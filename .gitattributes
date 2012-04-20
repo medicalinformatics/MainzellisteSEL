@@ -8,6 +8,7 @@
 .settings/org.eclipse.wst.jsdt.ui.superType.container -text
 .settings/org.eclipse.wst.jsdt.ui.superType.name -text
 WebContent/META-INF/MANIFEST.MF -text svneol=unset#text/plain
+WebContent/WEB-INF/jsp/createPerson.jsp -text svneol=unset#text/plain
 WebContent/WEB-INF/lib/asm-3.1.jar -text
 WebContent/WEB-INF/lib/jackson-core-asl-1.9.2.jar -text
 WebContent/WEB-INF/lib/jackson-jaxrs-1.9.2.jar -text
@@ -20,9 +21,23 @@ WebContent/WEB-INF/lib/jersey-server-1.12.jar -text
 WebContent/WEB-INF/lib/jersey-servlet-1.12.jar -text
 WebContent/WEB-INF/lib/jettison-1.1.jar -text
 WebContent/WEB-INF/lib/jsr311-api-1.1.1.jar -text
-src/de/unimainz/imbei/mzid/InvalidPIDException.java -text svneol=unset#text/plain
+WebContent/WEB-INF/web.xml -text svneol=unset#text/plain
+src/de/unimainz/imbei/mzid/Characteristic.java -text svneol=unset#text/plain
+src/de/unimainz/imbei/mzid/HashedCharacteristic.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/PID.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/PIDGenerator.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/PIDNotCorrectableException.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/Person.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/PidGen.java -text svneol=unset#text/plain
+src/de/unimainz/imbei/mzid/PlainTextCharacteristic.java -text svneol=unset#text/plain
+src/de/unimainz/imbei/mzid/exceptions/InvalidEntryException.java -text svneol=unset#text/plain
+src/de/unimainz/imbei/mzid/exceptions/InvalidPIDException.java -text svneol=unset#text/plain
+src/de/unimainz/imbei/mzid/webservice/AbstractParam.java -text svneol=unset#text/plain
+src/de/unimainz/imbei/mzid/webservice/HTMLResource.java -text svneol=unset#text/plain
+src/de/unimainz/imbei/mzid/webservice/JAXBContextResolver.java -text svneol=unset#text/plain
+src/de/unimainz/imbei/mzid/webservice/PIDAdapter.java -text svneol=unset#text/plain
+src/de/unimainz/imbei/mzid/webservice/PIDDto.java -text svneol=unset#text/plain
+src/de/unimainz/imbei/mzid/webservice/PersonDAO.java -text svneol=unset#text/plain
+src/de/unimainz/imbei/mzid/webservice/PersonResource.java -text svneol=unset#text/plain
+src/de/unimainz/imbei/mzid/webservice/PersonUnknownException.java -text svneol=unset#text/plain
+src/de/unimainz/imbei/mzid/webservice/PersonsResource.java -text svneol=unset#text/plain
