@@ -50,7 +50,17 @@ public class PID {
 	 * @param pid zu prüfender String
 	 */
 	public static boolean verify(String pid){
-		return true;
+		int codeWord[], sum6, sum7, test6, test7;
+		
+		codeWord = PIDBackend.PID2c(pid);
+		sum6 = PIDBackend.wsum1(codeWord); // checksum 1
+		sum7 = PIDBackend.wsum2(codeWord); // checksum 2		
+		test6 = sum6 ^ codeWord[6];
+		test7 = sum7 ^ codeWord[7];
+		if (test6 == 0 && test7 == 0)
+			return true;
+		else
+			return false;
 	}
 
 	/**
@@ -59,6 +69,6 @@ public class PID {
 	 * @return correct PIDString or null if impossible to correct
 	 */
 	public static String correct(String PIDString){
-		return null;
+		return PIDString;
 	}
 }
