@@ -1,11 +1,17 @@
 package de.unimainz.imbei.mzid;
 
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+
+import de.unimainz.imbei.mzid.exceptions.InvalidPIDException;
+import de.unimainz.imbei.mzid.webservice.PIDAdapter;
+
 /**
  * A person's identificator. Once created, the PID is guaranteed to be valid. Immutable.
  * 
  * @see PIDGenerator to generate PIDs.
  * @author Martin Lablans
  */
+@XmlJavaTypeAdapter(PIDAdapter.class)
 public class PID {
 	String PIDString;
 	
@@ -17,10 +23,7 @@ public class PID {
 	 */
 	public PID(String PIDString) throws InvalidPIDException {
 		if(!verify(PIDString)){
-			String c = correct(PIDString);
-			if(c==null)
-				throw new InvalidPIDException();
-			PIDString = c;
+			throw new InvalidPIDException();
 		}
 		this.PIDString = PIDString;
 	}
