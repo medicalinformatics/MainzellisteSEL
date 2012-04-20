@@ -22,6 +22,7 @@ WebContent/WEB-INF/lib/jettison-1.1.jar -text
 WebContent/WEB-INF/lib/jsr311-api-1.1.1.jar -text
 src/de/unimainz/imbei/mzid/InvalidPIDException.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/PID.java -text svneol=unset#text/plain
+src/de/unimainz/imbei/mzid/PIDBackend.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/PIDGenerator.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/Person.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/PidGen.java -text svneol=unset#text/plain
