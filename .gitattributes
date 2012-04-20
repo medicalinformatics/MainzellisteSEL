@@ -24,5 +24,6 @@ src/de/unimainz/imbei/mzid/InvalidPIDException.java -text svneol=unset#text/plai
 src/de/unimainz/imbei/mzid/PID.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/PIDBackend.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/PIDGenerator.java -text svneol=unset#text/plain
+src/de/unimainz/imbei/mzid/PIDNotCorrectableException.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/Person.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/PidGen.java -text svneol=unset#text/plain
