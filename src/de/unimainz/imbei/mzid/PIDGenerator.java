@@ -66,10 +66,106 @@ public class PIDGenerator {
 	/** Check PID.
 	 * Description in psx-pgi.h
 	 */
-	static int PIDcheck(String s, String out)
+	static boolean isCorrectPID(String pid)
 	{
-		//TODO: portieren
-		return 0;
+		int codeWord[], sum6, sum7, test6, test7;
+		
+		codeWord = PIDGenerator.PID2c(pid);
+		sum6 = PIDGenerator.wsum1(codeWord); // checksum 1
+		sum7 = PIDGenerator.wsum2(codeWord); // checksum 2		
+		test6 = sum6 ^ codeWord[6];
+		test7 = sum7 ^ codeWord[7];
+		if (test6 == 0 && test7 == 0)
+			return true;
+		else
+			return false;
+	}
+
+	private static StringBuffer swapPositions(StringBuffer str, int pos1, int pos2)
+	{
+		StringBuffer ret = new StringBuffer(str);
+		ret.setCharAt(pos1, str.charAt(pos2));
+		ret.setCharAt(pos2,  str.charAt(pos1));
+		return ret;
+	}	
+	
+	static String correctPID(String PIDString) {		
+		
+		int c[];
+		int i, sum6, sum7, test6, test7;
+		StringBuffer PIDStringBuffer = new StringBuffer(PIDString);
+		
+		c = PID2c(PIDString);
+		if (c == null) return null;
+
+		
+		  sum6 = wsum1(c);                /* checksum 1                */
+		  sum7 = wsum2(c);                /* checksum 2                */
+		  test6 = sum6 ^ c[6];
+		  test7 = sum7 ^ c[7];
+		  
+		  if (test6 == 0) {                   /* checksum 1 correct        */
+		    if (test7 == 0) return PIDString;        /* checksum 2 correct        */
+		    else {
+		      PIDStringBuffer.setCharAt(7, sigma[sum7]);           /* correct checksum 2        */
+		      }
+		    }
+		  else {
+		    if (test7 == 0) {                  /* checksum 2 correct        */
+		    	PIDStringBuffer.setCharAt(6, sigma[sum6]);            /* correct checksum 1        */
+		      }
+		    else {
+		      if (test7 == multf32(test6,1)) {          /* c[0] wrong   */
+		    	  PIDStringBuffer.setCharAt(0, sigma[c[0] ^ multf32(test6,30)]);   /* correct char */
+		        }
+		      else if (test7 == multf32(test6,2)) {     /* c[1] wrong   */
+		    	  PIDStringBuffer.setCharAt(1, sigma[c[1] ^ multf32(test6,29)]);   /* correct char */
+		        }
+		      else if (test7 == multf32(test6,3)) {     /* c[2] wrong   */
+		    	  PIDStringBuffer.setCharAt(2, sigma[c[2] ^ multf32(test6,28)]);   /* correct char */
+		        }
+		      else if (test7 == multf32(test6,4)) {     /* c[3] wrong   */
+		    	  PIDStringBuffer.setCharAt(3, sigma[c[3] ^ multf32(test6,27)]);   /* correct char */
+		        }
+		      else if (test7 == multf32(test6,5)) {     /* c[4] wrong   */
+		    	  PIDStringBuffer.setCharAt(4, sigma[c[4] ^ multf32(test6,26)]);   /* correct char */
+		        }
+		      else if (test7 == multf32(test6,6)) {     /* c[5] wrong   */
+		    	  PIDStringBuffer.setCharAt(5, sigma[c[5] ^ multf32(test6,25)]);   /* correct char */
+			}
+		      else if (test7 == test6 &&               /* corrected 1.Oct.2007 */ 
+		               test7 == (c[6] ^ c[7])) {       /* c[6], c[7] interchanged */
+		    	  PIDStringBuffer = swapPositions(PIDStringBuffer, 6 , 7);
+		        }
+		      else if (test7 == multf32(test6,16) &&   /* corrected 1.Oct.2007 */
+		        (multf32(c[5],6) ^ multf32(c[6],6) ^ c[5] ^ c[6]) == test6) { /* c[5],c[6] int'd */
+		    	  PIDStringBuffer = swapPositions(PIDStringBuffer, 5 , 6);
+			}
+		      else if (test7 == multf32(test6,19) &&   /* corrected 1.Oct.2007 */
+		        multf32(c[0] ^ c[1],19) == test6) { /* c[0],c[1] int'd */
+		    	  PIDStringBuffer = swapPositions(PIDStringBuffer, 0 , 1);
+			}
+		      else if (test7 == multf32(test6,20) &&  /* corrected 1.Oct.2007 */
+		        multf32(c[1] ^ c[2],20) == test6) { /* c[1],c[2] int'd */
+		    	  PIDStringBuffer = swapPositions(PIDStringBuffer, 1 , 2);
+			}
+		      else if (test7 == multf32(test6,21) &&  /* corrected 1.Oct.2007 */
+		        multf32(c[2] ^ c[3],21) == test6) { /* c[2],c[3] int'd */
+		    	  PIDStringBuffer = swapPositions(PIDStringBuffer, 2 , 3);
+			}
+		      else if (test7 == multf32(test6,22) &&  /* corrected 1.Oct.2007 */
+		        multf32(c[3] ^ c[4],22) == test6) { /* c[3],c[4] int'd */
+		    	  PIDStringBuffer = swapPositions(PIDStringBuffer, 3 , 4);
+			}
+		      else if (test7 == multf32(test6,23) &&  /* corrected 1.Oct.2007 */
+		        multf32(c[4] ^ c[5],23) == test6) { /* c[4],c[5] int'd */
+		    	  PIDStringBuffer = swapPositions(PIDStringBuffer, 4 , 5);
+			}
+		      else return null;             /* at least 2 characters wrong */
+		                                 /* and no simple interchange   */
+		      }
+		    }
+		return PIDStringBuffer.toString();
 	}
 
 	/** Initialize random generator.                                
