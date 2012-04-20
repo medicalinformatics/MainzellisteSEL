@@ -64,7 +64,11 @@ public class PIDGenerator {
 	}
 
 	/** Check PID.
-	 * Description in psx-pgi.h
+	 * 
+	 * Up to two errors are recognized.
+	 * 
+	 * @param pid The PID which to check.
+	 * @return true if pid is a correct PID, false otherwise.
 	 */
 	static boolean isCorrectPID(String pid)
 	{
@@ -80,7 +84,7 @@ public class PIDGenerator {
 		else
 			return false;
 	}
-
+	
 	private static StringBuffer swapPositions(StringBuffer str, int pos1, int pos2)
 	{
 		StringBuffer ret = new StringBuffer(str);
@@ -89,6 +93,17 @@ public class PIDGenerator {
 		return ret;
 	}	
 	
+	/**
+	 * Tries to correct a PID.
+	 * 
+	 * Up to two errors are recognized, errors with one changed
+	 * character or a transposition of adjacent characters can
+	 * be corrected.
+	 * @param PIDString The PID to correct.
+	 * @return PIDString, if it is a correct PID, the corrected PID
+	 * if PIDString is invalid but can be corrected, null if
+	 * PIDString is invalid and can not be corrected.
+	 */
 	static String correctPID(String PIDString) {		
 		
 		int c[];

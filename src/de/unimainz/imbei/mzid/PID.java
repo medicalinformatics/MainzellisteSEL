@@ -50,7 +50,8 @@ public class PID {
 	/**
 	 * Checks whether a given String is a valid PID.
 	 * 
-	 * @param pid zu prüfender String
+	 * @param pid The PID which to check.
+	 * @return true if pid is a correct PID, false otherwise.
 	 */
 	public static boolean verify(String pid){
 		return PIDGenerator.isCorrectPID(pid);
@@ -58,7 +59,9 @@ public class PID {
 
 	/**
 	 * Tries to correct the given PIDString.
-	 * 
+	 * Up to two errors are recognized, errors with one changed
+	 * character or a transposition of adjacent characters can
+	 * be corrected.
 	 * @return correct PIDString or null if impossible to correct
 	 */
 	public static String correct(String PIDString)  {
