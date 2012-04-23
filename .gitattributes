@@ -41,3 +41,5 @@ src/de/unimainz/imbei/mzid/webservice/PersonDAO.java -text svneol=unset#text/pla
 src/de/unimainz/imbei/mzid/webservice/PersonResource.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/webservice/PersonUnknownException.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/webservice/PersonsResource.java -text svneol=unset#text/plain
+test/de/unimainz/imbei/mzid/test/TestPIDGenerator.java -text svneol=unset#text/plain
+test/pidlist.txt -text svneol=unset#text/plain
