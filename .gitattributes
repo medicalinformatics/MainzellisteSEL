@@ -31,6 +31,7 @@ src/de/unimainz/imbei/mzid/Person.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/PidGen.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/PlainTextCharacteristic.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/exceptions/InvalidEntryException.java -text svneol=unset#text/plain
+src/de/unimainz/imbei/mzid/exceptions/InvalidIDException.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/exceptions/InvalidPIDException.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/webservice/AbstractParam.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/webservice/HTMLResource.java -text svneol=unset#text/plain

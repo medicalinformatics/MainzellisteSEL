@@ -7,7 +7,6 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
-import org.apache.commons.io.FileUtils;
 import java.io.*;
 import java.util.List;
 import java.util.ListIterator;
@@ -19,7 +18,12 @@ public class TestPIDGenerator {
 	
 	public TestPIDGenerator() throws IOException{
 		try {
-			 pidList = FileUtils.readLines(new File("test/pidlist.txt"));
+			BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream("test/pidlist.txt")));
+			String line;
+			while((line = br.readLine()) != null){
+				pidList.add(line);
+			}
+			br.close();
 		} catch(IOException e) {
 			throw new IOException("Reading of test pids failed: " + e.getMessage());
 		}
