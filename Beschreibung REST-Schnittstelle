@@ -1,0 +1,54 @@
+Syntax:
+/pfad/{param1}/{param2}
+Caller: Wer darf das aufrufen? (Authentifizierung)
+PreCon: Was muss der Client als Vorbedingung sicherstellen?
+PostCo: Was garantiert der Server als Nachbedingung?
+Params: Was wird beim Aufruf übergeben (was nicht oben schon im Pfad steht; also entweder in URL als ?param3=...&param4=... oder als Schlüssel-Wert-Paar; das ist aber hier ein unrelevantes Implementierungsdetail)
+Return: Was liefert der Server zurück? (Code, Daten - nur mögliche Erfolgsfälle abbilden)
+Except: Was kann schiefgehen? (Code, Wann tritt der auf)
+[Kurzbeschreibung]
+
+Parameter weglassen falls trivial!
+
+Patient = {IDs, Merkmale/Charakteristika}
+
+/
+	/patients
+	GET
+	Caller: IDAT-Admin
+	Return: 2xx, Liste registrierter PIDs
+	Liefert Liste registrierter PIDs.
+
+	POST
+	Caller: MDAT-Server, Nutzer
+	Params: Merkmale des Patienten. PID, falls enthalten, wird ignoriert.
+	Return: 201, Erzeugte PID
+	Legt einen neuen Patienten an.
+
+		/pid_{pid}
+		GET
+		Caller: IDAT-Admin
+		Return: 2xx, Merkmale des Patienten, mit PID
+		Abruf von Merkmalen des Patienten mit der PID pid.
+
+		PUT
+		Caller: IDAT-Admin
+		PreCon: Patient mit PID pid existiert bereits
+		Params: Neue Merkmale. PID, falls enthalten, wird ignoriert.
+		Return: TODO
+		Aktualisiert Merkmale des bestehenden Patienten mit der PID pid.
+
+		/tempid_{tempid}
+		GET
+		Caller: Nutzer
+		PreCon: tempid wurde registriert (@see Methode TODO)
+		Return: 2xx, Merkmale des Patienten
+		Abruf von Merkmalen des Patienten mit der TempID tempid.
+
+		PUT
+		Caller: Nutzer
+		PreCon: tempid wurde registriert (@see Methode TODO)
+		Params: Merkmale
+		Return: TODO
+		Aktualisiert Merkmale des Patienten mit der TempID tempid.
+		
