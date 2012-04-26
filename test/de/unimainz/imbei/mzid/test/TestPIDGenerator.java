@@ -133,6 +133,12 @@ public class TestPIDGenerator {
 		brokenPID = "H02YM0JJ";
 		assertFalse("Incorrect PID " + brokenPID + " was verified.", PID.verify(brokenPID));
 		
-		//TODO: Fehlschlag der Korrekturmethode prüfen
+		/* Check that PID.correct fails (returns null for incorrectable PID */
+		brokenPID = "M12YH0AJ";
+		assertNull("PID correction did not fail for incorrectable PID " + brokenPID, PID.correct(brokenPID));
+
+		brokenPID = "H02YM0JJ";
+		assertNull("PID correction did not fail for incorrectable PID " + brokenPID, PID.correct(brokenPID));
+		
 	}
 }
