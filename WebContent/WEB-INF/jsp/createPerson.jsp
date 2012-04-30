@@ -36,14 +36,16 @@ function createBloomFilter(form, fields)
 		value = $(fields[i]).val();
 		value = normalize(value);
 		bloom = nGramBloomFilter(value, n, k, l);
-		bloomFld = jQuery('<input type="hidden", id="bloom_' + fieldName + '" value="' + JSON.stringify(bloom) + '">');		
+		bloomFld = jQuery('<input type="hidden", id="bloom_' + fieldName + '" value="' + JSON.stringify(bloom) + '">');
+		$(form).append(bloomFld);
+		
 	}
 }
 
 </script>
 
 <body>
-	<form action="/mzid/persons" method="post" id="form_person" onsubmit="createBloomFilter('form_person', {'#vorname', '#nachname'});">
+	<form action="/mzid/persons" method="post" id="form_person" onsubmit="createBloomFilter('form_person', Array('#vorname', '#nachname'));">
 		<label for="id">PID</label>
 		<input name="id" id="id"/>
 		<br/>

@@ -8,13 +8,14 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 
 import java.io.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
 
 public class TestPIDGenerator { 	
 
 	private static StringBuffer sigma = new StringBuffer("0123456789ACDEFGHJKLMNPQRTUVWXYZ");	
-	private List<String> pidList;
+	private List<String> pidList = new ArrayList<String>();
 	
 	public TestPIDGenerator() throws IOException{
 		try {
@@ -140,5 +141,19 @@ public class TestPIDGenerator {
 		brokenPID = "H02YM0JJ";
 		assertNull("PID correction did not fail for incorrectable PID " + brokenPID, PID.correct(brokenPID));
 		
+		/* Empty String */
+		brokenPID = "";
+		assertFalse("Incorrect PID " + brokenPID + " was verified.", PID.verify(brokenPID));
+		assertNull("PID correction did not fail for empty PID " + brokenPID, PID.correct(brokenPID));
+		
+		/* Null String */
+		brokenPID = null;
+		assertFalse("Incorrect PID " + brokenPID + " was verified.", PID.verify(brokenPID));
+		assertNull("PID correction did not fail for null " + brokenPID, PID.correct(brokenPID));
+
+		/* Wrong number of characters */
+		brokenPID = "H02YM0J";
+		assertFalse("Incorrect PID " + brokenPID + " was verified.", PID.verify(brokenPID));
+		assertNull("PID correction did not fail for wrong number of characters " + brokenPID, PID.correct(brokenPID));
 	}
 }
