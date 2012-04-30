@@ -23,6 +23,7 @@ WebContent/WEB-INF/lib/jersey-servlet-1.12.jar -text
 WebContent/WEB-INF/lib/jettison-1.1.jar -text
 WebContent/WEB-INF/lib/jsr311-api-1.1.1.jar -text
 WebContent/WEB-INF/web.xml -text svneol=unset#text/plain
+jslib/bloomFilter-js/bloomFilter.js -text svneol=unset#text/plain
 jslib/crypto-js/aes/aes-min.js -text svneol=unset#text/plain
 jslib/crypto-js/aes/aes.js -text svneol=unset#text/plain
 jslib/crypto-js/blockmodes/blockmodes-min.js -text svneol=unset#text/plain
