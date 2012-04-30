@@ -1,21 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd" version="3.0">
 	<display-name>de.unimainz.imbei.mzid</display-name>
-	<servlet>
-		<servlet-name>Mainzer ID-Framework</servlet-name>
-		<servlet-class>com.sun.jersey.spi.container.servlet.ServletContainer</servlet-class>
-		<init-param>
+	<filter>
+		<filter-name>Mainzer ID-Framework</filter-name>
+		<filter-class>com.sun.jersey.spi.container.servlet.ServletContainer</filter-class>
+	<!--  	<init-param>
 			<param-name>com.sun.jersey.config.property.packages</param-name>
 			<param-value>de.unimainz.imbei.mzid</param-value>
-		</init-param>
+		</init-param>-->
 		<init-param>
 			<param-name>com.sun.jersey.config.property.JSPTemplatesBasePath</param-name>
 			<param-value>/WEB-INF/jsp</param-value>
 		</init-param>
-		<load-on-startup>1</load-on-startup>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>Mainzer ID-Framework</servlet-name>
-		<url-pattern>/mzid/*</url-pattern>
-	</servlet-mapping>
+		<init-param>
+			<param-name>com.sun.jersey.config.property.WebPageContentRegex</param-name>
+			<param-value>/static/.*</param-value>
+		</init-param>
+	</filter>
+	<filter-mapping>
+		<filter-name>Mainzer ID-Framework</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
 </web-app>

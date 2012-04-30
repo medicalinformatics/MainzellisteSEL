@@ -73,10 +73,6 @@ Params: { changeListener: http://... } // Wird aufgerufen, wenn Sitzungsparamete
 Return: Sitzungskennung {session}
 Legt eine neue Sitzung an.
 
-DELETE
-Caller: MDAT
-Params: 
-
 	/{session}
 	GET
 	Caller: MDAT

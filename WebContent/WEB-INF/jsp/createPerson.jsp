@@ -11,7 +11,7 @@
 <script type="text/javascript" src="http://crypto-js.googlecode.com/files/2.5.3-crypto-sha1.js"></script>
 <script type="text/javascript" src="http://crypto-js.googlecode.com/files/2.5.3-crypto-md5.js"></script>
 <script type="text/javascript" src="http://code.jquery.com/jquery-1.7.2.js"></script>
-<script type="text/javascript" src="bloomFilter.js"></script>
+<script type="text/javascript" src="/mzid/static/jslib/bloomFilter-js/bloomFilter.js"></script>
 <script type="text/javascript">
 
 /* TODO: Normalisierung von Umlauten, Namenskomponenten, ...
@@ -43,7 +43,7 @@ function createBloomFilter(form, fields)
 </script>
 
 <body>
-	<form action="/mzid/mzid/persons" method="post" id="form_person" onsubmit="createBloomFilter('form_person', {'#vorname', '#nachname'});">
+	<form action="/mzid/persons" method="post" id="form_person" onsubmit="createBloomFilter('form_person', {'#vorname', '#nachname'});">
 		<label for="id">PID</label>
 		<input name="id" id="id"/>
 		<br/>

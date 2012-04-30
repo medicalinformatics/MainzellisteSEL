@@ -12,9 +12,6 @@ function hash(val, i, l)
 {
 	var hash1 = Crypto.SHA1(val, {asBytes: true});
 	var hash2 = Crypto.MD5(val, {asBytes: true});
-
-	var hash3 = Crypto.SHA1(val, {asString: true});
-	var hash4 = Crypto.MD5(val, {asString: true});
 	
 	// reduce hashes to significant bytes
 	var nSignBytes = Math.ceil(Math.log(l) / Math.log(256));
