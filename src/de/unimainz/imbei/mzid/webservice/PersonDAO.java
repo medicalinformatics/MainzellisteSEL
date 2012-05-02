@@ -7,6 +7,7 @@ import java.util.List;
 import de.unimainz.imbei.mzid.PID;
 import de.unimainz.imbei.mzid.Person;
 
+@Deprecated
 public enum PersonDAO {
 	instance; // http://electrotek.wordpress.com/2008/08/06/singleton-in-java-the-proper-way/
 	

@@ -11,6 +11,7 @@ import de.unimainz.imbei.mzid.PID;
 import de.unimainz.imbei.mzid.Person;
 import de.unimainz.imbei.mzid.exceptions.InvalidPIDException;
 
+@Deprecated
 public class PersonResource {
 	@Context
 	UriInfo uriInfo;

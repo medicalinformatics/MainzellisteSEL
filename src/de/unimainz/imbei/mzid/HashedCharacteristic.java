@@ -1,15 +1,21 @@
 package de.unimainz.imbei.mzid;
 
-public class HashedCharacteristic extends Characteristic{
-	private String value;
+import java.util.BitSet;
+
+public class HashedCharacteristic extends Characteristic<BitSet>{
+	private BitSet value;
+	
+	public HashedCharacteristic(BitSet b) {
+		super(b);
+	}
 	
 	@Override
-	public String getValue() {
+	public BitSet getValue() {
 		return value;
 	}
 	
 	@Override
-	public void setValue(String hash) {
+	public void setValue(BitSet hash) {
 		this.value = hash;
 	}
 }

@@ -15,9 +15,13 @@ public abstract class AbstractParam<V> {
 		this.originalParam = param;
 		try {
 			this.value = parse(param);
-		} catch (Throwable e) {
-			throw new WebApplicationException(onError(param, e));
 		}
+		catch (WebApplicationException e){
+			throw e;
+		}
+		catch (Throwable e) {
+			throw new WebApplicationException(onError(param, e));
+		} 
 	}
 
 	public V getValue() {

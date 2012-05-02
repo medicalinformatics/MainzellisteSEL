@@ -7,6 +7,8 @@ import java.util.Random;
  * PIDs. Methods here are private to the package. A user should call the static
  * functions of class PID.
  * 
+ * TODO: Ist diese Klasse threadsicher?
+ * 
  * @author Martin Lablans
  */
 public class PIDGenerator {
@@ -68,7 +70,7 @@ public class PIDGenerator {
 	/**
 	 * Returns the next PID according to this factory's internal counter.
 	 */
-	public String getNextPIDString() {
+	public synchronized String getNextPIDString() {
 		return createPIDString(counter++);
 	}
 

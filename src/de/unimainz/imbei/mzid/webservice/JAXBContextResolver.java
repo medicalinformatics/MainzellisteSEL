@@ -1,5 +1,4 @@
-package de.unimainz.imbei.mzid.webservice;
-/*package de.unimainz.imbei.mzid;
+/*package de.unimainz.imbei.mzid.webservice;
 
 import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.Provider;

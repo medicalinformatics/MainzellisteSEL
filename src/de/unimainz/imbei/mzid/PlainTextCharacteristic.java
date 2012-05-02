@@ -1,10 +1,10 @@
 package de.unimainz.imbei.mzid;
 
-public class PlainTextCharacteristic extends Characteristic {
+public class PlainTextCharacteristic extends Characteristic<String> {
 	private String value;
 
 	public PlainTextCharacteristic(String value) {
-		this.value = value;
+		super(value);
 	}
 	
 	@Override

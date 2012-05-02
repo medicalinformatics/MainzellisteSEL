@@ -4,6 +4,7 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+@Deprecated
 public class InvalidEntryException extends WebApplicationException {
 	private static String message = "Invalid data input.";
 	

@@ -4,11 +4,11 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
-public class InvalidIDException extends WebApplicationException {
-	private static String message = "Invalid ID.";
+public class UnauthorizedException extends WebApplicationException {
+	private static String message = "Unauthorized to access resource.";
 	
-	public InvalidIDException() {
-        super(Response.status(Status.BAD_REQUEST).entity(message).build());
+	public UnauthorizedException() {
+		super(Response.status(Status.UNAUTHORIZED).entity(message).build());
 	}
 	
 	@Override

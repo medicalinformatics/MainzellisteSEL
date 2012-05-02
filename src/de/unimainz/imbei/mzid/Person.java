@@ -5,13 +5,13 @@ import java.util.Map;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
-public class Person {
+public class Person { //TODO: Umbenennen in Patient
 	private PID id;
-	private Map<String, Characteristic> characteristics;
+	private Map<String, Characteristic<?>> characteristics;
 	
 	public Person() {}
 	
-	public Person(PID id, Map<String, Characteristic> c) {
+	public Person(PID id, Map<String, Characteristic<?>> c) {
 		this.id = id;
 		this.characteristics = c;
 	}
@@ -24,11 +24,11 @@ public class Person {
 		this.id = id;
 	}
 	
-	public Map<String, Characteristic> getCharacteristics() {
+	public Map<String, Characteristic<?>> getCharacteristics() {
 		return characteristics;
 	}
 	
-	public void setCharacteristics(Map<String, Characteristic> characteristics) {
+	public void setCharacteristics(Map<String, Characteristic<?>> characteristics) {
 		this.characteristics = characteristics;
 	}
 	
