@@ -13,10 +13,12 @@ public class DiceFieldComparator extends FieldComparator {
 	@Override
 	public Object compare(Person personLeft, Person personRight)
 	{
-		// TODO: Typ-Check
-		// TODO: Fall, dass geforderte Charakteristiken nicht vorhanden sind  
-		Map<String, Characteristic<?>> cLeft = personLeft.getCharacteristics();
-		Map<String, Characteristic<?>> cRight = personRight.getCharacteristics();
+
+		Characteristic<?> cLeft = personLeft.getCharacteristics().get(fieldLeft);
+		Characteristic<?> cRight = personRight.getCharacteristics().get(fieldRight);
+		assert (cLeft instanceof HashedCharacteristic);
+		assert (cRight instanceof HashedCharacteristic);
+		
 		HashedCharacteristic hLeft = (HashedCharacteristic) cLeft;
 		HashedCharacteristic hRight = (HashedCharacteristic) cRight;
 		BitSet bLeft = hLeft.getValue();
