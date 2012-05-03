@@ -1,6 +1,10 @@
 package de.unimainz.imbei.mzid;
 
+import java.util.BitSet;
 import java.util.Collection;
+import java.util.Map;
+
+import sun.security.util.BitArray;
 
 /**
  * Represents a comparison between two input fields (characteristics)
@@ -48,5 +52,4 @@ public abstract class FieldComparator {
 	 * Double for distance metrics or Boolean for equal / unequal comparisons.
 	 */
 	public abstract Object compare (Person personLeft, Person personRight);
-
 }

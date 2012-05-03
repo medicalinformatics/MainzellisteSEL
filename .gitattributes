@@ -63,6 +63,7 @@ jslib/crypto-js/sha256/sha256.js -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/BinaryFieldComparator.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/Characteristic.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/Config.java -text svneol=unset#text/plain
+src/de/unimainz/imbei/mzid/DiceFieldComparator.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/FieldComparator.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/HashedCharacteristic.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/Matcher.java -text svneol=unset#text/plain
