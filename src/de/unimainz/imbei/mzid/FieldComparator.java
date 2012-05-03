@@ -21,8 +21,20 @@ public abstract class FieldComparator {
 	protected String fieldLeft;
 	protected String fieldRight;
 	
+	
+	/** Default constructor. Usually the parametrized constructor
+	 * should be used, but the default constructor makes sense
+	 * for array comparisons, where the the comparison fields are
+	 * changed in order to avoid the overhead of instantiating many
+	 * FieldComparator objects.
+	 * 
+	 */
+	public FieldComparator()
+	{
+	}
+	
 	/**
-	 * Default constructor: Instantiate comparison between two
+	 * Instantiate comparison between two
 	 * specified fields. The field definitions correspond to
 	 * indices in the characteristics map of the persons (objects of
 	 * class Person) which are compared.
@@ -52,4 +64,20 @@ public abstract class FieldComparator {
 	 * Double for distance metrics or Boolean for equal / unequal comparisons.
 	 */
 	public abstract Object compare (Person personLeft, Person personRight);
+
+	public String getFieldLeft() {
+		return fieldLeft;
+	}
+
+	public void setFieldLeft(String fieldLeft) {
+		this.fieldLeft = fieldLeft;
+	}
+
+	public String getFieldRight() {
+		return fieldRight;
+	}
+
+	public void setFieldRight(String fieldRight) {
+		this.fieldRight = fieldRight;
+	}
 }
