@@ -3,7 +3,9 @@
 /.project -text svneol=unset#text/plain
 .settings/.jsdtscope -text
 .settings/org.eclipse.jdt.core.prefs -text svneol=unset#text/plain
+.settings/org.eclipse.jpt.core.prefs -text svneol=unset#text/plain
 .settings/org.eclipse.wst.common.component -text
+.settings/org.eclipse.wst.common.project.facet.core.prefs.xml -text svneol=unset#text/plain
 .settings/org.eclipse.wst.common.project.facet.core.xml -text svneol=unset#text/plain
 .settings/org.eclipse.wst.jsdt.ui.superType.container -text
 .settings/org.eclipse.wst.jsdt.ui.superType.name -text
@@ -11,6 +13,7 @@
 WebContent/META-INF/MANIFEST.MF -text svneol=unset#text/plain
 WebContent/WEB-INF/jsp/createPerson.jsp -text svneol=unset#text/plain
 WebContent/WEB-INF/lib/asm-3.1.jar -text
+WebContent/WEB-INF/lib/derby.jar -text
 WebContent/WEB-INF/lib/jackson-core-asl-1.9.2.jar -text
 WebContent/WEB-INF/lib/jackson-jaxrs-1.9.2.jar -text
 WebContent/WEB-INF/lib/jackson-mapper-asl-1.9.2.jar -text
@@ -22,6 +25,7 @@ WebContent/WEB-INF/lib/jersey-server-1.12.jar -text
 WebContent/WEB-INF/lib/jersey-servlet-1.12.jar -text
 WebContent/WEB-INF/lib/jettison-1.1.jar -text
 WebContent/WEB-INF/lib/jsr311-api-1.1.1.jar -text
+WebContent/WEB-INF/lib/openjpa-all-2.2.0.jar -text
 WebContent/WEB-INF/web.xml -text svneol=unset#text/plain
 jslib/bloomFilter-js/bloomFilter.js -text svneol=unset#text/plain
 jslib/crypto-js/aes/aes-min.js -text svneol=unset#text/plain
@@ -60,6 +64,7 @@ jslib/crypto-js/sha1/sha1-min.js -text svneol=unset#text/plain
 jslib/crypto-js/sha1/sha1.js -text svneol=unset#text/plain
 jslib/crypto-js/sha256/sha256-min.js -text svneol=unset#text/plain
 jslib/crypto-js/sha256/sha256.js -text svneol=unset#text/plain
+src/META-INF/persistence.xml -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/ArrayFieldComparator.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/BinaryFieldComparator.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/Characteristic.java -text svneol=unset#text/plain
@@ -70,12 +75,10 @@ src/de/unimainz/imbei/mzid/HashedCharacteristic.java -text svneol=unset#text/pla
 src/de/unimainz/imbei/mzid/Matcher.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/PID.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/PIDGenerator.java -text svneol=unset#text/plain
-src/de/unimainz/imbei/mzid/PIDNotCorrectableException.java -text svneol=unset#text/plain
-src/de/unimainz/imbei/mzid/Person.java -text svneol=unset#text/plain
+src/de/unimainz/imbei/mzid/Patient.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/PlainTextCharacteristic.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/Session.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/StringPair.java -text svneol=unset#text/plain
-src/de/unimainz/imbei/mzid/exceptions/InvalidEntryException.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/exceptions/InvalidPIDException.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/exceptions/NotImplementedException.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/exceptions/UnauthorizedException.java -text svneol=unset#text/plain
@@ -83,16 +86,11 @@ src/de/unimainz/imbei/mzid/webservice/AbstractParam.java -text svneol=unset#text
 src/de/unimainz/imbei/mzid/webservice/CharacteristicKeyParam.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/webservice/FunctionsResource.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/webservice/HTMLResource.java -text svneol=unset#text/plain
-src/de/unimainz/imbei/mzid/webservice/JAXBContextResolver.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/webservice/PIDAdapter.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/webservice/PIDDto.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/webservice/PatientAdapter.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/webservice/PatientDto.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/webservice/PatientsResource.java -text svneol=unset#text/plain
-src/de/unimainz/imbei/mzid/webservice/PersonDAO.java -text svneol=unset#text/plain
-src/de/unimainz/imbei/mzid/webservice/PersonResource.java -text svneol=unset#text/plain
-src/de/unimainz/imbei/mzid/webservice/PersonUnknownException.java -text svneol=unset#text/plain
-src/de/unimainz/imbei/mzid/webservice/PersonsResource.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/webservice/SessionAdapter.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/webservice/SessionDto.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/webservice/SessionIdParam.java -text svneol=unset#text/plain

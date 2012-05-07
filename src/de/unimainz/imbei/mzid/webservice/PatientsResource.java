@@ -14,12 +14,13 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 
 import de.unimainz.imbei.mzid.Characteristic;
 import de.unimainz.imbei.mzid.Config;
 import de.unimainz.imbei.mzid.Matcher;
 import de.unimainz.imbei.mzid.PID;
-import de.unimainz.imbei.mzid.Person;
+import de.unimainz.imbei.mzid.Patient;
 import de.unimainz.imbei.mzid.exceptions.NotImplementedException;
 import de.unimainz.imbei.mzid.exceptions.UnauthorizedException;
 
@@ -34,21 +35,21 @@ public class PatientsResource {
 	
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	public List<Person> getAllPatients() throws UnauthorizedException {
+	public List<Patient> getAllPatients() throws UnauthorizedException {
 		//1. Auth prüfen: Falls nicht IDAT-Admin, UnauthorizedException werfen
 		
-		//2. Jeden Patienten aus der DB laden. Von EntityManager abkoppeln. Alle Felder, die keine IDs sind, streichen.
+		//2. Jeden Patienten aus der DB laden. Die müssen vom EntityManager abgekoppelt sein und nur Felder führen, die IDs sind.
 	
 		//3. Patienten in Liste zurückgeben.
 		
-		throw new NotImplementedException();
+		return Config.instance.getPatients();
 	}
 
 	@POST
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 	@Produces(MediaType.APPLICATION_JSON)
 	public PID newPatient(MultivaluedMap<String, String> form){
-		Person p = new Person();
+		Patient p = new Patient();
 		Map<String, Characteristic<?>> chars = new HashMap<String, Characteristic<?>>();
 		
 		for(String s: form.keySet()){ //TODO: Testfall mit defekten/leeren Eingaben
@@ -65,7 +66,7 @@ public class PatientsResource {
 		PID pid = new PID(Config.instance.getPidgen().getNextPIDString());
 		
 		p.setId(pid);
-		//TODO: Person speichern
+		Config.instance.addPatient(p);
 		
 		return pid;
 	}
@@ -73,11 +74,10 @@ public class PatientsResource {
 	@Path("/pid/{pid}")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	public Person getPatient(
+	public Patient getPatient(
 			@PathParam("pid") PID pid){
 		//IDAT-Admin?
-		//Patient mit PID pid aus DB laden und zurückgeben
-		throw new NotImplementedException();
+		return Config.instance.getPatient(pid);
 	}
 	
 	@Path("/pid/{pid}")
@@ -85,16 +85,18 @@ public class PatientsResource {
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response setPatient(
 			@PathParam("pid") PID pid,
-			Person p){
+			Patient p){
 		//IDAT-Admin?
-		//Charakteristika des Patients in DB mit PID pid austauschen durch die von p
-		throw new NotImplementedException();
+		Config.instance.updatePatient(p);
+		return Response
+				.status(Status.NO_CONTENT)
+				.build();
 	}
 	
 	@Path("/tempid/{tid}")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	public Person getPatient(
+	public Patient getPatient(
 			@PathParam("tid") String tid){
 		//Hier keine Auth notwendig. Wenn tid existiert, ist der Nutzer dadurch autorisiert.
 		//Patient mit TempID tid zurückgeben
@@ -106,7 +108,7 @@ public class PatientsResource {
 	@Consumes(MediaType.APPLICATION_JSON)
 	public void setPatient(
 			@PathParam("tid") String tid,
-			Person p){
+			Patient p){
 		//Hier keine Auth notwendig. Wenn tid existiert, ist der Nutzer dadurch autorisiert.
 		//Charakteristika des Patients in DB mit TempID tid austauschen durch die von p
 	}

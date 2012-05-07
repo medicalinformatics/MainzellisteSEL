@@ -11,11 +11,11 @@ public class DiceFieldComparator extends FieldComparator {
 	}
 	
 	@Override
-	public Object compare(Person personLeft, Person personRight)
+	public Object compare(Patient patientLeft, Patient patientRight)
 	{
 
-		Characteristic<?> cLeft = personLeft.getCharacteristics().get(fieldLeft);
-		Characteristic<?> cRight = personRight.getCharacteristics().get(fieldRight);
+		Characteristic<?> cLeft = patientLeft.getCharacteristics().get(fieldLeft);
+		Characteristic<?> cRight = patientRight.getCharacteristics().get(fieldRight);
 		assert (cLeft instanceof HashedCharacteristic);
 		assert (cRight instanceof HashedCharacteristic);
 		

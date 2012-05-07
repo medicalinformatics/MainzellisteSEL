@@ -14,7 +14,7 @@ public enum Matcher {
 	
 
 	/** The list of Persons in the database */
-	private Iterable<Person> personList;
+	private Iterable<Patient> patientList;
 	
 	/** PID-Generator instance */
 	private PIDGenerator pidGen;
@@ -24,11 +24,11 @@ public enum Matcher {
 	 * 
 	 * @return match's PID; null if none found.
 	 */
-	public PID match(Person a){
+	public PID match(Patient a){
 
-		Vector<Person> directMatches = new Vector<Person>();
+		Vector<Patient> directMatches = new Vector<Patient>();
 
-		for (Person b : personList)
+		for (Patient b : patientList)
 		{
 			// assert that the persons have the same Characteristics 
 			assert (a.getCharacteristics().keySet().equals(b.getCharacteristics().keySet()));

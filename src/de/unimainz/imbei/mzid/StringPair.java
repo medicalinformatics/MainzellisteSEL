@@ -5,20 +5,28 @@ package de.unimainz.imbei.mzid;
  * @author borg
  *
  */
-public class StringPair {
+public class StringPair { // TODO: Pairs are evil!
+	private String str1;
+	private String str2;
+	
 	public StringPair(String str1, String str2) {
-		super();
 		this.str1 = str1;
 		this.str2 = str2;
 	}
 
-	private String str1;
-	private String str2;
-
+	@Override
 	public int hashCode()
 	{
 		String hashStr = str1 + "," + str2;
 		return hashStr.hashCode();
 	}
 
+	@Override
+	public boolean equals(Object obj) {
+		if(!(obj instanceof StringPair))
+			return false;
+		
+		StringPair other = (StringPair)obj;
+		return str1.equals(other.str1) && str2.equals(other.str2);
+	}
 }

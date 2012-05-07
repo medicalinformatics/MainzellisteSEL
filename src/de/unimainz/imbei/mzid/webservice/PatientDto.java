@@ -7,7 +7,7 @@ import javax.xml.bind.annotation.XmlAttribute;
 
 import de.unimainz.imbei.mzid.Characteristic;
 import de.unimainz.imbei.mzid.PID;
-import de.unimainz.imbei.mzid.Person;
+import de.unimainz.imbei.mzid.Patient;
 
 /**
  * TODO: Serialisierer für Session schreiben
@@ -20,7 +20,7 @@ public class PatientDto {
 	
 	public PatientDto() {}
 	
-	public PatientDto(Person arg0) {
+	public PatientDto(Patient arg0) {
 		id = arg0.getId();
 		characteristics = new HashMap<String, Characteristic<?>>(arg0.getCharacteristics());
 	}

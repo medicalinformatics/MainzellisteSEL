@@ -36,7 +36,7 @@ public class ArrayFieldComparator {
 	}
 	
 	
-	public Map<StringPair, Object> compare(Person personLeft, Person personRight) 
+	public Map<StringPair, Object> compare(Patient patientLeft, Patient patientRight) 
 	{
 		Hashtable<StringPair, Object> result = new Hashtable<StringPair, Object>();
 		for (String fieldLeft : fieldListLeft)
@@ -45,7 +45,7 @@ public class ArrayFieldComparator {
 			for (String fieldRight : fieldListRight)
 			{	
 				comparator.setFieldRight(fieldRight);
-				Object value = comparator.compare(personLeft, personRight);
+				Object value = comparator.compare(patientLeft, patientRight);
 				result.put(new StringPair(fieldLeft, fieldRight), value);
 			}
 		}

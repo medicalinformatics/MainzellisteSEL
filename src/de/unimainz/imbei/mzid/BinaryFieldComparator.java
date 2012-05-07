@@ -10,10 +10,10 @@ public class BinaryFieldComparator extends FieldComparator {
 	}
 	
 	@Override
-	public Object compare(Person personLeft, Person personRight) {
+	public Object compare(Patient patientLeft, Patient patientRight) {
 		// TODO: Fall, dass geforderte Charakteristiken nicht vorhanden sind  
-		Map<String, Characteristic<?>> cLeft = personLeft.getCharacteristics();
-		Map<String, Characteristic<?>> cRight = personRight.getCharacteristics();
+		Map<String, Characteristic<?>> cLeft = patientLeft.getCharacteristics();
+		Map<String, Characteristic<?>> cRight = patientRight.getCharacteristics();
 		
 		return cLeft.get(this.fieldLeft).equals(cRight.get(this.fieldLeft));
 		
