@@ -6,17 +6,17 @@ import javax.ws.rs.core.Response.Status;
 
 import de.unimainz.imbei.mzid.Config;
 
-public class CharacteristicKeyParam extends AbstractParam<String> {
-	public CharacteristicKeyParam(String s) {
+public class FieldKeyParam extends AbstractParam<String> {
+	public FieldKeyParam(String s) {
 		super(s);
 	}
 	
 	@Override
 	protected String parse(String s) throws Throwable {
-		if(!Config.instance.getCharacteristicKeys().contains(s)){
+		if(!Config.instance.getFieldKeys().contains(s)){
 			throw new WebApplicationException(Response
 				.status(Status.BAD_REQUEST)
-				.entity("There is no characteristic key called " + s + ".")
+				.entity("There is no Field key called " + s + ".")
 				.build()
 			);
 		}

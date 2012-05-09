@@ -14,13 +14,13 @@ public class DiceFieldComparator extends FieldComparator {
 	public Object compare(Patient patientLeft, Patient patientRight)
 	{
 
-		Characteristic<?> cLeft = patientLeft.getCharacteristics().get(fieldLeft);
-		Characteristic<?> cRight = patientRight.getCharacteristics().get(fieldRight);
-		assert (cLeft instanceof HashedCharacteristic);
-		assert (cRight instanceof HashedCharacteristic);
+		Field<?> cLeft = patientLeft.getFields().get(fieldLeft);
+		Field<?> cRight = patientRight.getFields().get(fieldRight);
+		assert (cLeft instanceof HashedField);
+		assert (cRight instanceof HashedField);
 		
-		HashedCharacteristic hLeft = (HashedCharacteristic) cLeft;
-		HashedCharacteristic hRight = (HashedCharacteristic) cRight;
+		HashedField hLeft = (HashedField) cLeft;
+		HashedField hRight = (HashedField) cRight;
 		BitSet bLeft = hLeft.getValue();
 		BitSet bRight = hRight.getValue();
 		

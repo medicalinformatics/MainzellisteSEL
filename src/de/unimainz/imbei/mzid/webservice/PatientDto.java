@@ -5,7 +5,7 @@ import java.util.Map;
 
 import javax.xml.bind.annotation.XmlAttribute;
 
-import de.unimainz.imbei.mzid.Characteristic;
+import de.unimainz.imbei.mzid.Field;
 import de.unimainz.imbei.mzid.PID;
 import de.unimainz.imbei.mzid.Patient;
 
@@ -16,13 +16,13 @@ import de.unimainz.imbei.mzid.Patient;
  */
 public class PatientDto {
 	private PID id;
-	private Map<String, Characteristic<?>> characteristics;
+	private Map<String, Field<?>> fields;
 	
 	public PatientDto() {}
 	
 	public PatientDto(Patient arg0) {
 		id = arg0.getId();
-		characteristics = new HashMap<String, Characteristic<?>>(arg0.getCharacteristics());
+		fields = new HashMap<String, Field<?>>(arg0.getFields());
 	}
 
 	@XmlAttribute
@@ -34,11 +34,11 @@ public class PatientDto {
 		this.id = id;
 	}
 	
-	public Map<String, Characteristic<?>> getCharacteristics() {
-		return characteristics;
+	public Map<String, Field<?>> getFields() {
+		return fields;
 	}
 	
-	public void setCharacteristics(Map<String, Characteristic<?>> characteristics) {
-		this.characteristics = characteristics;
+	public void setFields(Map<String, Field<?>> Fields) {
+		this.fields = Fields;
 	}
 }

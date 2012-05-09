@@ -14,7 +14,7 @@ public class PatientAdapter extends XmlAdapter<PatientDto, Patient>{
 
 	@Override
 	public Patient unmarshal(PatientDto arg0) throws Exception {
-		Patient p = new Patient(arg0.getId(), arg0.getCharacteristics());
+		Patient p = new Patient(arg0.getId(), arg0.getFields());
 		return p;
 	}
 

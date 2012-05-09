@@ -21,7 +21,7 @@ import javax.persistence.TypedQuery;
 public enum Config {
 	instance;
 	
-	enum CharacteristicType {
+	enum FieldType {
 		PLAINTEXT,
 		PLAINTEXT_NORMALIZED,
 		HASHED, // Bloomfilter without prior normalization
@@ -29,7 +29,7 @@ public enum Config {
 	}
 	
 	private EntityManagerFactory emf;
-	private final Map<String,CharacteristicType> characteristicTypes;
+	private final Map<String,FieldType> FieldTypes;
 	private final PIDGenerator pidgen;
 	private final Map<String, Session> sessions;
 	private Properties props;
@@ -37,12 +37,12 @@ public enum Config {
 	Config() {
 		//TODO: Das alles irgendwoher laden.
 		emf = Persistence.createEntityManagerFactory("mzid");
-		Map<String, CharacteristicType> temp = new HashMap<String, CharacteristicType>();
-		temp.put("vorname", CharacteristicType.PLAINTEXT);
-		temp.put("nachname", CharacteristicType.PLAINTEXT);
-		temp.put("geburtsname", CharacteristicType.PLAINTEXT);
-		temp.put("geburtsdatum", CharacteristicType.PLAINTEXT);
-		characteristicTypes = Collections.unmodifiableMap(temp);
+		Map<String, FieldType> temp = new HashMap<String, FieldType>();
+		temp.put("vorname", FieldType.PLAINTEXT);
+		temp.put("nachname", FieldType.PLAINTEXT);
+		temp.put("geburtsname", FieldType.PLAINTEXT);
+		temp.put("geburtsdatum", FieldType.PLAINTEXT);
+		FieldTypes = Collections.unmodifiableMap(temp);
 		pidgen = PIDGenerator.init(1, 2, 3, 0);
 		sessions = new HashMap<String, Session>();
 		props = new Properties();
@@ -52,13 +52,13 @@ public enum Config {
 		return props.getProperty(propKey);
 	}
 	
-	public Set<String> getCharacteristicKeys(){
-		return characteristicTypes.keySet();
+	public Set<String> getFieldKeys(){
+		return FieldTypes.keySet();
 	}
 	
-	public CharacteristicType getCharacteristicType(String characteristicKey){
-		assert characteristicTypes.keySet().contains(characteristicKey);
-		return characteristicTypes.get(characteristicKey);
+	public FieldType getFieldType(String FieldKey){
+		assert FieldTypes.keySet().contains(FieldKey);
+		return FieldTypes.get(FieldKey);
 	}
 	
 	public PIDGenerator getPidgen() {
@@ -128,7 +128,7 @@ public enum Config {
 		Patient exPat = em.find(Patient.class, p.getId());
 		
 		//2. update persisted instance
-		exPat.setCharacteristics(p.getCharacteristics());
+		exPat.setFields(p.getFields());
 		
 		//3. close //TODO: Commit needed?
 		em.close();

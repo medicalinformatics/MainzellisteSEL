@@ -30,18 +30,18 @@ public enum Matcher {
 
 		for (Patient b : patientList)
 		{
-			// assert that the persons have the same Characteristics 
-			assert (a.getCharacteristics().keySet().equals(b.getCharacteristics().keySet()));
+			// assert that the persons have the same Fields 
+			assert (a.getFields().keySet().equals(b.getFields().keySet()));
 			
 			// TODO: Eleganter lösen über Datenbankabfrage
-			// get exact matches (i.e. all Characteristics agree)
-			if (a.getCharacteristics().equals(b.getCharacteristics()))
+			// get exact matches (i.e. all Fields agree)
+			if (a.getFields().equals(b.getFields()))
 				directMatches.add(b);
 			
 			// TODO: Gewichte berechnen, Klassifikation etc.
 		}
 		
-		// Two or more exact matches are not possible (errornous database)
+		// Two or more exact matches are not possible (erroneous database)
 		assert (directMatches.size() < 2);
 		
 		if (directMatches.size() == 1)

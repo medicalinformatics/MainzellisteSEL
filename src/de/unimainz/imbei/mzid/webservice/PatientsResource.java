@@ -16,7 +16,7 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
-import de.unimainz.imbei.mzid.Characteristic;
+import de.unimainz.imbei.mzid.Field;
 import de.unimainz.imbei.mzid.Config;
 import de.unimainz.imbei.mzid.Matcher;
 import de.unimainz.imbei.mzid.PID;
@@ -50,13 +50,13 @@ public class PatientsResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	public PID newPatient(MultivaluedMap<String, String> form){
 		Patient p = new Patient();
-		Map<String, Characteristic<?>> chars = new HashMap<String, Characteristic<?>>();
+		Map<String, Field<?>> chars = new HashMap<String, Field<?>>();
 		
 		for(String s: form.keySet()){ //TODO: Testfall mit defekten/leeren Eingaben
-			chars.put(s, Characteristic.build(s, form.getFirst(s)));
+			chars.put(s, Field.build(s, form.getFirst(s)));
 		}
 
-		p.setCharacteristics(chars);
+		p.setFields(chars);
 		
 		PID match = Matcher.instance.match(p);
 		

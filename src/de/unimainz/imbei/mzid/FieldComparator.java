@@ -7,7 +7,7 @@ import java.util.Map;
 import sun.security.util.BitArray;
 
 /**
- * Represents a comparison between two input fields (characteristics)
+ * Represents a comparison between two input fields (Fields)
  * in a Patient. Comparison methods, such as string comparison or
  * binary comparison (equal / not equal) are implemented as
  * subclasses of this class. Every concrete comparison (for example:
@@ -35,7 +35,7 @@ public abstract class FieldComparator {
 	/**
 	 * Instantiate comparison between two
 	 * specified fields. The field definitions correspond to
-	 * indices in the characteristics map of the persons (objects of
+	 * indices in the Fields map of the persons (objects of
 	 * class Patient) which are compared.
 	 * 
 	 * In many cases, subclasses will define constructors with

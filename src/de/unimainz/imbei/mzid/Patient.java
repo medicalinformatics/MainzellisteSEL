@@ -8,16 +8,16 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
 @Entity
-public class Patient { //TODO: Umbenennen in Patient
+public class Patient { 
 	@Id
 	private PID id;
-	private Map<String, Characteristic<?>> characteristics;
+	private Map<String, Field<?>> fields;
 	
 	public Patient() {}
 	
-	public Patient(PID id, Map<String, Characteristic<?>> c) {
+	public Patient(PID id, Map<String, Field<?>> c) {
 		this.id = id;
-		this.characteristics = c;
+		this.fields = c;
 	}
 
 	public PID getId() {
@@ -28,16 +28,16 @@ public class Patient { //TODO: Umbenennen in Patient
 		this.id = id;
 	}
 	
-	public Map<String, Characteristic<?>> getCharacteristics() {
-		return characteristics;
+	public Map<String, Field<?>> getFields() {
+		return fields;
 	}
 	
-	public void setCharacteristics(Map<String, Characteristic<?>> characteristics) {
-		this.characteristics = characteristics;
+	public void setFields(Map<String, Field<?>> Fields) {
+		this.fields = Fields;
 	}
 	
 	@Override
 	public String toString() {
-		return id.toString() + characteristics.toString();
+		return id.toString() + fields.toString();
 	}
 }
