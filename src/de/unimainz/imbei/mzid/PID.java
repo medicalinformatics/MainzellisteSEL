@@ -1,30 +1,19 @@
 package de.unimainz.imbei.mzid;
 
+import javax.persistence.Entity;
 import javax.persistence.Transient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
+import de.unimainz.imbei.mzid.dto.IDAdapter;
 import de.unimainz.imbei.mzid.exceptions.InvalidIDException;
-import de.unimainz.imbei.mzid.webservice.PIDAdapter;
 
-/**
- * A person's identificator. Once created, the PID is guaranteed to be valid. Immutable.
- * 
- * @see PIDGenerator to generate PIDs.
- * @author Martin Lablans
- */
-@XmlJavaTypeAdapter(PIDAdapter.class)
-public class PID implements ID{
+@XmlJavaTypeAdapter(IDAdapter.class)
+public class PID extends ID{
 	String PIDString;
-	IDGenerator<PID> generator;
+	String type;
 	
-	/**
-	 * Creates a PID from a given PIDString.
-	 * 
-	 * @param PIDString String containing a valid PID.
-	 * @throws InvalidIDException The given PIDString is invalid and could not be corrected.
-	 */
-	public PID(String PIDString) throws InvalidIDException {
-		setId(PIDString);
+	public PID(String PIDString, String type) throws InvalidIDException {
+		super(PIDString, type);
 	}
 	
 	@Override
@@ -47,20 +36,22 @@ public class PID implements ID{
 	}
 
 	@Override
-	public IDGenerator<PID> getFactory() {
-		return generator;
-	}
-
-	@Override
 	public String getId() {
 		return toString();
 	}
 
 	@Override
-	public void setId(String id) throws InvalidIDException{
-		if(!getFactory().verify(PIDString)){
-			throw new InvalidIDException();
-		}
+	protected void setId(String id) throws InvalidIDException{
 		PIDString = id;
+	}
+
+	@Override
+	public String getType() {
+		return type;
+	}
+
+	@Override
+	protected void setType(String type) {
+		this.type = type;
 	}
 }

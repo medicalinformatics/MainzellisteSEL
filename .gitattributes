@@ -26,6 +26,7 @@ WebContent/WEB-INF/lib/jersey-server-1.12.jar -text
 WebContent/WEB-INF/lib/jersey-servlet-1.12.jar -text
 WebContent/WEB-INF/lib/jettison-1.1.jar -text
 WebContent/WEB-INF/lib/jsr311-api-1.1.1.jar -text
+WebContent/WEB-INF/lib/mysql-connector-java-5.1.20-bin.jar -text
 WebContent/WEB-INF/lib/openjpa-all-2.2.0.jar -text
 WebContent/WEB-INF/web.xml -text svneol=unset#text/plain
 builder_project/enhance.xml -text svneol=unset#text/plain
@@ -94,6 +95,14 @@ src/de/unimainz/imbei/mzid/PlainTextField.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/Session.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/StringNormalizer.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/StringPair.java -text svneol=unset#text/plain
+src/de/unimainz/imbei/mzid/dto/IDAdapter.java -text svneol=unset#text/plain
+src/de/unimainz/imbei/mzid/dto/IDDto.java -text svneol=unset#text/plain
+src/de/unimainz/imbei/mzid/dto/PIDAdapter.java -text svneol=unset#text/plain
+src/de/unimainz/imbei/mzid/dto/PatientAdapter.java -text svneol=unset#text/plain
+src/de/unimainz/imbei/mzid/dto/PatientDto.java -text svneol=unset#text/plain
+src/de/unimainz/imbei/mzid/dto/Persistence.java -text svneol=unset#text/plain
+src/de/unimainz/imbei/mzid/dto/SessionAdapter.java -text svneol=unset#text/plain
+src/de/unimainz/imbei/mzid/dto/SessionDto.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/exceptions/InvalidIDException.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/exceptions/NotImplementedException.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/exceptions/UnauthorizedException.java -text svneol=unset#text/plain
@@ -101,13 +110,7 @@ src/de/unimainz/imbei/mzid/webservice/AbstractParam.java -text svneol=unset#text
 src/de/unimainz/imbei/mzid/webservice/FieldKeyParam.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/webservice/FunctionsResource.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/webservice/HTMLResource.java -text svneol=unset#text/plain
-src/de/unimainz/imbei/mzid/webservice/PIDAdapter.java -text svneol=unset#text/plain
-src/de/unimainz/imbei/mzid/webservice/PIDDto.java -text svneol=unset#text/plain
-src/de/unimainz/imbei/mzid/webservice/PatientAdapter.java -text svneol=unset#text/plain
-src/de/unimainz/imbei/mzid/webservice/PatientDto.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/webservice/PatientsResource.java -text svneol=unset#text/plain
-src/de/unimainz/imbei/mzid/webservice/SessionAdapter.java -text svneol=unset#text/plain
-src/de/unimainz/imbei/mzid/webservice/SessionDto.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/webservice/SessionIdParam.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/webservice/SessionsResource.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/webservice/Token.java -text svneol=unset#text/plain

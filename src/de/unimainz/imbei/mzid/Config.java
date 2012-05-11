@@ -18,6 +18,10 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceUnit;
 import javax.persistence.TypedQuery;
 
+import de.unimainz.imbei.mzid.dto.PatientAdapter;
+import de.unimainz.imbei.mzid.dto.PatientDto;
+import de.unimainz.imbei.mzid.exceptions.NotImplementedException;
+
 public enum Config {
 	instance;
 	
@@ -32,27 +36,27 @@ public enum Config {
 	private final Map<String,FieldType> FieldTypes;
 	private final PIDGenerator pidgen;
 	private final Map<String, Session> sessions;
-	private final Map<String, IDGenerator<? extends ID>> generators = null; //TODO
+	private final Map<String, IDGenerator<? extends ID>> generators;
 	private Properties props;
 	
 	Config() {
 		//TODO: Das alles irgendwoher laden.
+		props = new Properties();
 		emf = Persistence.createEntityManagerFactory("mzid");
+
 		Map<String, FieldType> temp = new HashMap<String, FieldType>();
 		temp.put("vorname", FieldType.PLAINTEXT);
 		temp.put("nachname", FieldType.PLAINTEXT);
 		temp.put("geburtsname", FieldType.PLAINTEXT);
 		temp.put("geburtsdatum", FieldType.PLAINTEXT);
 		FieldTypes = Collections.unmodifiableMap(temp);
+		
 		pidgen = PIDGenerator.init(1, 2, 3, 0);
 		sessions = new HashMap<String, Session>();
-		props = new Properties();
 		
-		for(String s: new String[3]){ //TODO Config lesen!
-			//class.forInstance...
-			//init
-			//in Map schreiben
-		}
+		HashMap<String, IDGenerator<? extends ID>> temp2 = new HashMap<String, IDGenerator<? extends ID>>();
+		temp2.put("pid", pidgen);
+		generators = Collections.unmodifiableMap(temp2);
 	}
 	
 	public String getProperty(String propKey){
@@ -66,10 +70,6 @@ public enum Config {
 	public FieldType getFieldType(String FieldKey){
 		assert FieldTypes.keySet().contains(FieldKey);
 		return FieldTypes.get(FieldKey);
-	}
-	
-	public PIDGenerator getPidgen() {
-		return pidgen;
 	}
 	
 	public Session newSession(){
@@ -115,21 +115,30 @@ public enum Config {
 		return p;
 	}
 	
-	public List<Patient> getPatients(){ //TODO: Filtern
+	public List<Patient> getPatients() { //TODO: Filtern
 		EntityManager em = emf.createEntityManager();
-		List<Patient> pl = em.createQuery("select p from Patient p", Patient.class).getResultList();
+		List<PatientDto> pdtol = em.createQuery("select p from PatientDto p", PatientDto.class).getResultList();
 		em.close(); // causes all entities to be detached
+		List<Patient> pl = new ArrayList<Patient>(pdtol.size());
+		PatientAdapter pa = new PatientAdapter();
+		for(PatientDto pdto: pdtol){
+			pl.add(pa.unmarshal(pdto));
+		}
 		return pl;
 	}
 
 	public void addPatient(Patient p){
 		EntityManager em = emf.createEntityManager();
-		em.persist(p); //TODO: Fehlerbehandlung, falls PID schon existiert.
+		PatientDto pdto = new PatientAdapter().marshal(p);
+		em.getTransaction().begin();
+		em.persist(pdto); //TODO: Fehlerbehandlung, falls PID schon existiert.
+		em.getTransaction().commit();
 		em.close();
 	}
 	
 	public void updatePatient(Patient p){
-		EntityManager em = emf.createEntityManager();
+		throw new NotImplementedException();
+/*		EntityManager em = emf.createEntityManager();
 		
 		//1. fetch existing patient -- avoid reuse of existing functions to retain persistence context
 		Patient exPat = em.find(Patient.class, p.getId());
@@ -138,7 +147,7 @@ public enum Config {
 		exPat.setFields(p.getFields());
 		
 		//3. close //TODO: Commit needed?
-		em.close();
+		em.close();*/
 	}
 	
 	public IDGenerator<? extends ID> getFactory(String idType){

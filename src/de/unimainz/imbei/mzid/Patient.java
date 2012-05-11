@@ -1,31 +1,43 @@
 package de.unimainz.imbei.mzid;
 
+import java.util.Collections;
 import java.util.Map;
+import java.util.Set;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
-@Entity
 public class Patient { 
-	@Id
-	private PID id;
+	/**
+	 * Internal ID. Set by JPA when on first persistance.
+	 */
+	private String plid;
+	
+	private Set<ID> ids;
 	private Map<String, Field<?>> fields;
 	
 	public Patient() {}
 	
-	public Patient(PID id, Map<String, Field<?>> c) {
-		this.id = id;
+	public Patient(String plid, Set<ID> ids, Map<String, Field<?>> c) {
+		this.plid = plid;
+		this.ids = ids;
 		this.fields = c;
 	}
-
-	public PID getId() {
-		return id;
+	
+	public String getPlid() {
+		return plid;
 	}
 	
-	public void setId(PID id) {
-		this.id = id;
+	private void setPlid(String plid) {
+		this.plid = plid;
+	}
+	
+	public Set<ID> getIds(){
+		return Collections.unmodifiableSet(ids);
+	}
+	
+	public void setIds(Set<ID> ids) {
+		this.ids = ids;
 	}
 	
 	public Map<String, Field<?>> getFields() {
@@ -38,6 +50,6 @@ public class Patient {
 	
 	@Override
 	public String toString() {
-		return id.toString() + fields.toString();
+		return plid.toString() + fields.toString();
 	}
 }

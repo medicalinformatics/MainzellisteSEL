@@ -13,9 +13,6 @@ public enum Matcher {
 	instance;
 	
 
-	/** The list of Persons in the database */
-	private Iterable<Patient> patientList;
-	
 	/** PID-Generator instance */
 	private PIDGenerator pidGen;
 	
@@ -25,10 +22,10 @@ public enum Matcher {
 	 * @return match's PID; null if none found.
 	 */
 	public PID match(Patient a){
-
+/*
 		Vector<Patient> directMatches = new Vector<Patient>();
 
-		for (Patient b : patientList)
+		for (Patient b : Config.instance.getPatients())
 		{
 			// assert that the persons have the same Fields 
 			assert (a.getFields().keySet().equals(b.getFields().keySet()));
@@ -52,6 +49,7 @@ public enum Matcher {
 		// Wenn nichts gefunden: Neuen PID zurückgeben
 		return new PID(pidGen.getNextPIDString());
 		// TODO: Zähler in der Datenbank hochzählen
-	
+	*/
+		return null;
 	}
 }

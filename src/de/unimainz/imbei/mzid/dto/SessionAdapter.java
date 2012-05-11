@@ -1,4 +1,4 @@
-package de.unimainz.imbei.mzid.webservice;
+package de.unimainz.imbei.mzid.dto;
 
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 

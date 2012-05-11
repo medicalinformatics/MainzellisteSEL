@@ -1,8 +1,11 @@
-package de.unimainz.imbei.mzid.webservice;
+package de.unimainz.imbei.mzid.dto;
 
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlAttribute;
 
 import de.unimainz.imbei.mzid.Session;
@@ -12,7 +15,9 @@ import de.unimainz.imbei.mzid.Session;
  * @author Martin
  *
  */
+//@Entity
 public class SessionDto {
+	@Id
 	private String sessionId;
 	private HashMap<String, String> data = new HashMap<String, String>();
 	

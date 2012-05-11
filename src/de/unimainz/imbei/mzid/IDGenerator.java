@@ -24,4 +24,6 @@ public interface IDGenerator<I> {
 	 * @return correct PIDString or null if impossible to correct
 	 */
 	public String correct(String PIDString);
+	
+	public I buildId(String id, String type);
 }
