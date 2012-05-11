@@ -1,8 +1,9 @@
 package de.unimainz.imbei.mzid;
 
+import javax.persistence.Transient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
-import de.unimainz.imbei.mzid.exceptions.InvalidPIDException;
+import de.unimainz.imbei.mzid.exceptions.InvalidIDException;
 import de.unimainz.imbei.mzid.webservice.PIDAdapter;
 
 /**
@@ -12,20 +13,18 @@ import de.unimainz.imbei.mzid.webservice.PIDAdapter;
  * @author Martin Lablans
  */
 @XmlJavaTypeAdapter(PIDAdapter.class)
-public class PID {
+public class PID implements ID{
 	String PIDString;
+	IDGenerator<PID> generator;
 	
 	/**
 	 * Creates a PID from a given PIDString.
 	 * 
 	 * @param PIDString String containing a valid PID.
-	 * @throws InvalidPIDException The given PIDString is invalid and could not be corrected.
+	 * @throws InvalidIDException The given PIDString is invalid and could not be corrected.
 	 */
-	public PID(String PIDString) throws InvalidPIDException {
-		if(!verify(PIDString)){
-			throw new InvalidPIDException();
-		}
-		this.PIDString = PIDString;
+	public PID(String PIDString) throws InvalidIDException {
+		setId(PIDString);
 	}
 	
 	@Override
@@ -47,25 +46,21 @@ public class PID {
 		return PIDString;
 	}
 
-	/**
-	 * Checks whether a given String is a valid PID.
-	 * 
-	 * @param pid The PID which to check.
-	 * @return true if pid is a correct PID, false otherwise.
-	 */
-	public static boolean verify(String pid){
-		return PIDGenerator.isCorrectPID(pid);
+	@Override
+	public IDGenerator<PID> getFactory() {
+		return generator;
 	}
 
-	/**
-	 * Tries to correct the given PIDString.
-	 * Up to two errors are recognized, errors with one changed
-	 * character or a transposition of adjacent characters can
-	 * be corrected.
-	 * @return correct PIDString or null if impossible to correct
-	 */
-	public static String correct(String PIDString)  {
-		return PIDGenerator.correctPID(PIDString);
+	@Override
+	public String getId() {
+		return toString();
 	}
-		
+
+	@Override
+	public void setId(String id) throws InvalidIDException{
+		if(!getFactory().verify(PIDString)){
+			throw new InvalidIDException();
+		}
+		PIDString = id;
+	}
 }

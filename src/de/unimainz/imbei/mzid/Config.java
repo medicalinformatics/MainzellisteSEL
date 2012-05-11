@@ -32,6 +32,7 @@ public enum Config {
 	private final Map<String,FieldType> FieldTypes;
 	private final PIDGenerator pidgen;
 	private final Map<String, Session> sessions;
+	private final Map<String, IDGenerator<? extends ID>> generators = null; //TODO
 	private Properties props;
 	
 	Config() {
@@ -46,6 +47,12 @@ public enum Config {
 		pidgen = PIDGenerator.init(1, 2, 3, 0);
 		sessions = new HashMap<String, Session>();
 		props = new Properties();
+		
+		for(String s: new String[3]){ //TODO Config lesen!
+			//class.forInstance...
+			//init
+			//in Map schreiben
+		}
 	}
 	
 	public String getProperty(String propKey){
@@ -132,5 +139,9 @@ public enum Config {
 		
 		//3. close //TODO: Commit needed?
 		em.close();
+	}
+	
+	public IDGenerator<? extends ID> getFactory(String idType){
+		return generators.get(idType);
 	}
 }

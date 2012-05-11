@@ -1,7 +1,7 @@
 package de.unimainz.imbei.mzid.test;
 
 import de.unimainz.imbei.mzid.*;
-import de.unimainz.imbei.mzid.exceptions.InvalidPIDException;
+import de.unimainz.imbei.mzid.exceptions.InvalidIDException;
 
 import static org.junit.Assert.*;
 
@@ -49,7 +49,7 @@ public class TestPIDGenerator {
 						nextPid, a.toString());
 				assertTrue(a + " was supposed to be a valid PID, but wasn't.", PID.verify(a.toString()));
 			}
-		} catch (InvalidPIDException e) {
+		} catch (InvalidIDException e) {
 			fail("Generation of " + i+1 + "th PID failed.");
 			return;
 		}

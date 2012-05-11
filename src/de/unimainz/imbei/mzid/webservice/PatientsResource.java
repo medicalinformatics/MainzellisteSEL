@@ -58,6 +58,8 @@ public class PatientsResource {
 
 		p.setFields(chars);
 		
+		//hier normalisieren
+		
 		PID match = Matcher.instance.match(p);
 		
 		if(match != null)
