@@ -9,6 +9,7 @@ import java.util.Vector;
  *
  * @param <T> Die Art des Felds
  */
+// TODO oder lieber extends Field<T[]> ?
 public class CompoundField<T extends Field> extends Field<List<T>> {
 	
 	private int size;
@@ -26,12 +27,21 @@ public class CompoundField<T extends Field> extends Field<List<T>> {
 	public CompoundField(int size)
 	{		
 		super(new Vector<T>(size));
+		for (int i = 0; i < size; i++)
+		{
+			value.add(null);
+		}
 	}
 	
 	@Override
 	public List<T> getValue()
 	{
 		return this.value;
+	}
+
+	public T getValueAt(int i)
+	{
+		return this.value.get(i);
 	}
 
 	@Override

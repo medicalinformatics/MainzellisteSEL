@@ -29,6 +29,14 @@ public abstract class Field<T> {
 		return build(Config.instance.getFieldType(charKey), o);
 	}
 	
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof Field<?>)
+				return this.getValue().equals(((Field<?>) obj).getValue());
+		else
+			return false;
+	}
+
 	public static Field<?> build(FieldType t, Object o){
 		switch(t){
 			case PLAINTEXT:
