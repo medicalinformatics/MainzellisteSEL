@@ -1,25 +1,17 @@
 package de.unimainz.imbei.mzid;
 
-import java.util.Set;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.HashMap;
+import java.util.Set;
 
-@Deprecated
+public class StringNormalizer implements FieldTransformer<PlainTextField, PlainTextField> {
 
-/**
- * This class provides functions for preprocessing input fields, such as conversion of umlauts, decomposition of names,
- * generation of phonetic codes.
- * @author borg
- *
- */
-public class FieldTransformation {
-
-	/** Delimiters to recognize when decomposing Names.
+	/** Delimiters to remove from start and end.
 	 * 
 	 */
 	private static char delimiterChars[] = {' ', '.', ':', ',', ';', '-', '\''};
-	
+
 	/** Characters which to replace (umlauts) 
 	 * {ä, Ä, ö, Ö, ü, Ü, ß}
 	 * */
@@ -35,8 +27,9 @@ public class FieldTransformation {
 	
 	/** Mapping between umlauts and their replacement */
 	private Map<Character, String> umlautReplacementMap;
-	
-	public FieldTransformation()
+
+
+	public StringNormalizer()
 	{
 		int i;
 		this.delimiters = new HashSet<Character>();
@@ -52,6 +45,7 @@ public class FieldTransformation {
 		}
 	}
 	
+
 	/**
 	 * Normalize a PlainTextField. Normalization includes:
 	 * <ul>
@@ -62,7 +56,7 @@ public class FieldTransformation {
 	 * @param input
 	 * @return
 	 */
-	public PlainTextField normalizeString(PlainTextField input)
+	public PlainTextField transform(PlainTextField input)
 	{
 		// TODO: ungültige Zeichen filtern
 		String inputStr = input.toString();
@@ -94,60 +88,5 @@ public class FieldTransformation {
 		return output;
 		
 	}
-	
-	/**
-	 * Decompose surname field into components.
-	 * The field is decomposed into tokens, seperated by the delimiters defined
-	 * by DELIMITERS.
-	 * @param input
-	 * @return
-	 */
-	public static CompoundField<PlainTextField> decomposeSurname(PlainTextField input)
-	{
-		CompoundField<PlainTextField> output = new CompoundField<PlainTextField>(3);
-		
-		// TODO: Implementieren
-		return output;
-	}
-	
-	/**
-	 * Decompose first name field into components.
-	 * TODO: Genaue Beschreibung
-	 * @param input
-	 * @return
-	 */
-	public static CompoundField<PlainTextField> decomposeFirstName(PlainTextField input)
-	{
-		CompoundField<PlainTextField> output = new CompoundField<PlainTextField>(3);
-		
-		// TODO: Implementieren
-		return output;
-	}
-	
-	/**
-	 * Generates phonetic code following the "Cologne phonetics" algorithm.
-	 * @param input
-	 * @return
-	 */
-	public static PlainTextField colognePhonetic(PlainTextField input)
-	{
-		String resultString = new String();
-		// TODO: Implementieren
-		PlainTextField output = new PlainTextField(resultString);
-		return output;
-	}
 
-	/**
-	 * Generates phonetic code following the "Hannover phonetics" algorithm.
-	 * @param input
-	 * @return
-	 */
-	public static PlainTextField hannoverPhonetic(PlainTextField input)
-	{
-		String resultString = new String();
-		// TODO: Implementieren
-		PlainTextField output = new PlainTextField(resultString);
-		return output;
-	}
-	
 }
