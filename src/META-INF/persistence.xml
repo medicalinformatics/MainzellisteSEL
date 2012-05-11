@@ -4,9 +4,8 @@
 		<class>de.unimainz.imbei.mzid.Patient</class>
 		<properties>
 			<property name="javax.persistence.jdbc.driver" value="org.apache.derby.jdbc.EmbeddedDriver"/>
-			<property name="javax.persistence.jdbc.url" value="jdbc:derby:${DBPath};create=true"/>
-			<property name="javax.persistence.jdbc.user" value="mzid"/>
-			<property name="javax.persistence.jdbc.password" value="mzid"/>
+			<property name="javax.persistence.jdbc.url" value="jdbc:derby:dbpath;create=true"/>
+			<property name="openjpa.jdbc.SynchronizeMappings" value="buildSchema"/>
 		</properties>
 	</persistence-unit>
 </persistence>
