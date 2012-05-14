@@ -44,10 +44,10 @@ public class TestPIDGenerator {
 		try {
 			for(; pidIterator.hasNext(); i++){
 				nextPid = pidIterator.next();
-				PID a = new PID(gen.getNextPIDString());
+				PID a = gen.getNext();
 				assertEquals("PID Nr. " + i + " was different than expected,", 
 						nextPid, a.toString());
-				assertTrue(a + " was supposed to be a valid PID, but wasn't.", PID.verify(a.toString()));
+				assertTrue(a + " was supposed to be a valid PID, but wasn't.", gen.verify(a.toString()));
 			}
 		} catch (InvalidIDException e) {
 			fail("Generation of " + i+1 + "th PID failed.");
@@ -65,6 +65,8 @@ public class TestPIDGenerator {
 		String correctPID;
 		StringBuffer brokenPID;
 		String correctedPID;
+		PIDGenerator gen = PIDGenerator.init(1, 2, 3, 0);
+		
 		int charPos;
 		
 		for (int i = 0; i<8; i++)
@@ -78,8 +80,8 @@ public class TestPIDGenerator {
 			charPos = sigma.indexOf(brokenPID.substring(i, i));
 			brokenPID.setCharAt(i, sigma.charAt((charPos + 1) % sigma.length()));
 			 
-			assertFalse("Wrong PID " + brokenPID + " was verified.", PID.verify(brokenPID.toString()));
-			correctedPID = PID.correct(brokenPID.toString());
+			assertFalse("Wrong PID " + brokenPID + " was verified.",  gen.verify(brokenPID.toString()));
+			correctedPID = gen.correct(brokenPID.toString());
 			 
 			assertEquals("Correction of changed character failed: ", correctPID, correctedPID.toString());			 
 		}
@@ -98,8 +100,8 @@ public class TestPIDGenerator {
 	 
 			/* Manchmal stimmen zwei Positionen des PIDs überein, dann ist die Vertauschung wirkungslos */
 			if (brokenPID.charAt(i) != brokenPID.charAt(i + 1))
-					assertFalse(PID.verify(brokenPID.toString()));
-			correctedPID = PID.correct(brokenPID.toString());
+					assertFalse(gen.verify(brokenPID.toString()));
+			correctedPID = gen.correct(brokenPID.toString());
 			 
 			assertEquals("Correction of transposed characters failed: ", correctPID, correctedPID.toString());			 
 		}
@@ -110,13 +112,14 @@ public class TestPIDGenerator {
 	public void testVerify() {
 
 		ListIterator<String> pidIterator = pidList.listIterator();
+		PIDGenerator gen = PIDGenerator.init(1, 2, 3, 0);
 		
 		/* Verify correct PIDs */
 		String thisPID;
 		while (pidIterator.hasNext())
 		{
 			thisPID = pidIterator.next();
-			assertTrue("Correct PID " + thisPID + " was not verified", PID.verify(thisPID));
+			assertTrue("Correct PID " + thisPID + " was not verified", gen.verify(thisPID));
 		}
 		
 		/* The following test build on modifications of the
@@ -128,32 +131,32 @@ public class TestPIDGenerator {
 		
 		/* Incorrect through replacement of two characters */
 		brokenPID = "M12YH0AJ";
-		assertFalse("Incorrect PID " + brokenPID + " was verified.", PID.verify(brokenPID));
+		assertFalse("Incorrect PID " + brokenPID + " was verified.", gen.verify(brokenPID));
 
 		/* Incorrect through transposition of two non-adjacent characters */
 		brokenPID = "H02YM0JJ";
-		assertFalse("Incorrect PID " + brokenPID + " was verified.", PID.verify(brokenPID));
+		assertFalse("Incorrect PID " + brokenPID + " was verified.", gen.verify(brokenPID));
 		
 		/* Check that PID.correct fails (returns null for incorrectable PID */
 		brokenPID = "M12YH0AJ";
-		assertNull("PID correction did not fail for incorrectable PID " + brokenPID, PID.correct(brokenPID));
+		assertNull("PID correction did not fail for incorrectable PID " + brokenPID, gen.correct(brokenPID));
 
 		brokenPID = "H02YM0JJ";
-		assertNull("PID correction did not fail for incorrectable PID " + brokenPID, PID.correct(brokenPID));
+		assertNull("PID correction did not fail for incorrectable PID " + brokenPID, gen.correct(brokenPID));
 		
 		/* Empty String */
 		brokenPID = "";
-		assertFalse("Incorrect PID " + brokenPID + " was verified.", PID.verify(brokenPID));
-		assertNull("PID correction did not fail for empty PID " + brokenPID, PID.correct(brokenPID));
+		assertFalse("Incorrect PID " + brokenPID + " was verified.", gen.verify(brokenPID));
+		assertNull("PID correction did not fail for empty PID " + brokenPID, gen.correct(brokenPID));
 		
 		/* Null String */
 		brokenPID = null;
-		assertFalse("Incorrect PID " + brokenPID + " was verified.", PID.verify(brokenPID));
-		assertNull("PID correction did not fail for null " + brokenPID, PID.correct(brokenPID));
+		assertFalse("Incorrect PID " + brokenPID + " was verified.", gen.verify(brokenPID));
+		assertNull("PID correction did not fail for null " + brokenPID, gen.correct(brokenPID));
 
 		/* Wrong number of characters */
 		brokenPID = "H02YM0J";
-		assertFalse("Incorrect PID " + brokenPID + " was verified.", PID.verify(brokenPID));
-		assertNull("PID correction did not fail for wrong number of characters " + brokenPID, PID.correct(brokenPID));
+		assertFalse("Incorrect PID " + brokenPID + " was verified.", gen.verify(brokenPID));
+		assertNull("PID correction did not fail for wrong number of characters " + brokenPID, gen.correct(brokenPID));
 	}
 }
