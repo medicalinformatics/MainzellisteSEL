@@ -116,4 +116,5 @@ src/de/unimainz/imbei/mzid/webservice/SessionsResource.java -text svneol=unset#t
 src/de/unimainz/imbei/mzid/webservice/Token.java -text svneol=unset#text/plain
 test/de/unimainz/imbei/mzid/test/TestPIDGenerator.java -text svneol=unset#text/plain
 test/de/unimainz/imbei/mzid/test/TestPSXFirstNameNormalizer.java -text svneol=unset#text/plain
+test/de/unimainz/imbei/mzid/test/TestPSXLastNameNormalizer.java -text svneol=unset#text/plain
 test/pidlist.txt -text svneol=unset#text/plain
