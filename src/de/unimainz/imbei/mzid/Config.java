@@ -1,5 +1,8 @@
 package de.unimainz.imbei.mzid;
 
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -32,6 +35,8 @@ public enum Config {
 		HASHED_NORMALIZED; // Bloomfilter with prior normalization
 	}
 	
+	private String configPath = "Web-Content/WEB-INF/mzid.conf";
+	
 	private EntityManagerFactory emf;
 	private final Map<String,FieldType> FieldTypes;
 	private final Map<String, Session> sessions;
@@ -40,6 +45,16 @@ public enum Config {
 	Config() {
 		//TODO: Das alles irgendwoher laden.
 		props = new Properties();
+		try {
+			FileReader r = new FileReader(new File(configPath));
+			props.load(r);
+			r.close();
+			
+		} catch (IOException e)
+		{
+			// TODO
+		}
+		
 		emf = Persistence.createEntityManagerFactory("mzid");
 		
 		sessions = new HashMap<String, Session>();
