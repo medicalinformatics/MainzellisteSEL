@@ -7,11 +7,9 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import de.unimainz.imbei.mzid.dto.IDAdapter;
 import de.unimainz.imbei.mzid.exceptions.InvalidIDException;
 
-@XmlJavaTypeAdapter(IDAdapter.class)
+//@XmlJavaTypeAdapter(IDAdapter.class)
+@Entity
 public class PID extends ID{
-	String PIDString;
-	String type;
-	
 	public PID(String PIDString, String type) throws InvalidIDException {
 		super(PIDString, type);
 	}
@@ -22,36 +20,19 @@ public class PID extends ID{
 			return false;
 		
 		PID other = (PID)arg0;
-		return other.PIDString.equals(PIDString);
+		return other.idString.equals(idString);
 	}
 	
 	@Override
-	public int hashCode() {
-		return PIDString.hashCode();
-	}
-	
-	@Override
-	public String toString() {
-		return PIDString;
+	public String getIdString() {
+		return idString;
 	}
 
 	@Override
-	public String getId() {
-		return toString();
-	}
-
-	@Override
-	protected void setId(String id) throws InvalidIDException{
-		PIDString = id;
-	}
-
-	@Override
-	public String getType() {
-		return type;
-	}
-
-	@Override
-	protected void setType(String type) {
-		this.type = type;
+	protected void setIdString(String id) throws InvalidIDException {
+		if(!getFactory().verify(id))
+			throw new InvalidIDException();
+		
+		idString = id;
 	}
 }

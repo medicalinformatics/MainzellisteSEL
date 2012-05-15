@@ -4,32 +4,50 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
+
 @XmlRootElement
-public class Patient { 
+@Entity
+public class Patient {
 	/**
 	 * Internal ID. Set by JPA when on first persistance.
 	 */
-	private String plid;
+	@Id
+	@GeneratedValue
+	@JsonIgnore
+	private String intPatId;
 	
+	@OneToMany(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+	@JoinColumn(name="intPatId")
 	private Set<ID> ids;
+	
+	@OneToMany(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+//	@JoinColumn(name="intPatId")
 	private Map<String, Field<?>> fields;
 	
 	public Patient() {}
 	
 	public Patient(String plid, Set<ID> ids, Map<String, Field<?>> c) {
-		this.plid = plid;
+		this.intPatId = plid;
 		this.ids = ids;
 		this.fields = c;
 	}
 	
-	public String getPlid() {
-		return plid;
+	public String getIntPatId() {
+		return intPatId;
 	}
 	
-	private void setPlid(String plid) {
-		this.plid = plid;
+	private void setIntPatId(String intPatId) {
+		this.intPatId = intPatId;
 	}
 	
 	public Set<ID> getIds(){
@@ -50,6 +68,6 @@ public class Patient {
 	
 	@Override
 	public String toString() {
-		return plid.toString() + fields.toString();
+		return intPatId.toString() + fields.toString();
 	}
 }

@@ -9,7 +9,7 @@ public class IDAdapter extends XmlAdapter<IDDto, ID>{
 
 	@Override
 	public IDDto marshal(ID v) {
-		return new IDDto(v.getId(), v.getType());
+		return new IDDto(v.getIdString(), v.getType());
 	}
 
 	@Override

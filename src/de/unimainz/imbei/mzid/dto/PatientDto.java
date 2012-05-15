@@ -27,25 +27,26 @@ import de.unimainz.imbei.mzid.Patient;
  * 
  * @author Martin
  */
-@Entity
+//@Entity
 public class PatientDto {
-	@Id
-	@GeneratedValue
-	private String plid;
+//	@Id
+//	@GeneratedValue
+	private String intPatId;
 
-	@OneToMany(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
-	@JoinColumn(name="plid")
+//	@OneToMany(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+//	@JoinColumn(name="intPatId")
 	private Set<IDDto> ids;
-	private Map<String, Field<?>> fields;
 	
-	PatientDto() {}
+//	@OneToMany(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+//	@JoinColumn(name="intPatId") //TODO: Wieso läuft das nicht?
+	private Map<String, Field<?>> fields;
 
-	public String getPlid() {
-		return plid;
+	public String getIntPatId() {
+		return intPatId;
 	}
 	
-	void setPlid(String plid) {
-		this.plid = plid;
+	void setIntPatId(String intPatId) {
+		this.intPatId = intPatId;
 	}
 	
 	public Set<IDDto> getIds() {

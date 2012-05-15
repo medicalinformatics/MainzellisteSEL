@@ -26,6 +26,7 @@ import de.unimainz.imbei.mzid.IDGeneratorFactory;
 import de.unimainz.imbei.mzid.Matcher;
 import de.unimainz.imbei.mzid.PID;
 import de.unimainz.imbei.mzid.Patient;
+import de.unimainz.imbei.mzid.dto.Persistor;
 import de.unimainz.imbei.mzid.exceptions.NotImplementedException;
 import de.unimainz.imbei.mzid.exceptions.UnauthorizedException;
 
@@ -46,7 +47,7 @@ public class PatientsResource {
 		//2. Jeden Patienten aus der DB laden. Die müssen vom EntityManager abgekoppelt sein und nur Felder führen, die IDs sind.
 	
 		//3. Patienten in Liste zurückgeben.
-		return Config.instance.getPatients();
+		return Persistor.instance.getPatients();
 	}
 
 	@POST
@@ -74,32 +75,41 @@ public class PatientsResource {
 		Set<ID> ids = new HashSet<ID>();
 		ids.add(id);
 		p.setIds(ids);
-		Config.instance.addPatient(p);
+		Persistor.instance.addPatient(p);
 		
 		return id;
 	}
 	
-/*	@Path("/pid/{pid}")
+	@Path("/pid/{pid}")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	public Patient getPatient(
-			@PathParam("pid") PID pid){
+	public Response getPatientViaPid(
+			@PathParam("pid") String pidString){
 		//IDAT-Admin?
-		return Config.instance.getPatient(pid);
-	}*/
+		PID pid = (PID) IDGeneratorFactory.instance.getFactory("pid").buildId(pidString);
+		Patient pat = Persistor.instance.getPatient(pid);
+		if(pat == null){
+			throw new WebApplicationException(Response
+					.status(Status.NOT_FOUND)
+					.entity("There is no patient with PID " + pid + ".")
+					.build());
+		} else {
+			return Response.status(Status.OK).entity(pat).build();
+		}
+	}
 	
-/*	@Path("/pid/{pid}")
+	@Path("/pid/{pid}")
 	@PUT
 	@Consumes(MediaType.APPLICATION_JSON)
-	public Response setPatient(
-			@PathParam("pid") PID pid,
+	public Response setPatientByPid(
+			@PathParam("pid") String pid,
 			Patient p){
 		//IDAT-Admin?
-		Config.instance.updatePatient(p);
+		Persistor.instance.updatePatient(p);
 		return Response
 				.status(Status.NO_CONTENT)
 				.build();
-	}*/
+	}
 	
 	@Path("/tempid/{tid}")
 	@GET
@@ -114,10 +124,11 @@ public class PatientsResource {
 	@Path("/tempid/{tid}")
 	@PUT
 	@Consumes(MediaType.APPLICATION_JSON)
-	public void setPatient(
+	public void setPatientByTempId(
 			@PathParam("tid") String tid,
 			Patient p){
 		//Hier keine Auth notwendig. Wenn tid existiert, ist der Nutzer dadurch autorisiert.
 		//Charakteristika des Patients in DB mit TempID tid austauschen durch die von p
+		throw new NotImplementedException();
 	}
 }

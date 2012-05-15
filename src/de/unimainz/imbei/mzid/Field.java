@@ -2,6 +2,12 @@ package de.unimainz.imbei.mzid;
 
 import java.util.BitSet;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+
+import org.codehaus.jackson.annotate.JsonUnwrapped;
+
 import de.unimainz.imbei.mzid.Config.FieldType;
 import de.unimainz.imbei.mzid.exceptions.NotImplementedException;
 
@@ -12,7 +18,12 @@ import de.unimainz.imbei.mzid.exceptions.NotImplementedException;
  * @author Martin Lablans
  *
  */
+@Entity
 public abstract class Field<T> {
+	@Id
+	@GeneratedValue
+	private int jpaId;
+	
 	public abstract T getValue();
 	public abstract void setValue(T value);
 	

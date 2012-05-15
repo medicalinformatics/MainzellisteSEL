@@ -1,5 +1,16 @@
 package de.unimainz.imbei.mzid;
 
+import javax.persistence.Access;
+import javax.persistence.AccessType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+import javax.persistence.UniqueConstraint;
+
+import org.codehaus.jackson.annotate.JsonIgnore;
+
 import de.unimainz.imbei.mzid.exceptions.InvalidIDException;
 
 /**
@@ -8,7 +19,14 @@ import de.unimainz.imbei.mzid.exceptions.InvalidIDException;
  * @see IDGenerator to generate IDs.
  * @author Martin Lablans
  */
+@Entity
+@Table(name="ID", uniqueConstraints=@UniqueConstraint(columnNames={"idString","type"}))
 public abstract class ID {
+	@Id
+	@GeneratedValue
+	private int idid;
+	protected String idString;
+	protected String type;
 	
 	/**
 	 * Creates an ID from a given IDString.
@@ -22,26 +40,42 @@ public abstract class ID {
 		if(!getFactory().verify(idString)){
 			throw new InvalidIDException();
 		}
-		setId(idString);
+		setIdString(idString);
 	}
 	
 	/**
 	 * String representation of this ID.
 	 */
-	public abstract String getId();
+	public abstract String getIdString();
+	protected abstract void setIdString(String id) throws InvalidIDException;
 	
 	/**
 	 * Type of this ID according to config.
 	 */
-	public abstract String getType();
+	public String getType(){
+		return type;
+	}
 	
-	protected abstract void setId(String id) throws InvalidIDException;
-	protected abstract void setType(String type);
+	protected void setType(String type){
+		this.type = type;
+	}
 	
 	/**
 	 * Returns a generator that can be used to create IDs of the same type as this ID.
 	 */
+	@JsonIgnore
+	@Transient
 	public IDGenerator<? extends ID> getFactory(){
 		return IDGeneratorFactory.instance.getFactory(getType());
+	}
+	
+	@Override
+	public String toString() {
+		return String.format("%s=%s", getType(), getIdString());
+	}
+	
+	@Override
+	public int hashCode() {
+		return toString().hashCode();
 	}
 }

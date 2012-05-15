@@ -1,5 +1,8 @@
 package de.unimainz.imbei.mzid;
 
+import javax.persistence.Entity;
+
+@Entity
 public class PlainTextField extends Field<String> {
 	private String value;
 

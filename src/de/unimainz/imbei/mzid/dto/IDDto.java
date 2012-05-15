@@ -10,16 +10,14 @@ import javax.xml.bind.annotation.XmlAttribute;
  * 
  * @author Martin Lablans
  */
-@Entity
+//@Entity
 public class IDDto {
-	@Id
-	@GeneratedValue
-	private String idid;
+//	@Id
+//	@GeneratedValue
+	private String jpaId;
 	
 	private String idString;
 	private String type;
-	
-	public IDDto() {}
 	
 	IDDto(String idString, String type) {
 		this.idString = idString;

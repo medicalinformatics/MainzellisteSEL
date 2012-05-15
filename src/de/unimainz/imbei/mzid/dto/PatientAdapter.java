@@ -24,7 +24,7 @@ public class PatientAdapter extends XmlAdapter<PatientDto, Patient>{
 		}
 		d.setFields(arg0.getFields());
 		d.setIds(iddtos);
-		d.setPlid(arg0.getPlid());
+		d.setIntPatId(arg0.getIntPatId());
 		return d;
 	}
 
@@ -37,7 +37,7 @@ public class PatientAdapter extends XmlAdapter<PatientDto, Patient>{
 				ids.add(ida.unmarshal(iddto));
 			}
 		}
-		return new Patient(d.getPlid(), ids, d.getFields());
+		return new Patient(d.getIntPatId(), ids, d.getFields());
 	}
 
 }

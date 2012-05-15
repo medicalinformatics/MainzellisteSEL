@@ -37,7 +37,6 @@ public enum Config {
 	
 	private String configPath = "Web-Content/WEB-INF/mzid.conf";
 	
-	private EntityManagerFactory emf;
 	private final Map<String,FieldType> FieldTypes;
 	private final Map<String, Session> sessions;
 	private Properties props;
@@ -55,8 +54,7 @@ public enum Config {
 			// TODO
 		}
 		
-		emf = Persistence.createEntityManagerFactory("mzid");
-		
+	
 		sessions = new HashMap<String, Session>();
 
 		Map<String, FieldType> temp = new HashMap<String, FieldType>();
@@ -115,48 +113,4 @@ public enum Config {
 			sessions.remove(sid);
 		}
 	}
-	
-	public Patient getPatient(PID pid){
-		EntityManager em = emf.createEntityManager();
-		Patient p = em.find(Patient.class, pid);
-		em.close();
-		return p;
-	}
-	
-	public List<Patient> getPatients() { //TODO: Filtern
-		EntityManager em = emf.createEntityManager();
-		List<PatientDto> pdtol = em.createQuery("select p from PatientDto p", PatientDto.class).getResultList();
-		em.close(); // causes all entities to be detached
-		List<Patient> pl = new ArrayList<Patient>(pdtol.size());
-		PatientAdapter pa = new PatientAdapter();
-		for(PatientDto pdto: pdtol){
-			pl.add(pa.unmarshal(pdto));
-		}
-		return pl;
-	}
-
-	public void addPatient(Patient p){
-		EntityManager em = emf.createEntityManager();
-		PatientDto pdto = new PatientAdapter().marshal(p);
-		em.getTransaction().begin();
-		em.persist(pdto); //TODO: Fehlerbehandlung, falls PID schon existiert.
-		em.getTransaction().commit();
-		em.close();
-	}
-	
-	public void updatePatient(Patient p){
-		throw new NotImplementedException();
-/*		EntityManager em = emf.createEntityManager();
-		
-		//1. fetch existing patient -- avoid reuse of existing functions to retain persistence context
-		Patient exPat = em.find(Patient.class, p.getId());
-		
-		//2. update persisted instance
-		exPat.setFields(p.getFields());
-		
-		//3. close //TODO: Commit needed?
-		em.close();*/
-	}
-	
-
 }
