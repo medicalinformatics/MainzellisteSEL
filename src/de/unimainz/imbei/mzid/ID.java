@@ -39,6 +39,6 @@ public abstract class ID {
 	protected abstract void setType(String type);
 	
 	public IDGenerator<? extends ID> getFactory(){
-		return Config.instance.getFactory(getType());
+		return IDGeneratorFactory.instance.getFactory(getType());
 	}
 }

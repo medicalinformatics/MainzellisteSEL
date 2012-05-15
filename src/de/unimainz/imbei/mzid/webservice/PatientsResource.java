@@ -22,6 +22,7 @@ import javax.ws.rs.core.Response.Status;
 import de.unimainz.imbei.mzid.Field;
 import de.unimainz.imbei.mzid.Config;
 import de.unimainz.imbei.mzid.ID;
+import de.unimainz.imbei.mzid.IDGeneratorFactory;
 import de.unimainz.imbei.mzid.Matcher;
 import de.unimainz.imbei.mzid.PID;
 import de.unimainz.imbei.mzid.Patient;
@@ -68,7 +69,7 @@ public class PatientsResource {
 		if(match != null)
 			return match;
 		
-		ID id = Config.instance.getFactory("pid").getNext(); //TODO: generalisieren
+		ID id = IDGeneratorFactory.instance.getFactory("pid").getNext(); //TODO: generalisieren
 		
 		Set<ID> ids = new HashSet<ID>();
 		ids.add(id);

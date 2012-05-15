@@ -12,6 +12,7 @@ import java.util.Random;
  * @author Martin Lablans
  */
 public class PIDGenerator implements IDGenerator<PID>{
+	private String idType;
 	private int key1, key2, key3;
 	private int counter = 1;
 	private Random rand;
@@ -33,6 +34,7 @@ public class PIDGenerator implements IDGenerator<PID>{
 
 	/** Set to 1 after first call to rndsetup */
 	private boolean RSET = false;
+	
 	/**
 	 * alphabet for PIDs
 	 * 
@@ -646,8 +648,9 @@ public class PIDGenerator implements IDGenerator<PID>{
 	}
 
 	@Override
-	public void init(IDGeneratorMemory mem) {
+	public void init(IDGeneratorMemory mem, String idType) {
 		this.counter = Integer.parseInt(mem.get("counter"));
+		this.idType = idType;
 	}
 
 	@Override
@@ -666,7 +669,12 @@ public class PIDGenerator implements IDGenerator<PID>{
 	}
 
 	@Override
-	public PID buildId(String id, String type) {
-		return new PID(id, type);
+	public PID buildId(String id) {
+		return new PID(id, getIdType());
+	}
+
+	@Override
+	public String getIdType() {
+		return idType;
 	}
 }

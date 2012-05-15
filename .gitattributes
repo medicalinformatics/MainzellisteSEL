@@ -84,6 +84,7 @@ src/de/unimainz/imbei/mzid/HannoverPhoneticTransformer.java -text svneol=unset#t
 src/de/unimainz/imbei/mzid/HashedField.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/ID.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/IDGenerator.java -text svneol=unset#text/plain
+src/de/unimainz/imbei/mzid/IDGeneratorFactory.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/IDGeneratorMemory.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/Matcher.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/PID.java -text svneol=unset#text/plain

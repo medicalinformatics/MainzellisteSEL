@@ -1,8 +1,37 @@
 package de.unimainz.imbei.mzid;
 
+/**
+ * Generator for a given type of ID (e.g. PID, SIC, LabID, ...)
+ * 
+ * Each type of ID needs an own generator - even if based on the same algorithm, in which case
+ * there would be several instances of the same generator implementation.
+ * 
+ * @author Martin Lablans
+ *
+ * @param <I>
+ */
 public interface IDGenerator<I> {
-	void init(IDGeneratorMemory mem);
+	/**
+	 * Called by the IDGeneratorFactory.
+	 * 
+	 * @param mem This allows the generator to "memorize" values, e.g. sequence counters.
+	 * @param type "name" of the generated IDs, e.g. "gpohid"
+	 */
+	void init(IDGeneratorMemory mem, String idType);
+	
+	/**
+	 * This is the method to call to generate a new unique (in its type) ID.
+	 */
 	I getNext();
+	
+	/**
+	 * Generates (and, if possible, verifies) an ID instance based on an existing
+	 * IDString.
+	 * 
+	 * @param id String representation of the ID to be instantiated.
+	 * @return
+	 */
+	public I buildId(String id);
 	
 	/**
 	 * Checks whether a given String is a valid PID.
@@ -25,5 +54,10 @@ public interface IDGenerator<I> {
 	 */
 	public String correct(String PIDString);
 	
-	public I buildId(String id, String type);
+	/**
+	 * Gets the type ("name") of IDs this generator produces, e.g. "gpohid"
+	 * 
+	 * @return
+	 */
+	public String getIdType();
 }

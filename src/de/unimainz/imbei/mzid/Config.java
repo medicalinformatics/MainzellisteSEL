@@ -34,15 +34,15 @@ public enum Config {
 	
 	private EntityManagerFactory emf;
 	private final Map<String,FieldType> FieldTypes;
-	private final PIDGenerator pidgen;
 	private final Map<String, Session> sessions;
-	private final Map<String, IDGenerator<? extends ID>> generators;
 	private Properties props;
 	
 	Config() {
 		//TODO: Das alles irgendwoher laden.
 		props = new Properties();
 		emf = Persistence.createEntityManagerFactory("mzid");
+		
+		sessions = new HashMap<String, Session>();
 
 		Map<String, FieldType> temp = new HashMap<String, FieldType>();
 		temp.put("vorname", FieldType.PLAINTEXT);
@@ -50,13 +50,6 @@ public enum Config {
 		temp.put("geburtsname", FieldType.PLAINTEXT);
 		temp.put("geburtsdatum", FieldType.PLAINTEXT);
 		FieldTypes = Collections.unmodifiableMap(temp);
-		
-		pidgen = PIDGenerator.init(1, 2, 3, 0);
-		sessions = new HashMap<String, Session>();
-		
-		HashMap<String, IDGenerator<? extends ID>> temp2 = new HashMap<String, IDGenerator<? extends ID>>();
-		temp2.put("pid", pidgen);
-		generators = Collections.unmodifiableMap(temp2);
 	}
 	
 	public String getProperty(String propKey){
@@ -150,7 +143,5 @@ public enum Config {
 		em.close();*/
 	}
 	
-	public IDGenerator<? extends ID> getFactory(String idType){
-		return generators.get(idType);
-	}
+
 }
