@@ -11,9 +11,10 @@ public enum IDGeneratorFactory {
 	
 	private IDGeneratorFactory() {
 		PIDGenerator pidgen = PIDGenerator.init(1, 2, 3, 0);
+		pidgen.init(new IDGeneratorMemory(), "pid");
 		
 		HashMap<String, IDGenerator<? extends ID>> temp = new HashMap<String, IDGenerator<? extends ID>>();
-		temp.put("pid", pidgen);
+		temp.put(pidgen.getIdType(), pidgen);
 		generators = Collections.unmodifiableMap(temp);
 	}
 	

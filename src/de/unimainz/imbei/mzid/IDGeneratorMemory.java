@@ -1,15 +1,20 @@
 package de.unimainz.imbei.mzid;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class IDGeneratorMemory {
-	void set(String key, String value){
-		
+	Map<String, String> mem = new HashMap<String, String>();
+	
+	synchronized void set(String key, String value){
+		mem.put(key, value);
 	}
 	
-	String get(String key){
-		return null;
+	synchronized String get(String key){
+		return mem.get(key);
 	}
 	
-	void commit(){
-		;
+	synchronized void commit(){
+		//TODO: Persistieren
 	}
 }

@@ -38,6 +38,9 @@ public abstract class ID {
 	protected abstract void setId(String id) throws InvalidIDException;
 	protected abstract void setType(String type);
 	
+	/**
+	 * Returns a generator that can be used to create IDs of the same type as this ID.
+	 */
 	public IDGenerator<? extends ID> getFactory(){
 		return IDGeneratorFactory.instance.getFactory(getType());
 	}

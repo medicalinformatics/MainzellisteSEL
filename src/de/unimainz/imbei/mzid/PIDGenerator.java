@@ -13,6 +13,8 @@ import java.util.Random;
  */
 public class PIDGenerator implements IDGenerator<PID>{
 	private String idType;
+	private IDGeneratorMemory mem;
+	
 	private int key1, key2, key3;
 	private int counter = 1;
 	private Random rand;
@@ -73,7 +75,9 @@ public class PIDGenerator implements IDGenerator<PID>{
 	 * Returns the next PID according to this factory's internal counter.
 	 */
 	private synchronized String getNextPIDString() {
-		return createPIDString(counter++);
+		String pid = createPIDString(counter++);
+		mem.set("counter", Integer.toString(counter));
+		return pid;
 	}
 
 	/**
@@ -649,7 +653,12 @@ public class PIDGenerator implements IDGenerator<PID>{
 
 	@Override
 	public void init(IDGeneratorMemory mem, String idType) {
-		this.counter = Integer.parseInt(mem.get("counter"));
+		this.mem = mem;
+
+		String memCounter = mem.get("counter");
+		if(memCounter == null) memCounter = "1";
+		this.counter = Integer.parseInt(memCounter);
+
 		this.idType = idType;
 	}
 
