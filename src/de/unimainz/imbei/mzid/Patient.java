@@ -54,6 +54,16 @@ public class Patient {
 		return Collections.unmodifiableSet(ids);
 	}
 	
+	public ID getId(String type)
+	{
+		for (ID thisId : ids)
+		{
+			if (thisId.getType().equals(type))
+				return thisId;
+		}
+		return null;
+	}
+	
 	public void setIds(Set<ID> ids) {
 		this.ids = ids;
 	}
