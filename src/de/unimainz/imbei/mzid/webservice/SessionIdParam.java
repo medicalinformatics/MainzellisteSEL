@@ -4,7 +4,7 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
-import de.unimainz.imbei.mzid.Config;
+import de.unimainz.imbei.mzid.Servers;
 import de.unimainz.imbei.mzid.Session;
 
 public class SessionIdParam extends AbstractParam<Session> {
@@ -14,7 +14,7 @@ public class SessionIdParam extends AbstractParam<Session> {
 	
 	@Override
 	protected Session parse(String sid) throws Throwable {
-		Session s = Config.instance.getSession(sid);
+		Session s = Servers.instance.getSession(sid);
 		if(s == null) {
 			throw new WebApplicationException(Response
 				.status(Status.NOT_FOUND)

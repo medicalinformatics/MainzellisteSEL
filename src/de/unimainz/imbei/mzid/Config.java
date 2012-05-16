@@ -23,7 +23,6 @@ public enum Config {
 	private final String configPath = "mzid.conf";
 	
 	private final Map<String,FieldType> FieldTypes;
-	private final Map<String, Session> sessions;
 	private Properties props;
 	
 	Config() {
@@ -42,9 +41,6 @@ public enum Config {
 			// TODO
 		}
 		
-	
-		sessions = new HashMap<String, Session>();
-
 		Map<String, FieldType> temp = new HashMap<String, FieldType>();
 		temp.put("vorname", FieldType.PLAINTEXT);
 		temp.put("nachname", FieldType.PLAINTEXT);
@@ -64,41 +60,5 @@ public enum Config {
 	public FieldType getFieldType(String FieldKey){
 		assert FieldTypes.keySet().contains(FieldKey);
 		return FieldTypes.get(FieldKey);
-	}
-	
-	public Session newSession(){
-		String sid = UUID.randomUUID().toString();
-		Session s = new Session(sid);
-		synchronized (sessions) {
-			sessions.put(sid, s);
-		}
-		return s;
-	}
-	
-	/**
-	 * Returns Session with sid (or null if unknown)
-	 * Caller MUST ensure proper synchronization on the session.
-	 * 
-	 * @return
-	 */
-	public Session getSession(String sid) {
-		synchronized (sessions) {
-			return sessions.get(sid);
-		}
-	}
-	
-	/**
-	 * Returns all known session ids.
-	 * 
-	 * @return
-	 */
-	public Set<String> getSessionIds(){
-		return Collections.unmodifiableSet(new HashSet<String>(sessions.keySet()));
-	}
-	
-	public void deleteSession(String sid){
-		synchronized (sessions) {
-			sessions.remove(sid);
-		}
 	}
 }
