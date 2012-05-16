@@ -20,7 +20,6 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
 import de.unimainz.imbei.mzid.Field;
-import de.unimainz.imbei.mzid.Config;
 import de.unimainz.imbei.mzid.ID;
 import de.unimainz.imbei.mzid.IDGeneratorFactory;
 import de.unimainz.imbei.mzid.Matcher;

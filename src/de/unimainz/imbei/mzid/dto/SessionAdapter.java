@@ -3,7 +3,7 @@ package de.unimainz.imbei.mzid.dto;
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 
 import de.unimainz.imbei.mzid.Session;
-
+/*
 public class SessionAdapter extends XmlAdapter<SessionDto, Session>{
 	@Override
 	public SessionDto marshal(Session arg0) throws Exception {
@@ -17,3 +17,4 @@ public class SessionAdapter extends XmlAdapter<SessionDto, Session>{
 		return s;
 	}
 }
+*/

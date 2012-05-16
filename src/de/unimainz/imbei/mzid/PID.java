@@ -1,10 +1,7 @@
 package de.unimainz.imbei.mzid;
 
 import javax.persistence.Entity;
-import javax.persistence.Transient;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
-import de.unimainz.imbei.mzid.dto.IDAdapter;
 import de.unimainz.imbei.mzid.exceptions.InvalidIDException;
 
 //@XmlJavaTypeAdapter(IDAdapter.class)

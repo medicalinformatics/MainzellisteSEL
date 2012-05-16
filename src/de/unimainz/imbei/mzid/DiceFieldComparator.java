@@ -1,7 +1,6 @@
 package de.unimainz.imbei.mzid;
 
 import java.util.BitSet;
-import java.util.Map;
 
 public class DiceFieldComparator extends FieldComparator {
 

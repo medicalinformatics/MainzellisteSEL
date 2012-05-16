@@ -1,7 +1,5 @@
 package de.unimainz.imbei.mzid;
 
-import java.util.Iterator;
-import java.util.Vector;
 
 /**
  * This class is reponsible for comparing a given patient to those present in the local database.
@@ -11,10 +9,6 @@ import java.util.Vector;
  */
 public enum Matcher {
 	instance;
-	
-
-	/** PID-Generator instance */
-	private PIDGenerator pidGen;
 	
 	/**
 	 * Checks if a given Patient is already present in the database.

@@ -5,12 +5,10 @@ import java.util.Set;
 
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 
-import de.unimainz.imbei.mzid.Field;
 import de.unimainz.imbei.mzid.ID;
 import de.unimainz.imbei.mzid.Patient;
-import de.unimainz.imbei.mzid.Session;
 
-public class PatientAdapter extends XmlAdapter<PatientDto, Patient>{
+/*public class PatientAdapter extends XmlAdapter<PatientDto, Patient>{
 
 	@Override
 	public PatientDto marshal(Patient arg0) {
@@ -41,3 +39,4 @@ public class PatientAdapter extends XmlAdapter<PatientDto, Patient>{
 	}
 
 }
+*/

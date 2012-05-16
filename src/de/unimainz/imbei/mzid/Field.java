@@ -6,7 +6,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
-import org.codehaus.jackson.annotate.JsonUnwrapped;
+import org.codehaus.jackson.annotate.JsonIgnore;
 
 import de.unimainz.imbei.mzid.Config.FieldType;
 import de.unimainz.imbei.mzid.exceptions.NotImplementedException;
@@ -22,7 +22,8 @@ import de.unimainz.imbei.mzid.exceptions.NotImplementedException;
 public abstract class Field<T> {
 	@Id
 	@GeneratedValue
-	private int jpaId;
+	@JsonIgnore
+	protected int jpaId;
 	
 	public abstract T getValue();
 	public abstract void setValue(T value);

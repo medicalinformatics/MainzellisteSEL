@@ -1,26 +1,9 @@
 package de.unimainz.imbei.mzid.dto;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Embedded;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-import javax.xml.bind.annotation.XmlAttribute;
-
-import org.apache.openjpa.persistence.Persistent;
-
 import de.unimainz.imbei.mzid.Field;
-import de.unimainz.imbei.mzid.ID;
-import de.unimainz.imbei.mzid.PID;
-import de.unimainz.imbei.mzid.Patient;
 
 /**
  * DTO für Patient
@@ -28,7 +11,7 @@ import de.unimainz.imbei.mzid.Patient;
  * @author Martin
  */
 //@Entity
-public class PatientDto {
+/*public class PatientDto {
 //	@Id
 //	@GeneratedValue
 	private String intPatId;
@@ -65,3 +48,4 @@ public class PatientDto {
 		this.fields = fields;
 	}
 }
+*/

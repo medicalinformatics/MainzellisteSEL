@@ -10,7 +10,7 @@ import java.util.Vector;
  * @param <T> Die Art des Felds
  */
 // TODO oder lieber extends Field<T[]> ?
-public class CompoundField<T extends Field> extends Field<List<T>> {
+public class CompoundField<T extends Field<?>> extends Field<List<T>> {
 	
 	private int size;
 	private List<T> value;

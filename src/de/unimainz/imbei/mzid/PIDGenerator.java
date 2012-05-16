@@ -133,7 +133,7 @@ public class PIDGenerator implements IDGenerator<PID>{
 
 		int c[] = PID2c(PIDString);
 
-		int i, sum6, sum7, test6, test7;
+		int sum6, sum7, test6, test7;
 
 		StringBuffer PIDStringBuffer = new StringBuffer(PIDString);
 

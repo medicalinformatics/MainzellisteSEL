@@ -1,10 +1,5 @@
 package de.unimainz.imbei.mzid;
 
-import java.util.BitSet;
-import java.util.Collection;
-import java.util.Map;
-
-import sun.security.util.BitArray;
 
 /**
  * Represents a comparison between two input fields (Fields)

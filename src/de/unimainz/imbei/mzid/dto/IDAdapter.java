@@ -5,7 +5,7 @@ import javax.xml.bind.annotation.adapters.XmlAdapter;
 import de.unimainz.imbei.mzid.ID;
 import de.unimainz.imbei.mzid.IDGeneratorFactory;
 
-public class IDAdapter extends XmlAdapter<IDDto, ID>{
+/*public class IDAdapter extends XmlAdapter<IDDto, ID>{
 
 	@Override
 	public IDDto marshal(ID v) {
@@ -17,3 +17,4 @@ public class IDAdapter extends XmlAdapter<IDDto, ID>{
 		return IDGeneratorFactory.instance.getFactory(v.getType()).buildId(v.getId());
 	}
 }
+*/

@@ -1,9 +1,7 @@
 package de.unimainz.imbei.mzid;
 
-import javax.persistence.Access;
-import javax.persistence.AccessType;
-import javax.persistence.GeneratedValue;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
@@ -24,7 +22,8 @@ import de.unimainz.imbei.mzid.exceptions.InvalidIDException;
 public abstract class ID {
 	@Id
 	@GeneratedValue
-	private int idid;
+	@JsonIgnore
+	protected int idid;
 	protected String idString;
 	protected String type;
 	

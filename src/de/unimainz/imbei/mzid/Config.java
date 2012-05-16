@@ -3,27 +3,13 @@ package de.unimainz.imbei.mzid;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
-
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
-import javax.persistence.PersistenceContext;
-import javax.persistence.PersistenceUnit;
-import javax.persistence.TypedQuery;
-
-import de.unimainz.imbei.mzid.dto.PatientAdapter;
-import de.unimainz.imbei.mzid.dto.PatientDto;
-import de.unimainz.imbei.mzid.exceptions.NotImplementedException;
 
 public enum Config {
 	instance;

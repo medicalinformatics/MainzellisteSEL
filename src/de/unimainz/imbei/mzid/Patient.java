@@ -46,7 +46,7 @@ public class Patient {
 		return intPatId;
 	}
 	
-	private void setIntPatId(String intPatId) {
+	protected void setIntPatId(String intPatId) {
 		this.intPatId = intPatId;
 	}
 	

@@ -1,8 +1,5 @@
 package de.unimainz.imbei.mzid.dto;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
 import javax.xml.bind.annotation.XmlAttribute;
 
 /**
@@ -11,7 +8,7 @@ import javax.xml.bind.annotation.XmlAttribute;
  * @author Martin Lablans
  */
 //@Entity
-public class IDDto {
+/*public class IDDto {
 //	@Id
 //	@GeneratedValue
 	private String jpaId;
@@ -41,3 +38,4 @@ public class IDDto {
 		this.type = type;
 	}
 }
+*/
