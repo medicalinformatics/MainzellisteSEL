@@ -10,6 +10,8 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.UUID;
 
+import de.unimainz.imbei.mzid.matcher.Matcher;
+
 public enum Config {
 	instance;
 	
@@ -22,8 +24,11 @@ public enum Config {
 	
 	private final String configPath = "mzid.conf";
 	
+	@Deprecated
 	private final Map<String,FieldType> FieldTypes;
+	
 	private Properties props;
+	private Matcher matcher;
 	
 	Config() {
 		//TODO: Das alles irgendwoher laden.
@@ -41,6 +46,14 @@ public enum Config {
 			// TODO
 		}
 		
+		try {
+			matcher = (Matcher) Class.forName(props.getProperty("matcher")).newInstance();
+		} catch (Exception e){
+			// TODO
+		}
+		
+
+
 		Map<String, FieldType> temp = new HashMap<String, FieldType>();
 		temp.put("vorname", FieldType.PLAINTEXT);
 		temp.put("nachname", FieldType.PLAINTEXT);
@@ -49,14 +62,20 @@ public enum Config {
 		FieldTypes = Collections.unmodifiableMap(temp);
 	}
 	
+	public Matcher getMatcher() {
+		return matcher;
+	}
+
 	public String getProperty(String propKey){
 		return props.getProperty(propKey);
 	}
 	
+	@Deprecated
 	public Set<String> getFieldKeys(){
 		return FieldTypes.keySet();
 	}
 	
+	@Deprecated
 	public FieldType getFieldType(String FieldKey){
 		assert FieldTypes.keySet().contains(FieldKey);
 		return FieldTypes.get(FieldKey);
