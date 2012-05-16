@@ -22,16 +22,19 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import de.unimainz.imbei.mzid.Config;
 import de.unimainz.imbei.mzid.Field;
 import de.unimainz.imbei.mzid.ID;
 import de.unimainz.imbei.mzid.IDGeneratorFactory;
-import de.unimainz.imbei.mzid.Matcher;
 import de.unimainz.imbei.mzid.PID;
 import de.unimainz.imbei.mzid.Patient;
 import de.unimainz.imbei.mzid.Servers;
 import de.unimainz.imbei.mzid.dto.Persistor;
 import de.unimainz.imbei.mzid.exceptions.NotImplementedException;
 import de.unimainz.imbei.mzid.exceptions.UnauthorizedException;
+import de.unimainz.imbei.mzid.matcher.FieldTransformer;
+import de.unimainz.imbei.mzid.matcher.MatchResult;
+import de.unimainz.imbei.mzid.matcher.Matcher;
 
 /**
  * Resource-based access to patients.
@@ -76,19 +79,37 @@ public class PatientsResource {
 
 		p.setFields(chars);
 		
-		//hier normalisieren
+/*		Patient pNormalized = new Patient();
+		Map<String, Field<?>> normalizedChars = new HashMap<String, Field<?>>();
+		for (String fieldName : chars.keySet())
+		{
+			FieldTransformer<?, ?> thisTransformer = Config.instance.getFieldTransformer(fieldName);
+			if (thisTransformer != null)
+				normalizedChars.put(fieldName, thisTransformer.transform(chars.get(fieldName)));
+			else
+				normalizedChars.put(fieldName, chars.get(fieldName));
+		}
+		*/
+		MatchResult match = Config.instance.getMatcher().match(p, getAllPatients());
 		
-		PID match = Matcher.instance.match(p);
-		
-		if(match != null)
-			return match;
-		
-		ID id = IDGeneratorFactory.instance.getFactory("pid").getNext(); //TODO: generalisieren
-		
-		Set<ID> ids = new HashSet<ID>();
-		ids.add(id);
-		p.setIds(ids);
-		Persistor.instance.addPatient(p);
+		ID id;
+		switch (match.getResultType())
+		{
+		case MATCH :
+			id = match.getPatient().getId("pid");
+		case NON_MATCH :
+			id = IDGeneratorFactory.instance.getFactory("pid").getNext(); //TODO: generalisieren
+			
+			Set<ID> ids = new HashSet<ID>();
+			ids.add(id);
+			p.setIds(ids);
+			Persistor.instance.addPatient(p);
+			
+		case POSSIBLE_MATCH : 
+		default :
+			// TODO
+			id = null;
+		}
 		
 		Servers.instance.deleteToken(tokenId);
 		
