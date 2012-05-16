@@ -1,9 +1,11 @@
-package de.unimainz.imbei.mzid;
+package de.unimainz.imbei.mzid.matcher;
 
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+
+import de.unimainz.imbei.mzid.PlainTextField;
 
 
 public class StringNormalizer implements FieldTransformer<PlainTextField, PlainTextField> {

@@ -1,7 +1,10 @@
-package de.unimainz.imbei.mzid;
+package de.unimainz.imbei.mzid.matcher;
 
 import java.util.Hashtable;
 import java.util.Map;
+
+import de.unimainz.imbei.mzid.Patient;
+import de.unimainz.imbei.mzid.StringPair;
 
 
 /**

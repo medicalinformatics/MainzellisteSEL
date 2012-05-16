@@ -1,6 +1,10 @@
-package de.unimainz.imbei.mzid;
+package de.unimainz.imbei.mzid.matcher;
 
 import java.util.BitSet;
+
+import de.unimainz.imbei.mzid.Field;
+import de.unimainz.imbei.mzid.HashedField;
+import de.unimainz.imbei.mzid.Patient;
 
 public class DiceFieldComparator extends FieldComparator {
 

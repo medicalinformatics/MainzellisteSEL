@@ -1,4 +1,6 @@
-package de.unimainz.imbei.mzid;
+package de.unimainz.imbei.mzid.matcher;
+
+import de.unimainz.imbei.mzid.PlainTextField;
 
 
 /**

@@ -1,7 +1,10 @@
-package de.unimainz.imbei.mzid;
+package de.unimainz.imbei.mzid.matcher;
 
 import java.util.Set;
 import java.util.HashSet;
+
+import de.unimainz.imbei.mzid.CompoundField;
+import de.unimainz.imbei.mzid.PlainTextField;
 
 
 /**

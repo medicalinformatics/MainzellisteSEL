@@ -1,6 +1,9 @@
-package de.unimainz.imbei.mzid;
+package de.unimainz.imbei.mzid.matcher;
 
 import java.util.Map;
+
+import de.unimainz.imbei.mzid.Field;
+import de.unimainz.imbei.mzid.Patient;
 
 
 public class BinaryFieldComparator extends FieldComparator {

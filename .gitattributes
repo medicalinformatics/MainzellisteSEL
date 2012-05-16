@@ -69,33 +69,20 @@ jslib/crypto-js/sha1/sha1.js -text svneol=unset#text/plain
 jslib/crypto-js/sha256/sha256-min.js -text svneol=unset#text/plain
 jslib/crypto-js/sha256/sha256.js -text svneol=unset#text/plain
 src/META-INF/persistence.xml -text svneol=unset#text/plain
-src/de/unimainz/imbei/mzid/ArrayFieldComparator.java -text
-src/de/unimainz/imbei/mzid/BinaryFieldComparator.java -text
-src/de/unimainz/imbei/mzid/ColognePhoneticTransformer.java -text
 src/de/unimainz/imbei/mzid/CompoundField.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/Config.java -text svneol=unset#text/plain
-src/de/unimainz/imbei/mzid/DiceFieldComparator.java -text
 src/de/unimainz/imbei/mzid/Field.java -text svneol=unset#text/plain
-src/de/unimainz/imbei/mzid/FieldComparator.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/FieldTransformation.java -text svneol=unset#text/plain
-src/de/unimainz/imbei/mzid/FieldTransformer.java -text
-src/de/unimainz/imbei/mzid/FirstNameDecomposer.java -text
-src/de/unimainz/imbei/mzid/GermanLastNameDecomposer.java -text
-src/de/unimainz/imbei/mzid/HannoverPhoneticTransformer.java -text
 src/de/unimainz/imbei/mzid/HashedField.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/ID.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/IDGenerator.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/IDGeneratorFactory.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/IDGeneratorMemory.java -text svneol=unset#text/plain
-src/de/unimainz/imbei/mzid/Matcher.java -text
 src/de/unimainz/imbei/mzid/PID.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/PIDGenerator.java -text svneol=unset#text/plain
-src/de/unimainz/imbei/mzid/PSXFirstNameNormalizer.java -text
-src/de/unimainz/imbei/mzid/PSXLastNameNormalizer.java -text
 src/de/unimainz/imbei/mzid/Patient.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/PlainTextField.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/Session.java -text svneol=unset#text/plain
-src/de/unimainz/imbei/mzid/StringNormalizer.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/StringPair.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/dto/IDAdapter.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/dto/IDDto.java -text svneol=unset#text/plain
@@ -107,6 +94,21 @@ src/de/unimainz/imbei/mzid/dto/SessionDto.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/exceptions/InvalidIDException.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/exceptions/NotImplementedException.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/exceptions/UnauthorizedException.java -text svneol=unset#text/plain
+src/de/unimainz/imbei/mzid/matcher/ArrayFieldComparator.java -text
+src/de/unimainz/imbei/mzid/matcher/BinaryFieldComparator.java -text
+src/de/unimainz/imbei/mzid/matcher/ColognePhoneticTransformer.java -text
+src/de/unimainz/imbei/mzid/matcher/DiceFieldComparator.java -text
+src/de/unimainz/imbei/mzid/matcher/EpilinkMatcher.java -text svneol=unset#text/plain
+src/de/unimainz/imbei/mzid/matcher/FieldComparator.java -text svneol=unset#text/plain
+src/de/unimainz/imbei/mzid/matcher/FieldTransformer.java -text
+src/de/unimainz/imbei/mzid/matcher/FirstNameDecomposer.java -text
+src/de/unimainz/imbei/mzid/matcher/GermanLastNameDecomposer.java -text
+src/de/unimainz/imbei/mzid/matcher/HannoverPhoneticTransformer.java -text
+src/de/unimainz/imbei/mzid/matcher/MatchResult.java -text svneol=unset#text/plain
+src/de/unimainz/imbei/mzid/matcher/Matcher.java -text
+src/de/unimainz/imbei/mzid/matcher/PSXFirstNameNormalizer.java -text
+src/de/unimainz/imbei/mzid/matcher/PSXLastNameNormalizer.java -text
+src/de/unimainz/imbei/mzid/matcher/StringNormalizer.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/webservice/AbstractParam.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/webservice/FieldKeyParam.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/webservice/FunctionsResource.java -text svneol=unset#text/plain

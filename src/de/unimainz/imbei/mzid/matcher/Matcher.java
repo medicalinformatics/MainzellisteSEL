@@ -1,9 +1,9 @@
-package de.unimainz.imbei.mzid;
+package de.unimainz.imbei.mzid.matcher;
 
 import java.util.Iterator;
 import java.util.Vector;
 
-import de.unimainz.imbei.mzid.matcher.MatchResult;
+import de.unimainz.imbei.mzid.Patient;
 
 /**
  * This class is reponsible for comparing a given patient to those present in the local database.
