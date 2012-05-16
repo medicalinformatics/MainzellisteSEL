@@ -1,8 +1,7 @@
 package de.unimainz.imbei.mzid;
 
-import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -14,14 +13,14 @@ import java.util.UUID;
 public enum Config {
 	instance;
 	
-	enum FieldType {
+	public enum FieldType {
 		PLAINTEXT,
 		PLAINTEXT_NORMALIZED,
 		HASHED, // Bloomfilter without prior normalization
 		HASHED_NORMALIZED; // Bloomfilter with prior normalization
 	}
 	
-	private String configPath = "Web-Content/WEB-INF/mzid.conf";
+	private final String configPath = "mzid.conf";
 	
 	private final Map<String,FieldType> FieldTypes;
 	private final Map<String, Session> sessions;
@@ -31,9 +30,12 @@ public enum Config {
 		//TODO: Das alles irgendwoher laden.
 		props = new Properties();
 		try {
-			FileReader r = new FileReader(new File(configPath));
-			props.load(r);
-			r.close();
+			InputStream is = Config.class.getResourceAsStream(configPath);
+			
+			props.load(is);
+			is.close();
+			System.out.println("Properties:");
+			System.out.println(props);
 			
 		} catch (IOException e)
 		{
