@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -13,7 +14,9 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
@@ -25,6 +28,7 @@ import de.unimainz.imbei.mzid.IDGeneratorFactory;
 import de.unimainz.imbei.mzid.Matcher;
 import de.unimainz.imbei.mzid.PID;
 import de.unimainz.imbei.mzid.Patient;
+import de.unimainz.imbei.mzid.Servers;
 import de.unimainz.imbei.mzid.dto.Persistor;
 import de.unimainz.imbei.mzid.exceptions.NotImplementedException;
 import de.unimainz.imbei.mzid.exceptions.UnauthorizedException;
@@ -52,7 +56,17 @@ public class PatientsResource {
 	@POST
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 	@Produces(MediaType.APPLICATION_JSON)
-	public ID newPatient(MultivaluedMap<String, String> form){
+	public ID newPatient(
+			@QueryParam("tokenId") String tokenId,
+			MultivaluedMap<String, String> form){
+		Token t = Servers.instance.getTokenByTid(tokenId);
+		if(t == null || !t.getType().equals("addPatient")){
+			throw new WebApplicationException(Response
+				.status(Status.UNAUTHORIZED)
+				.entity("Please supply a valid 'addPatient' token.")
+				.build());
+		}
+		
 		Patient p = new Patient();
 		Map<String, Field<?>> chars = new HashMap<String, Field<?>>();
 		
@@ -75,6 +89,8 @@ public class PatientsResource {
 		ids.add(id);
 		p.setIds(ids);
 		Persistor.instance.addPatient(p);
+		
+		Servers.instance.deleteToken(tokenId);
 		
 		return id;
 	}

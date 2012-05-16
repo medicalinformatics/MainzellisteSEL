@@ -30,11 +30,15 @@ public enum Servers {
 	private final Map<String, Token> tokensByTid = new HashMap<String, Token>();
 	
 	private Servers() {
-		Server mdat = new Server();
-		mdat.apiKey = "mdat1234";
-		mdat.permissions = new HashSet<String>(Arrays.asList("addNewPatient", "showSessionIds", "createSession"));
-		mdat.allowedRemoteAdresses = new HashSet<String>(Arrays.asList("127.0.0.1", "0:0:0:0:0:0:0:1"));
-		servers.put(mdat.apiKey, mdat);
+		//TODO: Server aus Properties lesen
+		
+		//foreach(server: getProps()) {
+			Server s = new Server();
+			s.apiKey = "mdat1234";
+			s.permissions = new HashSet<String>(Arrays.asList("addNewPatient", "showSessionIds", "createSession"));
+			s.allowedRemoteAdresses = new HashSet<String>(Arrays.asList("127.0.0.1", "0:0:0:0:0:0:0:1"));
+			servers.put(s.apiKey, s);
+		//}
 	}
 	
 	public Session newSession(){
@@ -125,8 +129,30 @@ public enum Servers {
 		return t;
 	}
 
+	/**
+	 * If you know this token's sessionId, call deleteToken instead...
+	 */
+	public void deleteToken(String tokenId) {
+		String sessionId = null;
+		
+		synchronized (sessions) {
+			for(String sid: sessions.keySet()){
+				for(Token t: sessions.get(sid).getTokens()){
+					if(tokenId.equals(t.getId())){
+						sessionId = sid;
+						break; // TODO: Das beendet nur die innere Schleife. Es bleibt teuer.
+					}
+				}
+			}
+		}
+		
+		deleteToken(sessionId, tokenId);
+	}
+	
 	public void deleteToken(String sessionId, String tokenId) {
-		getSession(sessionId).deleteToken(tokenId);
+		if(sessionId != null){
+			getSession(sessionId).deleteToken(tokenId);
+		}
 		
 		synchronized (tokensByTid) {
 			tokensByTid.remove(tokenId);

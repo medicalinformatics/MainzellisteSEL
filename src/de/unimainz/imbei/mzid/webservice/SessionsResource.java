@@ -126,10 +126,8 @@ public class SessionsResource {
 		Session s = sid.getValue();
 		
 		Token t2 = Servers.instance.newToken(s.getId());
-		synchronized(t2){
-			t2.setData(t.getData());
-			t2.setType(t.getType());
-		}
+		t2.setData(t.getData());
+		t2.setType(t.getType());
 		
 		return Response
 			.status(Status.CREATED)
