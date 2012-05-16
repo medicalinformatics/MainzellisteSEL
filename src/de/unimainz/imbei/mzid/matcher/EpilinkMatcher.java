@@ -29,12 +29,17 @@ public class EpilinkMatcher implements Matcher {
 	
 	private double calculateWeight(Patient left, Patient right)
 	{
-		double 
-		for (String fieldName : frequencies.keySet())
+
+		double weightSum = 0; // holds sum of field weights 
+		double totalWeight = 0; // holds total weight
+		for (String fieldName : weights.keySet())
 		{
-			
+			double fieldWeight = weights.get(fieldName); 
+			weightSum += fieldWeight;
+			totalWeight += comparators.get(fieldName).compare(left, right) * fieldWeight;
 		}
-		return 0;
+		totalWeight /= weightSum;
+		return totalWeight;
 	}
 	
 	public EpilinkMatcher(Properties props)
