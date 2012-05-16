@@ -69,29 +69,29 @@ jslib/crypto-js/sha1/sha1.js -text svneol=unset#text/plain
 jslib/crypto-js/sha256/sha256-min.js -text svneol=unset#text/plain
 jslib/crypto-js/sha256/sha256.js -text svneol=unset#text/plain
 src/META-INF/persistence.xml -text svneol=unset#text/plain
-src/de/unimainz/imbei/mzid/ArrayFieldComparator.java -text svneol=unset#text/plain
-src/de/unimainz/imbei/mzid/BinaryFieldComparator.java -text svneol=unset#text/plain
-src/de/unimainz/imbei/mzid/ColognePhoneticTransformer.java -text svneol=unset#text/plain
+src/de/unimainz/imbei/mzid/ArrayFieldComparator.java -text
+src/de/unimainz/imbei/mzid/BinaryFieldComparator.java -text
+src/de/unimainz/imbei/mzid/ColognePhoneticTransformer.java -text
 src/de/unimainz/imbei/mzid/CompoundField.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/Config.java -text svneol=unset#text/plain
-src/de/unimainz/imbei/mzid/DiceFieldComparator.java -text svneol=unset#text/plain
+src/de/unimainz/imbei/mzid/DiceFieldComparator.java -text
 src/de/unimainz/imbei/mzid/Field.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/FieldComparator.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/FieldTransformation.java -text svneol=unset#text/plain
-src/de/unimainz/imbei/mzid/FieldTransformer.java -text svneol=unset#text/plain
-src/de/unimainz/imbei/mzid/FirstNameDecomposer.java -text svneol=unset#text/plain
-src/de/unimainz/imbei/mzid/GermanLastNameDecomposer.java -text svneol=unset#text/plain
-src/de/unimainz/imbei/mzid/HannoverPhoneticTransformer.java -text svneol=unset#text/plain
+src/de/unimainz/imbei/mzid/FieldTransformer.java -text
+src/de/unimainz/imbei/mzid/FirstNameDecomposer.java -text
+src/de/unimainz/imbei/mzid/GermanLastNameDecomposer.java -text
+src/de/unimainz/imbei/mzid/HannoverPhoneticTransformer.java -text
 src/de/unimainz/imbei/mzid/HashedField.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/ID.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/IDGenerator.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/IDGeneratorFactory.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/IDGeneratorMemory.java -text svneol=unset#text/plain
-src/de/unimainz/imbei/mzid/Matcher.java -text svneol=unset#text/plain
+src/de/unimainz/imbei/mzid/Matcher.java -text
 src/de/unimainz/imbei/mzid/PID.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/PIDGenerator.java -text svneol=unset#text/plain
-src/de/unimainz/imbei/mzid/PSXFirstNameNormalizer.java -text svneol=unset#text/plain
-src/de/unimainz/imbei/mzid/PSXLastNameNormalizer.java -text svneol=unset#text/plain
+src/de/unimainz/imbei/mzid/PSXFirstNameNormalizer.java -text
+src/de/unimainz/imbei/mzid/PSXLastNameNormalizer.java -text
 src/de/unimainz/imbei/mzid/Patient.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/PlainTextField.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/Session.java -text svneol=unset#text/plain

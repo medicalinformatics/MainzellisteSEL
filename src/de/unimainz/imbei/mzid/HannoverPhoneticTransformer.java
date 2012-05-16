@@ -1,5 +1,6 @@
 package de.unimainz.imbei.mzid;
 
+
 /**
  * Generates phonetic code following the "Hannover phonetics" algorithm.
  * @param input

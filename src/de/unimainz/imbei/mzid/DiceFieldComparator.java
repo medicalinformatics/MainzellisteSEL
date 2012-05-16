@@ -10,7 +10,7 @@ public class DiceFieldComparator extends FieldComparator {
 	}
 	
 	@Override
-	public Object compare(Patient patientLeft, Patient patientRight)
+	public double compare(Patient patientLeft, Patient patientRight)
 	{
 
 		Field<?> cLeft = patientLeft.getFields().get(fieldLeft);

@@ -54,10 +54,10 @@ public abstract class FieldComparator {
 	 * 
 	 * @param patientLeft 
 	 * @param patientRight
-	 * @return An object containing the comparison result, for example
-	 * Double for distance metrics or Boolean for equal / unequal comparisons.
+	 * @return The comparison result as a real number in the interval [0,1],
+	 * where 1 denotes equality and 0 maximal disagreement.
 	 */
-	public abstract Object compare (Patient patientLeft, Patient patientRight);
+	public abstract double compare (Patient patientLeft, Patient patientRight);
 
 	public String getFieldLeft() {
 		return fieldLeft;

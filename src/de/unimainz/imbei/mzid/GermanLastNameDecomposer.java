@@ -1,7 +1,8 @@
 package de.unimainz.imbei.mzid;
 
-import java.util.HashSet;
 import java.util.Set;
+import java.util.HashSet;
+
 
 /**
  * Decomposition of last name into components (3 by default),

@@ -2,6 +2,7 @@ package de.unimainz.imbei.mzid;
 
 import java.util.Map;
 
+
 public class BinaryFieldComparator extends FieldComparator {
 
 	public BinaryFieldComparator (String fieldLeft, String fieldRight)
@@ -10,13 +11,15 @@ public class BinaryFieldComparator extends FieldComparator {
 	}
 	
 	@Override
-	public Object compare(Patient patientLeft, Patient patientRight) {
+	public double compare(Patient patientLeft, Patient patientRight) {
 		// TODO: Fall, dass geforderte Charakteristiken nicht vorhanden sind  
 		Map<String, Field<?>> cLeft = patientLeft.getFields();
 		Map<String, Field<?>> cRight = patientRight.getFields();
 		
-		return cLeft.get(this.fieldLeft).equals(cRight.get(this.fieldLeft));
-		
+		if (cLeft.get(this.fieldLeft).equals(cRight.get(this.fieldLeft)))
+			return 1.0;
+		else
+			return 0.0;		
 	}
 
 }

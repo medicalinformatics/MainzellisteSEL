@@ -1,5 +1,6 @@
 package de.unimainz.imbei.mzid;
 
+
 /**
  * Decomposition of first name into components (3 by default)
  * @author borg

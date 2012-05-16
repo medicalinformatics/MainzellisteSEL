@@ -3,6 +3,7 @@ package de.unimainz.imbei.mzid;
 import java.util.Hashtable;
 import java.util.Map;
 
+
 /**
  * Implements an array comparison between sets of fields.
  * I.e., a set of fields in the data of one patient is compared 
