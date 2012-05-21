@@ -1,6 +1,8 @@
 /build
 /doc
 src/de/unimainz/imbei/mzid/CopyOfConfig.java
+src/de/unimainz/imbei/mzid/FormDefinition.java
+src/de/unimainz/imbei/mzid/PSXState.java
 src/de/unimainz/imbei/mzid/matcher/PSXMatcher.java
 src/de/unimainz/imbei/mzid/matcher/PSXMatchingState.java
 src/de/unimainz/imbei/mzid/matcher/PSXSpecification.java

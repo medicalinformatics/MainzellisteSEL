@@ -1,5 +1,7 @@
 package de.unimainz.imbei.mzid;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collections;
@@ -22,7 +24,7 @@ public enum Config {
 		HASHED_NORMALIZED; // Bloomfilter with prior normalization
 	}
 	
-	private final String configPath = "mzid.conf";
+	private final String configPath = "X:/workspace/mzid/WebContent/mzid.conf";
 	
 	@Deprecated
 	private final Map<String,FieldType> FieldTypes;
@@ -34,7 +36,12 @@ public enum Config {
 		//TODO: Das alles irgendwoher laden.
 		props = new Properties();
 		try {
-			InputStream is = Config.class.getResourceAsStream(configPath);
+			File f = new File(".");
+			String path = f.getAbsolutePath();
+			System.err.println("Arbeitsverzeichnis: " + path);
+
+			//InputStream is = Config.class.getResourceAsStream(configPath);
+			InputStream is = new FileInputStream(configPath);
 			
 			props.load(is);
 			is.close();
@@ -43,7 +50,7 @@ public enum Config {
 			
 		} catch (IOException e)
 		{
-			// TODO
+			System.err.println("Error while reading configuration file!");
 		}
 		
 		try {
@@ -79,5 +86,10 @@ public enum Config {
 	public FieldType getFieldType(String FieldKey){
 		assert FieldTypes.keySet().contains(FieldKey);
 		return FieldTypes.get(FieldKey);
+	}
+	
+	public static void main(String args[])
+	{
+		Config cfg;
 	}
 }
