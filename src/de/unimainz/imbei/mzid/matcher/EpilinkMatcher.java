@@ -47,9 +47,13 @@ public class EpilinkMatcher implements Matcher {
 		// Get error rate (is needed for weight computation below)
 		this.error_rate = Double.parseDouble(props.getProperty("epilink.error_rate"));			
 
+		// Initialize internal maps
 		this.comparators = new HashMap<String, FieldComparator>();
+		this.frequencies = new HashMap<String, Double>();
+		this.weights = new HashMap<String, Double>();
+		
 		// Get names of fields from config vars.*
-		Pattern p = Pattern.compile("^field.(\\w+).type");
+		Pattern p = Pattern.compile("^field\\.(\\w+)\\.type");
 		java.util.regex.Matcher m;
 
 		// Build map of comparators and map of frequencies from Properties
@@ -58,7 +62,7 @@ public class EpilinkMatcher implements Matcher {
 			m = p.matcher((String) key);
 			if (m.find()){
 				String fieldName = m.group(1);
-				String fieldTypeStr = props.getProperty("field." + fieldName + ".type");
+				String fieldTypeStr = props.getProperty("field." + fieldName + ".type").trim();
 				
 				FieldType fieldType = FieldType.valueOf(fieldTypeStr);
 				switch (fieldType)

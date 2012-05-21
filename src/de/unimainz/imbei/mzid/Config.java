@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Constructor;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -12,7 +13,7 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.UUID;
 
-import de.unimainz.imbei.mzid.matcher.Matcher;
+import de.unimainz.imbei.mzid.matcher.*;
 
 public enum Config {
 	instance;
@@ -54,9 +55,11 @@ public enum Config {
 		}
 		
 		try {
-			matcher = (Matcher) Class.forName(props.getProperty("matcher")).newInstance();
+			Class<?> matcherClass = Class.forName("de.unimainz.imbei.mzid.matcher." + props.getProperty("matcher"));
+			Constructor<?> matcherConstructor = matcherClass.getConstructor(props.getClass());
+			matcher = (Matcher) matcherConstructor.newInstance(props);
 		} catch (Exception e){
-			// TODO
+			System.err.println(e);
 		}
 		
 
@@ -64,11 +67,17 @@ public enum Config {
 		Map<String, FieldType> temp = new HashMap<String, FieldType>();
 		temp.put("vorname", FieldType.PLAINTEXT);
 		temp.put("nachname", FieldType.PLAINTEXT);
-		temp.put("geburtsname", FieldType.PLAINTEXT);
-		temp.put("geburtsdatum", FieldType.PLAINTEXT);
+		//temp.put("geburtsname", FieldType.PLAINTEXT);
+		temp.put("geburtstag", FieldType.PLAINTEXT);
+		temp.put("geburtsmonat", FieldType.PLAINTEXT);
+		temp.put("geburtsjahr", FieldType.PLAINTEXT);
 		FieldTypes = Collections.unmodifiableMap(temp);
 	}
 	
+	public Properties getProperties() {
+		return props;
+	}
+
 	public Matcher getMatcher() {
 		return matcher;
 	}
