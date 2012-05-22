@@ -1,14 +1,20 @@
 package de.unimainz.imbei.mzid.matcher;
 
+import javax.persistence.Embeddable;
+import javax.persistence.ManyToOne;
+
 import de.unimainz.imbei.mzid.Patient;
 
+@Embeddable
 public class MatchResult {
 	
 	public enum MatchResultType {
-		MATCH, NON_MATCH, POSSIBLE_MATCH;
+		MATCH, NON_MATCH, POSSIBLE_MATCH, AMBIGOUS;
 	};
 	
 	private MatchResultType type;
+
+	@ManyToOne
 	private Patient patient;
 	
 	public Patient getPatient()
