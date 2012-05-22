@@ -28,6 +28,10 @@ public abstract class Field<T> {
 	public abstract T getValue();
 	public abstract void setValue(T value);
 	
+	/** Empty constructor. Used by subclasses. */ 
+	protected Field()
+	{		
+	}
 	public Field(T s) {
 		setValue(s);
 	}

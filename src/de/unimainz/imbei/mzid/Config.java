@@ -65,8 +65,8 @@ public enum Config {
 
 
 		Map<String, FieldType> temp = new HashMap<String, FieldType>();
-		temp.put("vorname", FieldType.PLAINTEXT);
-		temp.put("nachname", FieldType.PLAINTEXT);
+		temp.put("vorname", FieldType.HASHED);
+		temp.put("nachname", FieldType.HASHED);
 		//temp.put("geburtsname", FieldType.PLAINTEXT);
 		temp.put("geburtstag", FieldType.PLAINTEXT);
 		temp.put("geburtsmonat", FieldType.PLAINTEXT);

@@ -26,6 +26,7 @@ import de.unimainz.imbei.mzid.Config;
 import de.unimainz.imbei.mzid.Field;
 import de.unimainz.imbei.mzid.ID;
 import de.unimainz.imbei.mzid.IDGeneratorFactory;
+import de.unimainz.imbei.mzid.IDRequest;
 import de.unimainz.imbei.mzid.PID;
 import de.unimainz.imbei.mzid.Patient;
 import de.unimainz.imbei.mzid.Servers;
@@ -63,53 +64,67 @@ public class PatientsResource {
 			@QueryParam("tokenId") String tokenId,
 			MultivaluedMap<String, String> form){
 		Token t = Servers.instance.getTokenByTid(tokenId);
-		if(t == null || !t.getType().equals("addPatient")){
+/*		if(t == null || !t.getType().equals("addPatient")){
 			throw new WebApplicationException(Response
 				.status(Status.UNAUTHORIZED)
 				.entity("Please supply a valid 'addPatient' token.")
 				.build());
-		}
-		
+		}*/
+
 		Patient p = new Patient();
 		Map<String, Field<?>> chars = new HashMap<String, Field<?>>();
 		
-		for(String s: form.keySet()){ //TODO: Testfall mit defekten/leeren Eingaben
+/*		for(String s: form.keySet()){ //TODO: Testfall mit defekten/leeren Eingaben
+			chars.put(s, Field.build(s, form.getFirst(s)));
+		}*/
+
+		for(String s: Config.instance.getFieldKeys()){ //TODO: Testfall mit defekten/leeren Eingaben
 			chars.put(s, Field.build(s, form.getFirst(s)));
 		}
 
 		p.setFields(chars);
 		
-/*		Patient pNormalized = new Patient();
+		Patient pNormalized = p;
+		// TODO Normalisierung
+		//Patient pNormalized = new Patient();
 		Map<String, Field<?>> normalizedChars = new HashMap<String, Field<?>>();
 		for (String fieldName : chars.keySet())
 		{
-			FieldTransformer<?, ?> thisTransformer = Config.instance.getFieldTransformer(fieldName);
+			/*FieldTransformer<?, ?> thisTransformer = Config.instance.getFieldTransformer(fieldName);
 			if (thisTransformer != null)
 				normalizedChars.put(fieldName, thisTransformer.transform(chars.get(fieldName)));
 			else
-				normalizedChars.put(fieldName, chars.get(fieldName));
+				normalizedChars.put(fieldName, chars.get(fieldName)); */
 		}
-		*/
+		
 		MatchResult match = Config.instance.getMatcher().match(p, getAllPatients());
 		
 		ID id;
+		Patient assignedPatient; // The "real" patient that is assigned (match result or new patient) 
+		
 		switch (match.getResultType())
 		{
 		case MATCH :
 			id = match.getPatient().getId("pid");
-		case NON_MATCH :
-			id = IDGeneratorFactory.instance.getFactory("pid").getNext(); //TODO: generalisieren
+			assignedPatient = match.getPatient();
+			break;
 			
+		case NON_MATCH :
+			id = IDGeneratorFactory.instance.getFactory("pid").getNext(); //TODO: generalisieren			
 			Set<ID> ids = new HashSet<ID>();
 			ids.add(id);
-			p.setIds(ids);
-			Persistor.instance.addPatient(p);
+			pNormalized.setIds(ids);
+			assignedPatient = pNormalized;
+			Persistor.instance.addPatient(pNormalized);
+			break;
 			
 		case POSSIBLE_MATCH : 
 		default :
 			// TODO
-			id = null;
+			return null;
 		}
+		
+		IDRequest request = new IDRequest(p.getFields(), "pid", match, assignedPatient);
 		
 		Servers.instance.deleteToken(tokenId);
 		
