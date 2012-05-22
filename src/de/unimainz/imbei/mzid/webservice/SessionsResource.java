@@ -133,8 +133,8 @@ public class SessionsResource {
 			.status(Status.CREATED)
 			.entity(UriBuilder
 				.fromResource(SessionsResource.class)
-				.path("/tokens/{tid}")
-				.build(t2.getId()))
+				.path("/{sid}/tokens/{tid}")
+				.build(s.getId(), t2.getId()))
 			.build();
 	}
 	
