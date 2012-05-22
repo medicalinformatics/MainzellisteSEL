@@ -94,6 +94,7 @@ src/de/unimainz/imbei/mzid/dto/PatientDto.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/dto/Persistor.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/dto/SessionAdapter.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/dto/SessionDto.java -text svneol=unset#text/plain
+src/de/unimainz/imbei/mzid/exceptions/InternalErrorException.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/exceptions/InvalidIDException.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/exceptions/NotImplementedException.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/exceptions/UnauthorizedException.java -text svneol=unset#text/plain

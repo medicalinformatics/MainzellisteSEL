@@ -12,7 +12,9 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.UUID;
+import java.util.regex.Pattern;
 
+import de.unimainz.imbei.mzid.exceptions.InternalErrorException;
 import de.unimainz.imbei.mzid.matcher.*;
 
 public enum Config {
@@ -27,13 +29,12 @@ public enum Config {
 	
 	private final String configPath = "X:/workspace/mzid/WebContent/mzid.conf";
 	
-	@Deprecated
-	private final Map<String,FieldType> FieldTypes;
+	private final Map<String,Class<? extends Field<?>>> FieldTypes;
 	
 	private Properties props;
 	private Matcher matcher;
 	
-	Config() {
+	Config() throws InternalErrorException{
 		//TODO: Das alles irgendwoher laden.
 		props = new Properties();
 		try {
@@ -59,19 +60,32 @@ public enum Config {
 			Constructor<?> matcherConstructor = matcherClass.getConstructor(props.getClass());
 			matcher = (Matcher) matcherConstructor.newInstance(props);
 		} catch (Exception e){
+			// TODO gescheites Logging
 			System.err.println(e);
+			throw new InternalErrorException();
+		}
+		
+		// Read field types from configuration
+		Pattern pattern = Pattern.compile("field\\.(\\w+)\\.type");
+		java.util.regex.Matcher patternMatcher;
+		this.FieldTypes = new HashMap<String, Class<? extends Field<?>>>();
+		for (String propKey : props.stringPropertyNames())
+		{
+			patternMatcher = pattern.matcher(propKey);
+			if (patternMatcher.find())
+			{
+				String fieldName = patternMatcher.group(1);	
+				String fieldClass = "de.unimainz.imbei.mzid." + props.getProperty(propKey).trim();
+				try {
+					this.FieldTypes.put(fieldName, (Class<? extends Field<?>>) Class.forName(fieldClass));
+				} catch (Exception e) {
+					//TODO Logging
+					throw new InternalErrorException();
+				}
+			}
 		}
 		
 
-
-		Map<String, FieldType> temp = new HashMap<String, FieldType>();
-		temp.put("vorname", FieldType.HASHED);
-		temp.put("nachname", FieldType.HASHED);
-		//temp.put("geburtsname", FieldType.PLAINTEXT);
-		temp.put("geburtstag", FieldType.PLAINTEXT);
-		temp.put("geburtsmonat", FieldType.PLAINTEXT);
-		temp.put("geburtsjahr", FieldType.PLAINTEXT);
-		FieldTypes = Collections.unmodifiableMap(temp);
 	}
 	
 	public Properties getProperties() {
@@ -86,13 +100,11 @@ public enum Config {
 		return props.getProperty(propKey);
 	}
 	
-	@Deprecated
 	public Set<String> getFieldKeys(){
 		return FieldTypes.keySet();
 	}
 	
-	@Deprecated
-	public FieldType getFieldType(String FieldKey){
+	public Class<? extends Field<?>> getFieldType(String FieldKey){
 		assert FieldTypes.keySet().contains(FieldKey);
 		return FieldTypes.get(FieldKey);
 	}

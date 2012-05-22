@@ -64,19 +64,12 @@ public class EpilinkMatcher implements Matcher {
 				String fieldName = m.group(1);
 				String fieldTypeStr = props.getProperty("field." + fieldName + ".type").trim();
 				
-				FieldType fieldType = FieldType.valueOf(fieldTypeStr);
-				switch (fieldType)
-				{
-				case HASHED :
-				case HASHED_NORMALIZED :
+				if (fieldTypeStr.equals("HashedField"))
 					comparators.put(fieldName, new DiceFieldComparator(fieldName, fieldName));
-					break;
-				case PLAINTEXT :
-				case PLAINTEXT_NORMALIZED :
-				default : // Binary Comparison should always work
+				else
 					comparators.put(fieldName, new BinaryFieldComparator(fieldName, fieldName));					
-				}
 				// set frequency
+
 				double frequency = Double.parseDouble(props.getProperty("epilink." + fieldName + ".frequency"));
 				frequencies.put(fieldName, frequency);
 				// calculate field weights

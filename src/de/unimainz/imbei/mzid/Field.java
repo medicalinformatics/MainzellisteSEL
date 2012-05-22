@@ -1,5 +1,6 @@
 package de.unimainz.imbei.mzid;
 
+import java.lang.reflect.Constructor;
 import java.util.BitSet;
 
 import javax.persistence.Entity;
@@ -53,17 +54,11 @@ public abstract class Field<T> {
 			return false;
 	}
 
-	public static Field<?> build(FieldType t, Object o){
-		switch(t){
-			case PLAINTEXT:
-			case PLAINTEXT_NORMALIZED:
-				assert o instanceof String;
-				return new PlainTextField((String)o);
-			case HASHED:
-			case HASHED_NORMALIZED:
-				assert o instanceof BitSet;
-				return new HashedField((BitSet)o);
-			default:
+	public static Field<?> build(Class<? extends Field<?>> t, Object o){
+		try {
+			Constructor<? extends Field<?>> c = t.getConstructor(o.getClass());
+			return c.newInstance(o);
+		} catch (Exception e) {
 				throw new NotImplementedException();
 		}
 	}
