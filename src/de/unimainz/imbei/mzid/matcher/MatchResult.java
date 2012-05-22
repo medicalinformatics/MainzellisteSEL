@@ -23,7 +23,7 @@ public class MatchResult {
 	 * 	matching patient.
 	 * 	<li>POSSIBLE_MATCH: An unsure match is found. getPatient() 
 	 * retreives the best matching patient.
-	 * 	<li> NON_MATCH: No matching patient was found. getPatients
+	 * 	<li> NON_MATCH: No matching patient was found. getPatient
 	 * returns null.
 	 * </ul>
 	 * @return
