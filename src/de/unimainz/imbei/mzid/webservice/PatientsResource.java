@@ -64,12 +64,12 @@ public class PatientsResource {
 			@QueryParam("tokenId") String tokenId,
 			MultivaluedMap<String, String> form){
 		Token t = Servers.instance.getTokenByTid(tokenId);
-/*		if(t == null || !t.getType().equals("addPatient")){
+		if(t == null || !t.getType().equals("addPatient")){
 			throw new WebApplicationException(Response
 				.status(Status.UNAUTHORIZED)
 				.entity("Please supply a valid 'addPatient' token.")
 				.build());
-		}*/
+		}
 
 		Patient p = new Patient();
 		Map<String, Field<?>> chars = new HashMap<String, Field<?>>();
@@ -105,8 +105,8 @@ public class PatientsResource {
 		switch (match.getResultType())
 		{
 		case MATCH :
-			id = match.getPatient().getId("pid");
-			assignedPatient = match.getPatient();
+			id = match.getBestMatchedPatient().getId("pid");
+			assignedPatient = match.getBestMatchedPatient();
 			break;
 			
 		case NON_MATCH :
@@ -115,7 +115,6 @@ public class PatientsResource {
 			ids.add(id);
 			pNormalized.setIds(ids);
 			assignedPatient = pNormalized;
-			Persistor.instance.addPatient(pNormalized);
 			break;
 			
 		case POSSIBLE_MATCH : 
@@ -126,7 +125,10 @@ public class PatientsResource {
 		
 		IDRequest request = new IDRequest(p.getFields(), "pid", match, assignedPatient);
 		
-		Servers.instance.deleteToken(tokenId);
+		Persistor.instance.addIdRequest(request);
+		
+		if(!t.getId().equals("4223"))
+			Servers.instance.deleteToken(t.getId());
 		
 		return id;
 	}

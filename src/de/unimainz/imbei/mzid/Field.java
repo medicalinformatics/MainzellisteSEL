@@ -24,7 +24,7 @@ public abstract class Field<T> {
 	@Id
 	@GeneratedValue
 	@JsonIgnore
-	protected int jpaId;
+	protected int fieldJpaId;
 	
 	public abstract T getValue();
 	public abstract void setValue(T value);

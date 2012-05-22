@@ -24,30 +24,19 @@ public class Patient {
 	@Id
 	@GeneratedValue
 	@JsonIgnore
-	private String intPatId;
+	private int patientJpaId; // JPA
 	
-	@OneToMany(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
-	@JoinColumn(name="intPatId")
+	@OneToMany(cascade={CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH}, fetch=FetchType.EAGER)
 	private Set<ID> ids;
 	
-	@OneToMany(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
-//	@JoinColumn(name="intPatId")
+	@OneToMany(cascade={CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH}, fetch=FetchType.EAGER)
 	private Map<String, Field<?>> fields;
 	
 	public Patient() {}
 	
-	public Patient(String plid, Set<ID> ids, Map<String, Field<?>> c) {
-		this.intPatId = plid;
+	public Patient(Set<ID> ids, Map<String, Field<?>> c) {
 		this.ids = ids;
 		this.fields = c;
-	}
-	
-	public String getIntPatId() {
-		return intPatId;
-	}
-	
-	protected void setIntPatId(String intPatId) {
-		this.intPatId = intPatId;
 	}
 	
 	public Set<ID> getIds(){
@@ -78,6 +67,6 @@ public class Patient {
 	
 	@Override
 	public String toString() {
-		return intPatId.toString() + fields.toString();
+		return fields.toString();
 	}
 }

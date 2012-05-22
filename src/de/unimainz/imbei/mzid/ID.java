@@ -1,5 +1,6 @@
 package de.unimainz.imbei.mzid;
 
+import javax.persistence.Basic;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -23,8 +24,12 @@ public abstract class ID {
 	@Id
 	@GeneratedValue
 	@JsonIgnore
-	protected int idid;
+	protected int idJpaId;
+	
+	@Basic
 	protected String idString;
+	
+	@Basic
 	protected String type;
 	
 	/**

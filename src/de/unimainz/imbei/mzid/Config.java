@@ -27,14 +27,14 @@ public enum Config {
 		HASHED_NORMALIZED; // Bloomfilter with prior normalization
 	}
 	
-	private final String configPath = "X:/workspace/mzid/WebContent/mzid.conf";
+	private final String configPath = "mzid.conf";
 	
 	private final Map<String,Class<? extends Field<?>>> FieldTypes;
 	
 	private Properties props;
 	private Matcher matcher;
 	
-	Config() throws InternalErrorException{
+	Config() throws InternalErrorException {
 		//TODO: Das alles irgendwoher laden.
 		props = new Properties();
 		try {
@@ -50,8 +50,7 @@ public enum Config {
 			System.out.println("Properties:");
 			System.out.println(props);
 			
-		} catch (IOException e)
-		{
+		} catch (IOException e)	{
 			System.err.println("Error while reading configuration file!");
 		}
 		
@@ -69,8 +68,7 @@ public enum Config {
 		Pattern pattern = Pattern.compile("field\\.(\\w+)\\.type");
 		java.util.regex.Matcher patternMatcher;
 		this.FieldTypes = new HashMap<String, Class<? extends Field<?>>>();
-		for (String propKey : props.stringPropertyNames())
-		{
+		for (String propKey : props.stringPropertyNames()) {
 			patternMatcher = pattern.matcher(propKey);
 			if (patternMatcher.find())
 			{
@@ -84,8 +82,6 @@ public enum Config {
 				}
 			}
 		}
-		
-
 	}
 	
 	public Properties getProperties() {

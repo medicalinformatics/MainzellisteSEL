@@ -7,6 +7,7 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import javax.persistence.TypedQuery;
 
+import de.unimainz.imbei.mzid.IDRequest;
 import de.unimainz.imbei.mzid.PID;
 import de.unimainz.imbei.mzid.Patient;
 import de.unimainz.imbei.mzid.exceptions.NotImplementedException;
@@ -37,10 +38,10 @@ public enum Persistor {
 		return pl;
 	}
 
-	public synchronized void addPatient(Patient p){
+	public synchronized void addIdRequest(IDRequest req){
 		EntityManager em = emf.createEntityManager();
 		em.getTransaction().begin();
-		em.persist(p); //TODO: Fehlerbehandlung, falls PID schon existiert.
+		em.persist(req); //TODO: Fehlerbehandlung, falls PID schon existiert.
 		em.getTransaction().commit();
 		em.close();
 	}

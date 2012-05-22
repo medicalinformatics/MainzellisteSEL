@@ -39,6 +39,11 @@ public enum Servers {
 			s.allowedRemoteAdresses = new HashSet<String>(Arrays.asList("127.0.0.1", "0:0:0:0:0:0:0:1"));
 			servers.put(s.apiKey, s);
 		//}
+			
+		//TODO: if debug
+		Token t = new Token("4223");
+		t.setType("addPatient");
+		tokensByTid.put(t.getId(), t);
 	}
 	
 	public Session newSession(){
