@@ -29,8 +29,8 @@ WebContent/WEB-INF/lib/jsr311-api-1.1.1.jar -text
 WebContent/WEB-INF/lib/mysql-connector-java-5.1.20-bin.jar -text
 WebContent/WEB-INF/lib/openjpa-all-2.2.0.jar -text
 WebContent/WEB-INF/web.xml -text svneol=unset#text/plain
-WebContent/mzid.conf -text
 builder_project/enhance.xml -text svneol=unset#text/plain
+config/mzid.conf -text
 jslib/bloomFilter-js/bloomFilter.js -text svneol=unset#text/plain
 jslib/crypto-js/aes/aes-min.js -text svneol=unset#text/plain
 jslib/crypto-js/aes/aes.js -text svneol=unset#text/plain
@@ -79,6 +79,7 @@ src/de/unimainz/imbei/mzid/IDGenerator.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/IDGeneratorFactory.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/IDGeneratorMemory.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/IDRequest.java -text svneol=unset#text/plain
+src/de/unimainz/imbei/mzid/Initializer.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/PID.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/PIDGenerator.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/Patient.java -text svneol=unset#text/plain
@@ -118,6 +119,7 @@ src/de/unimainz/imbei/mzid/webservice/FieldKeyParam.java -text svneol=unset#text
 src/de/unimainz/imbei/mzid/webservice/FunctionsResource.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/webservice/HTMLResource.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/webservice/PatientsResource.java -text svneol=unset#text/plain
+src/de/unimainz/imbei/mzid/webservice/RootResource.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/webservice/SessionIdParam.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/webservice/SessionsResource.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/webservice/Token.java -text svneol=unset#text/plain

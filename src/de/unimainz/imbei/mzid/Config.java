@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Constructor;
+import java.net.URL;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -27,7 +28,9 @@ public enum Config {
 		HASHED_NORMALIZED; // Bloomfilter with prior normalization
 	}
 	
-	private final String configPath = "mzid.conf";
+	private final String dist = "mzid";
+	private final String version = "0.1";
+	private final String configPath = "/mzid.conf";
 	
 	private final Map<String,Class<? extends Field<?>>> FieldTypes;
 	
@@ -35,23 +38,15 @@ public enum Config {
 	private Matcher matcher;
 	
 	Config() throws InternalErrorException {
-		//TODO: Das alles irgendwoher laden.
 		props = new Properties();
-		try {
-			File f = new File(".");
-			String path = f.getAbsolutePath();
-			System.err.println("Arbeitsverzeichnis: " + path);
-
-			//InputStream is = Config.class.getResourceAsStream(configPath);
-			InputStream is = new FileInputStream(configPath);
-			
-			props.load(is);
-			is.close();
-			System.out.println("Properties:");
-			System.out.println(props);
+		try {			
+			InputStream configInputStream = getClass().getResourceAsStream(configPath);
+			props.load(configInputStream);
+			configInputStream.close();
+			System.out.println("Config read successfully: " + props);
 			
 		} catch (IOException e)	{
-			System.err.println("Error while reading configuration file!");
+			System.err.println("Error reading configuration file!" + e.getMessage());
 		}
 		
 		try {
@@ -105,8 +100,11 @@ public enum Config {
 		return FieldTypes.get(FieldKey);
 	}
 	
-	public static void main(String args[])
-	{
-		Config cfg;
+	public String getDist() {
+		return dist;
+	}
+	
+	public String getVersion() {
+		return version;
 	}
 }

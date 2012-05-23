@@ -22,6 +22,11 @@ public enum Persistor {
 	
 	private EntityManagerFactory emf = Persistence.createEntityManagerFactory("mzid");
 	
+	private Persistor() {
+		// Check database connection
+		getPatients();
+	}
+	
 	public Patient getPatient(PID pid){
 		EntityManager em = emf.createEntityManager();
 		TypedQuery<Patient> q = em.createQuery("SELECT p FROM Patient p JOIN p.ids id WHERE id.idString = :idString", Patient.class);
