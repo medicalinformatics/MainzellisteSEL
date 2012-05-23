@@ -1,3 +1,4 @@
+package de.unimainz.imbei.mzid.test;
 import static org.junit.Assert.*;
 
 import java.io.IOException;
