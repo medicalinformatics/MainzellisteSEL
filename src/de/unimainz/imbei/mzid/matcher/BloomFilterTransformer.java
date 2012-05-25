@@ -1,0 +1,97 @@
+package de.unimainz.imbei.mzid.matcher;
+
+import java.security.MessageDigest;
+import java.util.BitSet;
+import java.util.Collection;
+import java.util.Vector;
+
+import org.apache.commons.codec.digest.DigestUtils;
+
+import de.unimainz.imbei.mzid.HashedField;
+import de.unimainz.imbei.mzid.PlainTextField;
+
+public class BloomFilterTransformer implements FieldTransformer<PlainTextField, HashedField> {
+
+	private int hashLength = 500;
+	private int nGramLength = 2;
+	private int nHashFunctions = 15;
+	
+	/**
+	 * Split the input string into n-grams of length nGramLength. The string
+	 * is padded with nGramLength-1 spaces (trailing and leading).
+	 * 
+	 * For example, the input string "Java" yields the output n-grams 
+	 * " J", "Ja", "av", "va", "a ".
+	 * 
+	 * @param input
+	 * @return
+	 */
+	private Collection<String> getNGrams(String input){
+		// initialize Buffer to hold input and padding 
+		// (nGramLength - 1 spaces on each side)
+		StringBuffer buffer = new StringBuffer(input.length() + 2 * (nGramLength - 1));
+		// Add leading padding
+		for (int i = 0; i < nGramLength - 1; i++)
+			buffer.append(" ");
+		// add input string
+		buffer.append(input);
+		// add leading padding
+		for (int i = 0; i < nGramLength - 1; i++)
+			buffer.append(" ");
+
+		Vector<String> output = new Vector<String>(buffer.length() - nGramLength + 1);
+		for (int i = 0; i <= buffer.length() - nGramLength; i++)
+		{
+			output.addElement(buffer.substring(i, i + nGramLength));
+		}
+		return output;
+	}
+	
+	private int hash(String input, int index)
+	{
+		int hash1 = 0;
+		int hash2 = 0;
+		
+		byte inputBytes[] = input.getBytes();
+		byte md5[] = DigestUtils.md5(inputBytes);
+		byte sha[] = DigestUtils.sha(inputBytes);
+		
+		// calculate significant Bytes of Hash
+		int nSignBytes = (int) Math.ceil(Math.log(hashLength) / Math.log(256));
+
+		// calculate combined Hash
+		for (int byteInd = 0; byteInd < nSignBytes; byteInd++)
+		{
+	    hash1 += Math.pow(256, byteInd) * md5[md5.length - 1 - byteInd];
+	    hash2 += Math.pow(256, byteInd) * sha[sha.length - 1 - byteInd];
+	  }
+		
+		return (hash1 + index * hash2) % hashLength;
+	}
+	
+
+	public HashedField transform(PlainTextField input)
+	{	
+		BitSet bitSet = new BitSet(hashLength);
+		Collection<String> nGrams = getNGrams(input.getValue());
+		for (String nGram : nGrams)
+		{
+			for (int i = 0; i < nHashFunctions; i++)
+			{
+				bitSet.set(hash(nGram, i));
+			}
+		}
+		
+		HashedField output = new HashedField(bitSet);
+		return output;
+	}
+	
+	public static void main(String args[])
+	{
+		BloomFilterTransformer transformer = new BloomFilterTransformer();
+		PlainTextField testText = new PlainTextField("Andreas");
+		Collection<String> nGrams = transformer.getNGrams(testText.getValue());
+		for (String str : nGrams)
+			System.out.println(str);
+	}
+}

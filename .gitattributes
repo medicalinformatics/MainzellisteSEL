@@ -14,6 +14,7 @@
 WebContent/META-INF/MANIFEST.MF -text svneol=unset#text/plain
 WebContent/WEB-INF/jsp/createPerson.jsp -text svneol=unset#text/plain
 WebContent/WEB-INF/lib/asm-3.1.jar -text
+WebContent/WEB-INF/lib/commons-codec-1.6.jar -text
 WebContent/WEB-INF/lib/derby.jar -text
 WebContent/WEB-INF/lib/jackson-core-asl-1.9.2.jar -text
 WebContent/WEB-INF/lib/jackson-jaxrs-1.9.2.jar -text
@@ -101,6 +102,7 @@ src/de/unimainz/imbei/mzid/exceptions/NotImplementedException.java -text svneol=
 src/de/unimainz/imbei/mzid/exceptions/UnauthorizedException.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/matcher/ArrayFieldComparator.java -text
 src/de/unimainz/imbei/mzid/matcher/BinaryFieldComparator.java -text
+src/de/unimainz/imbei/mzid/matcher/BloomFilterTransformer.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/matcher/ColognePhoneticTransformer.java -text
 src/de/unimainz/imbei/mzid/matcher/DiceFieldComparator.java -text
 src/de/unimainz/imbei/mzid/matcher/EpilinkMatcher.java -text svneol=unset#text/plain
