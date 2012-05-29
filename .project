@@ -47,33 +47,95 @@
 		<link>
 			<name>WebContent/WEB-INF/lib</name>
 			<type>2</type>
-			<locationURI>PROJECT_LOC/lib/deploy</locationURI>
+			<locationURI>virtual:/virtual</locationURI>
 		</link>
 		<link>
 			<name>WebContent/static/jslib</name>
 			<type>2</type>
 			<locationURI>PROJECT_LOC/lib/js</locationURI>
 		</link>
+		<link>
+			<name>WebContent/WEB-INF/lib/asm-3.1.jar</name>
+			<type>1</type>
+			<location>C:/Sync/My Dropbox/Sync/eclipseWorkspace.mzid/mzid/lib/deploy/jersey/asm-3.1.jar</location>
+		</link>
+		<link>
+			<name>WebContent/WEB-INF/lib/commons-codec-1.6.jar</name>
+			<type>1</type>
+			<location>C:/Sync/My Dropbox/Sync/eclipseWorkspace.mzid/mzid/lib/deploy/openjpa/commons-codec-1.6.jar</location>
+		</link>
+		<link>
+			<name>WebContent/WEB-INF/lib/derby.jar</name>
+			<type>1</type>
+			<location>C:/Sync/My Dropbox/Sync/eclipseWorkspace.mzid/mzid/lib/deploy/openjpa/derby.jar</location>
+		</link>
+		<link>
+			<name>WebContent/WEB-INF/lib/jackson-core-asl-1.9.2.jar</name>
+			<type>1</type>
+			<location>C:/Sync/My Dropbox/Sync/eclipseWorkspace.mzid/mzid/lib/deploy/jersey/jackson-core-asl-1.9.2.jar</location>
+		</link>
+		<link>
+			<name>WebContent/WEB-INF/lib/jackson-jaxrs-1.9.2.jar</name>
+			<type>1</type>
+			<location>C:/Sync/My Dropbox/Sync/eclipseWorkspace.mzid/mzid/lib/deploy/jersey/jackson-jaxrs-1.9.2.jar</location>
+		</link>
+		<link>
+			<name>WebContent/WEB-INF/lib/jackson-mapper-asl-1.9.2.jar</name>
+			<type>1</type>
+			<location>C:/Sync/My Dropbox/Sync/eclipseWorkspace.mzid/mzid/lib/deploy/jersey/jackson-mapper-asl-1.9.2.jar</location>
+		</link>
+		<link>
+			<name>WebContent/WEB-INF/lib/jackson-xc-1.9.2.jar</name>
+			<type>1</type>
+			<location>C:/Sync/My Dropbox/Sync/eclipseWorkspace.mzid/mzid/lib/deploy/jersey/jackson-xc-1.9.2.jar</location>
+		</link>
+		<link>
+			<name>WebContent/WEB-INF/lib/jersey-client-1.12.jar</name>
+			<type>1</type>
+			<location>C:/Sync/My Dropbox/Sync/eclipseWorkspace.mzid/mzid/lib/deploy/jersey/jersey-client-1.12.jar</location>
+		</link>
+		<link>
+			<name>WebContent/WEB-INF/lib/jersey-core-1.12.jar</name>
+			<type>1</type>
+			<location>C:/Sync/My Dropbox/Sync/eclipseWorkspace.mzid/mzid/lib/deploy/jersey/jersey-core-1.12.jar</location>
+		</link>
+		<link>
+			<name>WebContent/WEB-INF/lib/jersey-json-1.12.jar</name>
+			<type>1</type>
+			<location>C:/Sync/My Dropbox/Sync/eclipseWorkspace.mzid/mzid/lib/deploy/jersey/jersey-json-1.12.jar</location>
+		</link>
+		<link>
+			<name>WebContent/WEB-INF/lib/jersey-server-1.12.jar</name>
+			<type>1</type>
+			<location>C:/Sync/My Dropbox/Sync/eclipseWorkspace.mzid/mzid/lib/deploy/jersey/jersey-server-1.12.jar</location>
+		</link>
+		<link>
+			<name>WebContent/WEB-INF/lib/jersey-servlet-1.12.jar</name>
+			<type>1</type>
+			<location>C:/Sync/My Dropbox/Sync/eclipseWorkspace.mzid/mzid/lib/deploy/jersey/jersey-servlet-1.12.jar</location>
+		</link>
+		<link>
+			<name>WebContent/WEB-INF/lib/jettison-1.1.jar</name>
+			<type>1</type>
+			<location>C:/Sync/My Dropbox/Sync/eclipseWorkspace.mzid/mzid/lib/deploy/jersey/jettison-1.1.jar</location>
+		</link>
+		<link>
+			<name>WebContent/WEB-INF/lib/jsr311-api-1.1.1.jar</name>
+			<type>1</type>
+			<location>C:/Sync/My Dropbox/Sync/eclipseWorkspace.mzid/mzid/lib/deploy/jersey/jsr311-api-1.1.1.jar</location>
+		</link>
+		<link>
+			<name>WebContent/WEB-INF/lib/mysql-connector-java-5.1.20-bin.jar</name>
+			<type>1</type>
+			<location>C:/Sync/My Dropbox/Sync/eclipseWorkspace.mzid/mzid/lib/deploy/openjpa/mysql-connector-java-5.1.20-bin.jar</location>
+		</link>
+		<link>
+			<name>WebContent/WEB-INF/lib/openjpa-all-2.2.0.jar</name>
+			<type>1</type>
+			<location>C:/Sync/My Dropbox/Sync/eclipseWorkspace.mzid/mzid/lib/deploy/openjpa/openjpa-all-2.2.0.jar</location>
+		</link>
 	</linkedResources>
 	<filteredResources>
-		<filter>
-			<id>0</id>
-			<name>WebContent/WEB-INF/lib</name>
-			<type>10</type>
-			<matcher>
-				<id>org.eclipse.ui.ide.multiFilter</id>
-				<arguments>1.0-name-matches-false-false-.svn</arguments>
-			</matcher>
-		</filter>
-		<filter>
-			<id>0</id>
-			<name>WebContent/WEB-INF/lib</name>
-			<type>5</type>
-			<matcher>
-				<id>org.eclipse.ui.ide.multiFilter</id>
-				<arguments>1.0-name-matches-false-false-*.jar</arguments>
-			</matcher>
-		</filter>
 		<filter>
 			<id>1338281630234</id>
 			<name>WebContent/static/jslib</name>
