@@ -45,11 +45,6 @@
 	</natures>
 	<linkedResources>
 		<link>
-			<name>WebContent/WEB-INF/lib</name>
-			<type>2</type>
-			<locationURI>virtual:/virtual</locationURI>
-		</link>
-		<link>
 			<name>WebContent/static/jslib</name>
 			<type>2</type>
 			<locationURI>PROJECT_LOC/lib/js</locationURI>
@@ -57,82 +52,82 @@
 		<link>
 			<name>WebContent/WEB-INF/lib/asm-3.1.jar</name>
 			<type>1</type>
-			<location>C:/Sync/My Dropbox/Sync/eclipseWorkspace.mzid/mzid/lib/deploy/jersey/asm-3.1.jar</location>
+			<locationURI>PROJECT_LOC/lib/deploy/jersey/asm-3.1.jar</locationURI>
 		</link>
 		<link>
 			<name>WebContent/WEB-INF/lib/commons-codec-1.6.jar</name>
 			<type>1</type>
-			<location>C:/Sync/My Dropbox/Sync/eclipseWorkspace.mzid/mzid/lib/deploy/openjpa/commons-codec-1.6.jar</location>
+			<locationURI>PROJECT_LOC/lib/deploy/openjpa/commons-codec-1.6.jar</locationURI>
 		</link>
 		<link>
 			<name>WebContent/WEB-INF/lib/derby.jar</name>
 			<type>1</type>
-			<location>C:/Sync/My Dropbox/Sync/eclipseWorkspace.mzid/mzid/lib/deploy/openjpa/derby.jar</location>
+			<locationURI>PROJECT_LOC/lib/deploy/openjpa/derby.jar</locationURI>
 		</link>
 		<link>
 			<name>WebContent/WEB-INF/lib/jackson-core-asl-1.9.2.jar</name>
 			<type>1</type>
-			<location>C:/Sync/My Dropbox/Sync/eclipseWorkspace.mzid/mzid/lib/deploy/jersey/jackson-core-asl-1.9.2.jar</location>
+			<locationURI>PROJECT_LOC/lib/deploy/jersey/jackson-core-asl-1.9.2.jar</locationURI>
 		</link>
 		<link>
 			<name>WebContent/WEB-INF/lib/jackson-jaxrs-1.9.2.jar</name>
 			<type>1</type>
-			<location>C:/Sync/My Dropbox/Sync/eclipseWorkspace.mzid/mzid/lib/deploy/jersey/jackson-jaxrs-1.9.2.jar</location>
+			<locationURI>PROJECT_LOC/lib/deploy/jersey/jackson-jaxrs-1.9.2.jar</locationURI>
 		</link>
 		<link>
 			<name>WebContent/WEB-INF/lib/jackson-mapper-asl-1.9.2.jar</name>
 			<type>1</type>
-			<location>C:/Sync/My Dropbox/Sync/eclipseWorkspace.mzid/mzid/lib/deploy/jersey/jackson-mapper-asl-1.9.2.jar</location>
+			<locationURI>PROJECT_LOC/lib/deploy/jersey/jackson-mapper-asl-1.9.2.jar</locationURI>
 		</link>
 		<link>
 			<name>WebContent/WEB-INF/lib/jackson-xc-1.9.2.jar</name>
 			<type>1</type>
-			<location>C:/Sync/My Dropbox/Sync/eclipseWorkspace.mzid/mzid/lib/deploy/jersey/jackson-xc-1.9.2.jar</location>
+			<locationURI>PROJECT_LOC/lib/deploy/jersey/jackson-xc-1.9.2.jar</locationURI>
 		</link>
 		<link>
 			<name>WebContent/WEB-INF/lib/jersey-client-1.12.jar</name>
 			<type>1</type>
-			<location>C:/Sync/My Dropbox/Sync/eclipseWorkspace.mzid/mzid/lib/deploy/jersey/jersey-client-1.12.jar</location>
+			<locationURI>PROJECT_LOC/lib/deploy/jersey/jersey-client-1.12.jar</locationURI>
 		</link>
 		<link>
 			<name>WebContent/WEB-INF/lib/jersey-core-1.12.jar</name>
 			<type>1</type>
-			<location>C:/Sync/My Dropbox/Sync/eclipseWorkspace.mzid/mzid/lib/deploy/jersey/jersey-core-1.12.jar</location>
+			<locationURI>PROJECT_LOC/lib/deploy/jersey/jersey-core-1.12.jar</locationURI>
 		</link>
 		<link>
 			<name>WebContent/WEB-INF/lib/jersey-json-1.12.jar</name>
 			<type>1</type>
-			<location>C:/Sync/My Dropbox/Sync/eclipseWorkspace.mzid/mzid/lib/deploy/jersey/jersey-json-1.12.jar</location>
+			<locationURI>PROJECT_LOC/lib/deploy/jersey/jersey-json-1.12.jar</locationURI>
 		</link>
 		<link>
 			<name>WebContent/WEB-INF/lib/jersey-server-1.12.jar</name>
 			<type>1</type>
-			<location>C:/Sync/My Dropbox/Sync/eclipseWorkspace.mzid/mzid/lib/deploy/jersey/jersey-server-1.12.jar</location>
+			<locationURI>PROJECT_LOC/lib/deploy/jersey/jersey-server-1.12.jar</locationURI>
 		</link>
 		<link>
 			<name>WebContent/WEB-INF/lib/jersey-servlet-1.12.jar</name>
 			<type>1</type>
-			<location>C:/Sync/My Dropbox/Sync/eclipseWorkspace.mzid/mzid/lib/deploy/jersey/jersey-servlet-1.12.jar</location>
+			<locationURI>PROJECT_LOC/lib/deploy/jersey/jersey-servlet-1.12.jar</locationURI>
 		</link>
 		<link>
 			<name>WebContent/WEB-INF/lib/jettison-1.1.jar</name>
 			<type>1</type>
-			<location>C:/Sync/My Dropbox/Sync/eclipseWorkspace.mzid/mzid/lib/deploy/jersey/jettison-1.1.jar</location>
+			<locationURI>PROJECT_LOC/lib/deploy/jersey/jettison-1.1.jar</locationURI>
 		</link>
 		<link>
 			<name>WebContent/WEB-INF/lib/jsr311-api-1.1.1.jar</name>
 			<type>1</type>
-			<location>C:/Sync/My Dropbox/Sync/eclipseWorkspace.mzid/mzid/lib/deploy/jersey/jsr311-api-1.1.1.jar</location>
+			<locationURI>PROJECT_LOC/lib/deploy/jersey/jsr311-api-1.1.1.jar</locationURI>
 		</link>
 		<link>
 			<name>WebContent/WEB-INF/lib/mysql-connector-java-5.1.20-bin.jar</name>
 			<type>1</type>
-			<location>C:/Sync/My Dropbox/Sync/eclipseWorkspace.mzid/mzid/lib/deploy/openjpa/mysql-connector-java-5.1.20-bin.jar</location>
+			<locationURI>PROJECT_LOC/lib/deploy/openjpa/mysql-connector-java-5.1.20-bin.jar</locationURI>
 		</link>
 		<link>
 			<name>WebContent/WEB-INF/lib/openjpa-all-2.2.0.jar</name>
 			<type>1</type>
-			<location>C:/Sync/My Dropbox/Sync/eclipseWorkspace.mzid/mzid/lib/deploy/openjpa/openjpa-all-2.2.0.jar</location>
+			<locationURI>PROJECT_LOC/lib/deploy/openjpa/openjpa-all-2.2.0.jar</locationURI>
 		</link>
 	</linkedResources>
 	<filteredResources>
