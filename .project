@@ -45,7 +45,7 @@
 	</natures>
 	<linkedResources>
 		<link>
-			<name>WebContent/WEB-INF/lib_deploy</name>
+			<name>WebContent/WEB-INF/lib</name>
 			<type>2</type>
 			<locationURI>PROJECT_LOC/lib/deploy</locationURI>
 		</link>
@@ -57,8 +57,8 @@
 	</linkedResources>
 	<filteredResources>
 		<filter>
-			<id>1338284199396</id>
-			<name>WebContent/WEB-INF/lib_deploy</name>
+			<id>0</id>
+			<name>WebContent/WEB-INF/lib</name>
 			<type>10</type>
 			<matcher>
 				<id>org.eclipse.ui.ide.multiFilter</id>
@@ -66,8 +66,8 @@
 			</matcher>
 		</filter>
 		<filter>
-			<id>1338284199396</id>
-			<name>WebContent/WEB-INF/lib_deploy</name>
+			<id>0</id>
+			<name>WebContent/WEB-INF/lib</name>
 			<type>5</type>
 			<matcher>
 				<id>org.eclipse.ui.ide.multiFilter</id>
