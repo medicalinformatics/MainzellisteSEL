@@ -55,4 +55,14 @@ public class CompoundField<T extends Field<?>> extends Field<List<T>> {
 	{
 		this.value.set(i,  value);	
 	}
+	
+	public CompoundField<T> clone()
+	{
+		List<Field<?>> copies = new Vector<Field<?>>(3);
+		for (T field : this.value)
+		{
+			copies.add(field.clone());
+		}
+		return new CompoundField<T>((List<T>) copies);
+	}
 }

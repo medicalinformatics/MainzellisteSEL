@@ -24,5 +24,15 @@ public class PSXFirstNameNormalizer implements FieldTransformer<PlainTextField, 
 		return output;
 	}
 	
+	public Class<PlainTextField> getInputClass()
+	{
+		return PlainTextField.class;
+	}
+	
+	public Class<CompoundField<PlainTextField>> getOutputClass()
+	{
+		return (Class<CompoundField<PlainTextField>>) new CompoundField<PlainTextField>(3).getClass();
+	}
+
 
 }

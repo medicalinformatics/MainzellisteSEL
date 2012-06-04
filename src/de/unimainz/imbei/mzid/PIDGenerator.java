@@ -664,6 +664,8 @@ public class PIDGenerator implements IDGenerator<PID>{
 
 	@Override
 	public PID getNext() {
+		mem.set("counter", Integer.toString(this.counter + 1));
+		mem.commit();
 		return new PID(getNextPIDString(), "pid");
 	}
 

@@ -30,4 +30,24 @@ public class FirstNameDecomposer implements FieldTransformer<PlainTextField, Com
 			output.setValueAt(i, new PlainTextField(""));
 		return output;
 	}
+	
+	public Class<PlainTextField> getInputClass()
+	{
+		return PlainTextField.class;
+	}
+	
+	public Class<CompoundField<PlainTextField>> getOutputClass()
+	{
+		return (Class<CompoundField<PlainTextField>>) new CompoundField<PlainTextField>(3).getClass();
+	}
+	
+	public static void main(String args[])
+	{
+		FirstNameDecomposer dec = new FirstNameDecomposer();
+		System.out.println(dec.getOutputClass());
+		
+		BloomFilterTransformer bf = new BloomFilterTransformer();
+		System.out.println(bf.getOutputClass());
+		
+	}
 }

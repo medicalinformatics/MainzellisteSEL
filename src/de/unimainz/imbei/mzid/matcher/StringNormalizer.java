@@ -92,4 +92,13 @@ public class StringNormalizer implements FieldTransformer<PlainTextField, PlainT
 		
 	}
 
+	public Class<PlainTextField> getInputClass()
+	{
+		return PlainTextField.class;
+	}
+
+	public Class<PlainTextField> getOutputClass()
+	{
+		return PlainTextField.class;
+	}
 }

@@ -3,9 +3,33 @@ package de.unimainz.imbei.mzid;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.ElementCollection;
+import javax.persistence.MapKeyColumn;
+import javax.persistence.Column;
+
+
+
+import de.unimainz.imbei.mzid.dto.Persistor;
+
+@Entity
 public class IDGeneratorMemory {
+	
+	@Id
+	protected int fieldJpaId;
+	
+	@ElementCollection
+    @MapKeyColumn(name="name")
+    @Column(name="value")
 	Map<String, String> mem = new HashMap<String, String>();
 	
+	protected String idString;
+	
+	public IDGeneratorMemory(String idString)
+	{
+		this.idString = idString;
+	}
 	synchronized void set(String key, String value){
 		mem.put(key, value);
 	}
@@ -15,6 +39,6 @@ public class IDGeneratorMemory {
 	}
 	
 	synchronized void commit(){
-		//TODO: Persistieren
+		Persistor.instance.updateIDGeneratorMemory(this);
 	}
 }

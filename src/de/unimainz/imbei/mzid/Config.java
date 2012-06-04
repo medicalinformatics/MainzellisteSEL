@@ -35,6 +35,7 @@ public enum Config {
 	private final Map<String,Class<? extends Field<?>>> FieldTypes;
 	
 	private Properties props;
+	private RecordTransformer recordTransformer;
 	private Matcher matcher;
 	
 	Config() throws InternalErrorException {
@@ -49,6 +50,8 @@ public enum Config {
 			System.err.println("Error reading configuration file!" + e.getMessage());
 		}
 		
+		this.recordTransformer = new RecordTransformer(props);
+		
 		try {
 			Class<?> matcherClass = Class.forName("de.unimainz.imbei.mzid.matcher." + props.getProperty("matcher"));
 			Constructor<?> matcherConstructor = matcherClass.getConstructor(props.getClass());
@@ -56,6 +59,7 @@ public enum Config {
 		} catch (Exception e){
 			// TODO gescheites Logging
 			System.err.println(e);
+			e.printStackTrace();
 			throw new InternalErrorException();
 		}
 		
@@ -79,6 +83,10 @@ public enum Config {
 		}
 	}
 	
+	public RecordTransformer getRecordTransformer() {
+		return recordTransformer;
+	}
+
 	public Properties getProperties() {
 		return props;
 	}

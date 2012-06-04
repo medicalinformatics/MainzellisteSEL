@@ -7,6 +7,7 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import javax.persistence.TypedQuery;
 
+import de.unimainz.imbei.mzid.IDGeneratorMemory;
 import de.unimainz.imbei.mzid.IDRequest;
 import de.unimainz.imbei.mzid.PID;
 import de.unimainz.imbei.mzid.Patient;
@@ -49,6 +50,28 @@ public enum Persistor {
 		em.persist(req); //TODO: Fehlerbehandlung, falls PID schon existiert.
 		em.getTransaction().commit();
 		em.close();
+	}
+	
+	public synchronized void updateIDGeneratorMemory(IDGeneratorMemory mem)
+	{
+		EntityManager em = emf.createEntityManager();
+		em.getTransaction().begin();
+		em.persist(mem);
+		em.getTransaction().commit();
+		em.close();
+	}
+	
+	public IDGeneratorMemory getIDGeneratorMemory(String idString)
+	{
+		EntityManager em = emf.createEntityManager();
+		TypedQuery<IDGeneratorMemory> q = em.createQuery("SELECT m FROM IDGeneratorMemory m WHERE m.idString = :idString", IDGeneratorMemory.class);
+		q.setParameter("idString", idString);
+		List<IDGeneratorMemory> result = q.getResultList();
+		em.close();
+		if (result.size() == 0)
+			return null;
+		else
+			return result.get(0);
 	}
 	
 	public synchronized void updatePatient(Patient p){

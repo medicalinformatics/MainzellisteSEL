@@ -3,6 +3,7 @@ package de.unimainz.imbei.mzid.matcher;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.lang.reflect.Constructor;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -13,6 +14,7 @@ import javax.swing.JOptionPane;
 import de.unimainz.imbei.mzid.Config;
 import de.unimainz.imbei.mzid.Config.FieldType;
 import de.unimainz.imbei.mzid.Patient;
+import de.unimainz.imbei.mzid.exceptions.InternalErrorException;
 import de.unimainz.imbei.mzid.matcher.MatchResult.MatchResultType;
 import de.unimainz.imbei.mzid.Config;
 
@@ -42,10 +44,10 @@ public class EpilinkMatcher implements Matcher {
 		return totalWeight;
 	}
 	
-	public EpilinkMatcher(Properties props)
+	public EpilinkMatcher(Properties props) throws InternalErrorException
 	{
 		// Get error rate (is needed for weight computation below)
-		this.error_rate = Double.parseDouble(props.getProperty("epilink.error_rate"));			
+		this.error_rate = Double.parseDouble(props.getProperty("matcher.epilink.error_rate"));			
 
 		// Initialize internal maps
 		this.comparators = new HashMap<String, FieldComparator>();
@@ -56,21 +58,26 @@ public class EpilinkMatcher implements Matcher {
 		Pattern p = Pattern.compile("^field\\.(\\w+)\\.type");
 		java.util.regex.Matcher m;
 
-		// Build map of comparators and map of frequencies from Properties
+		// Build maps of comparators, frequencies and attribute weights from Properties
 		for (Object key : props.keySet())
 		{
 			m = p.matcher((String) key);
 			if (m.find()){
 				String fieldName = m.group(1);
-				String fieldTypeStr = props.getProperty("field." + fieldName + ".type").trim();
-				
-				if (fieldTypeStr.equals("HashedField"))
-					comparators.put(fieldName, new DiceFieldComparator(fieldName, fieldName));
-				else
-					comparators.put(fieldName, new BinaryFieldComparator(fieldName, fieldName));					
-				// set frequency
+				String fieldCompStr = props.getProperty("field." + fieldName + ".comparator").trim();
 
-				double frequency = Double.parseDouble(props.getProperty("epilink." + fieldName + ".frequency"));
+				try {
+					Class<FieldComparator> fieldCompClass = (Class<FieldComparator>) Class.forName("de.unimainz.imbei.mzid.matcher." + fieldCompStr);
+					Constructor<FieldComparator> fieldCompConstr = fieldCompClass.getConstructor(String.class, String.class);
+					FieldComparator fieldComp = fieldCompConstr.newInstance(fieldName, fieldName);
+					comparators.put(fieldName, fieldComp);
+				} catch (Exception e) {
+					System.err.println(e.getMessage());
+					throw new InternalErrorException();
+				}
+
+				// set frequency
+				double frequency = Double.parseDouble(props.getProperty("matcher.epilink." + fieldName + ".frequency"));
 				frequencies.put(fieldName, frequency);
 				// calculate field weights
 				// log_2 ((1 - e_i) / f_i)
@@ -85,8 +92,8 @@ public class EpilinkMatcher implements Matcher {
 		assert(frequencies.keySet().equals(weights.keySet()));
 		
 		// load other config vars
-		this.threshold_match = Double.parseDouble(props.getProperty("epilink.threshold_match"));
-		this.threshold_non_match = Double.parseDouble(props.getProperty("epilink.threshold_non_match"));
+		this.threshold_match = Double.parseDouble(props.getProperty("matcher.epilink.threshold_match"));
+		this.threshold_non_match = Double.parseDouble(props.getProperty("matcher.epilink.threshold_non_match"));
 	}
 	
 	@Override

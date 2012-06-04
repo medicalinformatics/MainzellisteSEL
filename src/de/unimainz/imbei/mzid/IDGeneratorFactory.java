@@ -4,6 +4,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import de.unimainz.imbei.mzid.dto.Persistor;
+
 public enum IDGeneratorFactory {
 	instance;
 	
@@ -11,7 +13,10 @@ public enum IDGeneratorFactory {
 	
 	private IDGeneratorFactory() {
 		PIDGenerator pidgen = PIDGenerator.init(1, 2, 3, 0);
-		pidgen.init(new IDGeneratorMemory(), "pid");
+		IDGeneratorMemory mem = Persistor.instance.getIDGeneratorMemory("pid");
+		if (mem == null)
+			mem = new IDGeneratorMemory("pid");
+		pidgen.init(mem, "pid");
 		
 		HashMap<String, IDGenerator<? extends ID>> temp = new HashMap<String, IDGenerator<? extends ID>>();
 		temp.put(pidgen.getIdType(), pidgen);

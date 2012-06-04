@@ -63,14 +63,17 @@ public class PatientsResource {
 	public ID newPatient(
 			@QueryParam("tokenId") String tokenId,
 			MultivaluedMap<String, String> form){
+		
 		Token t = Servers.instance.getTokenByTid(tokenId);
-		if(t == null || !t.getType().equals("addPatient")){
-			throw new WebApplicationException(Response
-				.status(Status.UNAUTHORIZED)
-				.entity("Please supply a valid 'addPatient' token.")
-				.build());
+		if(!Config.instance.getProperty("debug").equals("true"))
+		{
+			if(t == null || !t.getType().equals("addPatient")){
+				throw new WebApplicationException(Response
+					.status(Status.UNAUTHORIZED)
+					.entity("Please supply a valid 'addPatient' token.")
+					.build());
+			}
 		}
-
 		Patient p = new Patient();
 		Map<String, Field<?>> chars = new HashMap<String, Field<?>>();
 		
@@ -84,20 +87,10 @@ public class PatientsResource {
 
 		p.setFields(chars);
 		
-		Patient pNormalized = p;
-		// TODO Normalisierung
-		//Patient pNormalized = new Patient();
-		Map<String, Field<?>> normalizedChars = new HashMap<String, Field<?>>();
-		for (String fieldName : chars.keySet())
-		{
-			/*FieldTransformer<?, ?> thisTransformer = Config.instance.getFieldTransformer(fieldName);
-			if (thisTransformer != null)
-				normalizedChars.put(fieldName, thisTransformer.transform(chars.get(fieldName)));
-			else
-				normalizedChars.put(fieldName, chars.get(fieldName)); */
-		}
+		// Normalisierung, Transformation
+		Patient pNormalized = Config.instance.getRecordTransformer().transform(p);
 		
-		MatchResult match = Config.instance.getMatcher().match(p, getAllPatients());
+		MatchResult match = Config.instance.getMatcher().match(pNormalized, getAllPatients());
 		
 		ID id;
 		Patient assignedPatient; // The "real" patient that is assigned (match result or new patient) 
@@ -127,7 +120,7 @@ public class PatientsResource {
 		
 		Persistor.instance.addIdRequest(request);
 		
-		if(!t.getId().equals("4223"))
+		if(t != null && !t.getId().equals("4223"))
 			Servers.instance.deleteToken(t.getId());
 		
 		return id;

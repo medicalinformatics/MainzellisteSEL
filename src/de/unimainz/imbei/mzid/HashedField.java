@@ -1,7 +1,9 @@
 package de.unimainz.imbei.mzid;
 
 import java.util.BitSet;
+import javax.persistence.Entity;
 
+//@Entity
 public class HashedField extends Field<BitSet>{
 	private BitSet value;
 	
@@ -36,5 +38,11 @@ public class HashedField extends Field<BitSet>{
 	@Override
 	public void setValue(BitSet hash) {
 		this.value = hash;
+	}
+	
+	public HashedField clone()
+	{		
+		HashedField result = new HashedField((BitSet) this.value.clone());
+		return result;
 	}
 }

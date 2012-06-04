@@ -30,7 +30,7 @@ public class DiceFieldComparator extends FieldComparator {
 		int nLeft = bLeft.cardinality();
 		int nRight = bRight.cardinality();
 		bLeft.and(bRight);
-		return (2 * bLeft.cardinality() / (nLeft + nRight));
+		return (2.0 * bLeft.cardinality() / (nLeft + nRight));
 	}
 }
 

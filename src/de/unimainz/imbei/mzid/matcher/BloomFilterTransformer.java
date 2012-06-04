@@ -3,11 +3,13 @@ package de.unimainz.imbei.mzid.matcher;
 import java.security.MessageDigest;
 import java.util.BitSet;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Vector;
 
 import org.apache.commons.codec.digest.DigestUtils;
 
 import de.unimainz.imbei.mzid.HashedField;
+import de.unimainz.imbei.mzid.Patient;
 import de.unimainz.imbei.mzid.PlainTextField;
 
 public class BloomFilterTransformer implements FieldTransformer<PlainTextField, HashedField> {
@@ -62,9 +64,10 @@ public class BloomFilterTransformer implements FieldTransformer<PlainTextField, 
 		// calculate combined Hash
 		for (int byteInd = 0; byteInd < nSignBytes; byteInd++)
 		{
-	    hash1 += Math.pow(256, byteInd) * md5[md5.length - 1 - byteInd];
-	    hash2 += Math.pow(256, byteInd) * sha[sha.length - 1 - byteInd];
-	  }
+			// byte is signed (-128 - 127), add 128 to get an unsigned value
+		    hash1 += Math.pow(256, byteInd) * (md5[md5.length - 1 - byteInd] + 128);
+		    hash2 += Math.pow(256, byteInd) * (sha[sha.length - 1 - byteInd] + 128);
+		}
 		
 		return (hash1 + index * hash2) % hashLength;
 	}
@@ -78,7 +81,8 @@ public class BloomFilterTransformer implements FieldTransformer<PlainTextField, 
 		{
 			for (int i = 0; i < nHashFunctions; i++)
 			{
-				bitSet.set(hash(nGram, i));
+				int hashRet = hash(nGram, i);
+				bitSet.set(hashRet);
 			}
 		}
 		
@@ -86,12 +90,45 @@ public class BloomFilterTransformer implements FieldTransformer<PlainTextField, 
 		return output;
 	}
 	
+	public Class<PlainTextField> getInputClass()
+	{
+		return PlainTextField.class;
+	}
+	
+	public Class<HashedField> getOutputClass()
+	{
+		return HashedField.class;
+	}
+
 	public static void main(String args[])
 	{
 		BloomFilterTransformer transformer = new BloomFilterTransformer();
-		PlainTextField testText = new PlainTextField("Andreas");
-		Collection<String> nGrams = transformer.getNGrams(testText.getValue());
+		PlainTextField testText1 = new PlainTextField("Andreas");
+		Collection<String> nGrams = transformer.getNGrams(testText1.getValue());
 		for (String str : nGrams)
 			System.out.println(str);
+		
+		PlainTextField testText2 = new PlainTextField("Andreas");
+				
+		HashedField f1 = transformer.transform(testText1);
+		HashedField f2 = transformer.transform(testText2);
+		
+		System.out.println(f1.toString());
+		System.out.println(f2.toString());
+		
+		Patient p1 = new Patient();
+		HashMap attr1 = new HashMap();
+		attr1.put("vorname", f1);
+		p1.setFields(attr1);
+		
+		Patient p2 = new Patient();
+		HashMap attr2 = new HashMap();
+		attr2.put("vorname", f2);
+		p2.setFields(attr2);
+
+		DiceFieldComparator comparator = new DiceFieldComparator("vorname", "vorname");
+		
+		System.out.println(comparator.compare(p1, p2));
+		
 	}
 }

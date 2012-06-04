@@ -19,5 +19,10 @@ public class PlainTextField extends Field<String> {
 	public void setValue(String value) {
 		this.value = value;
 	}
+	
+	public PlainTextField clone()
+	{
+		return new PlainTextField(new String(this.value));
+	}
 
 }
