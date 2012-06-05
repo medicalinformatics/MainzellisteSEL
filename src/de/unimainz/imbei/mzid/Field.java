@@ -1,9 +1,13 @@
 package de.unimainz.imbei.mzid;
 
+import java.io.Serializable;
 import java.lang.reflect.Constructor;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
+
 import org.codehaus.jackson.annotate.JsonIgnore;
 
 import de.unimainz.imbei.mzid.exceptions.NotImplementedException;
@@ -16,12 +20,14 @@ import de.unimainz.imbei.mzid.exceptions.NotImplementedException;
  *
  */
 @Entity
+@Inheritance(strategy = InheritanceType.JOINED)
 public abstract class Field<T> {
 	@Id
 	@GeneratedValue
 	@JsonIgnore
 	protected int fieldJpaId;
 	 
+	
 	public abstract T getValue();
 	public abstract void setValue(T value);
 	@Override
