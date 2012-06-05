@@ -1,18 +1,12 @@
 package de.unimainz.imbei.mzid;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Constructor;
-import java.net.URL;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
-import java.util.UUID;
 import java.util.regex.Pattern;
 
 import de.unimainz.imbei.mzid.exceptions.InternalErrorException;

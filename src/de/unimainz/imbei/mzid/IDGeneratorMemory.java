@@ -3,19 +3,11 @@ package de.unimainz.imbei.mzid;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.ElementCollection;
-import javax.persistence.MapKey;
 import javax.persistence.MapKeyClass;
-import javax.persistence.MapKeyColumn;
-import javax.persistence.Column;
-import javax.persistence.OneToMany;
-
-
-
 import de.unimainz.imbei.mzid.dto.Persistor;
 
 @Entity

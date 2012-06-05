@@ -56,6 +56,7 @@ public class CompoundField<T extends Field<?>> extends Field<List<T>> {
 		this.value.set(i,  value);	
 	}
 	
+	@Override
 	public CompoundField<T> clone()
 	{
 		List<Field<?>> copies = new Vector<Field<?>>(3);

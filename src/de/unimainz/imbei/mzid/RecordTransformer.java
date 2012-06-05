@@ -8,8 +8,6 @@ import java.util.regex.Pattern;
 import de.unimainz.imbei.mzid.exceptions.InternalErrorException;
 import de.unimainz.imbei.mzid.matcher.*;
 
-import de.unimainz.imbei.mzid.matcher.FieldComparator;
-
 /**
  * Stores the field transformers for a set of fields, implemented as a HashMap.
  * Keys are the field names, values the corresponding FieldTransformer objects.

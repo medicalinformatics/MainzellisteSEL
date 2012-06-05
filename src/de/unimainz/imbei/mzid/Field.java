@@ -1,19 +1,11 @@
 package de.unimainz.imbei.mzid;
 
 import java.lang.reflect.Constructor;
-import java.util.BitSet;
-
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
-import javax.persistence.MappedSuperclass;
-
 import org.codehaus.jackson.annotate.JsonIgnore;
 
-import de.unimainz.imbei.mzid.Config.FieldType;
 import de.unimainz.imbei.mzid.exceptions.NotImplementedException;
 
 /**
@@ -32,6 +24,7 @@ public abstract class Field<T> {
 	 
 	public abstract T getValue();
 	public abstract void setValue(T value);
+	@Override
 	public abstract Field<T> clone();
 	
 	/** Empty constructor. Used by subclasses. */ 

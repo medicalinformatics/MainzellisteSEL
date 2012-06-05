@@ -56,7 +56,7 @@ public enum Persistor {
 	{
 		EntityManager em = emf.createEntityManager();
 		em.getTransaction().begin();
-		em.persist(mem);
+		em.merge(mem);
 		em.getTransaction().commit();
 		em.close();
 	}
@@ -73,6 +73,15 @@ public enum Persistor {
 		else
 			return result.get(0);
 	}
+	
+//	public List<IDGeneratorMemory> getIDGeneratorMemories()
+//	{
+//		EntityManager em = emf.createEntityManager();
+//		TypedQuery<IDGeneratorMemory> q = em.createQuery("SELECT m FROM IDGeneratorMemory m WHERE m.idString = :idString", IDGeneratorMemory.class);
+//		q.setParameter("idString", idString);
+//		List<IDGeneratorMemory> result = q.getResultList();
+//		em.close();
+//	}
 	
 	public synchronized void updatePatient(Patient p){
 		throw new NotImplementedException();

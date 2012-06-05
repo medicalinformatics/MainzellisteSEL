@@ -20,6 +20,7 @@ public class PlainTextField extends Field<String> {
 		this.value = value;
 	}
 	
+	@Override
 	public PlainTextField clone()
 	{
 		return new PlainTextField(new String(this.value));
