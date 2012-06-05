@@ -3,11 +3,16 @@ package de.unimainz.imbei.mzid;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.ElementCollection;
+import javax.persistence.MapKey;
+import javax.persistence.MapKeyClass;
 import javax.persistence.MapKeyColumn;
 import javax.persistence.Column;
+import javax.persistence.OneToMany;
 
 
 
@@ -19,10 +24,9 @@ public class IDGeneratorMemory {
 	@Id
 	protected int fieldJpaId;
 	
-	@ElementCollection
-    @MapKeyColumn(name="name")
-    @Column(name="value")
-	Map<String, String> mem = new HashMap<String, String>();
+	@ElementCollection(targetClass = String.class, fetch=FetchType.EAGER)
+	@MapKeyClass(String.class)
+	protected Map<String, String> mem = new HashMap<String, String>();
 	
 	protected String idString;
 	
