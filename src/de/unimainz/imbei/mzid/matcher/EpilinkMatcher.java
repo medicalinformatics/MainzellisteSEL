@@ -38,7 +38,8 @@ public class EpilinkMatcher implements Matcher {
 		{
 			double fieldWeight = weights.get(fieldName); 
 			weightSum += fieldWeight;
-			totalWeight += comparators.get(fieldName).compare(left, right) * fieldWeight;
+			double thisCompWeight = comparators.get(fieldName).compare(left, right) * fieldWeight; 
+			totalWeight += thisCompWeight;
 		}
 		totalWeight /= weightSum;
 		return totalWeight;
