@@ -54,7 +54,7 @@ public class NGramComparator extends FieldComparator {
 		nGramsLeft.retainAll(nGramsRight);
 		int nCommon = nGramsLeft.size();
 		
-		return 2 * nCommon / (nLeft + nRight);
+		return 2.0 * nCommon / (nLeft + nRight);
 	}
 
 }
