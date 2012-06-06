@@ -8,7 +8,7 @@ import de.unimainz.imbei.mzid.PlainTextField;
  * @param input
  * @return
  */
-public class HannoverPhoneticTransformer implements FieldTransformer<PlainTextField, PlainTextField> {
+public class HannoverPhoneticTransformer extends FieldTransformer<PlainTextField, PlainTextField> {
 
 	public PlainTextField transform(PlainTextField input)
 	{

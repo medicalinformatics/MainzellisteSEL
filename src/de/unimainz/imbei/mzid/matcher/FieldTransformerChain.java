@@ -6,6 +6,8 @@ import java.util.Vector;
 import org.eclipse.jdt.internal.compiler.ast.TypeParameter;
 
 import de.unimainz.imbei.mzid.Field;
+import de.unimainz.imbei.mzid.CompoundField;
+
 import de.unimainz.imbei.mzid.exceptions.IncompatibleFieldTypesException;
 
 /** Implements a chain of several FieldTransformers applied one after another */
@@ -56,7 +58,13 @@ public class FieldTransformerChain {
 		Field<?> result = input.clone();
 		for (FieldTransformer<Field<?>, Field<?>> transformer : this.transformers)
 		{
-			result = transformer.transform(result);
+			if (result instanceof CompoundField)
+			{
+				CompoundField cf = transformer.transform((CompoundField) result);
+				result = cf;
+			} else {
+				result = transformer.transform(result);
+			}
 		}
 		
 		return result;

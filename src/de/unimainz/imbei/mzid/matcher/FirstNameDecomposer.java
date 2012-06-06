@@ -9,7 +9,7 @@ import de.unimainz.imbei.mzid.PlainTextField;
  * @author borg
  *
  */
-public class FirstNameDecomposer implements FieldTransformer<PlainTextField, CompoundField<PlainTextField>> {
+public class FirstNameDecomposer extends FieldTransformer<PlainTextField, CompoundField<PlainTextField>> {
 
 	/** Delimiters to recognize when decomposing Names as regular expression.
 	 * 

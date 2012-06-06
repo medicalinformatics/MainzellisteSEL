@@ -8,7 +8,7 @@ import java.util.Set;
 import de.unimainz.imbei.mzid.PlainTextField;
 
 
-public class StringNormalizer implements FieldTransformer<PlainTextField, PlainTextField> {
+public class StringNormalizer extends FieldTransformer<PlainTextField, PlainTextField> {
 
 	/** Delimiters to remove from start and end.
 	 * 
@@ -61,10 +61,14 @@ public class StringNormalizer implements FieldTransformer<PlainTextField, PlainT
 	 */
 	public PlainTextField transform(PlainTextField input)
 	{
+		if (input == null) return null;
+		if (input.getValue() == null) return new PlainTextField(null);
+		if (input.getValue().length() == 0) return new PlainTextField("");
+		
 		// TODO: ungültige Zeichen filtern
 		String inputStr = input.toString();
 		StringBuffer resultString;
-
+		
 		// Copy into new String, omitting leading and trainling delimiters
 		int start, end;
 		for (start = 0; delimiters.contains(inputStr.charAt(start)); start++);

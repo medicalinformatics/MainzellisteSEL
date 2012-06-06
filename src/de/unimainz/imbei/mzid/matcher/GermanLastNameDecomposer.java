@@ -14,7 +14,7 @@ import de.unimainz.imbei.mzid.PlainTextField;
  * @author borg
  *
  */
-public class GermanLastNameDecomposer implements FieldTransformer<PlainTextField, CompoundField<PlainTextField>>{
+public class GermanLastNameDecomposer extends FieldTransformer<PlainTextField, CompoundField<PlainTextField>>{
 	
 	private int nCcomponents = 3;
 

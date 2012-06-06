@@ -6,7 +6,7 @@ import de.unimainz.imbei.mzid.PlainTextField;
 /**
  * Generates phonetic code following the "Cologne phonetics" algorithm.
  */
-public class ColognePhoneticTransformer implements FieldTransformer<PlainTextField, PlainTextField>{
+public class ColognePhoneticTransformer extends FieldTransformer<PlainTextField, PlainTextField>{
 
 	// TODO
 	// replacement rules, patterns encoded as regular expressions

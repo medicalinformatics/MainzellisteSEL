@@ -13,7 +13,7 @@ import de.unimainz.imbei.mzid.PlainTextField;
  * @author borg
  *
  */
-public class PSXFirstNameNormalizer implements FieldTransformer<PlainTextField, CompoundField<PlainTextField>> {
+public class PSXFirstNameNormalizer extends FieldTransformer<PlainTextField, CompoundField<PlainTextField>> {
 
 	private StringNormalizer stringNormalizer = new StringNormalizer();
 	private FirstNameDecomposer firstNameDecomposer = new FirstNameDecomposer();

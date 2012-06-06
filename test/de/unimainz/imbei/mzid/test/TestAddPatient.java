@@ -85,21 +85,30 @@ public class TestAddPatient {
 		MultivaluedMap<String, String> form = new MultivaluedMapImpl();
 		ID newId;
 		
-		form.put("vorname", Arrays.asList("Anreas"));
-		form.put("nachname", Arrays.asList("Testpatient"));
-		form.put("geburtstag", Arrays.asList("2"));
-		form.put("geburtsmonat", Arrays.asList("3"));
-		form.put("geburtsjahr", Arrays.asList("1991"));
-		newId = p.newPatient("token", form);
-		System.out.println(newId.getIdString());
-		
-//		form.put("vorname", Arrays.asList("Max"));
-//		form.put("nachname", Arrays.asList("Mustermann"));
-//		form.put("geburtstag", Arrays.asList("1"));
-//		form.put("geburtsmonat", Arrays.asList("2"));
-//		form.put("geburtsjahr", Arrays.asList("1990"));
-//
+//		form.put("vorname", Arrays.asList("Andreas"));
+//		form.put("nachname", Arrays.asList("Testpatient"));
+//		form.put("geburtstag", Arrays.asList("2"));
+//		form.put("geburtsmonat", Arrays.asList("3"));
+//		form.put("geburtsjahr", Arrays.asList("1991"));
 //		newId = p.newPatient("token", form);
 //		System.out.println(newId.getIdString());
-	}
+		
+		form.put("vorname", Arrays.asList("Max"));
+		form.put("nachname", Arrays.asList("Graf Mustermann von und zu Meier"));
+		form.put("geburtstag", Arrays.asList("1"));
+		form.put("geburtsmonat", Arrays.asList("2"));
+		form.put("geburtsjahr", Arrays.asList("1990"));
+
+		newId = p.newPatient("token", form);
+		System.out.println(newId.getIdString());
+
+		form.put("vorname", Arrays.asList("Max"));
+		form.put("nachname", Arrays.asList("Mustermann"));
+		form.put("geburtstag", Arrays.asList("1"));
+		form.put("geburtsmonat", Arrays.asList("2"));
+		form.put("geburtsjahr", Arrays.asList("1990"));
+
+		newId = p.newPatient("token", form);
+		System.out.println(newId.getIdString());
+}
 }

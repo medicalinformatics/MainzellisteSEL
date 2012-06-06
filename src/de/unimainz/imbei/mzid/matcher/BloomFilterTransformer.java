@@ -1,6 +1,5 @@
 package de.unimainz.imbei.mzid.matcher;
 
-import java.security.MessageDigest;
 import java.util.BitSet;
 import java.util.Collection;
 import java.util.HashMap;
@@ -8,11 +7,12 @@ import java.util.Vector;
 
 import org.apache.commons.codec.digest.DigestUtils;
 
+import de.unimainz.imbei.mzid.CompoundField;
 import de.unimainz.imbei.mzid.HashedField;
 import de.unimainz.imbei.mzid.Patient;
 import de.unimainz.imbei.mzid.PlainTextField;
 
-public class BloomFilterTransformer implements FieldTransformer<PlainTextField, HashedField> {
+public class BloomFilterTransformer extends FieldTransformer<PlainTextField, HashedField> {
 
 	private int hashLength = 500;
 	private int nGramLength = 2;
