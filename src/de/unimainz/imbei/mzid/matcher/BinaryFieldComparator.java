@@ -6,7 +6,7 @@ import de.unimainz.imbei.mzid.Field;
 import de.unimainz.imbei.mzid.Patient;
 
 
-public class BinaryFieldComparator extends FieldComparator {
+public class BinaryFieldComparator extends FieldComparator<Field<?>> {
 
 	public BinaryFieldComparator (String fieldLeft, String fieldRight)
 	{
@@ -18,11 +18,15 @@ public class BinaryFieldComparator extends FieldComparator {
 		// TODO: Fall, dass geforderte Charakteristiken nicht vorhanden sind  
 		Map<String, Field<?>> cLeft = patientLeft.getFields();
 		Map<String, Field<?>> cRight = patientRight.getFields();
-		
-		if (cLeft.get(this.fieldLeft).equals(cRight.get(this.fieldLeft)))
+		return compare(cLeft.get(this.fieldLeft), cRight.get(this.fieldRight));
+	}
+
+	public double compare(Field<?> fieldLeft, Field<?> fieldRight)
+	{
+		if (fieldLeft.equals(fieldRight))
 			return 1.0;
 		else
 			return 0.0;		
+		
 	}
-
 }

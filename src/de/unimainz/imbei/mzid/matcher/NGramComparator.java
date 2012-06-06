@@ -9,7 +9,7 @@ import de.unimainz.imbei.mzid.Field;
 import de.unimainz.imbei.mzid.PlainTextField;
 import de.unimainz.imbei.mzid.Patient;
 
-public class NGramComparator extends FieldComparator {
+public class NGramComparator extends FieldComparator<PlainTextField> {
 
 	private int nGramLength = 2;
 
@@ -40,14 +40,12 @@ public class NGramComparator extends FieldComparator {
 	}
 
 	@Override
-	public double compare(Patient patientLeft, Patient patientRight) {
-		Field<?> cLeft = patientLeft.getFields().get(fieldLeft);
-		Field<?> cRight = patientRight.getFields().get(fieldRight);
-		assert (cLeft instanceof PlainTextField);
-		assert (cRight instanceof PlainTextField);
+	public double compare(PlainTextField fieldLeft, PlainTextField fieldRight) {
+		assert (fieldLeft instanceof PlainTextField);
+		assert (fieldRight instanceof PlainTextField);
 		
-		Set<String> nGramsLeft = getNGrams((String) cLeft.getValue());
-		Set<String> nGramsRight = getNGrams((String) cRight.getValue());
+		Set<String> nGramsLeft = getNGrams((String) fieldLeft.getValue());
+		Set<String> nGramsRight = getNGrams((String) fieldRight.getValue());
 		
 		int nLeft = nGramsLeft.size();
 		int nRight = nGramsRight.size();

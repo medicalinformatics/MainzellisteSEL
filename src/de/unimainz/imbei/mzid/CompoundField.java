@@ -3,16 +3,24 @@ package de.unimainz.imbei.mzid;
 import java.util.List;
 import java.util.Vector;
 
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.OneToMany;
+
 /**
  * Klasse für zusammengesetzte Attribute, z.B. Namen aus mehreren Komponenten.
  * @author borg
  *
  * @param <T> Die Art des Felds
  */
-// TODO oder lieber extends Field<T[]> ?
+@Entity
 public class CompoundField<T extends Field<?>> extends Field<List<T>> {
 	
 	private int size;
+	
+	@OneToMany(cascade={CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH}, 
+				fetch=FetchType.EAGER, targetEntity = Field.class)
 	private List<T> value;
 	
 	public int getSize() {

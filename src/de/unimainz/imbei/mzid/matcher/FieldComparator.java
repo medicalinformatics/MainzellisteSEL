@@ -1,5 +1,10 @@
 package de.unimainz.imbei.mzid.matcher;
 
+import java.util.List;
+import java.util.Map;
+
+import de.unimainz.imbei.mzid.CompoundField;
+import de.unimainz.imbei.mzid.Field;
 import de.unimainz.imbei.mzid.Patient;
 
 
@@ -13,10 +18,11 @@ import de.unimainz.imbei.mzid.Patient;
  * @author borg
  *
  */
-public abstract class FieldComparator {
+public abstract class FieldComparator<F extends Field<?>> {
 
 	protected String fieldLeft;
 	protected String fieldRight;
+	protected double missingWeight = 0.0;
 	
 	/** Default constructor. Usually the parametrized constructor
 	 * should be used, but the default constructor makes sense
@@ -59,7 +65,15 @@ public abstract class FieldComparator {
 	 * @return The comparison result as a real number in the interval [0,1],
 	 * where 1 denotes equality and 0 maximal disagreement.
 	 */
-	public abstract double compare (Patient patientLeft, Patient patientRight);
+	public double compare (Patient patientLeft, Patient patientRight)
+	{
+		Field<?> cLeft = patientLeft.getFields().get(this.fieldLeft);
+		Field<?> cRight = patientRight.getFields().get(this.fieldRight);
+		if(cLeft instanceof CompoundField && cRight instanceof CompoundField)
+			return compare((CompoundField<F>) cLeft, (CompoundField<F>) cRight);
+		else
+			return compare((F) cLeft, (F) cRight);
+	}
 
 	public String getFieldLeft() {
 		return fieldLeft;
@@ -75,5 +89,58 @@ public abstract class FieldComparator {
 
 	public void setFieldRight(String fieldRight) {
 		this.fieldRight = fieldRight;
+	}
+	
+	public abstract double compare(F fieldLeft, F fieldRight);
+
+	/**
+	 * Default method for comparison of CompoundField. An implementatino of the 
+	 * algorithm for array comparisons used by Automatch and its successor
+	 * QualityStage. See: Ascential QualityStage. Mathing Concepts and Reference Guide.
+	 * Version 7.5, 5/19-5/20.
+ 	 *
+	 * @param fieldLeft
+	 * @param fieldRight
+	 * @return
+	 */
+	public double compare(CompoundField<F> fieldLeft, CompoundField<F> fieldRight)
+	{
+		
+		// let fieldsA be the longer array
+		List<F> fieldsA;
+		List<F> fieldsB;
+		
+		if (fieldLeft.getSize() >= fieldRight.getSize())
+		{
+			fieldsA = fieldLeft.clone().getValue();
+			fieldsB = fieldRight.clone().getValue();
+		} else {
+			fieldsB = fieldLeft.clone().getValue();
+			fieldsA = fieldRight.clone().getValue();
+			
+		}
+		double highestWeight;
+		double numerator = 0.0;
+		double denominator = Math.min(fieldsA.size(), fieldsB.size());
+		F fieldWithMaxWeight = null;
+		for (F oneFieldA : fieldsA)
+		{
+			highestWeight = this.missingWeight;
+			for (F oneFieldB : fieldsB)
+			{
+				double thisWeight = this.compare(oneFieldA, oneFieldB);
+				if (thisWeight > highestWeight)
+				{
+					highestWeight = thisWeight;
+					fieldWithMaxWeight = oneFieldB;					
+				}
+			}
+			if (highestWeight > this.missingWeight)
+			{
+				numerator += highestWeight;
+				fieldsB.remove(fieldWithMaxWeight);
+			}
+		}		
+		return numerator / denominator;
 	}
 }

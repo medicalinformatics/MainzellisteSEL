@@ -6,7 +6,7 @@ import de.unimainz.imbei.mzid.Field;
 import de.unimainz.imbei.mzid.HashedField;
 import de.unimainz.imbei.mzid.Patient;
 
-public class DiceFieldComparator extends FieldComparator {
+public class DiceFieldComparator extends FieldComparator<HashedField> {
 
 	public DiceFieldComparator (String fieldLeft, String fieldRight)
 	{
@@ -14,16 +14,14 @@ public class DiceFieldComparator extends FieldComparator {
 	}
 	
 	@Override
-	public double compare(Patient patientLeft, Patient patientRight)
+	public double compare(HashedField fieldLeft, HashedField fieldRight)
 	{
 
-		Field<?> cLeft = patientLeft.getFields().get(fieldLeft);
-		Field<?> cRight = patientRight.getFields().get(fieldRight);
-		assert (cLeft instanceof HashedField);
-		assert (cRight instanceof HashedField);
+		assert (fieldLeft instanceof HashedField);
+		assert (fieldRight instanceof HashedField);
 		
-		HashedField hLeft = (HashedField) cLeft;
-		HashedField hRight = (HashedField) cRight;
+		HashedField hLeft = (HashedField) fieldLeft;
+		HashedField hRight = (HashedField) fieldRight;
 		BitSet bLeft = hLeft.getValue();
 		BitSet bRight = hRight.getValue();
 		

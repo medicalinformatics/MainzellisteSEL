@@ -4,6 +4,7 @@
 		<class>de.unimainz.imbei.mzid.Field</class>
  		<class>de.unimainz.imbei.mzid.HashedField</class>
 		<class>de.unimainz.imbei.mzid.PlainTextField</class>
+		<class>de.unimainz.imbei.mzid.CompoundField</class>
 		<class>de.unimainz.imbei.mzid.Patient</class>
 		<class>de.unimainz.imbei.mzid.ID</class>
 		<class>de.unimainz.imbei.mzid.PID</class>
