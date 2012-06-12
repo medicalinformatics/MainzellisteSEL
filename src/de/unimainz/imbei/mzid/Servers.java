@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 import java.util.UUID;
 
@@ -30,20 +31,32 @@ public enum Servers {
 	private final Map<String, Token> tokensByTid = new HashMap<String, Token>();
 	
 	private Servers() {
-		//TODO: Server aus Properties lesen
-		
-		//foreach(server: getProps()) {
-			Server s = new Server();
-			s.apiKey = "mdat1234";
-			s.permissions = new HashSet<String>(Arrays.asList("addNewPatient", "showSessionIds", "createSession"));
-			s.allowedRemoteAdresses = new HashSet<String>(Arrays.asList("127.0.0.1", "0:0:0:0:0:0:0:1"));
-			servers.put(s.apiKey, s);
-		//}
+		// read Server configuration from mzid.conf
+		Properties props = Config.instance.getProperties();
+		for (int i = 0; ; i++)
+		{
+			if (!props.containsKey("servers." + i + "apiKey") ||
+				!props.containsKey("servers." + i + "permissions") ||
+				!props.containsKey("servers." + i + "allowedRemoteAdresses"))
+				break;
 			
-		//TODO: if debug
-		Token t = new Token("4223");
-		t.setType("addPatient");
-		tokensByTid.put(t.getId(), t);
+			Server s = new Server();
+			s.apiKey = props.getProperty("servers." + i + "apiKey");
+			
+			String permissions[] = props.getProperty("servers." + i + "properties").split("[;,]");
+			s.permissions = new HashSet<String>(Arrays.asList(permissions));
+			
+			String allowedRemoteAdresses[] = props.getProperty("servers." + i + "allowedRemoteAdresses").split("[;,]");
+			s.allowedRemoteAdresses = new HashSet<String>(Arrays.asList(allowedRemoteAdresses));
+			servers.put(s.apiKey, s);
+		}
+			
+		if (Config.instance.getProperty("debug") == "true")
+		{
+			Token t = new Token("4223");
+			t.setType("addPatient");
+			tokensByTid.put(t.getId(), t);
+		}
 	}
 	
 	public Session newSession(){
