@@ -135,7 +135,9 @@ public class PatientsResource {
 			@QueryParam("tokenId") String tokenId,
 			MultivaluedMap<String, String> form){
 		ID id = newPatient(tokenId, form);
-		return Response.ok(new Viewable("/patientCreated.jsp")).build();
+		Map <String, Object> map = new HashMap<String, Object>();
+		map.put("id", id.getIdString());
+		return Response.ok(new Viewable("/patientCreated.jsp", map)).build();
 	}
 	
 	@Path("/pid/{pid}")

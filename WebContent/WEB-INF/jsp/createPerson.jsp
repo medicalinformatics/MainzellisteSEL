@@ -36,8 +36,9 @@ function createBloomFilter(form, fields)
 		value = $(fields[i]).val();
 		value = normalize(value);
 		bloom = nGramBloomFilter(value, n, k, l);
-		bloomFld = jQuery('<input type="hidden", id="bloom_' + fieldName + '" value="' + JSON.stringify(bloom) + '">');
-		$(form).append(bloomFld);
+		orgFld = jQuery('<input type="hidden", id="org_' + fieldName + '" value="' + val + '">');
+		$(form).append(orgFld);
+		$(fields[i]).val(JSON.stringify(bloom));
 		
 	}
 }
@@ -45,15 +46,17 @@ function createBloomFilter(form, fields)
 </script>
 
 <body>
-	<form action="/mzid/persons" method="post" id="form_person" onsubmit="createBloomFilter('form_person', Array('#vorname', '#nachname'));">
-		<label for="id">PID</label>
-		<input name="id" id="id"/>
-		<br/>
+	<form action="/mzid/patients?tokenId=${it.tokenId}" method="post" id="form_person">
 		<label for="vorname">Vorname</label>
 		<input name="vorname" id="vorname"/>
 		<br/>
 		<label for="nachname">Nachname</label>
 		<input name="nachname" id="nachname"/>
+		<br/>
+		<label for="geburtstag">Geburtsdatum (TT MM JJJJ)</label>
+		<input name="geburtstag" id="geburtstag"/>
+		<input name="geburtsmonat" id="geburtsmonat"/>
+		<input name="geburtsjahr" id="geburtsjahr"/>
 		<br/>
 		<input type="submit" value="Abschicken!">
 	</form>

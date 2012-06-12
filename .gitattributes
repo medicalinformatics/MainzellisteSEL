@@ -13,6 +13,7 @@
 /Beschreibung[!!-~]REST-Schnittstelle -text
 WebContent/META-INF/MANIFEST.MF -text svneol=unset#text/plain
 WebContent/WEB-INF/jsp/createPerson.jsp -text svneol=unset#text/plain
+WebContent/WEB-INF/jsp/patientCreated.jsp -text svneol=unset#text/plain
 WebContent/WEB-INF/web.xml -text svneol=unset#text/plain
 builder_project/enhance.xml -text svneol=unset#text/plain
 config/mzid.conf -text
