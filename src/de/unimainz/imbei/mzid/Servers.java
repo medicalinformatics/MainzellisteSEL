@@ -35,18 +35,18 @@ public enum Servers {
 		Properties props = Config.instance.getProperties();
 		for (int i = 0; ; i++)
 		{
-			if (!props.containsKey("servers." + i + "apiKey") ||
-				!props.containsKey("servers." + i + "permissions") ||
-				!props.containsKey("servers." + i + "allowedRemoteAdresses"))
+			if (!props.containsKey("servers." + i + ".apiKey") ||
+				!props.containsKey("servers." + i + ".permissions") ||
+				!props.containsKey("servers." + i + ".allowedRemoteAdresses"))
 				break;
 			
 			Server s = new Server();
-			s.apiKey = props.getProperty("servers." + i + "apiKey");
+			s.apiKey = props.getProperty("servers." + i + ".apiKey");
 			
-			String permissions[] = props.getProperty("servers." + i + "properties").split("[;,]");
+			String permissions[] = props.getProperty("servers." + i + ".permissions").split("[;,]");
 			s.permissions = new HashSet<String>(Arrays.asList(permissions));
 			
-			String allowedRemoteAdresses[] = props.getProperty("servers." + i + "allowedRemoteAdresses").split("[;,]");
+			String allowedRemoteAdresses[] = props.getProperty("servers." + i + ".allowedRemoteAdresses").split("[;,]");
 			s.allowedRemoteAdresses = new HashSet<String>(Arrays.asList(allowedRemoteAdresses));
 			servers.put(s.apiKey, s);
 		}
@@ -189,4 +189,9 @@ public enum Servers {
 			return tokensByTid.get(tokenId);
 		}
 	}
+	public static void main(String args[])
+	{
+		Servers s = Servers.instance;
+	}
+	
 }
