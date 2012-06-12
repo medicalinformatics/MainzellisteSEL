@@ -46,7 +46,7 @@ function createBloomFilter(form, fields)
 </script>
 
 <body>
-	<form action="/mzid/patients?tokenId=${it.tokenId}" method="post" id="form_person">
+	<form action="/mzid/patients?tokenId=${it.tokenId}&callback=${it.callback}" method="post" id="form_person">
 		<label for="vorname">Vorname</label>
 		<input name="vorname" id="vorname"/>
 		<br/>

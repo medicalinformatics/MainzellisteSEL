@@ -1,5 +1,6 @@
 package de.unimainz.imbei.mzid.webservice;
 
+import java.net.URL;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -21,6 +22,10 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
+
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
 
 import com.sun.jersey.api.view.Viewable;
 
@@ -64,6 +69,7 @@ public class PatientsResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	public ID newPatient(
 			@QueryParam("tokenId") String tokenId,
+			@QueryParam("callback") String callback,
 			MultivaluedMap<String, String> form){
 		
 		Token t = Servers.instance.getTokenByTid(tokenId);
@@ -125,6 +131,24 @@ public class PatientsResource {
 		if(t != null && !t.getId().equals("4223"))
 			Servers.instance.deleteToken(t.getId());
 		
+		// Callback aufrufen
+		// TODO auslagern in Funktion. Wohin?
+		// TODO Fehlerbehebung
+		if (callback != null && callback.length() > 0)
+		{
+			try {
+				HttpClient httpClient = new DefaultHttpClient();
+				HttpGet getRequest = new HttpGet(callback + "?tokenId=" + tokenId + "&pid=" + id.getIdString());
+				httpClient.execute(getRequest);
+			} catch (Exception e) {
+				System.err.println("Request to callback " + callback + "failed:");
+				e.printStackTrace();
+				throw new WebApplicationException(Response
+						.status(Status.INTERNAL_SERVER_ERROR)
+						.entity("Request to callback failed!")
+						.build());
+			}
+		}
 		return id;
 	}
 	
@@ -133,10 +157,11 @@ public class PatientsResource {
 	@Produces(MediaType.TEXT_HTML)
 	public Response newPatientBrowser(
 			@QueryParam("tokenId") String tokenId,
+			@QueryParam("callback") String callback,
 			MultivaluedMap<String, String> form){
-		ID id = newPatient(tokenId, form);
+		ID id = newPatient(tokenId, callback, form);
 		Map <String, Object> map = new HashMap<String, Object>();
-		map.put("id", id.getIdString());
+		if (id != null) map.put("id", id.getIdString());
 		return Response.ok(new Viewable("/patientCreated.jsp", map)).build();
 	}
 	

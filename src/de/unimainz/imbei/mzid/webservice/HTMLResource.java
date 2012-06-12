@@ -18,9 +18,11 @@ public class HTMLResource {
 	@Path("createPerson")
 	@Produces(MediaType.TEXT_HTML)
 	public Response createPatient(
-			@QueryParam("tokenId") String tokenId){
+			@QueryParam("tokenId") String tokenId,
+			@QueryParam("callback") String callback){
 		HashMap<String, Object> map = new HashMap<String, Object>();
 		map.put("tokenId", tokenId);
+		map.put("callback", callback);
 		return Response.ok(new Viewable("/createPerson.jsp", map)).build();
 	}
 }
