@@ -22,6 +22,8 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import com.sun.jersey.api.view.Viewable;
+
 import de.unimainz.imbei.mzid.Config;
 import de.unimainz.imbei.mzid.Field;
 import de.unimainz.imbei.mzid.ID;
@@ -124,6 +126,16 @@ public class PatientsResource {
 			Servers.instance.deleteToken(t.getId());
 		
 		return id;
+	}
+	
+	@POST
+	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+	@Produces(MediaType.TEXT_HTML)
+	public Response newPatientBrowser(
+			@QueryParam("tokenId") String tokenId,
+			MultivaluedMap<String, String> form){
+		ID id = newPatient(tokenId, form);
+		return Response.ok(new Viewable("/patientCreated.jsp")).build();
 	}
 	
 	@Path("/pid/{pid}")
