@@ -4,14 +4,21 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Vector;
 import java.util.regex.Pattern;
 
 import javax.swing.JOptionPane;
 
 import de.unimainz.imbei.mzid.Config;
+import de.unimainz.imbei.mzid.Field;
 import de.unimainz.imbei.mzid.Config.FieldType;
 import de.unimainz.imbei.mzid.Patient;
 import de.unimainz.imbei.mzid.exceptions.InternalErrorException;
@@ -29,12 +36,69 @@ public class EpilinkMatcher implements Matcher {
 	/** Field weights */
 	private Map<String, Double> weights;
 	
-	private double calculateWeight(Patient left, Patient right)
+	private List<List<String>> exchangeGroups;
+	
+	private static LinkedList<LinkedList<String>> permutations(List<String> elements)
+	{
+		LinkedList<LinkedList<String>> result = new LinkedList<LinkedList<String>>();
+		LinkedList<String> workingCopy;
+		if (elements.size() <= 1)
+		{
+			workingCopy = new LinkedList<String>(elements);
+			result.add(new LinkedList<String>(workingCopy));
+		} else {
+			for (String elem : elements)
+			{
+				workingCopy = new LinkedList<String>(elements);
+				workingCopy.remove(elem);
+				LinkedList<LinkedList<String>> restPerm = permutations(workingCopy);
+				for (LinkedList<String> thisList : restPerm)
+				{
+					thisList.addFirst(elem);
+					result.add(thisList);
+				}
+			}
+		}
+		return result;		
+	}
+	
+	public double calculateWeight(Patient left, Patient right)
 	{
 
 		double weightSum = 0; // holds sum of field weights 
 		double totalWeight = 0; // holds total weight
-		for (String fieldName : weights.keySet())
+		HashSet<String> fieldSet = new HashSet<String>(weights.keySet());
+		
+		// process exchange groups
+		for (List<String> exchangeGroup : this.exchangeGroups)
+		{
+			// remove exchange group from the map of fields which are yet to be processed
+			// add field weights to weight sum
+			for (String fieldName : exchangeGroup)
+			{
+				fieldSet.remove(fieldName);
+				weightSum += weights.get(fieldName);;
+			}
+			LinkedList<LinkedList<String>> permutations = permutations(exchangeGroup);
+			
+			double bestPermWeight = 0.0; 
+			for (LinkedList<String> permutation : permutations)
+			{
+				double thisPermWeight = 0.0;
+				Iterator<String> fieldIterator = exchangeGroup.iterator();
+				for (String fieldNamePerm : permutation)
+				{
+					String fieldName = fieldIterator.next();
+					thisPermWeight += comparators.get(fieldName).compare(left.getFields().get(fieldName),
+							right.getFields().get(fieldNamePerm)) * weights.get(fieldName);
+				}
+				if (thisPermWeight > bestPermWeight)
+					bestPermWeight = thisPermWeight;
+			}
+			totalWeight += bestPermWeight;
+		}
+		
+		for (String fieldName : fieldSet)
 		{
 			double fieldWeight = weights.get(fieldName); 
 			weightSum += fieldWeight;
@@ -95,7 +159,17 @@ public class EpilinkMatcher implements Matcher {
 		// load other config vars
 		this.threshold_match = Double.parseDouble(props.getProperty("matcher.epilink.threshold_match"));
 		this.threshold_non_match = Double.parseDouble(props.getProperty("matcher.epilink.threshold_non_match"));
+	
+		// initialize exchange groups
+		//TODO Mechanismus generalisieren für andere Matcher
+		this.exchangeGroups = new Vector<List<String>>();
+		for (int i = 0; props.containsKey("exchangeGroup." + i); i++)
+		{
+			String exchangeFields[] = props.getProperty("exchangeGroup." + i).split("[;,]");
+			this.exchangeGroups.add(new Vector<String>(Arrays.asList(exchangeFields)));
+		}
 	}
+	
 	
 	@Override
 	public MatchResult match(Patient a, Iterable<Patient> patientList) {
@@ -123,8 +197,11 @@ public class EpilinkMatcher implements Matcher {
 			return new MatchResult(MatchResultType.NON_MATCH, null);
 		}				
 	}
-	
-	public static void main(String arg[])
-	{
+
+	public static void main(String args[]){
+		LinkedList<String> elements = new LinkedList<String>(Arrays.asList("a", "b", "c"));
+		LinkedList<LinkedList<String>> permutations = permutations(elements);
+		for (LinkedList<String> thisList : permutations)
+			System.out.println(thisList.toString());
 	}
 }

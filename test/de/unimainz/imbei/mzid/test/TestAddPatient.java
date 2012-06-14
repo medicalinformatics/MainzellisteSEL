@@ -85,30 +85,54 @@ public class TestAddPatient {
 		MultivaluedMap<String, String> form = new MultivaluedMapImpl();
 		ID newId;
 		
-//		form.put("vorname", Arrays.asList("Andreas"));
-//		form.put("nachname", Arrays.asList("Testpatient"));
-//		form.put("geburtstag", Arrays.asList("2"));
-//		form.put("geburtsmonat", Arrays.asList("3"));
-//		form.put("geburtsjahr", Arrays.asList("1991"));
-//		newId = p.newPatient("token", form);
-//		System.out.println(newId.getIdString());
+		form.put("vorname", Arrays.asList("Andreas"));
+		form.put("nachname", Arrays.asList("Testpatient"));
+		form.put("geburtstag", Arrays.asList("2"));
+		form.put("geburtsmonat", Arrays.asList("3"));
+		form.put("geburtsjahr", Arrays.asList("1991"));
+		newId = p.newPatient("token", "", form);
+		System.out.println(newId.getIdString());
 		
-		form.put("vorname", Arrays.asList("Max"));
-		form.put("nachname", Arrays.asList("Graf Mustermann von und zu Meier"));
-		form.put("geburtstag", Arrays.asList("1"));
-		form.put("geburtsmonat", Arrays.asList("2"));
-		form.put("geburtsjahr", Arrays.asList("1990"));
 
-		newId = p.newPatient("token", form);
+		form.put("vorname", Arrays.asList("Andreas"));
+		form.put("nachname", Arrays.asList("Testpatient"));
+		form.put("geburtstag", Arrays.asList("3"));
+		form.put("geburtsmonat", Arrays.asList("2"));
+		form.put("geburtsjahr", Arrays.asList("1991"));
+		newId = p.newPatient("token", "", form);
 		System.out.println(newId.getIdString());
 
-		form.put("vorname", Arrays.asList("Max"));
-		form.put("nachname", Arrays.asList("Mustermann"));
-		form.put("geburtstag", Arrays.asList("1"));
-		form.put("geburtsmonat", Arrays.asList("2"));
-		form.put("geburtsjahr", Arrays.asList("1990"));
-
-		newId = p.newPatient("token", form);
+		form.put("vorname", Arrays.asList("Testpatient"));
+		form.put("nachname", Arrays.asList("Andreas"));
+		form.put("geburtstag", Arrays.asList("2"));
+		form.put("geburtsmonat", Arrays.asList("3"));
+		form.put("geburtsjahr", Arrays.asList("1991"));
+		newId = p.newPatient("token", "", form);
 		System.out.println(newId.getIdString());
+		
+		form.put("vorname", Arrays.asList("Testpatient"));
+		form.put("nachname", Arrays.asList("Andreas"));
+		form.put("geburtstag", Arrays.asList("3"));
+		form.put("geburtsmonat", Arrays.asList("2"));
+		form.put("geburtsjahr", Arrays.asList("1991"));
+		newId = p.newPatient("token", "", form);
+		System.out.println(newId.getIdString());
+
+//		form.put("vorname", Arrays.asList("Hans Christian"));
+//		form.put("nachname", Arrays.asList("Andersen"));
+//		form.put("geburtstag", Arrays.asList("2"));
+//		form.put("geburtsmonat", Arrays.asList("4"));
+//		form.put("geburtsjahr", Arrays.asList("1805"));
+//
+//		newId = p.newPatient("token", "", form);
+//		System.out.println(newId.getIdString());
+//		form.put("vorname", Arrays.asList("Christian Max"));
+//		form.put("nachname", Arrays.asList("Andersen"));
+//		form.put("geburtstag", Arrays.asList("2"));
+//		form.put("geburtsmonat", Arrays.asList("4"));
+//		form.put("geburtsjahr", Arrays.asList("1805"));
+//
+//		newId = p.newPatient("token", "", form);
+//		System.out.println(newId.getIdString());
 }
 }

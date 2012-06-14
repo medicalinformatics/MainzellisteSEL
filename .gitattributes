@@ -133,9 +133,13 @@ src/de/unimainz/imbei/mzid/webservice/RootResource.java -text svneol=unset#text/
 src/de/unimainz/imbei/mzid/webservice/SessionIdParam.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/webservice/SessionsResource.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/webservice/Token.java -text svneol=unset#text/plain
+test/cohortReduced.txt -text svneol=unset#text/plain
+test/de/unimainz/imbei/mzid/test/EvaluateMatcher.java -text svneol=unset#text/plain
 test/de/unimainz/imbei/mzid/test/TestAddPatient.java -text svneol=unset#text/plain
 test/de/unimainz/imbei/mzid/test/TestFieldTransformation.java -text svneol=unset#text/plain
 test/de/unimainz/imbei/mzid/test/TestPIDGenerator.java -text svneol=unset#text/plain
 test/de/unimainz/imbei/mzid/test/TestPSXFirstNameNormalizer.java -text svneol=unset#text/plain
 test/de/unimainz/imbei/mzid/test/TestPSXLastNameNormalizer.java -text svneol=unset#text/plain
+test/evaluateMatching.r -text
 test/pidlist.txt -text svneol=unset#text/plain
+test/registryReduced.txt -text svneol=unset#text/plain

@@ -5,9 +5,12 @@ import java.util.BitSet;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 
+import de.unimainz.imbei.mzid.matcher.BloomFilterTransformer;
+
 @Entity
 public class HashedField extends Field<BitSet>{
-	@Column(columnDefinition = "text")
+//	@Column(columnDefinition = "text")
+	@Column(length = BloomFilterTransformer.hashLength)
 	private String value;
 	
 	private static BitSet String2BitSet(String b)
@@ -31,7 +34,7 @@ public class HashedField extends Field<BitSet>{
 	private static String BitSet2String(BitSet hash)
 	{
 		StringBuffer result = new StringBuffer(hash.size());
-		for (int i = 0; i < hash.size(); i++)
+		for (int i = 0; i < hash.length(); i++)
 		{
 			if (hash.get(i))
 				result.append("1");

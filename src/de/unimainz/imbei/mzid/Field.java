@@ -41,6 +41,7 @@ public abstract class Field<T> {
 		setValue(s);
 	}
 	
+	
 	@Override
 	public String toString() {
 		return getValue().toString();
@@ -58,11 +59,17 @@ public abstract class Field<T> {
 			return false;
 	}
 
+	public boolean isEmpty()
+	{
+		return this.getValue() == null;
+	}
+	
 	public static Field<?> build(Class<? extends Field<?>> t, Object o){
 		try {
 			Constructor<? extends Field<?>> c = t.getConstructor(o.getClass());
 			return c.newInstance(o);
 		} catch (Exception e) {
+				e.printStackTrace();
 				throw new NotImplementedException();
 		}
 	}

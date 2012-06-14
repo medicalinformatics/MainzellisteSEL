@@ -21,6 +21,12 @@ public class PlainTextField extends Field<String> {
 	}
 	
 	@Override
+	public boolean isEmpty()
+	{
+		return (this.value == null || this.value.length() == 0);
+	}
+	
+	@Override
 	public PlainTextField clone()
 	{
 		return new PlainTextField(new String(this.value));

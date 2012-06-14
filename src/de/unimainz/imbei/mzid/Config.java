@@ -12,6 +12,15 @@ import java.util.regex.Pattern;
 import de.unimainz.imbei.mzid.exceptions.InternalErrorException;
 import de.unimainz.imbei.mzid.matcher.*;
 
+/**
+ * Configuration of the patient list. Implemented as a singleton object, which can be referenced
+ * by Config.instance. The configuration is read from the properties file mzid.conf (TODO: location)
+ * (see {@link java.util.Properties#load(InputStream) java.util.Properties}). 
+ * 
+ * 
+ * @author borg
+ *
+ */
 public enum Config {
 	instance;
 	

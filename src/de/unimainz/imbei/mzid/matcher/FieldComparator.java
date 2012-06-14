@@ -1,5 +1,6 @@
 package de.unimainz.imbei.mzid.matcher;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -106,11 +107,16 @@ public abstract class FieldComparator<F extends Field<?>> {
 	public double compare(CompoundField<F> fieldLeft, CompoundField<F> fieldRight)
 	{
 		
-		// let fieldsA be the longer array
+		int nLeft = fieldLeft.getSize();
+		int nRight = fieldRight.getSize();
+		int nNonEmptyLeft = fieldLeft.getSize() - fieldLeft.nEmptyFields();
+		int nNonEmptyRight = fieldLeft.getSize() - fieldRight.nEmptyFields();
+
+		// let fieldsA be the array with less non-missing fields
 		List<F> fieldsA;
 		List<F> fieldsB;
 		
-		if (fieldLeft.getSize() >= fieldRight.getSize())
+		if (nNonEmptyLeft <= nNonEmptyRight)
 		{
 			fieldsA = fieldLeft.clone().getValue();
 			fieldsB = fieldRight.clone().getValue();
@@ -121,13 +127,22 @@ public abstract class FieldComparator<F extends Field<?>> {
 		}
 		double highestWeight;
 		double numerator = 0.0;
-		double denominator = Math.min(fieldsA.size(), fieldsB.size());
+		double denominator = Math.min(nNonEmptyLeft, nNonEmptyRight);
 		F fieldWithMaxWeight = null;
 		for (F oneFieldA : fieldsA)
 		{
+			if (oneFieldA.isEmpty()) continue;
 			highestWeight = this.missingWeight;
-			for (F oneFieldB : fieldsB)
+			Iterator<F> fieldBIt = fieldsB.iterator();
+			while (fieldBIt.hasNext())
 			{
+				F oneFieldB = fieldBIt.next();
+				// do not consider empty fields
+				if (oneFieldB.isEmpty()) 
+				{
+					fieldBIt.remove();
+					continue;
+				}
 				double thisWeight = this.compare(oneFieldA, oneFieldB);
 				if (thisWeight > highestWeight)
 				{

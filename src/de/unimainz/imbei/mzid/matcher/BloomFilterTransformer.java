@@ -14,7 +14,7 @@ import de.unimainz.imbei.mzid.PlainTextField;
 
 public class BloomFilterTransformer extends FieldTransformer<PlainTextField, HashedField> {
 
-	private int hashLength = 500;
+	public final static int hashLength = 500;
 	private int nGramLength = 2;
 	private int nHashFunctions = 15;
 	
