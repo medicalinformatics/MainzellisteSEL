@@ -86,6 +86,7 @@ src/de/unimainz/imbei/mzid/IDGeneratorFactory.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/IDGeneratorMemory.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/IDRequest.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/Initializer.java -text svneol=unset#text/plain
+src/de/unimainz/imbei/mzid/IntegerField.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/PID.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/PIDGenerator.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/Patient.java -text svneol=unset#text/plain
