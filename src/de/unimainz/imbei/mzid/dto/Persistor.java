@@ -7,9 +7,9 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import javax.persistence.TypedQuery;
 
+import de.unimainz.imbei.mzid.ID;
 import de.unimainz.imbei.mzid.IDGeneratorMemory;
 import de.unimainz.imbei.mzid.IDRequest;
-import de.unimainz.imbei.mzid.PID;
 import de.unimainz.imbei.mzid.Patient;
 import de.unimainz.imbei.mzid.exceptions.NotImplementedException;
 
@@ -28,7 +28,7 @@ public enum Persistor {
 		getPatients();
 	}
 	
-	public Patient getPatient(PID pid){
+	public Patient getPatient(ID pid){
 		EntityManager em = emf.createEntityManager();
 		TypedQuery<Patient> q = em.createQuery("SELECT p FROM Patient p JOIN p.ids id WHERE id.idString = :idString", Patient.class);
 		q.setParameter("idString", pid.getIdString());
@@ -61,6 +61,14 @@ public enum Persistor {
 		em.close();
 	}
 	
+	public synchronized void markAsDuplicate(ID idOfDuplicate, ID idOfOriginal)
+	{
+		Patient pDuplicate = getPatient(idOfDuplicate);
+		Patient pOriginal = getPatient(idOfOriginal);
+		pDuplicate.setOriginal(pOriginal);
+		updatePatient(pDuplicate);
+	}
+	
 	public IDGeneratorMemory getIDGeneratorMemory(String idString)
 	{
 		EntityManager em = emf.createEntityManager();
@@ -84,6 +92,10 @@ public enum Persistor {
 //	}
 	
 	public synchronized void updatePatient(Patient p){
-		throw new NotImplementedException();
+		EntityManager em = emf.createEntityManager();
+		em.getTransaction().begin();
+		em.merge(p);
+		em.getTransaction().commit();
+		em.close();
 	}
 }

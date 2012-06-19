@@ -43,6 +43,7 @@ import de.unimainz.imbei.mzid.exceptions.UnauthorizedException;
 import de.unimainz.imbei.mzid.matcher.FieldTransformer;
 import de.unimainz.imbei.mzid.matcher.MatchResult;
 import de.unimainz.imbei.mzid.matcher.Matcher;
+import de.unimainz.imbei.mzid.matcher.MatchResult.MatchResultType;
 
 /**
  * Resource-based access to patients.
@@ -106,19 +107,23 @@ public class PatientsResource {
 		switch (match.getResultType())
 		{
 		case MATCH :
-			id = match.getBestMatchedPatient().getId("pid");
+			id = match.getBestMatchedPatient().getOriginal().getId("pid");
 			assignedPatient = match.getBestMatchedPatient();
 			break;
 			
 		case NON_MATCH :
+		case POSSIBLE_MATCH :
 			id = IDGeneratorFactory.instance.getFactory("pid").getNext(); //TODO: generalisieren			
 			Set<ID> ids = new HashSet<ID>();
 			ids.add(id);
 			pNormalized.setIds(ids);
+			if (match.getResultType() == MatchResultType.POSSIBLE_MATCH)
+			{
+				pNormalized.setTentative(true);
+			}
 			assignedPatient = pNormalized;
 			break;
-			
-		case POSSIBLE_MATCH : 
+		
 		default :
 			// TODO
 			return null;

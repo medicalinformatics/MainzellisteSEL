@@ -10,6 +10,7 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import javax.persistence.ManyToOne;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
@@ -30,6 +31,48 @@ public class Patient {
 	
 	@OneToMany(cascade={CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH}, fetch=FetchType.EAGER)
 	private Map<String, Field<?>> fields;
+	
+	private boolean isTentative = false;
+
+	public boolean isTentative() {
+		return isTentative;
+	}
+
+	public void setTentative(boolean isTentative) {
+		this.isTentative = isTentative;
+	}
+
+	/**
+	 * Gets the original patient if this patient is a duplicate.
+	 * 
+	 * @return <ul>
+	 * 	<li>this if this.original == null</li>
+	 * 	<li>original.getOriginal() otherwise</li>
+	 * </ul>
+	 */
+	public Patient getOriginal() {
+		if (this.original == null) return this;
+		else return this.original.getOriginal();
+	}
+
+	public void setOriginal(Patient original) {
+		this.original = original;
+	}
+	
+	public boolean isDuplicate()
+	{
+		return (this.original != null);
+	}
+
+	/**
+	 * If p.original is not null, p is considered a duplicate of p.original. PID requests
+	 * that find p as the best matching patient should return the PID of p.getOriginal().
+	 * 
+	 */
+	@ManyToOne(cascade={CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH}, fetch=FetchType.EAGER)
+	private Patient original = null;
+	
+	
 	
 	public Patient() {}
 	
