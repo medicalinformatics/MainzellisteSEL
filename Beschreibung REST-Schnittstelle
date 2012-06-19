@@ -26,6 +26,9 @@ Liefert Liste registrierter PIDs.
 POST
 Caller: MDAT-Server, Nutzer
 Params: Merkmale des Patienten. PID, falls enthalten, wird ignoriert.
+		URL-Parameter: 
+			callback (optional): Callback-Adresse
+			tokenId: Token
 Return: 201, Erzeugte PID
 Legt einen neuen Patienten an.
 
@@ -101,6 +104,17 @@ Legt eine neue Sitzung an.
 		        { type: tempId, data: { pid: H172MYA } }
 		Return: Token-ID {tid}
 		Legt ein neues Token an.
+
+/html
+
+	/createPatient
+	GET
+	Caller: Nutzer
+	Params:
+		tokenId: Id eines gültigen Tokens vom Typ "addPatient"
+		callback (optional): Adresse, die nach dem Anlegen des Patienten aufgerufen werden soll
+			(siehe POST /patients)  
+	Gibt HTML-Formular zur Eingabe eines Patienten aus.
 
 /functions // nachrüstbare Operationen, die auf den Daten der PL durchgeführt werden, ohne sie herauszugeben.
 	/sendmail

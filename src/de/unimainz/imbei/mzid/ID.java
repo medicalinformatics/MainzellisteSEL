@@ -32,6 +32,17 @@ public abstract class ID {
 	@Basic
 	protected String type;
 	
+	@Basic
+	protected boolean tentative;
+	
+	public boolean isTentative() {
+		return tentative;
+	}
+
+	public void setTentative(boolean tentative) {
+		this.tentative = tentative;
+	}
+
 	/**
 	 * Creates an ID from a given IDString.
 	 * 
@@ -41,6 +52,7 @@ public abstract class ID {
 	 */
 	public ID(String idString, String type) throws InvalidIDException {
 		setType(type);
+		setTentative(false);
 		if(!getFactory().verify(idString)){
 			throw new InvalidIDException();
 		}

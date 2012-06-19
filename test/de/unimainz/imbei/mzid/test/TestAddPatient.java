@@ -1,3 +1,7 @@
+/*
+ * Datenbank leeren vor Testlauf!
+ */
+
 package de.unimainz.imbei.mzid.test;
 import static org.junit.Assert.*;
 
@@ -23,6 +27,7 @@ import org.codehaus.jackson.map.ObjectMapper;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
 
 import de.unimainz.imbei.mzid.ID;
+import de.unimainz.imbei.mzid.dto.Persistor;
 import de.unimainz.imbei.mzid.webservice.PatientsResource;
 
 public class TestAddPatient {
@@ -85,38 +90,38 @@ public class TestAddPatient {
 		MultivaluedMap<String, String> form = new MultivaluedMapImpl();
 		ID newId;
 		
-		form.put("vorname", Arrays.asList("Andreas"));
-		form.put("nachname", Arrays.asList("Testpatient"));
-		form.put("geburtstag", Arrays.asList("2"));
-		form.put("geburtsmonat", Arrays.asList("3"));
-		form.put("geburtsjahr", Arrays.asList("1991"));
-		newId = p.newPatient("token", "", form);
-		System.out.println(newId.getIdString());
-		
-
-		form.put("vorname", Arrays.asList("Andreas"));
-		form.put("nachname", Arrays.asList("Testpatient"));
-		form.put("geburtstag", Arrays.asList("3"));
-		form.put("geburtsmonat", Arrays.asList("2"));
-		form.put("geburtsjahr", Arrays.asList("1991"));
-		newId = p.newPatient("token", "", form);
-		System.out.println(newId.getIdString());
-
-		form.put("vorname", Arrays.asList("Testpatient"));
-		form.put("nachname", Arrays.asList("Andreas"));
-		form.put("geburtstag", Arrays.asList("2"));
-		form.put("geburtsmonat", Arrays.asList("3"));
-		form.put("geburtsjahr", Arrays.asList("1991"));
-		newId = p.newPatient("token", "", form);
-		System.out.println(newId.getIdString());
-		
-		form.put("vorname", Arrays.asList("Testpatient"));
-		form.put("nachname", Arrays.asList("Andreas"));
-		form.put("geburtstag", Arrays.asList("3"));
-		form.put("geburtsmonat", Arrays.asList("2"));
-		form.put("geburtsjahr", Arrays.asList("1991"));
-		newId = p.newPatient("token", "", form);
-		System.out.println(newId.getIdString());
+//		form.put("vorname", Arrays.asList("Andreas"));
+//		form.put("nachname", Arrays.asList("Testpatient"));
+//		form.put("geburtstag", Arrays.asList("2"));
+//		form.put("geburtsmonat", Arrays.asList("3"));
+//		form.put("geburtsjahr", Arrays.asList("1991"));
+//		newId = p.newPatient("token", "", form);
+//		System.out.println(newId.getIdString());
+//		
+//
+//		form.put("vorname", Arrays.asList("Andreas"));
+//		form.put("nachname", Arrays.asList("Testpatient"));
+//		form.put("geburtstag", Arrays.asList("3"));
+//		form.put("geburtsmonat", Arrays.asList("2"));
+//		form.put("geburtsjahr", Arrays.asList("1991"));
+//		newId = p.newPatient("token", "", form);
+//		System.out.println(newId.getIdString());
+//
+//		form.put("vorname", Arrays.asList("Testpatient"));
+//		form.put("nachname", Arrays.asList("Andreas"));
+//		form.put("geburtstag", Arrays.asList("2"));
+//		form.put("geburtsmonat", Arrays.asList("3"));
+//		form.put("geburtsjahr", Arrays.asList("1991"));
+//		newId = p.newPatient("token", "", form);
+//		System.out.println(newId.getIdString());
+//		
+//		form.put("vorname", Arrays.asList("Testpatient"));
+//		form.put("nachname", Arrays.asList("Andreas"));
+//		form.put("geburtstag", Arrays.asList("3"));
+//		form.put("geburtsmonat", Arrays.asList("2"));
+//		form.put("geburtsjahr", Arrays.asList("1991"));
+//		newId = p.newPatient("token", "", form);
+//		System.out.println(newId.getIdString());
 
 //		form.put("vorname", Arrays.asList("Hans Christian"));
 //		form.put("nachname", Arrays.asList("Andersen"));
@@ -134,5 +139,41 @@ public class TestAddPatient {
 //
 //		newId = p.newPatient("token", "", form);
 //		System.out.println(newId.getIdString());
-}
+
+		form.put("vorname", Arrays.asList("Andreas"));
+		form.put("nachname", Arrays.asList("Testpatient"));
+		form.put("geburtstag", Arrays.asList("3"));
+		form.put("geburtsmonat", Arrays.asList("2"));
+		form.put("geburtsjahr", Arrays.asList("1991"));
+		ID id1 = p.newPatient("token", "", form);
+		System.out.println(id1.getIdString());
+		System.out.println(id1.isTentative());
+
+		form.put("vorname", Arrays.asList("Andreas"));
+		form.put("nachname", Arrays.asList("Testpatient"));
+		form.put("geburtstag", Arrays.asList("4"));
+		form.put("geburtsmonat", Arrays.asList("2"));
+		form.put("geburtsjahr", Arrays.asList("1991"));
+		ID id2  = p.newPatient("token", "", form);
+		System.out.println(id2.getIdString());
+		System.out.println(id2.isTentative());
+		
+		assertTrue("Erwartete unsichere ID", id2.isTentative());
+		assertTrue("Unsichere Abfrage lieferte bestehende ID!", !id1.getIdString().equals(id2.getIdString()));
+		
+		Persistor.instance.markAsDuplicate(id2, id1);
+		
+		form.put("vorname", Arrays.asList("Andreas"));
+		form.put("nachname", Arrays.asList("Testpatient"));
+		form.put("geburtstag", Arrays.asList("4"));
+		form.put("geburtsmonat", Arrays.asList("2"));
+		form.put("geburtsjahr", Arrays.asList("1991"));
+		ID id3  = p.newPatient("token", "", form);
+		System.out.println(id3.getIdString());
+		System.out.println(id3.isTentative());
+		
+		assertTrue("Erwartete sichere ID", !id3.isTentative());
+		assertEquals("Erneute Abfrage mit Duplikat lieferte nicht das Original", id3.getIdString(), id1.getIdString());
+	
+	}
 }

@@ -3,6 +3,7 @@ package de.unimainz.imbei.mzid.webservice;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -23,9 +24,17 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import org.apache.http.HttpRequest;
+import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicHttpRequest;
+import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.protocol.HTTP;
+import org.codehaus.jackson.map.ObjectMapper;
 
 import com.sun.jersey.api.view.Viewable;
 
@@ -120,6 +129,7 @@ public class PatientsResource {
 			if (match.getResultType() == MatchResultType.POSSIBLE_MATCH)
 			{
 				pNormalized.setTentative(true);
+				id.setTentative(true);
 			}
 			assignedPatient = pNormalized;
 			break;
@@ -143,8 +153,13 @@ public class PatientsResource {
 		{
 			try {
 				HttpClient httpClient = new DefaultHttpClient();
-				HttpGet getRequest = new HttpGet(callback + "?tokenId=" + tokenId + "&pid=" + id.getIdString());
-				httpClient.execute(getRequest);
+				HttpPost callbackReq = new HttpPost(callback);
+				List<NameValuePair> params = new LinkedList<NameValuePair>();
+				params.add(new BasicNameValuePair("tokenID", tokenId.toString()));
+				ObjectMapper mapper = new ObjectMapper();
+				params.add(new BasicNameValuePair("id", mapper.writeValueAsString(id)));
+				callbackReq.setEntity(new UrlEncodedFormEntity(params, HTTP.UTF_8));				
+				httpClient.execute(callbackReq);
 			} catch (Exception e) {
 				System.err.println("Request to callback " + callback + "failed:");
 				e.printStackTrace();
@@ -166,7 +181,11 @@ public class PatientsResource {
 			MultivaluedMap<String, String> form){
 		ID id = newPatient(tokenId, callback, form);
 		Map <String, Object> map = new HashMap<String, Object>();
-		if (id != null) map.put("id", id.getIdString());
+		if (id != null) { 
+			map.put("id", id.getIdString());
+			map.put("tentative", id.isTentative());
+		}
+		
 		return Response.ok(new Viewable("/patientCreated.jsp", map)).build();
 	}
 	

@@ -11,11 +11,13 @@ import javax.ws.rs.core.Response;
 
 import com.sun.jersey.api.view.Viewable;
 
+import de.unimainz.imbei.mzid.Config;
+
 @Path("/html")
 public class HTMLResource {
 
 	@GET
-	@Path("createPerson")
+	@Path("createPatient")
 	@Produces(MediaType.TEXT_HTML)
 	public Response createPatient(
 			@QueryParam("tokenId") String tokenId,
@@ -23,6 +25,7 @@ public class HTMLResource {
 		HashMap<String, Object> map = new HashMap<String, Object>();
 		map.put("tokenId", tokenId);
 		map.put("callback", callback);
-		return Response.ok(new Viewable("/createPerson.jsp", map)).build();
+		map.put("adminPhone", Config.instance.getProperty("adminPhone"));
+		return Response.ok(new Viewable("/createPatient.jsp", map)).build();
 	}
 }
