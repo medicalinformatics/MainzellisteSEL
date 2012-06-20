@@ -9,6 +9,8 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.regex.Pattern;
 
+import org.apache.log4j.Logger;
+
 import de.unimainz.imbei.mzid.exceptions.InternalErrorException;
 import de.unimainz.imbei.mzid.matcher.*;
 
@@ -41,16 +43,19 @@ public enum Config {
 	private RecordTransformer recordTransformer;
 	private Matcher matcher;
 	
+	private Logger logger = Logger.getLogger(Config.class);
+	
 	Config() throws InternalErrorException {
 		props = new Properties();
 		try {			
 			InputStream configInputStream = getClass().getResourceAsStream(configPath);
 			props.load(configInputStream);
 			configInputStream.close();
-			System.out.println("Config read successfully: " + props);
+			logger.info("Config read successfully: " + props);
 			
 		} catch (IOException e)	{
-			System.err.println("Error reading configuration file!" + e.getMessage());
+			logger.fatal("Error reading configuration file: ", e);
+			throw new InternalErrorException();
 		}
 		
 		this.recordTransformer = new RecordTransformer(props);
@@ -59,10 +64,10 @@ public enum Config {
 			Class<?> matcherClass = Class.forName("de.unimainz.imbei.mzid.matcher." + props.getProperty("matcher"));
 			Constructor<?> matcherConstructor = matcherClass.getConstructor(props.getClass());
 			matcher = (Matcher) matcherConstructor.newInstance(props);
+			logger.info("Matcher of class " + matcher.getClass() + " initialized.");
 		} catch (Exception e){
 			// TODO gescheites Logging
-			System.err.println(e);
-			e.printStackTrace();
+			logger.fatal("Initialization of matcher failed: ", e);
 			throw new InternalErrorException();
 		}
 		

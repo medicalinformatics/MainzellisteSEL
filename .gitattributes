@@ -16,6 +16,7 @@ WebContent/WEB-INF/jsp/createPatient.jsp -text svneol=unset#text/plain
 WebContent/WEB-INF/jsp/patientCreated.jsp -text svneol=unset#text/plain
 WebContent/WEB-INF/web.xml -text svneol=unset#text/plain
 builder_project/enhance.xml -text svneol=unset#text/plain
+config/log4j.properties -text svneol=unset#text/plain
 config/mzid.conf -text
 lib/deploy/jersey/asm-3.1.jar -text
 lib/deploy/jersey/jackson-core-asl-1.9.2.jar -text
@@ -29,6 +30,7 @@ lib/deploy/jersey/jersey-server-1.12.jar -text
 lib/deploy/jersey/jersey-servlet-1.12.jar -text
 lib/deploy/jersey/jettison-1.1.jar -text
 lib/deploy/jersey/jsr311-api-1.1.1.jar -text
+lib/deploy/log4j-1.2.17.jar -text
 lib/deploy/openjpa/commons-codec-1.6.jar -text
 lib/deploy/openjpa/derby.jar -text
 lib/deploy/openjpa/mysql-connector-java-5.1.20-bin.jar -text
