@@ -3,6 +3,8 @@ package de.unimainz.imbei.mzid;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.ext.Provider;
 
+import org.apache.log4j.Logger;
+
 import com.sun.jersey.spi.inject.SingletonTypeInjectableProvider;
 
 import de.unimainz.imbei.mzid.dto.Persistor;
@@ -16,13 +18,14 @@ import de.unimainz.imbei.mzid.dto.Persistor;
 @Provider public class Initializer extends SingletonTypeInjectableProvider<Context, Config> {
 	public Initializer() {
 		super(Config.class, Config.instance);
-		System.err.println("MZID: Initializing Singletons...");
+		Logger logger = Logger.getLogger(Initializer.class);
+		logger.info("MZID: Initializing Singletons...");
 		
 		Config c = Config.instance;
 		Persistor p = Persistor.instance;
 		IDGeneratorFactory idgf = IDGeneratorFactory.instance;
 		Servers s = Servers.instance;
 
-		System.err.println("MZID: Singletons initialized successfully.");
+		logger.info("MZID: Singletons initialized successfully.");
 	}
 }

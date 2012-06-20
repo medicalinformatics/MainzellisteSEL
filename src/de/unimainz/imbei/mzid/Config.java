@@ -51,7 +51,8 @@ public enum Config {
 			InputStream configInputStream = getClass().getResourceAsStream(configPath);
 			props.load(configInputStream);
 			configInputStream.close();
-			logger.info("Config read successfully: " + props);
+			logger.info("Config read successfully");
+			logger.debug(props);
 			
 		} catch (IOException e)	{
 			logger.fatal("Error reading configuration file: ", e);
@@ -66,7 +67,6 @@ public enum Config {
 			matcher = (Matcher) matcherConstructor.newInstance(props);
 			logger.info("Matcher of class " + matcher.getClass() + " initialized.");
 		} catch (Exception e){
-			// TODO gescheites Logging
 			logger.fatal("Initialization of matcher failed: ", e);
 			throw new InternalErrorException();
 		}
@@ -80,11 +80,13 @@ public enum Config {
 			if (patternMatcher.find())
 			{
 				String fieldName = patternMatcher.group(1);	
-				String fieldClass = "de.unimainz.imbei.mzid." + props.getProperty(propKey).trim();
+				String fieldClassStr = "de.unimainz.imbei.mzid." + props.getProperty(propKey).trim();
 				try {
-					this.FieldTypes.put(fieldName, (Class<? extends Field<?>>) Class.forName(fieldClass));
+					Class<? extends Field<?>> fieldClass = (Class<? extends Field<?>>) Class.forName(fieldClassStr);
+					this.FieldTypes.put(fieldName, fieldClass);
+					logger.debug("Initialized field " + fieldName + " with class " + fieldClass);
 				} catch (Exception e) {
-					//TODO Logging
+					logger.fatal("Initialization of field " + fieldName + " failed: ", e);
 					throw new InternalErrorException();
 				}
 			}

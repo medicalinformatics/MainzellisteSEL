@@ -54,13 +54,16 @@ public class SessionsResource {
 	
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
-	public URI newSession(@Context HttpServletRequest req) throws ServletException{
+	public Response newSession(@Context HttpServletRequest req) throws ServletException{
 		Servers.instance.checkPermission(req, "createSession");
 		String sid = Servers.instance.newSession().getId();
-		return UriBuilder
-			.fromUri(req.getRequestURI())
-			.path("{sid}")
-			.build(sid);
+		return Response
+			.status(Status.CREATED)
+			.entity(UriBuilder
+					.fromUri(req.getRequestURI())
+					.path("{sid}")
+					.build(sid))
+			.build();
 	}
 	
 /*

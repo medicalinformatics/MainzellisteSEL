@@ -34,6 +34,7 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicHttpRequest;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.HTTP;
+import org.apache.log4j.Logger;
 import org.codehaus.jackson.map.ObjectMapper;
 
 import com.sun.jersey.api.view.Viewable;
@@ -63,6 +64,8 @@ import de.unimainz.imbei.mzid.matcher.MatchResult.MatchResultType;
 @Path("/patients")
 public class PatientsResource {
 	
+	private Logger logger = Logger.getLogger(PatientsResource.class);
+	
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public List<Patient> getAllPatients() throws UnauthorizedException {
@@ -86,19 +89,17 @@ public class PatientsResource {
 		if(!Config.instance.getProperty("debug").equals("true"))
 		{
 			if(t == null || !t.getType().equals("addPatient")){
+				logger.info("Received ID request with invalid token. Token-ID: " + t.getId() + ", Token type: " + t.getType());
 				throw new WebApplicationException(Response
 					.status(Status.UNAUTHORIZED)
 					.entity("Please supply a valid 'addPatient' token.")
 					.build());
 			}
 		}
+		logger.info("Handling ID Request with token " + t.getId());
 		Patient p = new Patient();
 		Map<String, Field<?>> chars = new HashMap<String, Field<?>>();
 		
-/*		for(String s: form.keySet()){ //TODO: Testfall mit defekten/leeren Eingaben
-			chars.put(s, Field.build(s, form.getFirst(s)));
-		}*/
-
 		for(String s: Config.instance.getFieldKeys()){ //TODO: Testfall mit defekten/leeren Eingaben
 			chars.put(s, Field.build(s, form.getFirst(s)));
 		}
@@ -118,6 +119,8 @@ public class PatientsResource {
 		case MATCH :
 			id = match.getBestMatchedPatient().getOriginal().getId("pid");
 			assignedPatient = match.getBestMatchedPatient();
+			// log token to separate concurrent request in the log file
+			logger.info("Found match with ID " + id.getIdString() + " for ID request " + t.getId()); 
 			break;
 			
 		case NON_MATCH :
@@ -126,10 +129,13 @@ public class PatientsResource {
 			Set<ID> ids = new HashSet<ID>();
 			ids.add(id);
 			pNormalized.setIds(ids);
+			logger.info("Created new ID " + id.getIdString() + " for ID request " + t.getId());
 			if (match.getResultType() == MatchResultType.POSSIBLE_MATCH)
 			{
 				pNormalized.setTentative(true);
 				id.setTentative(true);
+				logger.info("New ID " + id.getIdString() + " is tentative. Found possible match with ID " + 
+						match.getBestMatchedPatient().getId("pid").getIdString());
 			}
 			assignedPatient = pNormalized;
 			break;
@@ -152,6 +158,7 @@ public class PatientsResource {
 		if (callback != null && callback.length() > 0)
 		{
 			try {
+				logger.debug("Sending request to callback " + callback);
 				HttpClient httpClient = new DefaultHttpClient();
 				HttpPost callbackReq = new HttpPost(callback);
 				List<NameValuePair> params = new LinkedList<NameValuePair>();
@@ -160,9 +167,9 @@ public class PatientsResource {
 				params.add(new BasicNameValuePair("id", mapper.writeValueAsString(id)));
 				callbackReq.setEntity(new UrlEncodedFormEntity(params, HTTP.UTF_8));				
 				httpClient.execute(callbackReq);
+				// TODO: Server-Antwort auslesen, Fehler abfangen.
 			} catch (Exception e) {
-				System.err.println("Request to callback " + callback + "failed:");
-				e.printStackTrace();
+				logger.error("Request to callback " + callback + "failed: ", e);
 				throw new WebApplicationException(Response
 						.status(Status.INTERNAL_SERVER_ERROR)
 						.entity("Request to callback failed!")
