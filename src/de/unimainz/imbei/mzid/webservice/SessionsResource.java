@@ -43,7 +43,7 @@ public class SessionsResource {
 		Set<URI> ret = new HashSet<URI>();
 		for(String s: Servers.instance.getSessionIds()){
 			URI u = UriBuilder
-				.fromResource(SessionsResource.class)
+				.fromUri(req.getRequestURI())
 				.path("{sid}")
 				.build(s);
 			ret.add(u);
@@ -58,7 +58,7 @@ public class SessionsResource {
 		Servers.instance.checkPermission(req, "createSession");
 		String sid = Servers.instance.newSession().getId();
 		return UriBuilder
-			.fromResource(SessionsResource.class)
+			.fromUri(req.getRequestURI())
 			.path("{sid}")
 			.build(sid);
 	}
@@ -120,6 +120,7 @@ public class SessionsResource {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response newToken(
+			@Context HttpServletRequest req,
 			@PathParam("session") SessionIdParam sid,
 			Token t){
 		//Token erstellen, speichern und URL zurückgeben
@@ -132,7 +133,7 @@ public class SessionsResource {
 		return Response
 			.status(Status.CREATED)
 			.entity(UriBuilder
-				.fromResource(SessionsResource.class)
+				.fromUri(req.getRequestURI())
 				.path("/{sid}/tokens/{tid}")
 				.build(s.getId(), t2.getId()))
 			.build();
