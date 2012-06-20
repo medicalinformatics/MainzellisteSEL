@@ -27,7 +27,6 @@ POST
 Caller: MDAT-Server, Nutzer
 Params: Merkmale des Patienten. PID, falls enthalten, wird ignoriert.
 		URL-Parameter: 
-			callback (optional): Callback-Adresse
 			tokenId: Token
 Return: 201, Erzeugte PID
 Legt einen neuen Patienten an.

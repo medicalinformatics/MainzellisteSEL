@@ -82,7 +82,6 @@ public class PatientsResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	public ID newPatient(
 			@QueryParam("tokenId") String tokenId,
-			@QueryParam("callback") String callback,
 			MultivaluedMap<String, String> form){
 		
 		Token t = Servers.instance.getTokenByTid(tokenId);
@@ -155,6 +154,7 @@ public class PatientsResource {
 		// Callback aufrufen
 		// TODO auslagern in Funktion. Wohin?
 		// TODO Fehlerbehebung
+		String callback = t.getData().get("callback");
 		if (callback != null && callback.length() > 0)
 		{
 			try {
@@ -184,9 +184,8 @@ public class PatientsResource {
 	@Produces(MediaType.TEXT_HTML)
 	public Response newPatientBrowser(
 			@QueryParam("tokenId") String tokenId,
-			@QueryParam("callback") String callback,
 			MultivaluedMap<String, String> form){
-		ID id = newPatient(tokenId, callback, form);
+		ID id = newPatient(tokenId, form);
 		Map <String, Object> map = new HashMap<String, Object>();
 		if (id != null) { 
 			map.put("id", id.getIdString());

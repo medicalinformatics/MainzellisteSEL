@@ -134,21 +134,13 @@ function validateForm()
 </p>
 	<form action="/mzid/patients?tokenId=${it.tokenId}&callback=${it.callback}" method="post" id="form_person"
 		onsubmit="return validateForm();">
-		<label for="vorname">Vorname</label>
-		<input name="vorname" id="vorname"/>
-		<br/>
-		<label for="nachname">Nachname</label>
-		<input name="nachname" id="nachname"/>
-		<br/>
-		<label for="geburtsname">Geburtsname (falls abweichend)</label>
-		<input name="geburtsname" id="geburtsname"/>
-		<br/>
-		<label for="geburtstag">Geburtsdatum (TT MM JJJJ)</label>
-		<input name="geburtstag" id="geburtstag"/>
-		<input name="geburtsmonat" id="geburtsmonat"/>
-		<input name="geburtsjahr" id="geburtsjahr"/>
+		<%@ include file="patientFormElements.jsp" %>
 		<br/>
 		<input type="submit" value="Abschicken!">
 	</form>
+<div id="kontaktdaten" style="font-size: 0.9em; text-align: center;">
+	Kontakt: Martin Lablans, Institut für Medizinische Biometrie, Epidemiologie und Informatik,
+	Universitätsmedizin der Johannes-Gutenberg-Universität Mainz. Tel.: 06131 17-5062
+</div>
 </body>
 </html>
