@@ -16,6 +16,8 @@ WebContent/WEB-INF/jsp/createPatient.jsp -text svneol=unset#text/plain
 WebContent/WEB-INF/jsp/patientCreated.jsp -text svneol=unset#text/plain
 WebContent/WEB-INF/jsp/patientFormElements.jsp -text svneol=unset#text/plain
 WebContent/WEB-INF/web.xml -text svneol=unset#text/plain
+WebContent/static/css/patientenliste.css -text svneol=unset#text/plain
+WebContent/static/media/JGU_Uni_medizin_Logo_4c_Internet_3.jpg -text
 builder_project/enhance.xml -text svneol=unset#text/plain
 config/log4j.properties -text svneol=unset#text/plain
 config/mzid.conf -text
