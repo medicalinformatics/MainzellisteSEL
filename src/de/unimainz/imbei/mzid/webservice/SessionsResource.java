@@ -137,8 +137,8 @@ public class SessionsResource {
 			.status(Status.CREATED)
 			.entity(UriBuilder
 				.fromUri(req.getRequestURI())
-				.path("/{sid}/tokens/{tid}")
-				.build(s.getId(), t2.getId()))
+				.path("/{tid}")
+				.build(t2.getId()))
 			.build();
 	}
 	
