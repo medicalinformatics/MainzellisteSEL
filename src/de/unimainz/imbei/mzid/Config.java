@@ -125,4 +125,10 @@ public enum Config {
 	public String getVersion() {
 		return version;
 	}
+	
+	public boolean debugIsOn()
+	{
+		String debugMode = this.props.getProperty("debug");
+		return (debugMode != null && debugMode.equals("true"));
+	}
 }
