@@ -24,12 +24,15 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import org.apache.http.HttpEntity;
 import org.apache.http.HttpRequest;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.BasicHttpEntity;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicHttpRequest;
 import org.apache.http.message.BasicNameValuePair;
@@ -86,7 +89,7 @@ public class PatientsResource {
 		
 		Token t = Servers.instance.getTokenByTid(tokenId);
 		// create a token if started in debug mode
-		if (Config.instance.debugIsOn())
+		if (t == null && Config.instance.debugIsOn())
 		{
 			t = new Token("debug");
 			t.setType("addPatient");
@@ -164,11 +167,15 @@ public class PatientsResource {
 				logger.debug("Sending request to callback " + callback);
 				HttpClient httpClient = new DefaultHttpClient();
 				HttpPost callbackReq = new HttpPost(callback);
-				List<NameValuePair> params = new LinkedList<NameValuePair>();
-				params.add(new BasicNameValuePair("tokenID", tokenId.toString()));
+				callbackReq.setHeader("Content-Type", "application");
+				HashMap<String, Object> reqBody = new HashMap<String, Object>();
+				reqBody.put("tokenId", t.getId());
+				reqBody.put("id", id);
 				ObjectMapper mapper = new ObjectMapper();
-				params.add(new BasicNameValuePair("id", mapper.writeValueAsString(id)));
-				callbackReq.setEntity(new UrlEncodedFormEntity(params, HTTP.UTF_8));				
+				String reqBodyJSON = mapper.writeValueAsString(reqBody);
+				StringEntity reqEntity = new StringEntity(reqBodyJSON);
+				reqEntity.setContentType("application/json");
+				callbackReq.setEntity(reqEntity);				
 				httpClient.execute(callbackReq);
 				// TODO: Server-Antwort auslesen, Fehler abfangen.
 			} catch (Exception e) {
