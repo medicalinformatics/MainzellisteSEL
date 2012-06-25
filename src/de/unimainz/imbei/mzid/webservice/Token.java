@@ -2,7 +2,6 @@ package de.unimainz.imbei.mzid.webservice;
 
 import java.util.Map;
 
-import de.unimainz.imbei.mzid.Servers;
 import de.unimainz.imbei.mzid.Session;
 
 /**
@@ -45,6 +44,19 @@ public class Token {
 		return data;
 	}
 	
+	/**
+	 * Get a particular data element by its key.
+	 * This method is preferable to getData().get() as it handles the case data==null safely. 
+	 * @param item
+	 * @return The requested data item. Null if no such item exists or if no data is attached to
+	 * the token (data==null). 
+	 */
+	public String getDataItem(String item) {
+		if (this.data == null)
+			return null;
+		else
+			return data.get(item);
+	}
 	public void setData(Map<String, String> data) {
 		this.data = data;
 	}
