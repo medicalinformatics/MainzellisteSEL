@@ -85,17 +85,20 @@ public class PatientsResource {
 			MultivaluedMap<String, String> form){
 		
 		Token t = Servers.instance.getTokenByTid(tokenId);
-		if(!Config.instance.getProperty("debug").equals("true"))
+		// create a token if started in debug mode
+		if (Config.instance.debugIsOn())
 		{
-			if(t == null || !t.getType().equals("addPatient")){
-				logger.info("Received ID request with invalid token. Token-ID: " + t.getId() + ", Token type: " + t.getType());
-				throw new WebApplicationException(Response
-					.status(Status.UNAUTHORIZED)
-					.entity("Please supply a valid 'addPatient' token.")
-					.build());
-			}
+			t = new Token("debug");
+			t.setType("addPatient");
 		}
-		logger.info("Handling ID Request with token " + t.getId());
+		if(t == null || !t.getType().equals("addPatient")){
+			logger.info("Received ID request with invalid token. Token-ID: " + t.getId() + ", Token type: " + t.getType());
+			throw new WebApplicationException(Response
+				.status(Status.UNAUTHORIZED)
+				.entity("Please supply a valid 'addPatient' token.")
+				.build());
+		}
+		logger.info("Handling ID Request with token " + (t == null ? "(null)" : t.getId()));
 		Patient p = new Patient();
 		Map<String, Field<?>> chars = new HashMap<String, Field<?>>();
 		
@@ -128,7 +131,7 @@ public class PatientsResource {
 			Set<ID> ids = new HashSet<ID>();
 			ids.add(id);
 			pNormalized.setIds(ids);
-			logger.info("Created new ID " + id.getIdString() + " for ID request " + t.getId());
+			logger.info("Created new ID " + id.getIdString() + " for ID request " + (t == null ? "(null)" : t.getId()));
 			if (match.getResultType() == MatchResultType.POSSIBLE_MATCH)
 			{
 				pNormalized.setTentative(true);
@@ -154,7 +157,7 @@ public class PatientsResource {
 		// Callback aufrufen
 		// TODO auslagern in Funktion. Wohin?
 		// TODO Fehlerbehebung
-		String callback = t.getData().get("callback");
+		String callback = t.getDataItem("callback");
 		if (callback != null && callback.length() > 0)
 		{
 			try {
