@@ -34,7 +34,10 @@ public enum Persistor {
 		q.setParameter("idString", pid.getIdString());
 		List<Patient> result = q.getResultList();
 		em.close();
-		return result.get(0);
+		if (result.size() == 0)
+			return null;
+		else
+			return result.get(0);
 	}
 	
 	public List<Patient> getPatients() { //TODO: Filtern
