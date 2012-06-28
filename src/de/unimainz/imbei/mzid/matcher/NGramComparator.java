@@ -40,7 +40,7 @@ public class NGramComparator extends FieldComparator<PlainTextField> {
 	}
 
 	@Override
-	public double compare(PlainTextField fieldLeft, PlainTextField fieldRight) {
+	public double compareBackend(PlainTextField fieldLeft, PlainTextField fieldRight) {
 		assert (fieldLeft instanceof PlainTextField);
 		assert (fieldRight instanceof PlainTextField);
 		

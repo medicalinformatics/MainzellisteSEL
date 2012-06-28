@@ -55,11 +55,7 @@ public abstract class FieldComparator<F extends Field<?>> {
 		this.fieldRight = fieldRight;
 	}
 	
-	/**
-	 * This is the workhorse of the comparator. Implementations
-	 * should implement or interface their comparison logic (e.g.
-	 * a string comparison algorithm) into this method. The parameters
-	 * specify the Patient objects which to compare.
+	/** Compare two patients on the field specified by this FieldComparator.
 	 * 
 	 * @param patientLeft 
 	 * @param patientRight
@@ -71,9 +67,9 @@ public abstract class FieldComparator<F extends Field<?>> {
 		Field<?> cLeft = patientLeft.getFields().get(this.fieldLeft);
 		Field<?> cRight = patientRight.getFields().get(this.fieldRight);
 		if(cLeft instanceof CompoundField && cRight instanceof CompoundField)
-			return compare((CompoundField<F>) cLeft, (CompoundField<F>) cRight);
+			return compareBackend((CompoundField<F>) cLeft, (CompoundField<F>) cRight);
 		else
-			return compare((F) cLeft, (F) cRight);
+			return compareBackend((F) cLeft, (F) cRight);
 	}
 
 	public String getFieldLeft() {
@@ -92,8 +88,45 @@ public abstract class FieldComparator<F extends Field<?>> {
 		this.fieldRight = fieldRight;
 	}
 	
-	public abstract double compare(F fieldLeft, F fieldRight);
+	/**
+	 * This is the workhorse of the comparator. Implementations
+	 * should implement or interface their comparison logic (e.g.
+	 * a string comparison algorithm) in this method. 
+	 * @param fieldLeft
+	 * @param fieldRight
+	 * @return
+	 */
+	public abstract double compareBackend(F fieldLeft, F fieldRight);
 
+	/**
+	 * Method to compare two fields. This method (a frontend to compareBackend)
+	 * is necessary because Java uses compile-time-types of
+	 * arguments for method dispatching. This method checks if the input fields are
+	 * CompoundField or simple fields and calls the corresponding version
+	 * of compareBackend. The former implementation with compare(F, F) and
+	 * compare(CompoundField<F>, CompoundField<F>) lead to an exception in the following case,
+	 * because the compare for simple fields would be called based on the compile-time-types
+	 * Field<?> for the fields:
+	 * 
+	 *  Field<?> field1 = new CompoundField<PlainTextField> (...);
+	 *  Field<?> field1 = new CompoundField<PlainTextField> (...);
+	 *  comparator1.compare(field1, field2);
+	 *  
+	 * See also: http://stackoverflow.com/questions/1572322/overloaded-method-selection-based-on-the-parameters-real-type
+	 * 
+	 * 
+	 *  
+	 * @param fieldLeft
+	 * @param fieldRight
+	 * @return
+	 */
+	public double compare(F fieldLeft, F fieldRight) {
+		if (fieldLeft instanceof CompoundField<?> && fieldRight instanceof CompoundField<?>)
+			return compareBackend((CompoundField<F>) fieldLeft, (CompoundField<F>) fieldRight);
+		else
+			return compareBackend(fieldLeft, fieldRight);
+			
+	}
 	/**
 	 * Default method for comparison of CompoundField. An implementatino of the 
 	 * algorithm for array comparisons used by Automatch and its successor
@@ -104,7 +137,7 @@ public abstract class FieldComparator<F extends Field<?>> {
 	 * @param fieldRight
 	 * @return
 	 */
-	public double compare(CompoundField<F> fieldLeft, CompoundField<F> fieldRight)
+	public double compareBackend(CompoundField<F> fieldLeft, CompoundField<F> fieldRight)
 	{
 		
 		int nLeft = fieldLeft.getSize();

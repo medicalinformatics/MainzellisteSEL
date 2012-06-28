@@ -14,7 +14,7 @@ public class DiceFieldComparator extends FieldComparator<HashedField> {
 	}
 	
 	@Override
-	public double compare(HashedField fieldLeft, HashedField fieldRight)
+	public double compareBackend(HashedField fieldLeft, HashedField fieldRight)
 	{
 
 		assert (fieldLeft instanceof HashedField);
