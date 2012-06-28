@@ -8,15 +8,16 @@
 							<tbody>
 								<tr>
 									<td><label for="vorname">Vorname : </label></td>
-									<td><input type="text" id="vorname" name="vorname" size="50" maxlength="50" placeholder="Vorname"/></td>
+									<td><input type="text" id="vorname" name="vorname" size="50" placeholder="Vorname"
+										value="${it.fields.vorname}"/></td>
 								</tr>
 								<tr>
 									<td><label for="nachname">Nachname : </label></td>
-									<td><input type="text" id="nachname" name="nachname" size="50" maxlength="50" placeholder="Nachname"/></td>
+									<td><input type="text" id="nachname" name="nachname" size="50" placeholder="Nachname"/></td>
 								</tr>
 								<tr>
-									<td><label for="geburt_name">Geburtsname : </label></td>
-									<td><input type="text" id="geburtsname" name="geburtsname" size="50" maxlength="50" placeholder="Geburtsname"/></td>
+									<td><label for="geburtsname">Geburtsname : </label></td>
+									<td><input type="text" id="geburtsname" name="geburtsname" size="50" placeholder="Geburtsname"/></td>
 								</tr>
 								<tr>
 									<td><small>(falls abweichend)</small></td>
@@ -186,6 +187,13 @@
 												<option value="1905">1905</option>
 											</select>
 										</div>
+									</td>
+								</tr>
+								<tr>
+									<td><label for="plz">Wohnort : </label></td>
+									<td>
+										<input type="text" id="plz" name="plz" size="5" maxlength="5" placeholder="PLZ"/>
+										<input type="text" id="ort" name="ort" size="40" placeholder="Ort"/>
 									</td>
 								</tr>
 								<tr>
