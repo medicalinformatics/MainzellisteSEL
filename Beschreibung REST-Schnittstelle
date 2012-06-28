@@ -114,6 +114,17 @@ Legt eine neue Sitzung an.
 		callback (optional): Adresse, die nach dem Anlegen des Patienten aufgerufen werden soll
 			(siehe POST /patients)  
 	Gibt HTML-Formular zur Eingabe eines Patienten aus.
+	
+	/admin // Formulare für den IDAT-Admin
+	
+		/editPatient
+		GET
+		Params:
+			pid (optional): ID des zu bearbeitenden Patienten
+		Caller: IDAT-Admin
+		Falls {pid} nicht angegeben: Gibt HTML-Formular für Auswahl des zu bearbeitenden Patienten aus
+		Falls {pid} angegeben: Gibt HTML-Formular zum Bearbeiten des Patienten mit ID {pid} aus.
+		
 
 /functions // nachrüstbare Operationen, die auf den Daten der PL durchgeführt werden, ohne sie herauszugeben.
 	/sendmail
