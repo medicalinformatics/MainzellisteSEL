@@ -165,7 +165,9 @@ public class EpilinkMatcher implements Matcher {
 		this.exchangeGroups = new Vector<List<String>>();
 		for (int i = 0; props.containsKey("exchangeGroup." + i); i++)
 		{
-			String exchangeFields[] = props.getProperty("exchangeGroup." + i).split("[;,]");
+			String exchangeFields[] = props.getProperty("exchangeGroup." + i).split(" *[;,] *");
+			for (String fieldName : exchangeFields)
+				fieldName = fieldName.trim();
 			this.exchangeGroups.add(new Vector<String>(Arrays.asList(exchangeFields)));
 		}
 	}
