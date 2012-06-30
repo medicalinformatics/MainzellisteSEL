@@ -22,7 +22,9 @@ WebContent/static/css/patientenliste.css -text svneol=unset#text/plain
 WebContent/static/media/JGU_Uni_medizin_Logo_4c_Internet_3.jpg -text
 builder_project/enhance.xml -text svneol=unset#text/plain
 config/log4j.properties -text svneol=unset#text/plain
+config/mzid-viele-Felder-Klartext.conf -text
 config/mzid.conf -text
+config/mzid.conf-viele-Felder-Dice -text
 lib/deploy/jersey/asm-3.1.jar -text
 lib/deploy/jersey/jackson-core-asl-1.9.2.jar -text
 lib/deploy/jersey/jackson-jaxrs-1.9.2.jar -text
