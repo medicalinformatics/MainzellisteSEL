@@ -113,6 +113,7 @@ public class PatientsResource {
 		
 		// Normalisierung, Transformation
 		Patient pNormalized = Config.instance.getRecordTransformer().transform(p);
+		pNormalized.setInputFields(chars);
 		
 		MatchResult match = Config.instance.getMatcher().match(pNormalized, getAllPatients());
 		

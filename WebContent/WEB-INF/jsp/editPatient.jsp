@@ -8,7 +8,7 @@
 <link rel="stylesheet" type="text/css"
 	href="/mzid/static/css/patientenliste.css">
 
-<title>Patienten anlegen</title>
+<title>Patienten bearbeiten</title>
 </head>
 
 <!-- JQuery -->
@@ -106,6 +106,22 @@ function validateForm()
 				onsubmit="return validateForm();">
 				<h1>Patienten bearbeiten</h1>
 				<%@ include file="patientFormElements.jsp"%>
+				<div id ="form_elements_admin">
+				<table class="daten_tabelle">
+					<tr>
+						<td><label for="tentative">Vorläufig</label></td>
+						<td><input type="checkbox" id="tentative" name="tentative" 
+							<% if (map.get("tentative").equals(true)) {%>
+							checked="${it.tentative}" <% } %>
+							/></td>
+					</tr>
+					<tr>
+						<td><label for="original">Duplikat von:</label>
+						<td><input type="text" id="original" name="original" value="${it.original}"/></td>
+					</tr>
+				</table>
+				
+				</div>
 			</form>
 		</div>
 		<div>&nbsp;</div>

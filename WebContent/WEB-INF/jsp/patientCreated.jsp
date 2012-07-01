@@ -9,7 +9,7 @@
 
 <link rel="stylesheet" type="text/css" href="/mzid/static/css/patientenliste.css">
 
-<title>Patient anlegt</title>
+<title>Patient angelegt</title>
 </head>
 
 <body>

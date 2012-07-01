@@ -66,10 +66,7 @@ public abstract class FieldComparator<F extends Field<?>> {
 	{
 		Field<?> cLeft = patientLeft.getFields().get(this.fieldLeft);
 		Field<?> cRight = patientRight.getFields().get(this.fieldRight);
-		if(cLeft instanceof CompoundField && cRight instanceof CompoundField)
-			return compareBackend((CompoundField<F>) cLeft, (CompoundField<F>) cRight);
-		else
-			return compareBackend((F) cLeft, (F) cRight);
+		return this.compare((F) cLeft, (F) cRight);
 	}
 
 	public String getFieldLeft() {
@@ -121,6 +118,11 @@ public abstract class FieldComparator<F extends Field<?>> {
 	 * @return
 	 */
 	public double compare(F fieldLeft, F fieldRight) {
+		/* If one of the fields is empty, consider them as unequal 
+		 * Justification: Sariyar M, Borg A. Missing values in deduplication of electronic patient data.
+		 * J Am Med Inform Assoc. 2012 Jun 1;19(e1):e76-e82.*/
+		if (fieldLeft.isEmpty() || fieldRight.isEmpty())
+			return 0.0;
 		if (fieldLeft instanceof CompoundField<?> && fieldRight instanceof CompoundField<?>)
 			return compareBackend((CompoundField<F>) fieldLeft, (CompoundField<F>) fieldRight);
 		else

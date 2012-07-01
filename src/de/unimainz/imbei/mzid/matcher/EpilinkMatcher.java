@@ -29,10 +29,11 @@ public class EpilinkMatcher implements Matcher {
 
 	private double threshold_match;
 	private double threshold_non_match;
-	private double error_rate;
 	
 	private Map<String, FieldComparator> comparators;
 	private Map<String, Double> frequencies;
+	private Map<String, Double> errorRates;
+
 	/** Field weights */
 	private Map<String, Double> weights;
 	
@@ -111,19 +112,19 @@ public class EpilinkMatcher implements Matcher {
 	
 	public EpilinkMatcher(Properties props) throws InternalErrorException
 	{
-		// Get error rate (is needed for weight computation below)
-		this.error_rate = Double.parseDouble(props.getProperty("matcher.epilink.error_rate"));			
+		// Get error rate (is needed for weight computation below)					
 
 		// Initialize internal maps
 		this.comparators = new HashMap<String, FieldComparator>();
 		this.frequencies = new HashMap<String, Double>();
+		this.errorRates = new HashMap<String, Double>();
 		this.weights = new HashMap<String, Double>();
 		
 		// Get names of fields from config vars.*
 		Pattern p = Pattern.compile("^field\\.(\\w+)\\.type");
 		java.util.regex.Matcher m;
 
-		// Build maps of comparators, frequencies and attribute weights from Properties
+		// Build maps of comparators, frequencies, error rates and attribute weights from Properties
 		for (Object key : props.keySet())
 		{
 			m = p.matcher((String) key);
@@ -140,7 +141,9 @@ public class EpilinkMatcher implements Matcher {
 					System.err.println(e.getMessage());
 					throw new InternalErrorException();
 				}
-
+				// set error rate
+				double error_rate = Double.parseDouble(props.getProperty("matcher.epilink."+ fieldName + ".errorRate"));
+				errorRates.put(fieldName, error_rate);
 				// set frequency
 				double frequency = Double.parseDouble(props.getProperty("matcher.epilink." + fieldName + ".frequency"));
 				frequencies.put(fieldName, frequency);

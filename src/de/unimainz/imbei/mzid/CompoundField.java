@@ -106,6 +106,18 @@ public class CompoundField<T extends Field<?>> extends Field<List<T>> {
 	
 	@Override
 	/**
+	 * A CompoundField is empty if all of its components are empty. 
+	 */
+	public boolean isEmpty()
+	{
+		if (this.nEmptyFields() == this.getSize())
+			return true;
+		else
+			return false;
+	}
+	
+	@Override
+	/**
 	 * Creates a copy of this CompoundField. The components are copied by calling
 	 * their clone() methods.
 	 */

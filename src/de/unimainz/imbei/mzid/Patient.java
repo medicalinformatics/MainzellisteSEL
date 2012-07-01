@@ -11,9 +11,13 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.apache.log4j.Logger;
 import org.codehaus.jackson.annotate.JsonIgnore;
+
+import de.unimainz.imbei.mzid.exceptions.CircularDuplicateRelationException;
 
 @XmlRootElement
 @Entity
@@ -26,12 +30,38 @@ public class Patient {
 	@JsonIgnore
 	private int patientJpaId; // JPA
 	
+	/**
+	 * Needed to determine if two Patient object refer to the same database entry.
+	 * @return the patientJpaId
+	 */
+	int getPatientJpaId() {
+		return patientJpaId;
+	}
+
 	@OneToMany(cascade={CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH}, fetch=FetchType.EAGER)
 	private Set<ID> ids;
 	
 	@OneToMany(cascade={CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH}, fetch=FetchType.EAGER)
 	private Map<String, Field<?>> fields;
 	
+	@OneToMany(cascade={CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH}, fetch=FetchType.EAGER)
+	/**
+	 * Input fields as read from form (before transformation).
+	 * 
+	 */
+	private Map<String, Field<?>> inputFields;
+	
+	@Transient
+	private Logger logger = Logger.getLogger(this.getClass());
+	
+	public Map<String, Field<?>> getInputFields() {
+		return inputFields;
+	}
+
+	public void setInputFields(Map<String, Field<?>> inputFields) {
+		this.inputFields = inputFields;
+	}
+
 	private boolean isTentative = false;
 
 	public boolean isTentative() {
@@ -40,6 +70,21 @@ public class Patient {
 
 	public void setTentative(boolean isTentative) {
 		this.isTentative = isTentative;
+		for (ID id : this.ids)
+		{
+			id.setTentative(isTentative);
+		}
+	}
+	
+	/**
+	 * Check wether p refers to the same Patient in the database
+	 * (i.e. their patientJpaId values are equal).
+	 * @param p
+	 * @return
+	 */
+	public boolean sameAs(Patient p)
+	{
+		return (this.getPatientJpaId() == p.getPatientJpaId()); 
 	}
 
 	/**
@@ -51,12 +96,27 @@ public class Patient {
 	 * </ul>
 	 */
 	public Patient getOriginal() {
-		if (this.original == null) return this;
+		if (this.original == null || this.original == this) return this;
 		else return this.original.getOriginal();
 	}
 
 	public void setOriginal(Patient original) {
-		this.original = original;
+		if (original == null || original.sameAs(this))
+		{
+			this.original = null;
+			return;
+		}
+		// Check if operation would lead to a circular relation
+		// (setting a as duplicate of b when b is a duplicate of a)
+		if (original.getOriginal().sameAs(this))
+		{
+			// TODO generalisieren für andere IDs
+			CircularDuplicateRelationException e = new CircularDuplicateRelationException(
+					this.getId("pid").getIdString(), original.getId("pid").getIdString());
+			logger.error(e.getMessage());
+			throw e;
+		}
+			this.original = original;
 	}
 	
 	public boolean isDuplicate()

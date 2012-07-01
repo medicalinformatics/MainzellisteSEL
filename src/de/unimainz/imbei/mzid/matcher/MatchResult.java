@@ -16,6 +16,8 @@ public class MatchResult {
 	
 	@Basic
 	private MatchResultType type;
+	
+	private double bestMatchedWeight; 
 
 	@ManyToOne
 	private Patient bestMatchedPatient;

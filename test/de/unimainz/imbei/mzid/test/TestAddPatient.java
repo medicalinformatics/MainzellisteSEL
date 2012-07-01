@@ -145,7 +145,7 @@ public class TestAddPatient {
 		form.put("geburtstag", Arrays.asList("3"));
 		form.put("geburtsmonat", Arrays.asList("2"));
 		form.put("geburtsjahr", Arrays.asList("1991"));
-		ID id1 = p.newPatient("token", "", form);
+		ID id1 = p.newPatient("token", form);
 		System.out.println(id1.getIdString());
 		System.out.println(id1.isTentative());
 
@@ -154,7 +154,7 @@ public class TestAddPatient {
 		form.put("geburtstag", Arrays.asList("4"));
 		form.put("geburtsmonat", Arrays.asList("2"));
 		form.put("geburtsjahr", Arrays.asList("1991"));
-		ID id2  = p.newPatient("token", "", form);
+		ID id2  = p.newPatient("token", form);
 		System.out.println(id2.getIdString());
 		System.out.println(id2.isTentative());
 		
@@ -168,7 +168,7 @@ public class TestAddPatient {
 		form.put("geburtstag", Arrays.asList("4"));
 		form.put("geburtsmonat", Arrays.asList("2"));
 		form.put("geburtsjahr", Arrays.asList("1991"));
-		ID id3  = p.newPatient("token", "", form);
+		ID id3  = p.newPatient("token", form);
 		System.out.println(id3.getIdString());
 		System.out.println(id3.isTentative());
 		
