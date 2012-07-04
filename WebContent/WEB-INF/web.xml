@@ -4,10 +4,10 @@
 	<filter>
 		<filter-name>Mainzer ID-Framework</filter-name>
 		<filter-class>com.sun.jersey.spi.container.servlet.ServletContainer</filter-class>
-	<!--  	<init-param>
+	  	<init-param>
 			<param-name>com.sun.jersey.config.property.packages</param-name>
-			<param-value>de.unimainz.imbei.mzid</param-value>
-		</init-param>-->
+			<param-value>de.unimainz.imbei.mzid.webservice</param-value>
+		</init-param>
 		<init-param>
 			<param-name>com.sun.jersey.config.property.JSPTemplatesBasePath</param-name>
 			<param-value>/WEB-INF/jsp</param-value>

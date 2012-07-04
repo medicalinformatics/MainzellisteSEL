@@ -58,7 +58,6 @@ public class HTMLResource {
 	}
 	
 	@Path("/admin/editPatient")
-
 	@GET
 	@Produces(MediaType.TEXT_HTML)
 	public Response editPatientForm(
