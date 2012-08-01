@@ -20,7 +20,7 @@ import de.unimainz.imbei.mzid.dto.Persistor;
  * @author Martin Lablans
  */
 @Provider public class Initializer extends SingletonTypeInjectableProvider<Context, Initializer> {
-	@Context ServletContext servletContext;
+	private @Context ServletContext servletContext;
 	private static ServletContext context;
 	
 	public Initializer() {
@@ -28,7 +28,7 @@ import de.unimainz.imbei.mzid.dto.Persistor;
 	}
 	
 	@PostConstruct
-	public void initialize(){
+	private void initialize(){
 		Logger logger = Logger.getLogger(Initializer.class);
 		logger.info("MZID: Initializing Singletons...");
 		Initializer.context = servletContext;
