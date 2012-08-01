@@ -38,7 +38,6 @@ public enum Config {
 		HASHED_NORMALIZED; // Bloomfilter with prior normalization
 	}
 	
-	private final String dist = "mzid";
 	private final String version = "0.1";
 	
 	private final Map<String,Class<? extends Field<?>>> FieldTypes;
@@ -52,7 +51,6 @@ public enum Config {
 	Config() throws InternalErrorException {
 		props = new Properties();
 		try {
-
 			ServletContext context = Initializer.getServletContext();
 			String configPath = context.getInitParameter("de.unimainz.imbei.mzid.ConfigurationFile");
 			if (configPath == null) configPath = "/mzid.conf";
@@ -134,7 +132,7 @@ public enum Config {
 	}
 	
 	public String getDist() {
-		return dist;
+		return getProperty("dist");
 	}
 	
 	public String getVersion() {

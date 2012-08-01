@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+	For the sake of readability, most of mzid's parameters 
+	have been moved	to a key-value conf file. Per default,
+	this file resides in /etc/mzid/mzid.conf. If you would
+	like to place the file somewhere else (e.g. to host 
+	multiple mzid instances on one machine), specify the
+	new path below.
+	
+	Note that Tomcat will delete this file on undeployment.
+	
+	@author Martin Lablans
+ -->
+<Context>
+        <Parameter name="de.unimainz.imbei.mzid.ConfigurationFile"
+                value="/etc/mzid/default.conf" override="false" />
+</Context>

@@ -12,6 +12,7 @@
 .settings/org.eclipse.wst.jsdt.ui.superType.name -text
 /Beschreibung[!!-~]REST-Schnittstelle -text
 WebContent/META-INF/MANIFEST.MF -text svneol=unset#text/plain
+WebContent/META-INF/context.xml -text svneol=unset#text/plain
 WebContent/WEB-INF/jsp/createPatient.jsp -text svneol=unset#text/plain
 WebContent/WEB-INF/jsp/editPatient.jsp -text svneol=unset#text/plain
 WebContent/WEB-INF/jsp/patientCreated.jsp -text svneol=unset#text/plain

@@ -34,6 +34,6 @@ public class RootResource {
 	@Produces({MediaType.TEXT_HTML, MediaType.TEXT_PLAIN})
 	public String helloHTML(){
 		Map<String, String> out = genMap();
-		return String.format("This is %s running version %s.", out.get("distname"), out.get("version"));
+		return String.format("This is mzid running version %s for %s.", out.get("version"), out.get("distname"));
 	}
 }
