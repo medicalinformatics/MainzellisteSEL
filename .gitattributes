@@ -120,7 +120,6 @@ src/de/unimainz/imbei/mzid/exceptions/UnauthorizedException.java -text svneol=un
 src/de/unimainz/imbei/mzid/matcher/ArrayFieldComparator.java -text
 src/de/unimainz/imbei/mzid/matcher/BinaryFieldComparator.java -text
 src/de/unimainz/imbei/mzid/matcher/BloomFilterTransformer.java -text svneol=unset#text/plain
-src/de/unimainz/imbei/mzid/matcher/ColognePhoneticTransformer.java -text
 src/de/unimainz/imbei/mzid/matcher/DiceFieldComparator.java -text
 src/de/unimainz/imbei/mzid/matcher/EpilinkMatcher.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/matcher/FieldComparator.java -text svneol=unset#text/plain
@@ -128,7 +127,6 @@ src/de/unimainz/imbei/mzid/matcher/FieldTransformer.java -text
 src/de/unimainz/imbei/mzid/matcher/FieldTransformerChain.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/matcher/FirstNameDecomposer.java -text
 src/de/unimainz/imbei/mzid/matcher/GermanLastNameDecomposer.java -text
-src/de/unimainz/imbei/mzid/matcher/HannoverPhoneticTransformer.java -text
 src/de/unimainz/imbei/mzid/matcher/MatchResult.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/matcher/Matcher.java -text
 src/de/unimainz/imbei/mzid/matcher/NGramComparator.java -text svneol=unset#text/plain
