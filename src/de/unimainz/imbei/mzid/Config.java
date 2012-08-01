@@ -3,13 +3,20 @@ package de.unimainz.imbei.mzid;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Constructor;
+import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.regex.Pattern;
 
+import javax.servlet.ServletContext;
+import javax.ws.rs.core.Context;
+
 import org.apache.log4j.Logger;
+
+import com.sun.xml.internal.bind.v2.schemagen.xmlschema.List;
 
 import de.unimainz.imbei.mzid.exceptions.InternalErrorException;
 import de.unimainz.imbei.mzid.matcher.*;
@@ -35,7 +42,6 @@ public enum Config {
 	
 	private final String dist = "mzid";
 	private final String version = "0.1";
-	private final String configPath = "/mzid.conf";
 	
 	private final Map<String,Class<? extends Field<?>>> FieldTypes;
 	
@@ -47,7 +53,17 @@ public enum Config {
 	
 	Config() throws InternalErrorException {
 		props = new Properties();
-		try {			
+		try {
+			ServletContext context = Initializer.getServletContext();
+			String configPath = context.getInitParameter("de.unimainz.imbei.mzid.ConfigurationFile");
+			
+			//<DEBUG>
+			Enumeration<String> en = context.getInitParameterNames();
+			while(en.hasMoreElements())
+				logger.info("Found init param " + en.nextElement());
+			//</DEBUG>
+			
+			logger.info("Reading config from path " + configPath + "...");
 			InputStream configInputStream = getClass().getResourceAsStream(configPath);
 			props.load(configInputStream);
 			configInputStream.close();

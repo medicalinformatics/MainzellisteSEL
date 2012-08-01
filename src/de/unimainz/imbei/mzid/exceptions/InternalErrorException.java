@@ -8,7 +8,7 @@ public class InternalErrorException extends WebApplicationException {
 	private static String message = "Internal server error.";
 	
 	public InternalErrorException() {
-        super(Response.status(Status.BAD_REQUEST).entity(message).build());
+        super(Response.status(Status.INTERNAL_SERVER_ERROR).entity(message).build());
 	}
 	
 	@Override

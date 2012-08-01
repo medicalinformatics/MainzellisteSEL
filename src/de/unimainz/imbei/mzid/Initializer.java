@@ -1,5 +1,6 @@
 package de.unimainz.imbei.mzid;
 
+import javax.servlet.ServletContext;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.ext.Provider;
 
@@ -15,9 +16,12 @@ import de.unimainz.imbei.mzid.dto.Persistor;
  * 
  * @author Martin Lablans
  */
-@Provider public class Initializer extends SingletonTypeInjectableProvider<Context, Config> {
-	public Initializer() {
-		super(Config.class, Config.instance);
+@Provider public class Initializer extends SingletonTypeInjectableProvider<Context, Initializer> {
+	static ServletContext context;
+	
+	public Initializer(@Context ServletContext context) {
+		super(Initializer.class, null);
+		Initializer.context = context;
 		Logger logger = Logger.getLogger(Initializer.class);
 		logger.info("MZID: Initializing Singletons...");
 		
@@ -27,5 +31,9 @@ import de.unimainz.imbei.mzid.dto.Persistor;
 		Servers s = Servers.instance;
 
 		logger.info("MZID: Singletons initialized successfully.");
+	}
+	
+	static ServletContext getServletContext(){
+		return context;
 	}
 }
