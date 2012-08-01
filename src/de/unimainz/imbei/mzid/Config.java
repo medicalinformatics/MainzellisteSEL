@@ -57,12 +57,6 @@ public enum Config {
 			ServletContext context = Initializer.getServletContext();
 			String configPath = context.getInitParameter("de.unimainz.imbei.mzid.ConfigurationFile");
 			
-			//<DEBUG>
-			Enumeration<String> en = context.getInitParameterNames();
-			while(en.hasMoreElements())
-				logger.info("Found init param " + en.nextElement());
-			//</DEBUG>
-			
 			logger.info("Reading config from path " + configPath + "...");
 			InputStream configInputStream = getClass().getResourceAsStream(configPath);
 			props.load(configInputStream);

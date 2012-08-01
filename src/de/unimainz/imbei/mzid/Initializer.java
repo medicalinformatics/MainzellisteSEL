@@ -1,5 +1,8 @@
 package de.unimainz.imbei.mzid;
 
+import java.util.Enumeration;
+
+import javax.annotation.PostConstruct;
 import javax.servlet.ServletContext;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.ext.Provider;
@@ -17,13 +20,26 @@ import de.unimainz.imbei.mzid.dto.Persistor;
  * @author Martin Lablans
  */
 @Provider public class Initializer extends SingletonTypeInjectableProvider<Context, Initializer> {
-	static ServletContext context;
+	@Context ServletContext servletContext;
+	private static ServletContext context;
 	
-	public Initializer(@Context ServletContext context) {
+	public Initializer() {
 		super(Initializer.class, null);
-		Initializer.context = context;
+	}
+	
+	@PostConstruct
+	public void initialize(){
 		Logger logger = Logger.getLogger(Initializer.class);
 		logger.info("MZID: Initializing Singletons...");
+		Initializer.context = servletContext;
+		
+		//<DEBUG>
+		Enumeration<String> en = context.getInitParameterNames();
+		while(en.hasMoreElements()){
+			String paramName = en.nextElement();
+			logger.debug("Init param " + paramName + "=" + context.getInitParameter(paramName));
+		}
+		//</DEBUG>
 		
 		Config c = Config.instance;
 		Persistor p = Persistor.instance;
