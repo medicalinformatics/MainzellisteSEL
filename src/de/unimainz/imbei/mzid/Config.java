@@ -1,9 +1,9 @@
 package de.unimainz.imbei.mzid;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Constructor;
-import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
@@ -15,8 +15,6 @@ import javax.servlet.ServletContext;
 import javax.ws.rs.core.Context;
 
 import org.apache.log4j.Logger;
-
-import com.sun.xml.internal.bind.v2.schemagen.xmlschema.List;
 
 import de.unimainz.imbei.mzid.exceptions.InternalErrorException;
 import de.unimainz.imbei.mzid.matcher.*;
@@ -54,11 +52,18 @@ public enum Config {
 	Config() throws InternalErrorException {
 		props = new Properties();
 		try {
+
 			ServletContext context = Initializer.getServletContext();
 			String configPath = context.getInitParameter("de.unimainz.imbei.mzid.ConfigurationFile");
-			
+			if (configPath == null) configPath = "/mzid.conf";
 			logger.info("Reading config from path " + configPath + "...");
+			
+			// First, try to read from resource (e.g. within the war file)
 			InputStream configInputStream = getClass().getResourceAsStream(configPath);
+			// Else: read from file System			
+			if (configInputStream == null)
+				configInputStream = new FileInputStream(configPath);
+			
 			props.load(configInputStream);
 			configInputStream.close();
 			logger.info("Config read successfully");
