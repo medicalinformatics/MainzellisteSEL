@@ -16,6 +16,10 @@
 			<param-name>com.sun.jersey.config.property.WebPageContentRegex</param-name>
 			<param-value>/static/.*</param-value>
 		</init-param>
+		<init-param>
+			<param-name>mzid.ConfigurationFile</param-name>
+			<param-value>/mzid.conf</param-value>
+		</init-param>
 	</filter>
 	<filter-mapping>
 		<filter-name>Mainzer ID-Framework</filter-name>
