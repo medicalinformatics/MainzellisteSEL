@@ -1,6 +1,5 @@
 # Properties mit vielen Feldern und Verwendung von Bloom-Filtern
 
-
 # Testproperties
 # Tue May 15 17:35:12 CEST 2012
 # Format: Key-value pairs, separated by spaces, tabs, "=", ":".
@@ -9,6 +8,15 @@
 
 # debug mode: If set to true, token handling is disabled (i.e. no tokens are necessary).
 debug = true
+
+# Name of this mzid distribution instance.
+dist = ILFTEST
+
+# Database setup
+db.driver = com.mysql.jdbc.Driver
+db.url = jdbc:mysql://localhost:3306/mzid
+db.username = mzid
+db.password = mzid
 
 # Field definitions
 #

@@ -1,5 +1,6 @@
 package de.unimainz.imbei.mzid.dto;
 
+import java.util.HashMap;
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -7,6 +8,9 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import javax.persistence.TypedQuery;
 
+import org.apache.log4j.Logger;
+
+import de.unimainz.imbei.mzid.Config;
 import de.unimainz.imbei.mzid.ID;
 import de.unimainz.imbei.mzid.IDGeneratorMemory;
 import de.unimainz.imbei.mzid.IDRequest;
@@ -21,11 +25,26 @@ import de.unimainz.imbei.mzid.exceptions.NotImplementedException;
 public enum Persistor {
 	instance;
 	
-	private EntityManagerFactory emf = Persistence.createEntityManagerFactory("mzid");
+	private EntityManagerFactory emf;
 	
 	private Persistor() {
+		HashMap<String, String> persistenceOptions = new HashMap<String, String>();
+		
+		// Settings from mzid config
+		persistenceOptions.put("javax.persistence.jdbc.driver", Config.instance.getProperty("db.driver"));
+		persistenceOptions.put("javax.persistence.jdbc.url", Config.instance.getProperty("db.url"));
+		persistenceOptions.put("javax.persistence.jdbc.user", Config.instance.getProperty("db.username"));
+		persistenceOptions.put("javax.persistence.jdbc.password", Config.instance.getProperty("db.password"));
+		
+		// Other settings
+		persistenceOptions.put("openjpa.jdbc.SynchronizeMappings", "buildSchema");
+		
+		emf = Persistence.createEntityManagerFactory("mzid", persistenceOptions);
+		
 		// Check database connection
 		getPatients();
+		
+		Logger.getLogger(Persistor.class).info("Persistence has initialized successfully.");
 	}
 	
 	public Patient getPatient(ID pid){

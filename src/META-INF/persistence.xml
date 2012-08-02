@@ -12,12 +12,6 @@
 		<class>de.unimainz.imbei.mzid.IDRequest</class>
 		<class>de.unimainz.imbei.mzid.matcher.MatchResult</class>
 		<class>de.unimainz.imbei.mzid.IDGeneratorMemory</class>
-		<properties>
-			<property name="javax.persistence.jdbc.driver" value="com.mysql.jdbc.Driver"/>
-			<property name="openjpa.jdbc.SynchronizeMappings" value="buildSchema"/>
-			<property name="javax.persistence.jdbc.url" value="jdbc:mysql://localhost:3306/mzid"/>
-			<property name="javax.persistence.jdbc.user" value="mzid"/>
-			<property name="javax.persistence.jdbc.password" value="mzid"/>
-		</properties>
+		<!-- See /etc/mzid/default.conf for database access config. -->
 	</persistence-unit>
 </persistence>
