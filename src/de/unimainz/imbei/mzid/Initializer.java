@@ -66,6 +66,13 @@ import de.unimainz.imbei.mzid.dto.Persistor;
 				app = new FileAppender(layout, logFile);
 				app.setName("MzidFileAppender");
 				root.addAppender(app);
+				
+				// In production mode, avoid spamming the servlet container's logfile.
+				if(!Config.instance.debugIsOn()){
+					root.warn("Redirecting mzid log to " + logFile + ".");
+					root.removeAllAppenders();
+				}
+				
 			} catch (IOException e) {
 				root.fatal("Unable to log to " + logFile + ": " + e.getMessage());
 				return;
