@@ -14,6 +14,7 @@ import java.util.regex.Pattern;
 import javax.servlet.ServletContext;
 import javax.ws.rs.core.Context;
 
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 import de.unimainz.imbei.mzid.exceptions.InternalErrorException;
@@ -143,5 +144,23 @@ public enum Config {
 	{
 		String debugMode = this.props.getProperty("debug");
 		return (debugMode != null && debugMode.equals("true"));
+	}
+	
+	Level getLogLevel() {
+		String level = this.props.getProperty("loglevel");
+		Level ret = Level.DEBUG;
+		
+		if (level == null || level.equals("DEBUG"))
+			ret = Level.DEBUG;
+		else if (level.equals("WARN"))
+			ret = Level.WARN;
+		else if (level.equals("ERROR"))
+			ret = Level.ERROR;
+		else if (level.equals("FATAL"))
+			ret = Level.FATAL;
+		else if (level.equals("INFO"))
+			ret = Level.INFO;
+		
+		return ret;
 	}
 }
