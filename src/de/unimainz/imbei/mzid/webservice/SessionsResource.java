@@ -2,8 +2,8 @@ package de.unimainz.imbei.mzid.webservice;
 
 import java.net.URI;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -14,15 +14,19 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriBuilder;
 
+import org.codehaus.jettison.json.JSONException;
+import org.codehaus.jettison.json.JSONObject;
+
+import de.unimainz.imbei.mzid.Config;
 import de.unimainz.imbei.mzid.Servers;
 import de.unimainz.imbei.mzid.Session;
-import de.unimainz.imbei.mzid.exceptions.NotImplementedException;
 
 /**
  * Resource-based access to server-side client sessions.
@@ -54,15 +58,21 @@ public class SessionsResource {
 	
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response newSession(@Context HttpServletRequest req) throws ServletException{
+	public Response newSession(@Context HttpServletRequest req) throws ServletException, JSONException{
 		Servers.instance.checkPermission(req, "createSession");
 		String sid = Servers.instance.newSession().getId();
+		
+		URI newUri = UriBuilder
+				.fromUri(req.getRequestURL().toString())
+				.path("{sid}")
+				.build(sid);
+		
+		JSONObject ret = new JSONObject().put("uri", newUri);
+		
 		return Response
 			.status(Status.CREATED)
-			.entity(UriBuilder
-					.fromUri(req.getRequestURI())
-					.path("{sid}")
-					.build(sid))
+			.entity(ret)
+			.location(newUri)
 			.build();
 	}
 	
@@ -126,6 +136,16 @@ public class SessionsResource {
 			@Context HttpServletRequest req,
 			@PathParam("session") SessionIdParam sid,
 			Token t){
+		
+		// Prüfe Callback-URL
+		String callback = t.getDataItem("callback");
+		if (callback != null && !callback.equals("") && 
+				!Pattern.matches(Config.instance.getProperty("callback.allowedFormat"), callback))
+		throw new WebApplicationException(Response
+				.status(Status.BAD_REQUEST)
+				.entity("Callback address does not conform to allowed format.")
+				.build());
+		
 		//Token erstellen, speichern und URL zurückgeben
 		Session s = sid.getValue();
 		
