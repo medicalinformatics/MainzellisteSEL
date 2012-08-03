@@ -138,7 +138,8 @@ public class PatientsResource {
 			t.setType("addPatient");
 		}
 		if(t == null || !t.getType().equals("addPatient")){
-			logger.info("Received ID request with invalid token. Token-ID: " + t.getId() + ", Token type: " + t.getType());
+			logger.info("Received ID request with invalid token. Token-ID: " + tokenId +
+					t == null ? "" : ", Token type: " + t.getType());
 			throw new WebApplicationException(Response
 				.status(Status.UNAUTHORIZED)
 				.entity("Please supply a valid 'addPatient' token.")
