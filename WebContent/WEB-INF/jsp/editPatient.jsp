@@ -13,7 +13,7 @@
 
 <!-- JQuery -->
 <script type="text/javascript"
-	src="http://code.jquery.com/jquery-1.7.2.js"></script>
+	src="<%=request.getContextPath() %>/static/jslib/jquery/jquery-1.7.2.js"></script>
 
 <script type="text/javascript">
 
