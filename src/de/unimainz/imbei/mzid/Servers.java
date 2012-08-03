@@ -14,6 +14,8 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import org.apache.log4j.Logger;
+
 import de.unimainz.imbei.mzid.exceptions.UnauthorizedException;
 import de.unimainz.imbei.mzid.webservice.Token;
 
@@ -29,6 +31,8 @@ public enum Servers {
 	private final Map<String, Server> servers = new HashMap<String, Server>();
 	private final Map<String, Session> sessions = new HashMap<String, Session>();
 	private final Map<String, Token> tokensByTid = new HashMap<String, Token>();
+	
+	Logger logger = Logger.getLogger(Servers.class);
 	
 	private Servers() {
 		// read Server configuration from mzid.conf
@@ -124,9 +128,11 @@ public enum Servers {
 			
 			perms = server.permissions;
 			req.getSession().setAttribute("permissions", perms);
+			logger.info("Server " + req.getRemoteHost() + " logged in with permissions " + Arrays.toString(perms.toArray()) + ".");
 		}
 		
 		if(!perms.contains(permission)){ // Check permission
+			logger.info("Access from " + req.getRemoteHost() + " is denied since they lack permission " + permission + ".");
 			throw new WebApplicationException(Response
 					.status(Status.UNAUTHORIZED)
 					.entity("Your permissions do not allow the requested access.")

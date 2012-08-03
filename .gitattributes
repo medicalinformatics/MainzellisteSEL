@@ -15,6 +15,7 @@ WebContent/META-INF/MANIFEST.MF -text svneol=unset#text/plain
 WebContent/META-INF/context.xml -text svneol=unset#text/plain
 WebContent/WEB-INF/jsp/createPatient.jsp -text svneol=unset#text/plain
 WebContent/WEB-INF/jsp/editPatient.jsp -text svneol=unset#text/plain
+WebContent/WEB-INF/jsp/footer.jsp -text svneol=unset#text/plain
 WebContent/WEB-INF/jsp/patientCreated.jsp -text svneol=unset#text/plain
 WebContent/WEB-INF/jsp/patientFormElements.jsp -text svneol=unset#text/plain
 WebContent/WEB-INF/jsp/selectPatient.jsp -text svneol=unset#text/plain

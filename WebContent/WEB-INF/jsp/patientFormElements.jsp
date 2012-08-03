@@ -14,7 +14,7 @@
 							<tbody>
 								<tr>
 									<td><label for="vorname">Vorname : </label></td>
-									<td><input type="text" id="vorname" name="vorname" size="50" placeholder="Anne-Marie"
+									<td><input type="text" id="vorname" name="vorname" size="50" placeholder="Anne-Marie Luise"
 										value="${it.fields.vorname}"/></td>
 								</tr>
 								<tr>

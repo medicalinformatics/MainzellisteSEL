@@ -25,6 +25,7 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.Response.Status;
+import javax.ws.rs.core.UriInfo;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpRequest;
@@ -76,25 +77,27 @@ public class PatientsResource {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public List<Patient> getAllPatients() throws UnauthorizedException {
+		throw new NotImplementedException();
 		// FIXME
 		//1. Auth prüfen: Falls nicht IDAT-Admin, UnauthorizedException werfen
 		
 		//2. Jeden Patienten aus der DB laden. Die müssen vom EntityManager abgekoppelt sein und nur Felder führen, die IDs sind.
 	
 		//3. Patienten in Liste zurückgeben.
-		return Persistor.instance.getPatients();
+		/*return Persistor.instance.getPatients();*/
 	}
 	
-	@POST
+/*	@POST //FIXME Problem im IE; der landet immer hier drin!
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response newPatientJson(
 			@QueryParam("tokenId") String tokenId,
+			@Context UriInfo context,
 			MultivaluedMap<String, String> form) throws JSONException {
 		ID newId = createNewPatient(tokenId, form);
 		
-		URI newUri = UriBuilder
-				.fromResource(PatientsResource.class)
+		URI newUri = context.getBaseUriBuilder()
+				.path(PatientsResource.class)
 				.path("/{idtype}/{idvalue}")
 				.build(newId.getType(), newId.getIdString());
 		
@@ -102,13 +105,13 @@ public class PatientsResource {
 				.put("newId", newId.getIdString())
 				.put("tentative", newId.isTentative())
 				.put("uri", newUri);
-
+		
 		return Response
 			.status(Status.CREATED)
 			.entity(ret)
 			.location(newUri)
 			.build();
-	}
+	}*/
 	
 	@POST
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
@@ -138,8 +141,12 @@ public class PatientsResource {
 			t.setType("addPatient");
 		}
 		if(t == null || !t.getType().equals("addPatient")){
-			logger.info("Received ID request with invalid token. Token-ID: " + tokenId +
-					t == null ? "" : ", Token type: " + t.getType());
+			String infoLog = "Received ID request with invalid token. Token with ID: " + tokenId;
+			if(t == null)
+				infoLog += " is unknown.";
+			else
+				infoLog += " has unexpected type: " + t.getType();
+			logger.info(infoLog);
 			throw new WebApplicationException(Response
 				.status(Status.UNAUTHORIZED)
 				.entity("Please supply a valid 'addPatient' token.")
@@ -159,7 +166,7 @@ public class PatientsResource {
 		Patient pNormalized = Config.instance.getRecordTransformer().transform(p);
 		pNormalized.setInputFields(chars);
 		
-		MatchResult match = Config.instance.getMatcher().match(pNormalized, getAllPatients());
+		MatchResult match = Config.instance.getMatcher().match(pNormalized, Persistor.instance.getPatients());
 		
 		ID id;
 		Patient assignedPatient; // The "real" patient that is assigned (match result or new patient) 
@@ -242,8 +249,9 @@ public class PatientsResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getPatientViaPid(
 			@PathParam("pid") String pidString){
-		//IDAT-Admin?
-		PID pid = (PID) IDGeneratorFactory.instance.getFactory("pid").buildId(pidString);
+		throw new NotImplementedException();
+		//FIXME IDAT-Admin?
+/*		PID pid = (PID) IDGeneratorFactory.instance.getFactory("pid").buildId(pidString);
 		Patient pat = Persistor.instance.getPatient(pid);
 		if(pat == null){
 			throw new WebApplicationException(Response
@@ -252,7 +260,7 @@ public class PatientsResource {
 					.build());
 		} else {
 			return Response.status(Status.OK).entity(pat).build();
-		}
+		}*/
 	}
 	
 	@Path("/pid/{pid}")
@@ -261,11 +269,12 @@ public class PatientsResource {
 	public Response setPatientByPid(
 			@PathParam("pid") String pid,
 			Patient p){
-		//IDAT-Admin?
-		Persistor.instance.updatePatient(p);
+		throw new NotImplementedException();
+		//FIXME IDAT-Admin?
+		/*Persistor.instance.updatePatient(p);
 		return Response
 				.status(Status.NO_CONTENT)
-				.build();
+				.build();*/
 	}
 	
 	@Path("/tempid/{tid}")

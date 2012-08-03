@@ -100,17 +100,19 @@ function validateForm()
 		<div class="inhalt">
 			<div>&nbsp;</div>
 			<div class="formular">
-	<form action="<%=request.getContextPath() %>/patients?tokenId=${it.tokenId}&callback=${it.callback}" method="post" id="form_person"
-		onsubmit="return validateForm();">
+				<form action="<%=request.getContextPath() %>/patients?tokenId=${it.tokenId}&callback=${it.callback}" method="post" id="form_person"
+					onsubmit="return validateForm();">
 					<h1>Patienten anlegen</h1>
 					<h3 class="header_left">Hinweise zur Eingabe</h3>
 					<p>
-						Die Patientenliste überprüft, ob der eingegebene Patient bereits existiert oder ob er neu angelegt werden muss. Sie können dabei helfen, diese Entscheidung zu treffen, indem Sie folgende Punkte beachten:
+						Diese Anwendung gibt für die von Ihnen im Folgenden einzugebenden Stammdaten einen Personenidentifikator (PID) zurück. 
+						Dabei wird der bekannte Patientenbestand durchsucht; bei einem Treffer wird der bestehende PID zurückgegeben. 
+						Bitte beachten Sie bei Ihrer Eingabe die folgenden Punkte:
 					</p>
 					<ul class="hinweisen_liste">
 						<li>
 							<span class="blauer_text">
-								Geben Sie alle Ihnen bekannten Vornamen, getrennt durch Leerzeichen, an. 
+								Geben Sie alle Ihnen bekannten Vornamen an, getrennt durch Leerzeichen. 
 							</span>
 						</li>
 						<li>
@@ -120,7 +122,7 @@ function validateForm()
 						</li>
 						<li>
 							<span class="blauer_text">
-								Geben Sie den Geburtsnamen an, falls er vom aktuellen Nachnamen abweicht (z.B. bei Namenswechsel durch Heirat).
+								Geben Sie den Geburtsnamen nur an, falls er vom aktuellen Nachnamen abweicht (z.B. bei Namenswechsel durch Heirat).
 							</span>
 						</li>
 					</ul>
@@ -129,13 +131,10 @@ function validateForm()
 
 
 		<%@ include file="patientFormElements.jsp" %>
-		</form>
+				</form>
 			</div>
-			<div>&nbsp;</div>
+			<div align="center">&nbsp;</div>
 		</div>
-		<div class="kontakt_daten">
-			<p>Kontakt: Martin Lablans, Institut für Medizinische Biometrie, Epidemiologie und Informatik, Universitätsmedizin der Johannes-Gutenberg-Universität Mainz. Tel.: 06131 17-5062</p>
-			<p>&copy; 2012</p>
-		</div>
+		<%@ include file="footer.jsp" %>
 	</body>
 </html>

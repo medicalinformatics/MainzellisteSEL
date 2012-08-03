@@ -9,7 +9,7 @@
 
 <link rel="stylesheet" type="text/css" href="<%=request.getContextPath() %>/static/css/patientenliste.css">
 
-<title>Patient angelegt</title>
+<title>Ergebnis</title>
 </head>
 
 <body>
@@ -20,26 +20,34 @@
 		<div class="inhalt">
 			<div class="formular">
 				<div>&nbsp;</div>
-				<h1>Patient wurde angelegt</h1>
+				<h1>Ergebnis</h1>
 
 	<p>
-		PID: ${it.id}
+		Ihr angeforderter PID lautet <tt><big>${it.id}</big></tt>. Bitte übernehmen Sie ihn in Ihre Unterlagen.
 	</p>
 	<%
 		Map<String, Object> map = (Map<String,Object>)request.getAttribute("it");
-		Boolean tentative = (Boolean) map.get("tentative");
+		boolean tentative = ((Boolean) map.get("tentative"));
 		if (tentative)
 		{
 	%>
 		<p>
 			Zu den eingegebenen Daten wurde ein ähnlicher Patient gefunden, der nicht
 			mit hinreichender Sicherheit zugeordnet werden kann. Der angezeigte PID
-			kann zwar verwendet werden, ist aber als vorläufig zu betrachten. Zukünftige
-			Abfragen mit den gleichen Daten werden möglicherweise einen anderen PID liefern.
+			ist als vorläufig zu betrachten. Das bedeutet, dass der PID zwar verwendet 
+			werden kann, aber zukünftige Abfragen mit den gleichen Daten können einen 
+			anderen	PID liefern.
 		<p>
-		<div>&nbsp;</div>
+		<div>
+			<form>
+				<input type="button" value="Fenster schließen" onClick="window.close()">
+			</form>
+		</div>
 	<%
 		}
 	%>
+		<div>&nbsp;</div>
+	</div>
+	<%@ include file="footer.jsp" %>
 </body>
 </html>

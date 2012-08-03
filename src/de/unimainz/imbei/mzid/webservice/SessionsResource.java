@@ -67,7 +67,7 @@ public class SessionsResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response newSession(@Context HttpServletRequest req) throws ServletException, JSONException{
 		
-		logger.info("Request to create session received by host" + req.getRemoteHost());
+		logger.info("Request to create session received by host " + req.getRemoteHost());
 		
 		Servers.instance.checkPermission(req, "createSession");
 		String sid = Servers.instance.newSession().getId();
@@ -158,11 +158,23 @@ public class SessionsResource {
 			@PathParam("session") SessionIdParam sid,
 			String tp) throws JSONException {
 		
-		logger.info("Received request to create token for session " + sid + " by host " + 
+		Session s = sid.getValue();
+		
+		logger.info("Received request to create token for session " + s.getId() + " by host " + 
 				req.getRemoteHost() + "\n" +
 				"Received data: " + tp);
 		
 		Token t = new TokenParam(tp).getValue();
+		
+		if(t.getType() == null) {
+			throw new WebApplicationException(Response
+					.status(Status.BAD_REQUEST)
+					.entity("Token type must not be empty.")
+					.build());
+		} else {
+			Servers.instance.checkPermission(req, "createToken");
+			Servers.instance.checkPermission(req, "tt_" + t.getType());
+		}
 		
 		// Prüfe Callback-URL
 		String callback = t.getDataItem("callback");
@@ -174,8 +186,6 @@ public class SessionsResource {
 				.build());
 		
 		//Token erstellen, speichern und URL zurückgeben
-		Session s = sid.getValue();
-		
 		Token t2 = Servers.instance.newToken(s.getId());
 		t2.setData(t.getData());
 		t2.setType(t.getType());
@@ -190,7 +200,7 @@ public class SessionsResource {
 				.put("uri", newUri);
 		
 		logger.info("Created token of type " + t2.getType() + " with id " + t2.getId() + 
-				" in session " + sid + "\n" +
+				" in session " + s.getId() + "\n" +
 				"Returned data: " + ret);
 
 		return Response

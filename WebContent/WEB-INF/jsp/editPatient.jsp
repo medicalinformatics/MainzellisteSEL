@@ -126,11 +126,6 @@ function validateForm()
 		</div>
 		<div>&nbsp;</div>
 	</div>
-	<div class="kontakt_daten">
-		<p>Kontakt: Martin Lablans, Institut für Medizinische Biometrie,
-			Epidemiologie und Informatik, Universitätsmedizin der
-			Johannes-Gutenberg-Universität Mainz. Tel.: 06131 17-5062</p>
-		<p>&copy; 2012</p>
-	</div>
+	<%@include file="footer.jsp" %>
 </body>
 </html>
