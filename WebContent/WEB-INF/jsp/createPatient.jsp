@@ -120,7 +120,7 @@ function validateForm()
 						</li>
 						<li>
 							<span class="blauer_text">
-								Geben Sie den Geburtsnamen an, falls er vom aktuellen Nachnamen abweicht (z.B. bei Namenswechsel durch Heirat)
+								Geben Sie den Geburtsnamen an, falls er vom aktuellen Nachnamen abweicht (z.B. bei Namenswechsel durch Heirat).
 							</span>
 						</li>
 					</ul>

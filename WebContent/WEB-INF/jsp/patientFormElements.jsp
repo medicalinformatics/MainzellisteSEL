@@ -6,7 +6,7 @@
 						Map<String, Object> map = (Map<String,Object>)request.getAttribute("it");
 						Map<String, Object> fields = (Map<String,Object>) map.get("fields");
 					%>
-					<h3>Patienten-Daten</h3>
+					<h3>Stammdaten</h3>
 					<fieldset class="patienten_daten">
 						<div>&nbsp;</div>
 						<div>&nbsp;</div>
@@ -14,21 +14,21 @@
 							<tbody>
 								<tr>
 									<td><label for="vorname">Vorname : </label></td>
-									<td><input type="text" id="vorname" name="vorname" size="50" placeholder="Vorname"
+									<td><input type="text" id="vorname" name="vorname" size="50" placeholder="Anne-Marie"
 										value="${it.fields.vorname}"/></td>
 								</tr>
 								<tr>
 									<td><label for="nachname">Nachname : </label></td>
-									<td><input type="text" id="nachname" name="nachname" size="50" placeholder="Nachname"
+									<td><input type="text" id="nachname" name="nachname" size="50" placeholder="Müller-Schulze"
 									value="${it.fields.nachname}"/></td>
 								</tr>
 								<tr>
 									<td><label for="geburtsname">Geburtsname : </label></td>
-									<td><input type="text" id="geburtsname" name="geburtsname" size="50" placeholder="Geburtsname"
-									value="${it.fields.geburtsname}"/></td>
+									<td><input type="text" id="geburtsname" name="geburtsname" size="50" placeholder="Schulze"
+									value="${it.fields.geburtsname}"/><small> (falls abweichend)</small></td>
 								</tr>
 								<tr>
-									<td><small>(falls abweichend)</small></td>
+									<td><small>&nbsp;</small></td>
 								</tr>
 								<tr>
 									<td><label for="geburtsdatum">Geburtsdatum :</label></td>
