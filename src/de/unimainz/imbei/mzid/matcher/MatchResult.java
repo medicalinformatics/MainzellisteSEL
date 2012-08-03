@@ -4,6 +4,8 @@ import javax.persistence.Basic;
 import javax.persistence.Embeddable;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.PrePersist;
+import javax.persistence.PreUpdate;
 
 import de.unimainz.imbei.mzid.Patient;
 
@@ -18,6 +20,13 @@ public class MatchResult {
 	private MatchResultType type;
 	
 	private double bestMatchedWeight; 
+
+	/**
+	 * @return the bestMatchedWeight
+	 */
+	public double getBestMatchedWeight() {
+		return bestMatchedWeight;
+	}
 
 	@ManyToOne
 	private Patient bestMatchedPatient;
@@ -44,9 +53,13 @@ public class MatchResult {
 		return this.type;
 	}
 
-	public MatchResult(MatchResultType type, Patient patient)
+	public MatchResult(MatchResultType type, Patient patient, double bestMatchedWeight)
 	{
 		this.type = type;
 		this.bestMatchedPatient = patient;
+		if (Double.isInfinite(bestMatchedWeight) || Double.isNaN(bestMatchedWeight))
+			this.bestMatchedWeight = -Double.MAX_VALUE;
+		else
+			this.bestMatchedWeight = bestMatchedWeight;
 	}	
 }

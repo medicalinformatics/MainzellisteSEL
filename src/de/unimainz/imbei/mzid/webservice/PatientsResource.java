@@ -194,6 +194,8 @@ public class PatientsResource {
 			return null;
 		}
 		
+		logger.info("Weight of best match: " + match.getBestMatchedWeight());
+		
 		IDRequest request = new IDRequest(p.getFields(), "pid", match, assignedPatient);
 		
 		Persistor.instance.addIdRequest(request);

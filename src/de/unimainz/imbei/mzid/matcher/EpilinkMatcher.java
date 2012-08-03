@@ -12,6 +12,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 import java.util.Vector;
 import java.util.regex.Pattern;
 
@@ -75,11 +76,38 @@ public class EpilinkMatcher implements Matcher {
 		{
 			// remove exchange group from the map of fields which are yet to be processed
 			// add field weights to weight sum
+			HashSet<String> missingFieldsLeft = new HashSet<String>();
+			HashSet<String> missingFieldsRight = new HashSet<String>();
+			
+			// TODO: Durchschnittsgewicht auch in Gewichtsberechnung berücksichtigen.
+			/* If a field in an exchange group is non-empty in both records,
+			 * add its weight to the weight sum. If a field is emtpy in both
+			 * records, do not consider its weight in the weight sum. For all
+			 * fields which are empty in one record only: Add to the weight sum their
+			 * mean value multiplied by the minumum number of non-empty fields from this 
+			 * group which across the two records. 
+			 */
+			
 			for (String fieldName : exchangeGroup)
 			{
 				fieldSet.remove(fieldName);
-				weightSum += weights.get(fieldName);;
+				boolean isEmptyLeft = left.getFields().get(fieldName).isEmpty();
+				boolean isEmptyRight = right.getFields().get(fieldName).isEmpty();
+				if (!isEmptyLeft && !isEmptyRight)
+					weightSum += weights.get(fieldName);
+				else if (!isEmptyLeft || !isEmptyLeft) {
+					if (isEmptyLeft) missingFieldsLeft.add(fieldName);
+					if (isEmptyRight) missingFieldsRight.add(fieldName);
+				}				
 			}
+			int minNonMissing = Math.min(missingFieldsLeft.size(), missingFieldsRight.size());
+			// calculate union
+			missingFieldsLeft.addAll(missingFieldsRight);
+			for (String fieldName : missingFieldsLeft)
+			{
+				weightSum += weights.get(fieldName) / missingFieldsLeft.size() * minNonMissing;
+			}
+			
 			LinkedList<LinkedList<String>> permutations = permutations(exchangeGroup);
 			
 			double bestPermWeight = 0.0; 
@@ -101,6 +129,10 @@ public class EpilinkMatcher implements Matcher {
 		
 		for (String fieldName : fieldSet)
 		{
+			// Ignore empty fields
+			if (left.getFields().get(fieldName).isEmpty() || right.getFields().get(fieldName).isEmpty())
+				continue;
+			
 			double fieldWeight = weights.get(fieldName); 
 			weightSum += fieldWeight;
 			double thisCompWeight = comparators.get(fieldName).compare(left, right) * fieldWeight; 
@@ -195,11 +227,11 @@ public class EpilinkMatcher implements Matcher {
 		}
 	
 		if (bestWeight >= threshold_match){
-			return new MatchResult(MatchResultType.MATCH, bestMatch);			
+			return new MatchResult(MatchResultType.MATCH, bestMatch, bestWeight);			
 		} else if (bestWeight < threshold_match && bestWeight > threshold_non_match) {
-			return new MatchResult(MatchResultType.POSSIBLE_MATCH, bestMatch);
+			return new MatchResult(MatchResultType.POSSIBLE_MATCH, bestMatch, bestWeight);
 		} else {
-			return new MatchResult(MatchResultType.NON_MATCH, null);
+			return new MatchResult(MatchResultType.NON_MATCH, null, bestWeight);
 		}				
 	}
 
