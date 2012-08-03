@@ -100,6 +100,7 @@ public class PatientsResource {
 		
 		JSONObject ret = new JSONObject()
 				.put("newId", newId.getIdString())
+				.put("tentative", newId.isTentative())
 				.put("uri", newUri);
 
 		return Response
@@ -210,12 +211,13 @@ public class PatientsResource {
 				logger.debug("Sending request to callback " + callback);
 				HttpClient httpClient = new DefaultHttpClient();
 				HttpPost callbackReq = new HttpPost(callback);
-				callbackReq.setHeader("Content-Type", "application");
-				HashMap<String, Object> reqBody = new HashMap<String, Object>();
-				reqBody.put("tokenId", t.getId());
-				reqBody.put("id", id);
-				ObjectMapper mapper = new ObjectMapper();
-				String reqBodyJSON = mapper.writeValueAsString(reqBody);
+				callbackReq.setHeader("Content-Type", MediaType.APPLICATION_JSON);
+				
+				JSONObject reqBody = new JSONObject()
+						.put("tokenId", t.getId())
+						.put("id", id);
+				
+				String reqBodyJSON = reqBody.toString();
 				StringEntity reqEntity = new StringEntity(reqBodyJSON);
 				reqEntity.setContentType("application/json");
 				callbackReq.setEntity(reqEntity);				
