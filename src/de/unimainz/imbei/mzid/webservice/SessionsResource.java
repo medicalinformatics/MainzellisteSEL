@@ -47,7 +47,7 @@ public class SessionsResource {
 		Set<URI> ret = new HashSet<URI>();
 		for(String s: Servers.instance.getSessionIds()){
 			URI u = UriBuilder
-				.fromUri(req.getRequestURI())
+				.fromUri(req.getRequestURL().toString())
 				.path("{sid}")
 				.build(s);
 			ret.add(u);
@@ -157,7 +157,7 @@ public class SessionsResource {
 		t2.setType(t.getType());
 		
 		URI newUri = UriBuilder
-				.fromUri(req.getRequestURI())
+				.fromUri(req.getRequestURL().toString())
 				.path("/{tid}")
 				.build(t2.getId());
 		

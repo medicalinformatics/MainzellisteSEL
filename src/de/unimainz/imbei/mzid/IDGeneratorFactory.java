@@ -37,7 +37,7 @@ public enum IDGeneratorFactory {
 		temp.put(pidgen.getIdType(), pidgen);
 		generators = Collections.unmodifiableMap(temp);
 		
-		logger.info("ID generators initialized successfully");
+		logger.info("ID generators have initialized successfully.");
 	}
 	
 	public IDGenerator<? extends ID> getFactory(String idType){

@@ -7,7 +7,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 
-<link rel="stylesheet" type="text/css" href="/mzid/static/css/patientenliste.css">
+<link rel="stylesheet" type="text/css" href="<%=request.getContextPath() %>/static/css/patientenliste.css">
 
 <title>Patient angelegt</title>
 </head>

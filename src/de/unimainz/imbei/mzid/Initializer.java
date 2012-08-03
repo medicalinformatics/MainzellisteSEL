@@ -35,7 +35,7 @@ import de.unimainz.imbei.mzid.dto.Persistor;
 	@PostConstruct
 	private void initialize(){
 		Logger logger = Logger.getLogger(Initializer.class);
-		logger.info("Initializing Singletons...");
+		logger.info("Initializing...");
 		Initializer.context = servletContext;
 		
 		//<DEBUG>
@@ -52,7 +52,7 @@ import de.unimainz.imbei.mzid.dto.Persistor;
 		IDGeneratorFactory idgf = IDGeneratorFactory.instance;
 		Servers s = Servers.instance;
 
-		logger.info("Singletons initialized successfully.");
+		logger.info("#####Startup succeeded. Ready to take requests.");
 	}
 	
 	private void log4jSetup(){
@@ -81,7 +81,7 @@ import de.unimainz.imbei.mzid.dto.Persistor;
 				return;
 			}
 		}
-		root.info("#####BEGIN MZID LOG SESSION#####");
+		root.info("#####BEGIN MZID LOG SESSION");
 	}
 	
 	static ServletContext getServletContext(){

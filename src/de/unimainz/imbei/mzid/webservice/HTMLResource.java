@@ -160,7 +160,7 @@ public class HTMLResource {
 				.status(Status.SEE_OTHER)
 //				.header("Cache-control", "must-revalidate")
 				.location(UriBuilder
-						.fromUri(req.getRequestURI())
+						.fromUri(req.getRequestURL().toString())
 						.path("")
 						.queryParam("id", pidString)
 						.build())

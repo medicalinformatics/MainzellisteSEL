@@ -5,7 +5,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
-<link rel="stylesheet" type="text/css" href="/mzid/static/css/patientenliste.css">
+<link rel="stylesheet" type="text/css" href="<%=request.getContextPath() %>/static/css/patientenliste.css">
 
 <title>Patienten anlegen</title>
 </head>
@@ -100,7 +100,7 @@ function validateForm()
 		<div class="inhalt">
 			<div>&nbsp;</div>
 			<div class="formular">
-	<form action="/mzid/patients?tokenId=${it.tokenId}&callback=${it.callback}" method="post" id="form_person"
+	<form action="<%=request.getContextPath() %>/patients?tokenId=${it.tokenId}&callback=${it.callback}" method="post" id="form_person"
 		onsubmit="return validateForm();">
 					<h1>Patienten anlegen</h1>
 					<h3 class="header_left">Hinweise zur Eingabe</h3>
