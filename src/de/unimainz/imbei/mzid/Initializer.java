@@ -58,28 +58,30 @@ import de.unimainz.imbei.mzid.dto.Persistor;
 	private void log4jSetup(){
 		Logger root = Logger.getRootLogger();
 		root.setLevel(Config.instance.getLogLevel());
-		String logFile = Config.instance.getProperty("logfile");
-		if(logFile != null){
+		String logFileName = Config.instance.getProperty("log.filename");
+		if(logFileName == null){
+			root.info("Using default logging output.");
+		} else {
 			PatternLayout layout = new PatternLayout("%d %p %t %c - %m%n");
 			try {
 				FileAppender app;
-				app = new FileAppender(layout, logFile);
+				app = new FileAppender(layout, logFileName);
 				app.setName("MzidFileAppender");
-				root.addAppender(app);
 				
 				// In production mode, avoid spamming the servlet container's logfile.
 				if(!Config.instance.debugIsOn()){
-					root.warn("Redirecting mzid log to " + logFile + ".");
+					root.warn("Redirecting mzid log to " + logFileName + ".");
 					root.removeAllAppenders();
 				}
 				
+				root.addAppender(app);
+				root.info("Logger setup to log on level " + Config.instance.getLogLevel() + " to " + logFileName);
 			} catch (IOException e) {
-				root.fatal("Unable to log to " + logFile + ": " + e.getMessage());
+				root.fatal("Unable to log to " + logFileName + ": " + e.getMessage());
 				return;
 			}
 		}
 		root.info("#####BEGIN MZID LOG SESSION#####");
-		root.info("Logger setup to log on level " + Config.instance.getLogLevel() + " to " + logFile);
 	}
 	
 	static ServletContext getServletContext(){
