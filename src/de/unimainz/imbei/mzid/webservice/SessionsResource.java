@@ -46,7 +46,7 @@ public class SessionsResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Set<URI> getSessionIds(@Context HttpServletRequest req){
 		
-		logger.info("Request to list sessions reveived by host " + req.getRemoteHost());
+		logger.info("Request to list sessions received by host " + req.getRemoteHost());
 		
 		//TODO: Auth: IDAT-Admin (sieht alle Sessions) oder MDAT-Server (sieht seine eigenen).
 		Servers.instance.checkPermission(req, "showSessionIds");
@@ -67,7 +67,7 @@ public class SessionsResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response newSession(@Context HttpServletRequest req) throws ServletException, JSONException{
 		
-		logger.info("Request to create session reveived by host" + req.getRemoteHost());
+		logger.info("Request to create session received by host" + req.getRemoteHost());
 		
 		Servers.instance.checkPermission(req, "createSession");
 		String sid = Servers.instance.newSession().getId();
@@ -129,7 +129,7 @@ public class SessionsResource {
 			@PathParam("session") String sid,
 			@Context HttpServletRequest req){
 		// No authentication other than knowing the session id.
-		logger.info("Reveived request to delete session " + sid + " from host " +
+		logger.info("Received request to delete session " + sid + " from host " +
 				req.getRemoteHost());
 		Servers.instance.deleteSession(sid);
 		logger.info("Deleted session " + sid);
