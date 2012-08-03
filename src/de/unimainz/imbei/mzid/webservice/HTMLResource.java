@@ -39,7 +39,7 @@ public class HTMLResource {
 	@GET
 	@Path("createPatient")
 	@Produces(MediaType.TEXT_HTML)
-	public Response createPatient(
+	public Response createPatientForm(
 			@QueryParam("tokenId") String tokenId,
 			@QueryParam("callback") String callback){
 		Token t = Servers.instance.getTokenByTid(tokenId);

@@ -67,7 +67,9 @@ public class SessionsResource {
 				.path("{sid}")
 				.build(sid);
 		
-		JSONObject ret = new JSONObject().put("uri", newUri);
+		JSONObject ret = new JSONObject()
+				.put("sessionId", sid)
+				.put("uri", newUri);
 		
 		return Response
 			.status(Status.CREATED)
@@ -135,7 +137,8 @@ public class SessionsResource {
 	public Response newToken(
 			@Context HttpServletRequest req,
 			@PathParam("session") SessionIdParam sid,
-			Token t){
+			String tp) throws JSONException {
+		Token t = new TokenParam(tp).getValue();
 		
 		// Prüfe Callback-URL
 		String callback = t.getDataItem("callback");
@@ -153,12 +156,19 @@ public class SessionsResource {
 		t2.setData(t.getData());
 		t2.setType(t.getType());
 		
-		return Response
-			.status(Status.CREATED)
-			.entity(UriBuilder
+		URI newUri = UriBuilder
 				.fromUri(req.getRequestURI())
 				.path("/{tid}")
-				.build(t2.getId()))
+				.build(t2.getId());
+		
+		JSONObject ret = new JSONObject()
+				.put("tokenId", t2.getId())
+				.put("uri", newUri);
+		
+		return Response
+			.status(Status.CREATED)
+			.location(newUri)
+			.entity(ret)
 			.build();
 	}
 	

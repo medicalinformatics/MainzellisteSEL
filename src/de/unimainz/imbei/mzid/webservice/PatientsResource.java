@@ -1,5 +1,6 @@
 package de.unimainz.imbei.mzid.webservice;
 
+import java.net.URI;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -22,6 +23,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.Response.Status;
 
 import org.apache.http.HttpEntity;
@@ -39,6 +41,8 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.HTTP;
 import org.apache.log4j.Logger;
 import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jettison.json.JSONException;
+import org.codehaus.jettison.json.JSONObject;
 
 import com.sun.jersey.api.view.Viewable;
 
@@ -72,6 +76,7 @@ public class PatientsResource {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public List<Patient> getAllPatients() throws UnauthorizedException {
+		// FIXME
 		//1. Auth prüfen: Falls nicht IDAT-Admin, UnauthorizedException werfen
 		
 		//2. Jeden Patienten aus der DB laden. Die müssen vom EntityManager abgekoppelt sein und nur Felder führen, die IDs sind.
@@ -79,14 +84,51 @@ public class PatientsResource {
 		//3. Patienten in Liste zurückgeben.
 		return Persistor.instance.getPatients();
 	}
-
+	
 	@POST
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 	@Produces(MediaType.APPLICATION_JSON)
-	public ID newPatient(
+	public Response newPatientJson(
+			@QueryParam("tokenId") String tokenId,
+			MultivaluedMap<String, String> form) throws JSONException {
+		ID newId = createNewPatient(tokenId, form);
+		
+		URI newUri = UriBuilder
+				.fromResource(PatientsResource.class)
+				.path("/{idtype}/{idvalue}")
+				.build(newId.getType(), newId.getIdString());
+		
+		JSONObject ret = new JSONObject()
+				.put("newId", newId.getIdString())
+				.put("uri", newUri);
+
+		return Response
+			.status(Status.CREATED)
+			.entity(ret)
+			.location(newUri)
+			.build();
+	}
+	
+	@POST
+	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+	@Produces(MediaType.TEXT_HTML)
+	public Response newPatientBrowser(
 			@QueryParam("tokenId") String tokenId,
 			MultivaluedMap<String, String> form){
+		ID id = createNewPatient(tokenId, form);
+		Map <String, Object> map = new HashMap<String, Object>();
+		if (id != null) { 
+			map.put("id", id.getIdString());
+			map.put("tentative", id.isTentative());
+		}
 		
+		return Response.ok(new Viewable("/patientCreated.jsp", map)).build();
+	}
+	
+	private ID createNewPatient(
+			String tokenId,
+			MultivaluedMap<String, String> form) throws WebApplicationException {
+
 		Token t = Servers.instance.getTokenByTid(tokenId);
 		// create a token if started in debug mode
 		if (t == null && Config.instance.debugIsOn())
@@ -188,22 +230,6 @@ public class PatientsResource {
 			}
 		}
 		return id;
-	}
-	
-	@POST
-	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-	@Produces(MediaType.TEXT_HTML)
-	public Response newPatientBrowser(
-			@QueryParam("tokenId") String tokenId,
-			MultivaluedMap<String, String> form){
-		ID id = newPatient(tokenId, form);
-		Map <String, Object> map = new HashMap<String, Object>();
-		if (id != null) { 
-			map.put("id", id.getIdString());
-			map.put("tentative", id.isTentative());
-		}
-		
-		return Response.ok(new Viewable("/patientCreated.jsp", map)).build();
 	}
 	
 	@Path("/pid/{pid}")

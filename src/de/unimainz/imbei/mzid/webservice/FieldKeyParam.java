@@ -12,7 +12,7 @@ public class FieldKeyParam extends AbstractParam<String> {
 	}
 	
 	@Override
-	protected String parse(String s) throws Throwable {
+	protected String parse(String s) throws WebApplicationException {
 		if(!Config.instance.getFieldKeys().contains(s)){
 			throw new WebApplicationException(Response
 				.status(Status.BAD_REQUEST)
