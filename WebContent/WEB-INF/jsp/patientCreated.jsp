@@ -25,27 +25,27 @@
 	<p>
 		Ihr angeforderter PID lautet <tt><big>${it.id}</big></tt>. Bitte übernehmen Sie ihn in Ihre Unterlagen.
 	</p>
-	<%
-		Map<String, Object> map = (Map<String,Object>)request.getAttribute("it");
-		boolean tentative = ((Boolean) map.get("tentative"));
-		if (tentative)
-		{
-	%>
-		<p>
-			Zu den eingegebenen Daten wurde ein ähnlicher Patient gefunden, der nicht
-			mit hinreichender Sicherheit zugeordnet werden kann. Der angezeigte PID
-			ist als vorläufig zu betrachten. Das bedeutet, dass der PID zwar verwendet 
-			werden kann, aber zukünftige Abfragen mit den gleichen Daten können einen 
-			anderen	PID liefern.
-		<p>
-		<div>
-			<form>
-				<input type="button" value="Fenster schließen" onClick="window.close()">
-			</form>
-		</div>
-	<%
-		}
-	%>
+<%-- 	<% --%>
+<!-- 		Map<String, Object> map = (Map<String,Object>)request.getAttribute("it"); -->
+<!-- 		boolean tentative = ((Boolean) map.get("tentative")); -->
+<!-- 		if (tentative) -->
+<!-- 		{ -->
+<!-- 	%> -->
+<!-- 		<p> -->
+<!-- 			Zu den eingegebenen Daten wurde ein ähnlicher Patient gefunden, der nicht -->
+<!-- 			mit hinreichender Sicherheit zugeordnet werden kann. Der angezeigte PID -->
+<!-- 			ist als vorläufig zu betrachten. Das bedeutet, dass der PID zwar verwendet  -->
+<!-- 			werden kann, aber zukünftige Abfragen mit den gleichen Daten können einen  -->
+<!-- 			anderen	PID liefern. -->
+<!-- 		<p> -->
+<!-- 		<div> -->
+<!-- 			<form> -->
+<!-- 				<input type="button" value="Fenster schließen" onClick="window.close()"> -->
+<!-- 			</form> -->
+<!-- 		</div> -->
+<%-- 	<% --%>
+<!-- 		} -->
+<!-- 	%> -->
 		<div>&nbsp;</div>
 	</div>
 	<%@ include file="footer.jsp" %>

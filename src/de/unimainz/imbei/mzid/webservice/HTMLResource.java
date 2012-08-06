@@ -82,7 +82,7 @@ public class HTMLResource {
 					.build());
 
 		Map <String, Object> map = new HashMap<String, Object>();
-		map.put("fields", p.getInputFields());
+		map.putAll(p.getInputFields());
 		map.put("id", pid.getIdString());
 		map.put("tentative", p.getId("pid").isTentative());
 		if (p.getOriginal() != p)

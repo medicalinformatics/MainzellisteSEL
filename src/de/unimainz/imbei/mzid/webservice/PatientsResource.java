@@ -121,12 +121,19 @@ public class PatientsResource {
 			MultivaluedMap<String, String> form){
 		ID id = createNewPatient(tokenId, form);
 		Map <String, Object> map = new HashMap<String, Object>();
-		if (id != null) { 
+		if (id == null) {
+			// Copy form to JSP model so that input is redisplayed
+			for (String key : form.keySet())
+			{
+				map.put(key, form.getFirst(key));
+			}
+			return Response.status(Status.ACCEPTED)
+					.entity(new Viewable("/unsureMatch.jsp", map)).build();
+		} else {
 			map.put("id", id.getIdString());
 			map.put("tentative", id.isTentative());
+			return Response.ok(new Viewable("/patientCreated.jsp", map)).build();
 		}
-		
-		return Response.ok(new Viewable("/patientCreated.jsp", map)).build();
 	}
 	
 	private ID createNewPatient(
@@ -182,6 +189,9 @@ public class PatientsResource {
 			
 		case NON_MATCH :
 		case POSSIBLE_MATCH :
+			if (match.getResultType() == MatchResultType.POSSIBLE_MATCH 
+			&& (form.getFirst("sureness") == null || !Boolean.parseBoolean(form.getFirst("sureness"))))
+				return null;
 			id = IDGeneratorFactory.instance.getFactory("pid").getNext(); //TODO: generalisieren			
 			Set<ID> ids = new HashSet<ID>();
 			ids.add(id);
@@ -196,7 +206,7 @@ public class PatientsResource {
 			}
 			assignedPatient = pNormalized;
 			break;
-		
+	
 		default :
 			// TODO
 			return null;
