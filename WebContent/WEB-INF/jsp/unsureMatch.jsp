@@ -27,19 +27,20 @@
 					onsubmit="return validateForm();">
 				<h1>Unsicherer Fall</h1>
 				<p>Zu den eingegeben Daten wurde ein ähnlicher Patient gefunden,
-					der aber nicht mit hinreichender Sicherheit zugeordnet werden kann.
+					der aber nicht mit hinreichender Sicherheit zugeordnet werden kann.</p>
+				<p>Bitte überprüfen Sie nochmals Ihre Eingabe! Dann:</p>
 				<ul class="blauer_text">
-					<li>Falls Sie die Daten korrigieren möchten, wählen Sie
-						"Korrigieren". Sie bekommen dann das Eingabeformular mit den
-						eingegebenen Daten erneut angezeigt.</li>
-					<li>Falls Sie sicher sind, dass die eingegebenen Daten
+					<li>Falls Sie einen Fehler festgestellt haben, wählen Sie "Korrigieren". 
+						Sie bekommen dann das Eingabeformular mit den eingegebenen Daten zur 
+						Korrektur erneut angezeigt.</li>
+					<li>Falls Sie sicher sind, dass die von Ihnen eingegebenen Daten
 						stimmen, wählen Sie "Bestätigen". Es wird dann ein neuer Patient
 						mit diesen Daten angelegt.</li>
-					<li>Falls Sie sicher sind, dass die eingegebenen Daten stimmen
-						und dass der Patient bereits eingegeben wurde, melden Sie sich bitte
-						beim Administrator (siehe Fußzeile).</li>
+					<li>Falls Sie sicher sind, dass die eingegebenen Daten stimmen, aber
+						der Patient schon früher einmal eingegeben wurde, melden Sie sich 
+						bitte beim Administrator der Patientenliste (siehe Fußzeile).</li>
 				</ul>
-				</p>
+				<p>&nbsp;</p>
 
 				<%@ include file="patientFormElements.jsp" %>
 			<div align="center">
