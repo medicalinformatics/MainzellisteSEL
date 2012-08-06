@@ -76,10 +76,15 @@ public class PatientsResource {
 	
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	public List<Patient> getAllPatients() throws UnauthorizedException {
+	public List<Patient> getAllPatients(@Context HttpServletRequest req) throws UnauthorizedException {
+		/* Benutzerrechte prüfen, basierend auf Rollenzuweisung in tomcat-users.xml.
+		 * Zusätzliche Prüfung via security-constraint in web.xml 
+		 */
+		if (!req.isUserInRole("admin"))
+			throw new UnauthorizedException();
+		
 		throw new NotImplementedException();
 		// FIXME
-		//1. Auth prüfen: Falls nicht IDAT-Admin, UnauthorizedException werfen
 		
 		//2. Jeden Patienten aus der DB laden. Die müssen vom EntityManager abgekoppelt sein und nur Felder führen, die IDs sind.
 	
@@ -119,7 +124,9 @@ public class PatientsResource {
 	public Response newPatientBrowser(
 			@QueryParam("tokenId") String tokenId,
 			MultivaluedMap<String, String> form){
-		ID id = createNewPatient(tokenId, form);
+		Map createRet = createNewPatient(tokenId, form); 
+		ID id = (ID) createRet.get("id");
+		MatchResult result = (MatchResult) createRet.get("result");
 		Map <String, Object> map = new HashMap<String, Object>();
 		if (id == null) {
 			// Copy form to JSP model so that input is redisplayed
@@ -127,20 +134,47 @@ public class PatientsResource {
 			{
 				map.put(key, form.getFirst(key));
 			}
+			
 			map.put("readonly", "true");
 			return Response.status(Status.ACCEPTED)
 					.entity(new Viewable("/unsureMatch.jsp", map)).build();
 		} else {
 			map.put("id", id.getIdString());
 			map.put("tentative", id.isTentative());
+			
+			if (Config.instance.debugIsOn() && result.getResultType() != MatchResultType.NON_MATCH)
+			{
+				map.put("debug", "on");
+				map.put("weight", Double.toString(result.getBestMatchedWeight()));
+				Map<String, Field<?>> matchedFields = result.getBestMatchedPatient().getFields();
+				Map<String, String> bestMatch= new HashMap<String, String>();
+				for(String fieldName : matchedFields.keySet())
+				{
+					bestMatch.put(fieldName, matchedFields.get(fieldName).toString());
+				}
+				map.put("bestMatch", bestMatch);
+			}
 			return Response.ok(new Viewable("/patientCreated.jsp", map)).build();
 		}
 	}
 	
-	private ID createNewPatient(
+	/**
+	 * PID request.
+	 * Looks for a patient with the specified data in the database. If a match is found, the 
+	 * ID of the matching patient is returned. If no match or possible match is found, a new
+	 * patient with the specified data is created. If a possible match is found and the form
+	 * has an entry "sureness" whose value can be parsed to true (by Boolean.parseBoolean()),
+	 * a new patient is created. Otherwise, return null.
+	 * @param tokenId
+	 * @param form
+	 * @return
+	 * @throws WebApplicationException if called with an invalid token.
+	 */
+	private Map createNewPatient(
 			String tokenId,
 			MultivaluedMap<String, String> form) throws WebApplicationException {
 
+		HashMap ret = new HashMap();
 		Token t = Servers.instance.getTokenByTid(tokenId);
 		// create a token if started in debug mode
 		if (t == null && Config.instance.debugIsOn())
@@ -252,7 +286,9 @@ public class PatientsResource {
 						.build());
 			}
 		}
-		return id;
+		ret.put("id", id);
+		ret.put("result", match);
+		return ret;
 	}
 	
 	@Path("/pid/{pid}")

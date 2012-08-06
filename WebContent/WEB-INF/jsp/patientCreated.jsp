@@ -25,6 +25,34 @@
 	<p>
 		Ihr angeforderter PID lautet <tt><big>${it.id}</big></tt>. Bitte übernehmen Sie ihn in Ihre Unterlagen.
 	</p>
+	
+<%
+	Map<String, Object> map = (Map<String,Object>)request.getAttribute("it");
+	if (map.containsKey("debug"))
+	{
+%>
+	<h3>Ähnlichster Eintrag:</h3>
+	<table>
+	<%
+	Map<String, String> fields = (Map<String, String>) map.get("bestMatch");
+	for (String key : fields.keySet()) {
+		%>
+		<tr>
+			<td><%=key %></td>
+			<td><%=fields.get(key) %></td>
+		</tr>
+		<%
+	}
+	
+	%>
+		<tr>
+			<td>Matchgewicht:</td>
+			<td><%=map.get("weight") %></td>
+		</tr>	
+	</table>
+<%
+	}
+%>	
 <%-- 	<% --%>
 <!-- 		Map<String, Object> map = (Map<String,Object>)request.getAttribute("it"); -->
 <!-- 		boolean tentative = ((Boolean) map.get("tentative")); -->
