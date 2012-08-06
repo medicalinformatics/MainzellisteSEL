@@ -127,6 +127,7 @@ public class PatientsResource {
 			{
 				map.put(key, form.getFirst(key));
 			}
+			map.put("disabled", "true");
 			return Response.status(Status.ACCEPTED)
 					.entity(new Viewable("/unsureMatch.jsp", map)).build();
 		} else {
