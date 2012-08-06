@@ -37,7 +37,9 @@
 											<% if (map.containsKey("readonly")) {
 												if (map != null && map.get("geburtstag") != null) {  
 													out.print(String.format("%02d", Integer.parseInt(map.get("geburtstag").toString())));
-												}
+													%>
+													<input type="hidden" name="geburtstag" value="<%= map.get("geburtstag") %>"/>
+													<%												}
 											} else {
 											%>
 											<select class="geburtstag" name="geburtstag" id ="geburtstag">
@@ -64,6 +66,9 @@
 											<% if (map.containsKey("readonly")) {
 												if (map != null && map.get("geburtsmonat") != null) {  
 													out.print(String.format("%02d", Integer.parseInt(map.get("geburtsmonat").toString())) + ".");
+													%>
+													<input type="hidden" name="geburtsmonat" value="<%= map.get("geburtsmonat") %>"/>
+													<%											
 												}
 											} else {
 											%>								
@@ -91,6 +96,9 @@
 											<% if (map.containsKey("readonly")) {
 												if (map != null && map.get("geburtsjahr") != null) {  
 													out.print(String.format("%02d", Integer.parseInt(map.get("geburtsjahr").toString())));
+													%>
+													<input type="hidden" name="geburtsjahr" value="<%= map.get("geburtsjahr") %>"/>
+													<%											
 												}
 											} else {
 											%>
