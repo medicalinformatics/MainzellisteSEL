@@ -28,7 +28,8 @@
 				<h1>Unsicherer Fall</h1>
 				<p>Zu den eingegeben Daten wurde ein ähnlicher Patient gefunden,
 					der aber nicht mit hinreichender Sicherheit zugeordnet werden kann.</p>
-				<p>Bitte überprüfen Sie nochmals Ihre Eingabe! Dann:</p>
+				<p>Um eine Verwechslung auszuschließen, überprüfen Sie bitte nochmals Ihre 
+					Eingabe! Dann:</p>
 				<ul class="blauer_text">
 					<li>Falls Sie einen Fehler festgestellt haben, wählen Sie "Korrigieren". 
 						Sie bekommen dann das Eingabeformular mit den eingegebenen Daten zur 
