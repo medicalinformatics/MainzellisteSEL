@@ -131,10 +131,10 @@
 									<td>
 										<input type="text" id="plz" name="plz" size="5" maxlength="5" 
 											value="${it.plz}" <% if (map.containsKey("readonly")) { %> readonly="readonly" <% } else { %>
-											placeholder="PLZ" <% } %>/>
+											placeholder="55131" <% } %>/>
 										<input type="text" id="ort" name="ort" size="40" 
 											value="${it.ort}" <% if (map.containsKey("readonly")) { %> readonly="readonly" <% } else {%>
-											placeholder="Ort" <% } %>/>
+											placeholder="Mainz" <% } %>/>
 									</td>
 								</tr>
 								<tr>
