@@ -34,7 +34,7 @@
 								</tr>
 								<tr>
 									<td><label for="geburtsdatum">Geburtsdatum :</label></td>
-									<td class="geburtsdatum" name="geburtsdatum">
+									<td class="geburtsdatum" id="geburtsdatum">
 										<div>
 											<% if (map.containsKey("readonly")) {
 												if (map != null && map.get("geburtstag") != null) {  

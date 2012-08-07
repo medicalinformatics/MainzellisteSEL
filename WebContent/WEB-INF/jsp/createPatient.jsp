@@ -68,6 +68,7 @@
 				<td>&nbsp;</td>
 			</div>
 			</form>
+			</div>
 		</div>
 		<%@ include file="footer.jsp" %>
 	</body>
