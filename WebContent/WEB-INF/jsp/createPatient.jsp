@@ -47,6 +47,11 @@
 								Geben Sie den Geburtsnamen nur an, falls er vom aktuellen Nachnamen abweicht (z.B. bei Namenswechsel durch Heirat).
 							</span>
 						</li>
+						<li>
+							<span class="blauer_text">
+								Die mit <font color="red">*</font> markierten Felder sind Pflichtfelder.
+							</span>
+						</li>
 					</ul>
 					<div>&nbsp;</div>
 					<p></p>

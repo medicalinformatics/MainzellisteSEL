@@ -14,12 +14,14 @@
 								<tr>
 									<td><label for="vorname">Vorname : </label></td>
 									<td><input type="text" id="vorname" name="vorname" size="50" placeholder="Anne-Marie Luise"
-										value="${it.vorname}" <% if (map.containsKey("readonly")) { %> readonly="readonly" <% } %>/></td>
+										value="${it.vorname}" <% if (map.containsKey("readonly")) { %> readonly="readonly" <% } %>/>
+										<font color="red">*</font></td>
 								</tr>
 								<tr>
 									<td><label for="nachname">Nachname : </label></td>
 									<td><input type="text" id="nachname" name="nachname" size="50" placeholder="Müller-Schulze"
-									value="${it.nachname}" <% if (map.containsKey("readonly")) { %> readonly="readonly" <% } %>/></td>
+									value="${it.nachname}" <% if (map.containsKey("readonly")) { %> readonly="readonly" <% } %>/>
+									<font color="red">*</font></td>
 								</tr>
 								<tr>
 									<td><label for="geburtsname">Geburtsname : </label></td>
@@ -59,10 +61,10 @@
 												<%
 												}
 												%>
-											</select>
+											</select><font color="red">*</font>
 											<%   
 											} 
-											%>.
+											%>
 											<% if (map.containsKey("readonly")) {
 												if (map != null && map.get("geburtsmonat") != null) {  
 													out.print(String.format("%02d", Integer.parseInt(map.get("geburtsmonat").toString())) + ".");
@@ -90,7 +92,7 @@
 												<%
 												}
 												%>
-											</select>
+											</select><font color="red">*</font>
 											<% } %>
 
 											<% if (map.containsKey("readonly")) {
@@ -121,7 +123,7 @@
 												<%
 												}
 												%>
-											</select>
+											</select><font color="red">*</font>
 											<% } %>
 										</div>
 									</td>
