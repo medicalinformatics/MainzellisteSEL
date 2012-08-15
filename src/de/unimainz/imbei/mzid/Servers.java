@@ -119,11 +119,13 @@ public enum Servers {
 						.build());
 			}
 			
-			if(!server.allowedRemoteAdresses.contains(req.getRemoteAddr())){
-				throw new WebApplicationException(Response
-						.status(Status.UNAUTHORIZED)
-						.entity(String.format("Rejecting your IP address %s.", req.getRemoteAddr()))
-						.build());
+			if(!Config.instance.getDist().equals("ILF-Testinstanz")){ //TODO: Entfernen!
+				if(!server.allowedRemoteAdresses.contains(req.getRemoteAddr())){
+					throw new WebApplicationException(Response
+							.status(Status.UNAUTHORIZED)
+							.entity(String.format("Rejecting your IP address %s.", req.getRemoteAddr()))
+							.build());
+				}
 			}
 			
 			perms = server.permissions;
