@@ -71,7 +71,7 @@ public class StringNormalizer extends FieldTransformer<PlainTextField, PlainText
 		
 		// Copy into new String, omitting leading and trainling delimiters
 		int start, end;
-		for (start = 0; delimiters.contains(inputStr.charAt(start)); start++);
+		for (start = 0; start < inputStr.length() && delimiters.contains(inputStr.charAt(start)); start++);
 		for (end = inputStr.length() - 1; end >= start && delimiters.contains(inputStr.charAt(end)); end--);
 		
 		resultString = new StringBuffer(inputStr.substring(start,  end + 1));
