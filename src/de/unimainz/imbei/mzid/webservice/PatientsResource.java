@@ -55,6 +55,7 @@ import de.unimainz.imbei.mzid.IDRequest;
 import de.unimainz.imbei.mzid.PID;
 import de.unimainz.imbei.mzid.Patient;
 import de.unimainz.imbei.mzid.Servers;
+import de.unimainz.imbei.mzid.Validator;
 import de.unimainz.imbei.mzid.dto.Persistor;
 import de.unimainz.imbei.mzid.exceptions.NotImplementedException;
 import de.unimainz.imbei.mzid.exceptions.UnauthorizedException;
@@ -80,6 +81,7 @@ public class PatientsResource {
 		/* Benutzerrechte prüfen, basierend auf Rollenzuweisung in tomcat-users.xml.
 		 * Zusätzliche Prüfung via security-constraint in web.xml 
 		 */
+		logger.info("Received GET /patients");
 		if (!req.isUserInRole("admin"))
 			throw new UnauthorizedException();
 		
@@ -99,7 +101,8 @@ public class PatientsResource {
 			@QueryParam("tokenId") String tokenId,
 			@Context UriInfo context,
 			MultivaluedMap<String, String> form) throws JSONException {
-		ID newId = createNewPatient(tokenId, form);
+		Map responseMap = createNewPatient(tokenId, form);
+		ID newId = (ID) responseMap.get("id");
 		
 		URI newUri = context.getBaseUriBuilder()
 				.path(PatientsResource.class)
@@ -116,8 +119,8 @@ public class PatientsResource {
 			.entity(ret)
 			.location(newUri)
 			.build();
-	}*/
-	
+	}
+	*/
 	@POST
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 	@Produces(MediaType.TEXT_HTML)
@@ -174,6 +177,7 @@ public class PatientsResource {
 			String tokenId,
 			MultivaluedMap<String, String> form) throws WebApplicationException {
 
+		Validator.instance.validateForm(form);
 		HashMap ret = new HashMap();
 		Token t = Servers.instance.getTokenByTid(tokenId);
 		// create a token if started in debug mode
@@ -225,8 +229,11 @@ public class PatientsResource {
 		case NON_MATCH :
 		case POSSIBLE_MATCH :
 			if (match.getResultType() == MatchResultType.POSSIBLE_MATCH 
-			&& (form.getFirst("sureness") == null || !Boolean.parseBoolean(form.getFirst("sureness"))))
-				return null;
+			&& (form.getFirst("sureness") == null || !Boolean.parseBoolean(form.getFirst("sureness")))) {
+				ret.put("id", null);
+				ret.put("result", match);
+				return ret;
+			}
 			id = IDGeneratorFactory.instance.getFactory("pid").getNext(); //TODO: generalisieren			
 			Set<ID> ids = new HashSet<ID>();
 			ids.add(id);
@@ -296,6 +303,7 @@ public class PatientsResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getPatientViaPid(
 			@PathParam("pid") String pidString){
+		logger.info("Received GET /patients/pid/" + pidString);
 		throw new NotImplementedException();
 		//FIXME IDAT-Admin?
 /*		PID pid = (PID) IDGeneratorFactory.instance.getFactory("pid").buildId(pidString);
@@ -331,6 +339,7 @@ public class PatientsResource {
 			@PathParam("tid") String tid){
 		//Hier keine Auth notwendig. Wenn tid existiert, ist der Nutzer dadurch autorisiert.
 		//Patient mit TempID tid zurückgeben
+		logger.info("Received GET /patients/tempid/" + tid);
 		throw new NotImplementedException();
 	}
 	
@@ -342,6 +351,7 @@ public class PatientsResource {
 			Patient p){
 		//Hier keine Auth notwendig. Wenn tid existiert, ist der Nutzer dadurch autorisiert.
 		//Charakteristika des Patients in DB mit TempID tid austauschen durch die von p
+		logger.info("Received PUT /patients/tempid/" + tid);
 		throw new NotImplementedException();
 	}
 }

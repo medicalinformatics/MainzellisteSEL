@@ -11,6 +11,10 @@ public class InternalErrorException extends WebApplicationException {
         super(Response.status(Status.INTERNAL_SERVER_ERROR).entity(message).build());
 	}
 	
+	public InternalErrorException(Throwable cause) {
+		super(cause, Status.INTERNAL_SERVER_ERROR);
+	}
+	
 	@Override
 	public String getMessage() {
 		return message;

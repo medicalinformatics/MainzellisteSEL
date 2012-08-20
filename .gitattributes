@@ -109,6 +109,7 @@ src/de/unimainz/imbei/mzid/RecordTransformer.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/Servers.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/Session.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/StringPair.java -text svneol=unset#text/plain
+src/de/unimainz/imbei/mzid/Validator.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/dto/IDAdapter.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/dto/IDDto.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/dto/PatientAdapter.java -text svneol=unset#text/plain
@@ -122,6 +123,7 @@ src/de/unimainz/imbei/mzid/exceptions/InternalErrorException.java -text svneol=u
 src/de/unimainz/imbei/mzid/exceptions/InvalidIDException.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/exceptions/NotImplementedException.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/exceptions/UnauthorizedException.java -text svneol=unset#text/plain
+src/de/unimainz/imbei/mzid/exceptions/ValidatorException.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/matcher/ArrayFieldComparator.java -text
 src/de/unimainz/imbei/mzid/matcher/BinaryFieldComparator.java -text
 src/de/unimainz/imbei/mzid/matcher/BloomFilterTransformer.java -text svneol=unset#text/plain

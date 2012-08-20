@@ -51,6 +51,7 @@ import de.unimainz.imbei.mzid.dto.Persistor;
 		Persistor p = Persistor.instance;
 		IDGeneratorFactory idgf = IDGeneratorFactory.instance;
 		Servers s = Servers.instance;
+		Validator v = Validator.instance;
 
 		logger.info("#####Startup succeeded. Ready to take requests.");
 	}

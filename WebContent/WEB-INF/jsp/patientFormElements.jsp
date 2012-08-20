@@ -50,7 +50,7 @@
 												for (int i=1; i <= 31; i++)
 												{
 												%>									
-												<option value="<%= i%>"
+												<option value="<% if (i < 10) { %>0<% }  %><%= i%>"
 													<% if (map != null && 
 														map.get("geburtstag") != null &&
 														i == Integer.parseInt(map.get("geburtstag").toString())) { %>
@@ -81,7 +81,7 @@
 												for (int i=1; i <= 12; i++)
 												{
 												%>									
-												<option value="<%= i%>"
+												<option value="<% if (i < 10) { %>0<% }  %><%= i%>"
 													<% if (map != null && 
 															map.get("geburtsmonat") != null &&
 															i==Integer.parseInt(map.get("geburtsmonat").toString())) { %>
