@@ -94,33 +94,7 @@ public class PatientsResource {
 		/*return Persistor.instance.getPatients();*/
 	}
 	
-/*	@POST //FIXME Problem im IE; der landet immer hier drin!
-	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-	@Produces(MediaType.APPLICATION_JSON)
-	public Response newPatientJson(
-			@QueryParam("tokenId") String tokenId,
-			@Context UriInfo context,
-			MultivaluedMap<String, String> form) throws JSONException {
-		Map responseMap = createNewPatient(tokenId, form);
-		ID newId = (ID) responseMap.get("id");
-		
-		URI newUri = context.getBaseUriBuilder()
-				.path(PatientsResource.class)
-				.path("/{idtype}/{idvalue}")
-				.build(newId.getType(), newId.getIdString());
-		
-		JSONObject ret = new JSONObject()
-				.put("newId", newId.getIdString())
-				.put("tentative", newId.isTentative())
-				.put("uri", newUri);
-		
-		return Response
-			.status(Status.CREATED)
-			.entity(ret)
-			.location(newUri)
-			.build();
-	}
-	*/
+
 	@POST
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 	@Produces(MediaType.TEXT_HTML)
@@ -161,6 +135,36 @@ public class PatientsResource {
 		}
 	}
 	
+	@POST //FIXME Problem im IE; der landet immer hier drin!
+	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response newPatientJson(
+			@QueryParam("tokenId") String tokenId,
+			@Context HttpServletRequest request,
+			@Context UriInfo context,
+			MultivaluedMap<String, String> form) throws JSONException {
+		Map responseMap = createNewPatient(tokenId, form);
+		logger.info("Accept: " + request.getHeader("Accept"));
+		logger.info("Content-Type: " + request.getHeader("Content-Type"));
+		ID newId = (ID) responseMap.get("id");
+		
+		URI newUri = context.getBaseUriBuilder()
+				.path(PatientsResource.class)
+				.path("/{idtype}/{idvalue}")
+				.build(newId.getType(), newId.getIdString());
+		
+		JSONObject ret = new JSONObject()
+				.put("newId", newId.getIdString())
+				.put("tentative", newId.isTentative())
+				.put("uri", newUri);
+		
+		return Response
+			.status(Status.CREATED)
+			.entity(ret)
+			.location(newUri)
+			.build();
+	}
+
 	/**
 	 * PID request.
 	 * Looks for a patient with the specified data in the database. If a match is found, the 
