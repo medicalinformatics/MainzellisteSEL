@@ -1,6 +1,8 @@
 package de.unimainz.imbei.mzid.dto;
 
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -26,6 +28,9 @@ public enum Persistor {
 	instance;
 	
 	private EntityManagerFactory emf;
+	
+	/** Caches patient list */
+	private List<Patient> cache = null;
 	
 	private Persistor() {
 		HashMap<String, String> persistenceOptions = new HashMap<String, String>();
@@ -60,15 +65,20 @@ public enum Persistor {
 	}
 	
 	public List<Patient> getPatients() { //TODO: Filtern
+		if (cache != null) return cache;
 		EntityManager em = emf.createEntityManager();
 		List<Patient> pl = em.createQuery("select p from Patient p", Patient.class).getResultList();
+		cache = new LinkedList<Patient>(pl);
 		em.close(); // causes all entities to be detached
-		return pl;
+		return Collections.unmodifiableList(pl);
 	}
 
 	public synchronized void addIdRequest(IDRequest req){
 		EntityManager em = emf.createEntityManager();
 		em.getTransaction().begin();
+		// add assigned patient to cache if not yet persisted
+		if (!em.contains(req.getAssignedPatient())  && this.cache != null)
+			this.cache.add(req.getAssignedPatient());
 		em.persist(req); //TODO: Fehlerbehandlung, falls PID schon existiert.
 		em.getTransaction().commit();
 		em.close();
@@ -89,6 +99,7 @@ public enum Persistor {
 		Patient pOriginal = getPatient(idOfOriginal);
 		pDuplicate.setOriginal(pOriginal);
 		updatePatient(pDuplicate);
+		cache = null;
 	}
 	
 	public IDGeneratorMemory getIDGeneratorMemory(String idString)
@@ -119,5 +130,6 @@ public enum Persistor {
 		em.merge(p);
 		em.getTransaction().commit();
 		em.close();
+		cache = null;
 	}
 }
