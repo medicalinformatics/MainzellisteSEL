@@ -64,13 +64,21 @@ public enum Persistor {
 			return result.get(0);
 	}
 	
-	public List<Patient> getPatients() { //TODO: Filtern
-		if (cache != null) return cache;
-		EntityManager em = emf.createEntityManager();
-		List<Patient> pl = em.createQuery("select p from Patient p", Patient.class).getResultList();
-		cache = new LinkedList<Patient>(pl);
-		em.close(); // causes all entities to be detached
-		return Collections.unmodifiableList(pl);
+	/**
+	 * Returns all patients currently persisted in the patient list. This is not a copy!
+	 * Caller MUST NOT perform write operations on the return value or its linked objects.
+	 * 
+	 * @return All persisted patients.
+	 */
+	public synchronized List<Patient> getPatients() { //TODO: Filtern
+		if (cache == null){
+			EntityManager em = emf.createEntityManager();
+			List<Patient> pl = em.createQuery("select p from Patient p", Patient.class).getResultList();
+			em.close(); // causes all entities to be detached
+			cache = new LinkedList<Patient>(pl);
+		}
+			
+		return Collections.unmodifiableList(cache);
 	}
 
 	public synchronized void addIdRequest(IDRequest req){
@@ -114,15 +122,6 @@ public enum Persistor {
 		else
 			return result.get(0);
 	}
-	
-//	public List<IDGeneratorMemory> getIDGeneratorMemories()
-//	{
-//		EntityManager em = emf.createEntityManager();
-//		TypedQuery<IDGeneratorMemory> q = em.createQuery("SELECT m FROM IDGeneratorMemory m WHERE m.idString = :idString", IDGeneratorMemory.class);
-//		q.setParameter("idString", idString);
-//		List<IDGeneratorMemory> result = q.getResultList();
-//		em.close();
-//	}
 	
 	public synchronized void updatePatient(Patient p){
 		EntityManager em = emf.createEntityManager();
