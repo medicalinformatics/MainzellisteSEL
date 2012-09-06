@@ -147,6 +147,7 @@ public class PatientsResource {
 		logger.info("Accept: " + request.getHeader("Accept"));
 		logger.info("Content-Type: " + request.getHeader("Content-Type"));
 		ID newId = (ID) responseMap.get("id");
+		MatchResult result = (MatchResult) responseMap.get("result");
 		
 		URI newUri = context.getBaseUriBuilder()
 				.path(PatientsResource.class)
@@ -157,6 +158,9 @@ public class PatientsResource {
 				.put("newId", newId.getIdString())
 				.put("tentative", newId.isTentative())
 				.put("uri", newUri);
+				
+		if (Config.instance.debugIsOn())
+			ret.put("max_weight", result.getBestMatchedWeight());
 		
 		return Response
 			.status(Status.CREATED)
