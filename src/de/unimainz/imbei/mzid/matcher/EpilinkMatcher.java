@@ -1,8 +1,5 @@
 package de.unimainz.imbei.mzid.matcher;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -16,15 +13,9 @@ import java.util.Set;
 import java.util.Vector;
 import java.util.regex.Pattern;
 
-import javax.swing.JOptionPane;
-
-import de.unimainz.imbei.mzid.Config;
-import de.unimainz.imbei.mzid.Field;
-import de.unimainz.imbei.mzid.Config.FieldType;
 import de.unimainz.imbei.mzid.Patient;
 import de.unimainz.imbei.mzid.exceptions.InternalErrorException;
 import de.unimainz.imbei.mzid.matcher.MatchResult.MatchResultType;
-import de.unimainz.imbei.mzid.Config;
 
 public class EpilinkMatcher implements Matcher {
 
@@ -39,95 +30,80 @@ public class EpilinkMatcher implements Matcher {
 	private Map<String, Double> weights;
 	
 	private List<List<String>> exchangeGroups;
+	private Set<String> nonExchangeFields;
 	
-	private static LinkedList<LinkedList<String>> permutations(List<String> elements)
+	private static List<List<String>> permutations(List<String> elements)
 	{
-		LinkedList<LinkedList<String>> result = new LinkedList<LinkedList<String>>();
+		LinkedList<List<String>> result = new LinkedList<List<String>>();
+		if(elements.size() == 0) return result;
+		permutationWorker(result, new LinkedList<String>(), elements);
+		return result;
+	}
+	
+	private static void permutationWorker(List<List<String>> result, List<String> prefix, List<String> elements) {
 		LinkedList<String> workingCopy;
-		if (elements.size() <= 1)
+		if (elements.size() == 1)
 		{
-			workingCopy = new LinkedList<String>(elements);
-			result.add(new LinkedList<String>(workingCopy));
+			List<String> thisPerm = new LinkedList<String>(prefix);
+			thisPerm.add(elements.get(0));
+			result.add(thisPerm);
 		} else {
 			for (String elem : elements)
 			{
-				workingCopy = new LinkedList<String>(elements);
-				workingCopy.remove(elem);
-				LinkedList<LinkedList<String>> restPerm = permutations(workingCopy);
-				for (LinkedList<String> thisList : restPerm)
-				{
-					thisList.addFirst(elem);
-					result.add(thisList);
-				}
+				List<String> prefixClone = new LinkedList<String>(prefix);
+				prefixClone.add(elem);
+				workingCopy = new LinkedList<String>();
+				for (String copyElem : elements)
+					if (copyElem!=elem) workingCopy.add(copyElem);
+				permutationWorker(result, prefixClone, workingCopy);
 			}
-		}
-		return result;		
+		}	
 	}
 	
 	public double calculateWeight(Patient left, Patient right)
 	{
 
+	
 		double weightSum = 0; // holds sum of field weights 
 		double totalWeight = 0; // holds total weight
-		HashSet<String> fieldSet = new HashSet<String>(weights.keySet());
 		
 		// process exchange groups
 		for (List<String> exchangeGroup : this.exchangeGroups)
 		{
-			// remove exchange group from the map of fields which are yet to be processed
-			// add field weights to weight sum
-			HashSet<String> missingFieldsLeft = new HashSet<String>();
-			HashSet<String> missingFieldsRight = new HashSet<String>();
 			
-			// TODO: Durchschnittsgewicht auch in Gewichtsberechnung berücksichtigen.
-			/* If a field in an exchange group is non-empty in both records,
-			 * add its weight to the weight sum. If a field is emtpy in both
-			 * records, do not consider its weight in the weight sum. For all
-			 * fields which are empty in one record only: Add to the weight sum their
-			 * mean value multiplied by the minumum number of non-empty fields from this 
-			 * group which across the two records. 
-			 */
+			List<List<String>> permutations = permutations(exchangeGroup);
 			
-			for (String fieldName : exchangeGroup)
-			{
-				fieldSet.remove(fieldName);
-				boolean isEmptyLeft = left.getFields().get(fieldName).isEmpty();
-				boolean isEmptyRight = right.getFields().get(fieldName).isEmpty();
-				if (!isEmptyLeft && !isEmptyRight)
-					weightSum += weights.get(fieldName);
-				else if (!isEmptyLeft || !isEmptyLeft) {
-					if (isEmptyLeft) missingFieldsLeft.add(fieldName);
-					if (isEmptyRight) missingFieldsRight.add(fieldName);
-				}				
-			}
-			int minNonMissing = Math.min(missingFieldsLeft.size(), missingFieldsRight.size());
-			// calculate union
-			missingFieldsLeft.addAll(missingFieldsRight);
-			for (String fieldName : missingFieldsLeft)
-			{
-				weightSum += weights.get(fieldName) / missingFieldsLeft.size() * minNonMissing;
-			}
-			
-			LinkedList<LinkedList<String>> permutations = permutations(exchangeGroup);
-			
-			double bestPermWeight = 0.0; 
-			for (LinkedList<String> permutation : permutations)
+			double bestPermWeight = Double.NEGATIVE_INFINITY; 
+			double bestPermWeightSum = 0.0;
+			for (List<String> permutation : permutations)
 			{
 				double thisPermWeight = 0.0;
+				double thisPermWeightSum = 0;
 				Iterator<String> fieldIterator = exchangeGroup.iterator();
 				for (String fieldNamePerm : permutation)
 				{
 					String fieldName = fieldIterator.next();
+					// Do not consider empty fields
+					if (left.getFields().get(fieldName).isEmpty() || 
+							right.getFields().get(fieldNamePerm).isEmpty())
+						continue;
+					
+					// account mean value of field weights
+					double meanFieldWeight = 0.5 * (weights.get(fieldName) + weights.get(fieldNamePerm));
 					thisPermWeight += comparators.get(fieldName).compare(left.getFields().get(fieldName),
-							right.getFields().get(fieldNamePerm)) * weights.get(fieldName);
+							right.getFields().get(fieldNamePerm)) * meanFieldWeight;
+					thisPermWeightSum += meanFieldWeight;
 				}
-				if (thisPermWeight > bestPermWeight)
+				if (thisPermWeight >= bestPermWeight) {
 					bestPermWeight = thisPermWeight;
+					bestPermWeightSum = thisPermWeightSum;
+				}
 			}
 			totalWeight += bestPermWeight;
+			weightSum += bestPermWeightSum;
 		}
 		
-		for (String fieldName : fieldSet)
+		for (String fieldName : nonExchangeFields)
 		{
 			// Ignore empty fields
 			if (left.getFields().get(fieldName).isEmpty() || right.getFields().get(fieldName).isEmpty())
@@ -197,12 +173,15 @@ public class EpilinkMatcher implements Matcher {
 	
 		// initialize exchange groups
 		//TODO Mechanismus generalisieren für andere Matcher
+		this.nonExchangeFields = new HashSet<String>(this.weights.keySet());
 		this.exchangeGroups = new Vector<List<String>>();
 		for (int i = 0; props.containsKey("exchangeGroup." + i); i++)
 		{
 			String exchangeFields[] = props.getProperty("exchangeGroup." + i).split(" *[;,] *");
-			for (String fieldName : exchangeFields)
+			for (String fieldName : exchangeFields) {
+				this.nonExchangeFields.remove(fieldName);
 				fieldName = fieldName.trim();
+			}
 			this.exchangeGroups.add(new Vector<String>(Arrays.asList(exchangeFields)));
 		}
 	}
@@ -237,8 +216,8 @@ public class EpilinkMatcher implements Matcher {
 
 	public static void main(String args[]){
 		LinkedList<String> elements = new LinkedList<String>(Arrays.asList("a", "b", "c"));
-		LinkedList<LinkedList<String>> permutations = permutations(elements);
-		for (LinkedList<String> thisList : permutations)
+		List<List<String>> permutations = permutations(elements);
+		for (List<String> thisList : permutations)
 			System.out.println(thisList.toString());
 	}
 }
