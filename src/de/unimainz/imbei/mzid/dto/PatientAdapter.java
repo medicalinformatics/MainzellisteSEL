@@ -1,29 +1,17 @@
 package de.unimainz.imbei.mzid.dto;
 
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
-
 import javax.persistence.Basic;
-import javax.persistence.ElementCollection;
-import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.xml.bind.annotation.adapters.XmlAdapter;
-
 import org.apache.log4j.Logger;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
-import org.codehaus.jettison.json.JSONWriter;
-
 import de.unimainz.imbei.mzid.Field;
-import de.unimainz.imbei.mzid.ID;
 import de.unimainz.imbei.mzid.Patient;
 import de.unimainz.imbei.mzid.exceptions.InternalErrorException;
 

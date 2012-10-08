@@ -7,7 +7,6 @@ import java.util.Vector;
 
 import org.apache.commons.codec.digest.DigestUtils;
 
-import de.unimainz.imbei.mzid.CompoundField;
 import de.unimainz.imbei.mzid.HashedField;
 import de.unimainz.imbei.mzid.Patient;
 import de.unimainz.imbei.mzid.PlainTextField;
@@ -73,6 +72,7 @@ public class BloomFilterTransformer extends FieldTransformer<PlainTextField, Has
 	}
 	
 
+	@Override
 	public HashedField transform(PlainTextField input)
 	{	
 		BitSet bitSet = new BitSet(hashLength);
@@ -90,11 +90,13 @@ public class BloomFilterTransformer extends FieldTransformer<PlainTextField, Has
 		return output;
 	}
 	
+	@Override
 	public Class<PlainTextField> getInputClass()
 	{
 		return PlainTextField.class;
 	}
 	
+	@Override
 	public Class<HashedField> getOutputClass()
 	{
 		return HashedField.class;

@@ -59,6 +59,7 @@ public class StringNormalizer extends FieldTransformer<PlainTextField, PlainText
 	 * @param input
 	 * @return
 	 */
+	@Override
 	public PlainTextField transform(PlainTextField input)
 	{
 		if (input == null) return null;
@@ -96,11 +97,13 @@ public class StringNormalizer extends FieldTransformer<PlainTextField, PlainText
 		
 	}
 
+	@Override
 	public Class<PlainTextField> getInputClass()
 	{
 		return PlainTextField.class;
 	}
 
+	@Override
 	public Class<PlainTextField> getOutputClass()
 	{
 		return PlainTextField.class;

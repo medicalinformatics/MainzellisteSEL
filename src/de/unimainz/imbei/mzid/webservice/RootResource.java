@@ -9,10 +9,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
 import org.codehaus.jettison.json.JSONObject;
-import org.codehaus.jettison.json.JSONWriter;
-
-import com.sun.jersey.json.impl.writer.JsonEncoder;
-
 import de.unimainz.imbei.mzid.Config;
 
 @Path("/")

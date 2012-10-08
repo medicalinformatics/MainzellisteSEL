@@ -16,7 +16,6 @@ import javax.ws.rs.core.Response.Status;
 
 import org.apache.log4j.Logger;
 
-import de.unimainz.imbei.mzid.exceptions.UnauthorizedException;
 import de.unimainz.imbei.mzid.webservice.Token;
 
 public enum Servers {

@@ -1,13 +1,11 @@
 package de.unimainz.imbei.mzid;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
-import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -23,10 +21,6 @@ import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.apache.log4j.Logger;
-import org.apache.openjpa.persistence.Externalizer;
-import org.apache.openjpa.persistence.Factory;
-import org.apache.openjpa.persistence.Persistent;
-import org.apache.openjpa.persistence.Type;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;

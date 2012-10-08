@@ -1,8 +1,5 @@
 package de.unimainz.imbei.mzid.matcher;
 
-import java.util.Iterator;
-import java.util.Vector;
-
 import de.unimainz.imbei.mzid.Patient;
 
 /**

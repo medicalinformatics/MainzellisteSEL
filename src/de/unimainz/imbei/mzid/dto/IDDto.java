@@ -1,7 +1,5 @@
 package de.unimainz.imbei.mzid.dto;
 
-import javax.xml.bind.annotation.XmlAttribute;
-
 /**
  * DTO for IDs. Can be converted from and into any type of ID.
  * 

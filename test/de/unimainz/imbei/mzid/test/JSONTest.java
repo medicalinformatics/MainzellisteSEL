@@ -2,8 +2,6 @@ package de.unimainz.imbei.mzid.test;
 
 import org.codehaus.jettison.json.JSONObject;
 
-import com.sun.org.apache.bcel.internal.classfile.InnerClass;
-
 public class JSONTest {
 
 	public static void main(String args[]) {

@@ -1,16 +1,11 @@
 package de.unimainz.imbei.mzid.matcher;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.Vector;
-
-import de.unimainz.imbei.mzid.Field;
 import de.unimainz.imbei.mzid.PlainTextField;
-import de.unimainz.imbei.mzid.Patient;
 
 public class NGramComparator extends FieldComparator<PlainTextField> {
 
@@ -53,8 +48,8 @@ public class NGramComparator extends FieldComparator<PlainTextField> {
 		assert (fieldLeft instanceof PlainTextField);
 		assert (fieldRight instanceof PlainTextField);
 		
-		Set<String> nGramsLeft = getNGrams((String) fieldLeft.getValue());
-		Set<String> nGramsRight = getNGrams((String) fieldRight.getValue());
+		Set<String> nGramsLeft = getNGrams(fieldLeft.getValue());
+		Set<String> nGramsRight = getNGrams(fieldRight.getValue());
 		
 		int nLeft = nGramsLeft.size();
 		int nRight = nGramsRight.size();

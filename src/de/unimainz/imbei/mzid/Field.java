@@ -1,6 +1,5 @@
 package de.unimainz.imbei.mzid;
 
-import java.io.Serializable;
 import java.lang.reflect.Constructor;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -11,8 +10,6 @@ import javax.persistence.InheritanceType;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
-import org.codehaus.jettison.json.JSONString;
-
 import de.unimainz.imbei.mzid.exceptions.NotImplementedException;
 
 /**
@@ -74,6 +71,7 @@ public abstract class Field<T> {
 			return false;
 	}
 
+	@Override
 	public String toString() {
 		return this.getValue().toString();
 	}

@@ -1,16 +1,7 @@
 package de.unimainz.imbei.mzid.dto;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Properties;
-
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
@@ -23,10 +14,6 @@ import de.unimainz.imbei.mzid.ID;
 import de.unimainz.imbei.mzid.IDGeneratorMemory;
 import de.unimainz.imbei.mzid.IDRequest;
 import de.unimainz.imbei.mzid.Patient;
-import de.unimainz.imbei.mzid.exceptions.InternalErrorException;
-import de.unimainz.imbei.mzid.exceptions.NotImplementedException;
-
-import org.postgresql.Driver;
 
 /**
  * Handles reading and writing from and to the database.

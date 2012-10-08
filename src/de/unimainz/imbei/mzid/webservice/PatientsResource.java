@@ -1,10 +1,8 @@
 package de.unimainz.imbei.mzid.webservice;
 
 import java.net.URI;
-import java.net.URL;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -23,25 +21,14 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpRequest;
-import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.BasicHttpEntity;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicHttpRequest;
-import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.protocol.HTTP;
 import org.apache.log4j.Logger;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 
@@ -52,16 +39,12 @@ import de.unimainz.imbei.mzid.Field;
 import de.unimainz.imbei.mzid.ID;
 import de.unimainz.imbei.mzid.IDGeneratorFactory;
 import de.unimainz.imbei.mzid.IDRequest;
-import de.unimainz.imbei.mzid.PID;
 import de.unimainz.imbei.mzid.Patient;
 import de.unimainz.imbei.mzid.Servers;
-import de.unimainz.imbei.mzid.Validator;
 import de.unimainz.imbei.mzid.dto.Persistor;
 import de.unimainz.imbei.mzid.exceptions.NotImplementedException;
 import de.unimainz.imbei.mzid.exceptions.UnauthorizedException;
-import de.unimainz.imbei.mzid.matcher.FieldTransformer;
 import de.unimainz.imbei.mzid.matcher.MatchResult;
-import de.unimainz.imbei.mzid.matcher.Matcher;
 import de.unimainz.imbei.mzid.matcher.MatchResult.MatchResultType;
 
 /**

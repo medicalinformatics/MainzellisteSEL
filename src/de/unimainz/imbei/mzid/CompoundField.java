@@ -1,6 +1,5 @@
 package de.unimainz.imbei.mzid;
 
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Vector;
@@ -11,7 +10,6 @@ import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 
 import org.apache.log4j.Logger;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
@@ -89,6 +87,7 @@ public class CompoundField<T extends Field<?>> extends Field<List<T>> {
 		this.value = value;
 	}
 	
+	@Override
 	public void setValue(String s) {
 		try {
 //			JSONObject obj = new JSONObject(s);
@@ -164,6 +163,7 @@ public class CompoundField<T extends Field<?>> extends Field<List<T>> {
 		return new CompoundField<T>((List<T>) copies);
 	}
 	
+	@Override
 	public JSONArray getValueJSON() throws JSONException {
 		JSONArray obj = new JSONArray();
 		for (T field : this.value) {

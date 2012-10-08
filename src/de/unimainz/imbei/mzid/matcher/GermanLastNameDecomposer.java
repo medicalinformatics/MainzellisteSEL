@@ -50,6 +50,7 @@ public class GermanLastNameDecomposer extends FieldTransformer<PlainTextField, C
 		}
 		
 	}
+	@Override
 	public CompoundField<PlainTextField> transform(PlainTextField input)
 	{
 		CompoundField<PlainTextField> output = new CompoundField<PlainTextField>(nComponents); 
@@ -89,11 +90,13 @@ public class GermanLastNameDecomposer extends FieldTransformer<PlainTextField, C
 		
 	}
 
+	@Override
 	public Class<PlainTextField> getInputClass()
 	{
 		return PlainTextField.class;
 	}
 	
+	@Override
 	public Class<CompoundField<PlainTextField>> getOutputClass()
 	{
 		return (Class<CompoundField<PlainTextField>>) new CompoundField<PlainTextField>(3).getClass();

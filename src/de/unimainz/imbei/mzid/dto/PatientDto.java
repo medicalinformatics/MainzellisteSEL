@@ -1,10 +1,5 @@
 package de.unimainz.imbei.mzid.dto;
 
-import java.util.Map;
-import java.util.Set;
-
-import de.unimainz.imbei.mzid.Field;
-
 /**
  * DTO für Patient
  * 

@@ -2,9 +2,7 @@ package de.unimainz.imbei.mzid.matcher;
 
 import java.util.BitSet;
 
-import de.unimainz.imbei.mzid.Field;
 import de.unimainz.imbei.mzid.HashedField;
-import de.unimainz.imbei.mzid.Patient;
 
 public class DiceFieldComparator extends FieldComparator<HashedField> {
 
@@ -20,8 +18,8 @@ public class DiceFieldComparator extends FieldComparator<HashedField> {
 		assert (fieldLeft instanceof HashedField);
 		assert (fieldRight instanceof HashedField);
 		
-		HashedField hLeft = (HashedField) fieldLeft;
-		HashedField hRight = (HashedField) fieldRight;
+		HashedField hLeft = fieldLeft;
+		HashedField hRight = fieldRight;
 		BitSet bLeft = hLeft.getValue();
 		BitSet bRight = hRight.getValue();
 		

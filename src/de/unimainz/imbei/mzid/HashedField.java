@@ -59,6 +59,7 @@ public class HashedField extends Field<BitSet>{
 		return String2BitSet(this.value);
 	}
 	
+	@Override
 	public String getValueJSON() {
 		return this.value;
 	}
@@ -69,10 +70,12 @@ public class HashedField extends Field<BitSet>{
 		this.value = BitSet2String(hash);
 	}
 	
+	@Override
 	public void setValue(String s) {
 		this.value = s;
 	}
 	
+	@Override
 	public HashedField clone()
 	{		
 		HashedField result = new HashedField(new String(this.value));

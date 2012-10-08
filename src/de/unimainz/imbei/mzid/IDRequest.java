@@ -13,8 +13,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
-import org.apache.openjpa.persistence.Externalizer;
-import org.apache.openjpa.persistence.Factory;
 import org.codehaus.jackson.annotate.JsonIgnore;
 
 import de.unimainz.imbei.mzid.matcher.MatchResult;
