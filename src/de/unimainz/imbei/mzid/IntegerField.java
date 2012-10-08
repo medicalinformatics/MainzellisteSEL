@@ -27,9 +27,16 @@ public class IntegerField extends Field<Integer> {
 		this.value = value;
 	}
 	
+	public void setValue(String s) {
+		this.value = Integer.parseInt(s);
+	}
+	
+	public Integer getValueJSON() {
+		return this.value;
+	}
+	
 	public IntegerField clone()
 	{
 		return new IntegerField(this.value);
-	}
-
+	}	
 }

@@ -185,7 +185,7 @@ public class PatientsResource {
 			String tokenId,
 			MultivaluedMap<String, String> form) throws WebApplicationException {
 
-		Validator.instance.validateForm(form);
+		//Validator.instance.validateForm(form);
 		HashMap ret = new HashMap();
 		Token t = Servers.instance.getTokenByTid(tokenId);
 		// create a token if started in debug mode

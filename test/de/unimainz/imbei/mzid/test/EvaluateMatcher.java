@@ -52,8 +52,8 @@ public class EvaluateMatcher {
 	public static void main(String args[]) {
 		EpilinkMatcher matcher = (EpilinkMatcher) Config.instance.getMatcher();
 		RecordTransformer transformer = Config.instance.getRecordTransformer();
-		LinkedList<Patient> registryRaw = readPatients("test/registryReduced.txt");
-		LinkedList<Patient> cohortRaw = readPatients("test/cohortReduced.txt");
+		LinkedList<Patient> registryRaw = readPatients("test/registry.txt");
+		LinkedList<Patient> cohortRaw = readPatients("test/cohort.txt");
 		int nPairs = registryRaw.size() * cohortRaw.size(); 
 		JFrame frame = new JFrame();
 		JProgressBar progressBar = new JProgressBar(0, nPairs);
@@ -76,19 +76,28 @@ public class EvaluateMatcher {
 		// Die beiden Dateien enthalten besonders interessante (schwierige) Paare von Patienten,
 		// sie werden parallel abgearbeitet, anstatt das Kreuzprodukt zu bilden
 		Iterator<Patient> it1 = cohort.iterator();
-		Iterator<Patient> it2 = registry.iterator();
+		//Iterator<Patient> it2 = registry.iterator();
 		try {
 			BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream("test/weights.txt", false)));
 			bw.write("id1;id2;weight;is_match\n");
-			while(it1.hasNext() && it2.hasNext())
+			while(it1.hasNext())
 			{
 				Patient p1 = it1.next();
-				Patient p2 = it2.next();
-				double thisWeight = matcher.calculateWeight(p1, p2);
-				String id1 = p1.getFields().get("ID_GoldStandard").getValue().toString();
-				String id2 = p2.getFields().get("ID_GoldStandard").getValue().toString();
-				Boolean thisIsMatch = id1.equals(id2);
-				bw.write(id1 + ";" + id2 + ";" + thisWeight + ";" + thisIsMatch + "\n");
+				Iterator<Patient> it2 = registry.iterator();
+				while (it2.hasNext())
+				{
+					Patient p2 = it2.next();
+//			while(it1.hasNext() && it2.hasNext())
+//			{
+//				Patient p1 = it1.next();
+//				Patient p2 = it2.next();
+					double thisWeight = matcher.calculateWeight(p1, p2);
+					String id1 = p1.getFields().get("ID_GoldStandard").getValue().toString();
+					String id2 = p2.getFields().get("ID_GoldStandard").getValue().toString();
+					Boolean thisIsMatch = id1.equals(id2);
+					if (thisWeight > 0.3) bw.write(id1 + ";" + id2 + ";" + thisWeight + ";" + thisIsMatch + "\n");
+//					progressBar.setValue(progressBar.getValue() + registry.size());
+				}
 				progressBar.setValue(progressBar.getValue() + registry.size());
 			}
 			bw.close();

@@ -1,23 +1,39 @@
 package de.unimainz.imbei.mzid;
 
+import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
+import javax.persistence.Basic;
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.PostLoad;
+import javax.persistence.PrePersist;
+import javax.persistence.PreUpdate;
 import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.apache.log4j.Logger;
+import org.apache.openjpa.persistence.Externalizer;
+import org.apache.openjpa.persistence.Factory;
+import org.apache.openjpa.persistence.Persistent;
+import org.apache.openjpa.persistence.Type;
 import org.codehaus.jackson.annotate.JsonIgnore;
+import org.codehaus.jettison.json.JSONException;
+import org.codehaus.jettison.json.JSONObject;
 
+import de.unimainz.imbei.mzid.dto.PatientAdapter;
 import de.unimainz.imbei.mzid.exceptions.CircularDuplicateRelationException;
+import de.unimainz.imbei.mzid.exceptions.InternalErrorException;
 
 @XmlRootElement
 @Entity
@@ -30,21 +46,101 @@ public class Patient {
 	@JsonIgnore
 	private int patientJpaId; // JPA
 	
+
+	private String stringVal = "String";
+
+	public static String classToString(Class clazz) {
+		return clazz.getName();
+	}
+	
+	public static Class stringToClass(String clazz) {
+		Class cl;
+		try {
+				cl = Class.forName(clazz);
+		} catch (ClassNotFoundException e) {
+			cl = Object.class;
+		} 
+		return cl;
+	}
 	/**
 	 * Needed to determine if two Patient object refer to the same database entry.
 	 * @return the patientJpaId
 	 */
-	int getPatientJpaId() {
+	public int getPatientJpaId() {
 		return patientJpaId;
 	}
 
-	@OneToMany(cascade={CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH}, fetch=FetchType.EAGER)
+	@OneToMany(cascade={CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH}, fetch=FetchType.LAZY)
 	private Set<ID> ids;
 	
-	@OneToMany(cascade={CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH}, fetch=FetchType.EAGER)
+//	@OneToMany(cascade={CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH}, fetch=FetchType.EAGER)
+//	@Persistent
+//	@Type(String.class)
+//	@Column(length=4096)
+//	@Externalizer("de.unimainz.imbei.mzid.dto.PatientAdapter.fieldsToString")
+//	@Factory("de.unimainz.imbei.mzid.dto.PatientAdapter.stringToFields")
+	@Transient
 	private Map<String, Field<?>> fields;
 	
-	@OneToMany(cascade={CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH}, fetch=FetchType.EAGER)
+	@Column(columnDefinition="text",length=-1)
+	private String fieldsString;
+	
+	@Column(length=4096)
+	private String inputFieldsString;
+	
+	@PrePersist
+	@PreUpdate
+	public void prePersist() {
+		this.fieldsString = fieldsToString(this.fields);
+		this.inputFieldsString = fieldsToString(this.inputFields);
+	}
+	
+	@PostLoad
+	public void postLoad() {
+		this.fields = stringToFields(this.fieldsString);
+		this.inputFields = stringToFields(this.inputFieldsString);
+	}
+	
+	public static String fieldsToString(Map<String, Field<?>> fields) {
+		try {
+			JSONObject fieldsJson = new JSONObject();
+			for (String fieldName : fields.keySet())
+			{
+				JSONObject thisField = new JSONObject();
+				thisField.put("class", fields.get(fieldName).getClass().getName());
+				thisField.put("value", fields.get(fieldName).getValueJSON());
+				fieldsJson.put(fieldName, thisField);
+			}
+			return fieldsJson.toString();
+		} catch (JSONException e) {
+			Logger.getLogger(PatientAdapter.class).error("Exception: ", e);
+			throw new InternalErrorException();
+		}
+	}
+	
+	public static Map<String, Field<?>> stringToFields(String fieldsJsonString) {
+		try {
+			Map<String, Field<?>> fields = new HashMap<String, Field<?>>();
+			JSONObject fieldsJson = new JSONObject(fieldsJsonString);
+			Iterator it = fieldsJson.keys();
+			while(it.hasNext()) {
+				String fieldName = (String) it.next();
+				JSONObject thisFieldJson = fieldsJson.getJSONObject(fieldName); 
+				String fieldClass = thisFieldJson.getString("class");
+				String fieldValue = thisFieldJson.getString("value");
+				Field<?> thisField = (Field) Class.forName(fieldClass).newInstance();
+				thisField.setValue(fieldValue);
+				fields.put(fieldName, thisField);
+			} 
+			return fields;
+		} catch (Exception e) {
+			Logger.getLogger(PatientAdapter.class).error("Exception: ", e);
+			throw new InternalErrorException();
+		}
+	}
+	
+	//@OneToMany(cascade={CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH}, fetch=FetchType.EAGER)
+	@Transient
 	/**
 	 * Input fields as read from form (before transformation).
 	 * 

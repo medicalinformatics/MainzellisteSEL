@@ -2,6 +2,8 @@ package de.unimainz.imbei.mzid;
 
 import javax.persistence.Entity;
 
+import org.codehaus.jettison.json.JSONObject;
+
 @Entity
 public class PlainTextField extends Field<String> {
 	private String value;
@@ -10,9 +12,12 @@ public class PlainTextField extends Field<String> {
 		super(value);
 	}
 	
-	@Override
 	public String getValue() {
-		return value;
+		return this.value;
+	}
+	
+	public String getValueJSON() {
+		return this.value;
 	}
 
 	@Override

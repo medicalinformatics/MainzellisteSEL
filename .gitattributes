@@ -45,6 +45,7 @@ lib/deploy/openjpa/commons-codec-1.6.jar -text
 lib/deploy/openjpa/derby.jar -text
 lib/deploy/openjpa/mysql-connector-java-5.1.20-bin.jar -text
 lib/deploy/openjpa/openjpa-all-2.2.0.jar -text
+lib/deploy/openjpa/postgresql-9.1-902.jdbc4.jar -text
 lib/js/bloomFilter-js/bloomFilter.js -text
 lib/js/crypto-js/aes/aes-min.js -text
 lib/js/crypto-js/aes/aes.js -text
@@ -152,6 +153,7 @@ src/de/unimainz/imbei/mzid/webservice/Token.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/webservice/TokenParam.java -text svneol=unset#text/plain
 test/cohortReduced.txt -text svneol=unset#text/plain
 test/de/unimainz/imbei/mzid/test/EvaluateMatcher.java -text svneol=unset#text/plain
+test/de/unimainz/imbei/mzid/test/JSONTest.java -text svneol=unset#text/plain
 test/de/unimainz/imbei/mzid/test/TestAddPatient.java -text svneol=unset#text/plain
 test/de/unimainz/imbei/mzid/test/TestFieldTransformation.java -text svneol=unset#text/plain
 test/de/unimainz/imbei/mzid/test/TestPIDGenerator.java -text svneol=unset#text/plain

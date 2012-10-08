@@ -1,13 +1,123 @@
 package de.unimainz.imbei.mzid.dto;
 
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
+import javax.persistence.Basic;
+import javax.persistence.ElementCollection;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 
+import org.apache.log4j.Logger;
+import org.codehaus.jackson.annotate.JsonIgnore;
+import org.codehaus.jettison.json.JSONException;
+import org.codehaus.jettison.json.JSONObject;
+import org.codehaus.jettison.json.JSONWriter;
+
+import de.unimainz.imbei.mzid.Field;
 import de.unimainz.imbei.mzid.ID;
 import de.unimainz.imbei.mzid.Patient;
+import de.unimainz.imbei.mzid.exceptions.InternalErrorException;
 
+public class PatientAdapter {
+
+	@Id
+	@GeneratedValue
+	@JsonIgnore
+	private int patientJpaId; // JPA
+
+	@Basic
+	private LinkedList<String> fieldNames = new LinkedList<String>();
+	@Basic
+	private LinkedList<String> fieldClasses = new LinkedList<String>();
+	
+	@Basic
+	private LinkedList<String> fieldValues = new LinkedList<String>();
+	
+	public static PatientAdapter fromPatient(Patient p) {
+		return new PatientAdapter(p);
+	}
+	
+	public static String fieldsToString(Map<String, Field<?>> fields) {
+		try {
+			JSONObject fieldsJson = new JSONObject();
+			for (String fieldName : fields.keySet())
+			{
+				Map<String, String> thisField = new HashMap<String, String>();
+				thisField.put("class", fields.get(fieldName).getClass().getName());
+				thisField.put("value", fields.get(fieldName).toString());
+				fieldsJson.put(fieldName, thisField);
+			}
+			return fieldsJson.toString();
+		} catch (JSONException e) {
+			Logger.getLogger(PatientAdapter.class).error("Exception: ", e);
+			throw new InternalErrorException();
+		}
+	}
+	
+	public static Map<String, Field<?>> stringToFields(String fieldsJsonString) {
+		try {
+			Map<String, Field<?>> fields = new HashMap<String, Field<?>>();
+			JSONObject fieldsJson = new JSONObject(fieldsJsonString);
+			Iterator it = fieldsJson.keys();
+			while(it.hasNext()) {
+				String fieldName = (String) it.next();
+				JSONObject thisFieldJson = fieldsJson.getJSONObject(fieldName); 
+				String fieldClass = thisFieldJson.getString("class");
+				String fieldValue = thisFieldJson.getString("value");
+				Field<?> thisField = (Field) Class.forName(fieldClass).newInstance();
+				thisField.setValue(fieldValue);
+				fields.put(fieldName, thisField);
+			} 
+			return fields;
+		} catch (Exception e) {
+			Logger.getLogger(PatientAdapter.class).error("Exception: ", e);
+			throw new InternalErrorException();
+		}
+	}
+	
+	public Patient toPatient() {
+		Patient p = new Patient();
+		Map<String, Field<?>> fields = new HashMap<String, Field<?>>();
+		Iterator<String> itName = fieldNames.iterator();
+		Iterator<String> itClass = fieldClasses.iterator();
+		Iterator<String> itValue = fieldValues.iterator();
+		try {
+			while (itName.hasNext()) {
+				String fieldName = itName.next();
+				String fieldClass = itClass.next();
+				String fieldValue = itValue.next();
+				Field<?> field = (Field<?>) Class.forName(fieldClass).newInstance();
+				field.setValue(fieldValue);
+				fields.put(fieldName, field);
+			} 
+		} catch (Exception e) {
+			Logger.getLogger(this.getClass()).error("Internal Server Error:", e);
+			throw new InternalErrorException();
+		}
+		p.setFields(fields);
+		return p;
+	}
+	
+	public PatientAdapter(Patient p) {
+		this.patientJpaId = p.getPatientJpaId();
+		Map<String, Field<?>> fields = p.getFields();
+		for (String fieldName : fields.keySet()) {
+			this.fieldNames.add(fieldName);
+			Field<?> field = fields.get(fieldName);
+			this.fieldClasses.add(field.getClass().getName());
+			this.fieldValues.add(field.toString());
+		}
+	}
+}
 /*public class PatientAdapter extends XmlAdapter<PatientDto, Patient>{
 
 	@Override

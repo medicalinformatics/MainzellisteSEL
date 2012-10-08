@@ -1,5 +1,7 @@
 package de.unimainz.imbei.mzid;
 
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Vector;
 
@@ -7,6 +9,14 @@ import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
+
+import org.apache.log4j.Logger;
+import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jettison.json.JSONArray;
+import org.codehaus.jettison.json.JSONException;
+import org.codehaus.jettison.json.JSONObject;
+
+import de.unimainz.imbei.mzid.exceptions.InternalErrorException;
 
 /**
  * CompoundField represents a field that is composed of several subfields. For example, 
@@ -79,6 +89,29 @@ public class CompoundField<T extends Field<?>> extends Field<List<T>> {
 		this.value = value;
 	}
 	
+	public void setValue(String s) {
+		try {
+//			JSONObject obj = new JSONObject(s);
+//			this.value = new LinkedList<T>();
+//			Class parameterClass = Class.forName(obj.getString("parameterClass"));
+//			// One field in obj is the class of the base fields, the other are values 
+//			for (int fieldInd = 0; fieldInd < obj.length() -  1; fieldInd++) {
+//				this.value.add((T) new PlainTextField((String)obj.get("field" + fieldInd)));
+//			}
+			JSONArray arr = new JSONArray(s);
+			this.value = new LinkedList<T>();
+			for (int fieldInd = 0; fieldInd < arr.length(); fieldInd++) {
+				JSONObject obj = arr.getJSONObject(fieldInd);
+				T thisField = (T) Class.forName(obj.getString("class")).newInstance();
+				thisField.setValue(obj.getString("value"));
+				this.value.add(thisField);
+			}
+		} catch (Exception e) {
+			Logger.getLogger(this.getClass()).error("Exception:", e);
+			throw new InternalErrorException();
+		}
+	}
+	
 	/**
 	 * Set the i-th component.
 	 * @param i
@@ -130,4 +163,15 @@ public class CompoundField<T extends Field<?>> extends Field<List<T>> {
 		}
 		return new CompoundField<T>((List<T>) copies);
 	}
+	
+	public JSONArray getValueJSON() throws JSONException {
+		JSONArray obj = new JSONArray();
+		for (T field : this.value) {
+			obj.put(field.toJSON());
+		}
+		return obj;
+	}
+	
+
+	
 }
