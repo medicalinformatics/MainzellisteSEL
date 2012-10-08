@@ -152,7 +152,6 @@ src/de/unimainz/imbei/mzid/webservice/SessionsResource.java -text svneol=unset#t
 src/de/unimainz/imbei/mzid/webservice/Token.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/webservice/TokenParam.java -text svneol=unset#text/plain
 test/cohortReduced.txt -text svneol=unset#text/plain
-test/de/unimainz/imbei/mzid/test/EvaluateMatcher.java -text svneol=unset#text/plain
 test/de/unimainz/imbei/mzid/test/JSONTest.java -text svneol=unset#text/plain
 test/de/unimainz/imbei/mzid/test/TestAddPatient.java -text svneol=unset#text/plain
 test/de/unimainz/imbei/mzid/test/TestFieldTransformation.java -text svneol=unset#text/plain
