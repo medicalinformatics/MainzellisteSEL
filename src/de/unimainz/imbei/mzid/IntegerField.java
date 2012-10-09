@@ -14,7 +14,7 @@ public class IntegerField extends Field<Integer> {
 	
 	public IntegerField(String value)
 	{
-		this.value = Integer.parseInt(value);
+		this.value = Integer.parseInt(value.trim());
 	}
 	
 	public Integer getValue()
