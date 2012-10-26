@@ -4,6 +4,7 @@ import java.net.URI;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -46,6 +47,7 @@ import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 
 import com.sun.jersey.api.view.Viewable;
+import com.sun.jersey.core.util.MultivaluedMapImpl;
 
 import de.unimainz.imbei.mzid.Config;
 import de.unimainz.imbei.mzid.Field;
@@ -135,38 +137,44 @@ public class PatientsResource {
 		}
 	}
 	
-	@POST //FIXME Problem im IE; der landet immer hier drin!
-	@Consumes({MediaType.APPLICATION_FORM_URLENCODED, MediaType.APPLICATION_JSON})
+	@POST 
+	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response newPatientJson(
 			@QueryParam("tokenId") String tokenId,
 			@Context HttpServletRequest request,
 			@Context UriInfo context,
 			MultivaluedMap<String, String> form) throws JSONException {
-		Map responseMap = createNewPatient(tokenId, form);
+
 		logger.info("Accept: " + request.getHeader("Accept"));
 		logger.info("Content-Type: " + request.getHeader("Content-Type"));
-		ID newId = (ID) responseMap.get("id");
-		MatchResult result = (MatchResult) responseMap.get("result");
+
+		Map responseMap = createNewPatient(tokenId, form);
+
+		return createPatientJsonResponse(responseMap, context);
+	}
+
+	@POST //FIXME Problem im IE; der landet immer hier drin!
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response newPatientJson(
+			@QueryParam("tokenId") String tokenId,
+			@Context HttpServletRequest request,
+			@Context UriInfo context,
+			JSONObject form) throws JSONException {
+		logger.info("Accept: " + request.getHeader("Accept"));
+		logger.info("Content-Type: " + request.getHeader("Content-Type"));
+
+		Iterator<?> keyIt = form.keys();
+		MultivaluedMap<String, String> formAsMap = new MultivaluedMapImpl();
+		while (keyIt.hasNext()) {
+			String key = (String) keyIt.next();
+			formAsMap.add(key, form.getString(key));		
+		}
 		
-		URI newUri = context.getBaseUriBuilder()
-				.path(PatientsResource.class)
-				.path("/{idtype}/{idvalue}")
-				.build(newId.getType(), newId.getIdString());
+		Map responseMap = createNewPatient(tokenId, formAsMap);
 		
-		JSONObject ret = new JSONObject()
-				.put("newId", newId.getIdString())
-				.put("tentative", newId.isTentative())
-				.put("uri", newUri);
-				
-		if (Config.instance.debugIsOn())
-			ret.put("max_weight", result.getBestMatchedWeight());
-		
-		return Response
-			.status(Status.CREATED)
-			.entity(ret)
-			.location(newUri)
-			.build();
+		return createPatientJsonResponse(responseMap, context);
 	}
 
 	/**
@@ -361,5 +369,38 @@ public class PatientsResource {
 		//Charakteristika des Patients in DB mit TempID tid austauschen durch die von p
 		logger.info("Received PUT /patients/tempid/" + tid);
 		throw new NotImplementedException();
+	}
+	
+	
+	/**
+	 * Create a JSON Response after creating a patient.
+	 * @param responseMap Result of call to createNewPatient.
+	 * @param context The injected UriInfo.
+	 * @return Response object.
+	 * @throws JSONException
+	 */
+	private Response createPatientJsonResponse(Map responseMap, UriInfo context) throws JSONException {
+
+		ID newId = (ID) responseMap.get("id");
+		MatchResult result = (MatchResult) responseMap.get("result");
+		
+		URI newUri = context.getBaseUriBuilder()
+				.path(PatientsResource.class)
+				.path("/{idtype}/{idvalue}")
+				.build(newId.getType(), newId.getIdString());
+		
+		JSONObject ret = new JSONObject()
+				.put("newId", newId.getIdString())
+				.put("tentative", newId.isTentative())
+				.put("uri", newUri);
+				
+		if (Config.instance.debugIsOn())
+			ret.put("max_weight", result.getBestMatchedWeight());
+		
+		return Response
+			.status(Status.CREATED)
+			.entity(ret)
+			.location(newUri)
+			.build();
 	}
 }
