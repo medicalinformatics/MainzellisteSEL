@@ -136,7 +136,7 @@ public class PatientsResource {
 	}
 	
 	@POST //FIXME Problem im IE; der landet immer hier drin!
-	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+	@Consumes({MediaType.APPLICATION_FORM_URLENCODED, MediaType.APPLICATION_JSON})
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response newPatientJson(
 			@QueryParam("tokenId") String tokenId,
