@@ -3,6 +3,7 @@
 .externalToolBuilders/OpenJPA[!!-~]Enhancer.launch -text svneol=unset#text/plain
 /.project -text svneol=unset#text/plain
 .settings/.jsdtscope -text
+.settings/org.eclipse.core.resources.prefs -text svneol=unset#text/plain
 .settings/org.eclipse.jdt.core.prefs -text svneol=unset#text/plain
 .settings/org.eclipse.jpt.core.prefs -text svneol=unset#text/plain
 .settings/org.eclipse.wst.common.component -text
@@ -111,13 +112,7 @@ src/de/unimainz/imbei/mzid/Servers.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/Session.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/StringPair.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/Validator.java -text svneol=unset#text/plain
-src/de/unimainz/imbei/mzid/dto/IDAdapter.java -text svneol=unset#text/plain
-src/de/unimainz/imbei/mzid/dto/IDDto.java -text svneol=unset#text/plain
-src/de/unimainz/imbei/mzid/dto/PatientAdapter.java -text svneol=unset#text/plain
-src/de/unimainz/imbei/mzid/dto/PatientDto.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/dto/Persistor.java -text svneol=unset#text/plain
-src/de/unimainz/imbei/mzid/dto/SessionAdapter.java -text svneol=unset#text/plain
-src/de/unimainz/imbei/mzid/dto/SessionDto.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/exceptions/CircularDuplicateRelationException.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/exceptions/IncompatibleFieldTypesException.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/exceptions/InternalErrorException.java -text svneol=unset#text/plain

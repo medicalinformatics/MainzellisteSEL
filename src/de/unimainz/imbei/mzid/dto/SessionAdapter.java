@@ -1,1 +1,0 @@
-package de.unimainz.imbei.mzid.dto;

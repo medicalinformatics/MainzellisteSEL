@@ -25,7 +25,6 @@ import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 
-import de.unimainz.imbei.mzid.dto.PatientAdapter;
 import de.unimainz.imbei.mzid.exceptions.CircularDuplicateRelationException;
 import de.unimainz.imbei.mzid.exceptions.InternalErrorException;
 
@@ -107,7 +106,7 @@ public class Patient {
 			}
 			return fieldsJson.toString();
 		} catch (JSONException e) {
-			Logger.getLogger(PatientAdapter.class).error("Exception: ", e);
+			Logger.getLogger(Patient.class).error("Exception: ", e);
 			throw new InternalErrorException();
 		}
 	}
@@ -128,7 +127,7 @@ public class Patient {
 			} 
 			return fields;
 		} catch (Exception e) {
-			Logger.getLogger(PatientAdapter.class).error("Exception: ", e);
+			Logger.getLogger(Patient.class).error("Exception: ", e);
 			throw new InternalErrorException();
 		}
 	}
@@ -200,7 +199,7 @@ public class Patient {
 		// (setting a as duplicate of b when b is a duplicate of a)
 		if (original.getOriginal().sameAs(this))
 		{
-			// TODO generalisieren für andere IDs
+			// TODO generalisieren fï¿½r andere IDs
 			CircularDuplicateRelationException e = new CircularDuplicateRelationException(
 					this.getId("pid").getIdString(), original.getId("pid").getIdString());
 			logger.error(e.getMessage());
