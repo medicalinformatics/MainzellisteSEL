@@ -1,13 +1,5 @@
 package de.unimainz.imbei.mzid.dto;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.persistence.Id;
-import javax.xml.bind.annotation.XmlAttribute;
-
-import de.unimainz.imbei.mzid.Session;
-
 /**
  * TODO: Serialisierer für Session schreiben
  * @author Martin

@@ -6,7 +6,6 @@ import org.junit.Test;
 
 import de.unimainz.imbei.mzid.CompoundField;
 import de.unimainz.imbei.mzid.PlainTextField;
-import de.unimainz.imbei.mzid.matcher.PSXFirstNameNormalizer;
 import de.unimainz.imbei.mzid.matcher.PSXLastNameNormalizer;
 
 public class TestPSXLastNameNormalizer {

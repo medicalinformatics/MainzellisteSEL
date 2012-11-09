@@ -3,12 +3,8 @@ package de.unimainz.imbei.mzid;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-
-import de.unimainz.imbei.mzid.Servers.Server;
 import de.unimainz.imbei.mzid.webservice.Token;
 
 //import de.unimainz.imbei.mzid.dto.SessionAdapter;

@@ -2,11 +2,7 @@ package de.unimainz.imbei.mzid.matcher;
 
 import javax.persistence.Basic;
 import javax.persistence.Embeddable;
-import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.PrePersist;
-import javax.persistence.PreUpdate;
-
 import de.unimainz.imbei.mzid.Patient;
 
 @Embeddable

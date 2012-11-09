@@ -1,6 +1,5 @@
 package de.unimainz.imbei.mzid;
 
-import java.io.Serializable;
 import java.lang.reflect.Constructor;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -9,7 +8,8 @@ import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
-
+import org.codehaus.jettison.json.JSONException;
+import org.codehaus.jettison.json.JSONObject;
 import de.unimainz.imbei.mzid.exceptions.NotImplementedException;
 
 /**
@@ -34,7 +34,7 @@ public abstract class Field<T> {
 	public abstract Field<T> clone();
 	
 	/** Empty constructor. Used by subclasses. */ 
-	protected Field()
+	public Field()
 	{		
 	}
 	public Field(T s) {
@@ -42,11 +42,23 @@ public abstract class Field<T> {
 	}
 	
 	
-	@Override
-	public String toString() {
-		return getValue().toString();
+	public abstract void setValue(String s);
+	
+	public JSONObject toJSON() throws JSONException {
+		JSONObject ret = new JSONObject();
+		ret.put("class", this.getClass().getName());
+		ret.put("value", this.getValueJSON());
+		return ret;
 	}
 	
+	/** Must return one of the types recognized by JSONObject.put:
+	 * Boolean, Double, Integer, JSONArray, JSONObject, Long, String, or the JSONObject.NULL object. 
+	 * 
+	 * Does not return a JSON-String! Call toJSON to get a JSON representation of a field.
+	 * @return
+	 */
+	public abstract Object getValueJSON() throws JSONException;
+
 	public static Field<?> build(String charKey, Object o){
 		return build(Config.instance.getFieldType(charKey), o);
 	}
@@ -59,6 +71,11 @@ public abstract class Field<T> {
 			return false;
 	}
 
+	@Override
+	public String toString() {
+		return this.getValue().toString();
+	}
+	
 	public boolean isEmpty()
 	{
 		return this.getValue() == null;

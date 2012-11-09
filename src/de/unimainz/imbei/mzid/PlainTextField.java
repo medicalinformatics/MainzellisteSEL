@@ -12,7 +12,12 @@ public class PlainTextField extends Field<String> {
 	
 	@Override
 	public String getValue() {
-		return value;
+		return this.value;
+	}
+	
+	@Override
+	public String getValueJSON() {
+		return this.value;
 	}
 
 	@Override

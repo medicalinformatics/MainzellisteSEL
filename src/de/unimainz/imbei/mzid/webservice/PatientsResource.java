@@ -1,11 +1,8 @@
 package de.unimainz.imbei.mzid.webservice;
 
 import java.net.URI;
-import java.net.URL;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -24,46 +21,30 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpRequest;
-import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.BasicHttpEntity;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicHttpRequest;
-import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.protocol.HTTP;
 import org.apache.log4j.Logger;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 
 import com.sun.jersey.api.view.Viewable;
-import com.sun.jersey.core.util.MultivaluedMapImpl;
 
 import de.unimainz.imbei.mzid.Config;
 import de.unimainz.imbei.mzid.Field;
 import de.unimainz.imbei.mzid.ID;
 import de.unimainz.imbei.mzid.IDGeneratorFactory;
 import de.unimainz.imbei.mzid.IDRequest;
-import de.unimainz.imbei.mzid.PID;
 import de.unimainz.imbei.mzid.Patient;
 import de.unimainz.imbei.mzid.Servers;
-import de.unimainz.imbei.mzid.Validator;
 import de.unimainz.imbei.mzid.dto.Persistor;
 import de.unimainz.imbei.mzid.exceptions.NotImplementedException;
 import de.unimainz.imbei.mzid.exceptions.UnauthorizedException;
-import de.unimainz.imbei.mzid.matcher.FieldTransformer;
 import de.unimainz.imbei.mzid.matcher.MatchResult;
-import de.unimainz.imbei.mzid.matcher.Matcher;
 import de.unimainz.imbei.mzid.matcher.MatchResult.MatchResultType;
 
 /**
@@ -137,7 +118,7 @@ public class PatientsResource {
 		}
 	}
 	
-	@POST 
+	@POST //FIXME Problem im IE; der landet immer hier drin!
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response newPatientJson(
@@ -145,36 +126,30 @@ public class PatientsResource {
 			@Context HttpServletRequest request,
 			@Context UriInfo context,
 			MultivaluedMap<String, String> form) throws JSONException {
-
-		logger.info("Accept: " + request.getHeader("Accept"));
-		logger.info("Content-Type: " + request.getHeader("Content-Type"));
-
 		Map responseMap = createNewPatient(tokenId, form);
-
-		return createPatientJsonResponse(responseMap, context);
-	}
-
-	@POST //FIXME Problem im IE; der landet immer hier drin!
-	@Consumes(MediaType.APPLICATION_JSON)
-	@Produces(MediaType.APPLICATION_JSON)
-	public Response newPatientJson(
-			@QueryParam("tokenId") String tokenId,
-			@Context HttpServletRequest request,
-			@Context UriInfo context,
-			JSONObject form) throws JSONException {
 		logger.info("Accept: " + request.getHeader("Accept"));
 		logger.info("Content-Type: " + request.getHeader("Content-Type"));
-
-		Iterator<?> keyIt = form.keys();
-		MultivaluedMap<String, String> formAsMap = new MultivaluedMapImpl();
-		while (keyIt.hasNext()) {
-			String key = (String) keyIt.next();
-			formAsMap.add(key, form.getString(key));		
-		}
+		ID newId = (ID) responseMap.get("id");
+		MatchResult result = (MatchResult) responseMap.get("result");
 		
-		Map responseMap = createNewPatient(tokenId, formAsMap);
+		URI newUri = context.getBaseUriBuilder()
+				.path(PatientsResource.class)
+				.path("/{idtype}/{idvalue}")
+				.build(newId.getType(), newId.getIdString());
 		
-		return createPatientJsonResponse(responseMap, context);
+		JSONObject ret = new JSONObject()
+				.put("newId", newId.getIdString())
+				.put("tentative", newId.isTentative())
+				.put("uri", newUri);
+				
+		if (Config.instance.debugIsOn())
+			ret.put("max_weight", result.getBestMatchedWeight());
+		
+		return Response
+			.status(Status.CREATED)
+			.entity(ret)
+			.location(newUri)
+			.build();
 	}
 
 	/**
@@ -193,7 +168,7 @@ public class PatientsResource {
 			String tokenId,
 			MultivaluedMap<String, String> form) throws WebApplicationException {
 
-		Validator.instance.validateForm(form);
+		//Validator.instance.validateForm(form);
 		HashMap ret = new HashMap();
 		Token t = Servers.instance.getTokenByTid(tokenId);
 		// create a token if started in debug mode
@@ -369,38 +344,5 @@ public class PatientsResource {
 		//Charakteristika des Patients in DB mit TempID tid austauschen durch die von p
 		logger.info("Received PUT /patients/tempid/" + tid);
 		throw new NotImplementedException();
-	}
-	
-	
-	/**
-	 * Create a JSON Response after creating a patient.
-	 * @param responseMap Result of call to createNewPatient.
-	 * @param context The injected UriInfo.
-	 * @return Response object.
-	 * @throws JSONException
-	 */
-	private Response createPatientJsonResponse(Map responseMap, UriInfo context) throws JSONException {
-
-		ID newId = (ID) responseMap.get("id");
-		MatchResult result = (MatchResult) responseMap.get("result");
-		
-		URI newUri = context.getBaseUriBuilder()
-				.path(PatientsResource.class)
-				.path("/{idtype}/{idvalue}")
-				.build(newId.getType(), newId.getIdString());
-		
-		JSONObject ret = new JSONObject()
-				.put("newId", newId.getIdString())
-				.put("tentative", newId.isTentative())
-				.put("uri", newUri);
-				
-		if (Config.instance.debugIsOn())
-			ret.put("max_weight", result.getBestMatchedWeight());
-		
-		return Response
-			.status(Status.CREATED)
-			.entity(ret)
-			.location(newUri)
-			.build();
 	}
 }

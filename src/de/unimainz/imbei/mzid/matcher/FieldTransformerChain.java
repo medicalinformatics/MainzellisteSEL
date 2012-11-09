@@ -3,7 +3,6 @@ package de.unimainz.imbei.mzid.matcher;
 import java.util.List;
 import java.util.Vector;
 
-import org.eclipse.jdt.internal.compiler.ast.TypeParameter;
 
 import de.unimainz.imbei.mzid.Field;
 import de.unimainz.imbei.mzid.CompoundField;

@@ -8,12 +8,9 @@ import javax.servlet.ServletContext;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.ext.Provider;
 
-import org.apache.log4j.Appender;
 import org.apache.log4j.FileAppender;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
-import org.apache.log4j.RollingFileAppender;
-
 import com.sun.jersey.spi.inject.SingletonTypeInjectableProvider;
 
 import de.unimainz.imbei.mzid.dto.Persistor;

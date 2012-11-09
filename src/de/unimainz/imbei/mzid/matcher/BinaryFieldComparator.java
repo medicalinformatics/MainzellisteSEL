@@ -21,6 +21,7 @@ public class BinaryFieldComparator extends FieldComparator<Field<?>> {
 		return compare(cLeft.get(this.fieldLeft), cRight.get(this.fieldRight));
 	}
 
+	@Override
 	public double compareBackend(Field<?> fieldLeft, Field<?> fieldRight)
 	{
 		if (fieldLeft.equals(fieldRight))

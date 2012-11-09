@@ -17,19 +17,31 @@ public class IntegerField extends Field<Integer> {
 		this.value = Integer.parseInt(value.trim());
 	}
 	
+	@Override
 	public Integer getValue()
 	{
 		return this.value;
 	}
 	
+	@Override
 	public void setValue(Integer value)
 	{
 		this.value = value;
 	}
 	
+	@Override
+	public void setValue(String s) {
+		this.value = Integer.parseInt(s);
+	}
+	
+	@Override
+	public Integer getValueJSON() {
+		return this.value;
+	}
+	
+	@Override
 	public IntegerField clone()
 	{
 		return new IntegerField(this.value);
-	}
-
+	}	
 }

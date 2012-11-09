@@ -1,10 +1,8 @@
 package de.unimainz.imbei.mzid.webservice;
 
-import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.persistence.Persistence;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -17,7 +15,6 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.Response.Status;
 
 import org.apache.log4j.Logger;

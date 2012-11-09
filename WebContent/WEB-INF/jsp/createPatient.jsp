@@ -7,7 +7,7 @@
 
 <link rel="stylesheet" type="text/css" href="<%=request.getContextPath() %>/static/css/patientenliste.css">
 
-<title>Patienten anlegen</title>
+<title>PID anfordern</title>
 </head>
 
 <!-- JQuery -->
@@ -17,14 +17,17 @@
 
 <body>
 		<div class="kopfzeile">
-			<div class="logo">&nbsp;</div>
+			<div class="logo">
+			<img src="<%=request.getContextPath() %>/static/media/JGU_Uni_medizin_Logo_4c_Internet.jpg" align="right"
+				height="80%">
+			</div>
 		</div>
 		<div class="inhalt">
 			<div>&nbsp;</div>
 			<div class="formular">
 				<form action="<%=request.getContextPath() %>/patients?tokenId=${it.tokenId}&callback=${it.callback}" method="post" id="form_person"
 					onsubmit="return validateForm();">
-					<h1>Patienten anlegen</h1>
+					<h1>PID anfordern</h1>
 					<h3 class="header_left">Hinweise zur Eingabe</h3>
 					<p>
 						Diese Anwendung gibt für die von Ihnen im Folgenden einzugebenden Stammdaten einen Personenidentifikator (PID) zurück. 
@@ -62,7 +65,7 @@
 				<td>&nbsp;</td>
 			</div>
 			<div align="center">
-				<input class="submit_anlegen" type="submit" name="anlegen" value=" Anlegen "/>
+				<input class="submit_anlegen" type="submit" name="anlegen" value=" PID anfordern "/>
 			</div>
 			<div align="center">
 				<td>&nbsp;</td>

@@ -129,7 +129,7 @@
 									</td>
 								</tr>
 								<tr>
-									<td><label for="plz">Wohnort : </label></td>
+									<td rowspan="2"><label for="plz">Wohnort : <br/>(PLZ / Ort) </label></td>
 									<td>
 										<input type="text" id="plz" name="plz" size="5" maxlength="5" 
 											value="${it.plz}" <% if (map.containsKey("readonly")) { %> readonly="readonly" <% } else { %>

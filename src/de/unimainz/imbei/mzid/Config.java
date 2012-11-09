@@ -4,7 +4,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Constructor;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -12,8 +11,6 @@ import java.util.Set;
 import java.util.regex.Pattern;
 
 import javax.servlet.ServletContext;
-import javax.ws.rs.core.Context;
-
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 

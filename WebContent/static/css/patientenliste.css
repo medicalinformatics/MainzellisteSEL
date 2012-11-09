@@ -1,9 +1,10 @@
 body {
 	margin: auto;
 	font-family: Arial,Verdana,Helvetica,sans-serif;
+	font-size: 90%;
 }
 p {
-	text-indent: 1em;
+/* 	text-indent: 1em; */
 	padding-left: 1em;
 	padding-right: 1em;
 	color: rgb(0,60,118);
@@ -34,8 +35,8 @@ input:-moz-placeholder {
 	padding-top: 2em;
 }
 .logo {
-	background: url('../media/JGU_Uni_medizin_Logo_4c_Internet.jpg') no-repeat scroll left top transparent; 
-	height: 9em; 
+/* 	background: url('../media/JGU_Uni_medizin_Logo_4c_Internet.jpg') no-repeat scroll right top transparent;  */
+	height: 6em; 
 	width: 70em; 
 	margin: auto;
 }

@@ -1,10 +1,5 @@
 package de.unimainz.imbei.mzid.dto;
 
-import javax.xml.bind.annotation.adapters.XmlAdapter;
-
-import de.unimainz.imbei.mzid.ID;
-import de.unimainz.imbei.mzid.IDGeneratorFactory;
-
 /*public class IDAdapter extends XmlAdapter<IDDto, ID>{
 
 	@Override
