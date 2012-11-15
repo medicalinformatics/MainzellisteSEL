@@ -27,37 +27,8 @@ public enum Persistor {
 	
 	private EntityManager em;
 	
-	/** Caches patient list */
-	private List<Patient> cache = null;
-	
 	private Persistor() {
 		
-//		try {
-//			Driver dbDriver = new Driver();
-//			Properties props = new Properties();
-//			props.setProperty("user", Config.instance.getProperty("db.username"));
-//			props.setProperty("password", Config.instance.getProperty("db.password"));
-//			Connection dbConn = dbDriver.connect(Config.instance.getProperty("db.url"), props);
-////			Connection dbConn = DriverManager.getConnection(
-////				Config.instance.getProperty("db.url"), 
-////				Config.instance.getProperty("db.username"),
-////				Config.instance.getProperty("db.password"));
-//		} catch (SQLException e) {
-//			throw new InternalErrorException(e);
-//		}
-		
-//		try {
-//			Connection dbConn = DriverManager.getConnection(
-//				"jdbc:postgresql://localhost:5432/mzid",
-//				"mzid",
-//				"mzid");
-//			Statement st = dbConn.createStatement();
-//			ResultSet rs = st.executeQuery("select * from test");
-//			while(rs.next())
-//				System.out.println(rs.getString(1) + ", " + rs.getString(2));
-//		} catch (SQLException e) {
-//			e.printStackTrace();
-//		}
 	
 		HashMap<String, String> persistenceOptions = new HashMap<String, String>();
 		
@@ -98,39 +69,28 @@ public enum Persistor {
 	 * @return All persisted patients.
 	 */
 	public synchronized List<Patient> getPatients() { //TODO: Filtern
-		EntityManager em;
+		// Entities are not detached, because the IDs are lazy-loaded
 		List<Patient> pl;
-//		em = emf.createEntityManager();
-//		List<PatientAdapter> pal = em.createQuery("select p from PatientAdapter p", PatientAdapter.class).getResultList();
-//		pl = new LinkedList<Patient>();
-//		em.close(); // causes all entities to be detached
-//		for (PatientAdapter pa : pal) {
-//			pl.add(pa.toPatient());
-//		}
-//		if (cache == null){
-//			em = emf.createEntityManager();
-			pl = this.em.createQuery("select p from Patient p", Patient.class).getResultList();
-//			em.close(); // causes all entities to be detached
-	return pl;
-//			cache = new LinkedList<Patient>(pl);
-//		}
-			
-//		return Collections.unmodifiableList(cache);
+		pl = this.em.createQuery("select p from Patient p", Patient.class).getResultList();
+		return pl;
 	}
 
+	/**
+	 * Add an ID request to the database. In cases where a new ID is created, a
+	 * new Patient object is persisted.
+	 * @param req
+	 */
 	public synchronized void addIdRequest(IDRequest req){
-		//EntityManager em = emf.createEntityManager();
 		em.getTransaction().begin();
-		// add assigned patient to cache if not yet persisted
-//		if (!em.contains(req.getAssignedPatient())  && this.cache != null)
-//			this.cache.add(req.getAssignedPatient());
-//		if (!em.contains(req.getAssignedPatient()))
-//			em.persist(new PatientAdapter(req.getAssignedPatient()));
 		em.persist(req); //TODO: Fehlerbehandlung, falls PID schon existiert.		
 		em.getTransaction().commit();
-//		em.close();
 	}
 	
+	/**
+	 * Update the persisted properties of an ID generator (e.g. the counter from which PIDs 
+	 * are generated).
+	 * @param mem
+	 */
 	public synchronized void updateIDGeneratorMemory(IDGeneratorMemory mem)
 	{
 		EntityManager em = emf.createEntityManager();
@@ -140,6 +100,14 @@ public enum Persistor {
 		em.close();
 	}
 	
+	/**
+	 * Mark the patient with ID idOfDuplicate as a duplicate of idOfOriginal.
+	 * @see de.unimainz.imbei.mzid.Patient#isDuplicate()
+	 * @see de.unimainz.imbei.mzid.Patient#getOriginal()
+	 * @see de.unimainz.imbei.mzid.Patient#setOriginal(Patient)
+	 * @param idOfDuplicate
+	 * @param idOfOriginal
+	 */
 	public synchronized void markAsDuplicate(ID idOfDuplicate, ID idOfOriginal)
 	{
 		Patient pDuplicate = getPatient(idOfDuplicate);
@@ -149,6 +117,11 @@ public enum Persistor {
 		cache = null;
 	}
 	
+	/**
+	 * Load the persisted properties for an ID generator.
+	 * @param idString Identifier of the ID generator.
+	 * @return
+	 */
 	public IDGeneratorMemory getIDGeneratorMemory(String idString)
 	{
 		EntityManager em = emf.createEntityManager();
@@ -162,6 +135,10 @@ public enum Persistor {
 			return result.get(0);
 	}
 	
+	/**
+	 * Persist changes made to a patient.
+	 * @param p
+	 */
 	public synchronized void updatePatient(Patient p){
 		EntityManager em = emf.createEntityManager();
 		em.getTransaction().begin();
