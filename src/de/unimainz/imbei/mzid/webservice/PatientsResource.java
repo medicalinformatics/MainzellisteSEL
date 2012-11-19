@@ -23,7 +23,8 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
-
+import org.apache.http.HttpResponse;
+import org.apache.http.StatusLine;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
@@ -42,6 +43,7 @@ import de.unimainz.imbei.mzid.IDRequest;
 import de.unimainz.imbei.mzid.Patient;
 import de.unimainz.imbei.mzid.Servers;
 import de.unimainz.imbei.mzid.dto.Persistor;
+import de.unimainz.imbei.mzid.exceptions.InternalErrorException;
 import de.unimainz.imbei.mzid.exceptions.NotImplementedException;
 import de.unimainz.imbei.mzid.exceptions.UnauthorizedException;
 import de.unimainz.imbei.mzid.matcher.MatchResult;
@@ -61,8 +63,8 @@ public class PatientsResource {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public List<Patient> getAllPatients(@Context HttpServletRequest req) throws UnauthorizedException {
-		/* Benutzerrechte prüfen, basierend auf Rollenzuweisung in tomcat-users.xml.
-		 * Zusätzliche Prüfung via security-constraint in web.xml 
+		/* Benutzerrechte prï¿½fen, basierend auf Rollenzuweisung in tomcat-users.xml.
+		 * Zusï¿½tzliche Prï¿½fung via security-constraint in web.xml 
 		 */
 		logger.info("Received GET /patients");
 		if (!req.isUserInRole("admin"))
@@ -71,9 +73,9 @@ public class PatientsResource {
 		throw new NotImplementedException();
 		// FIXME
 		
-		//2. Jeden Patienten aus der DB laden. Die müssen vom EntityManager abgekoppelt sein und nur Felder führen, die IDs sind.
+		//2. Jeden Patienten aus der DB laden. Die mï¿½ssen vom EntityManager abgekoppelt sein und nur Felder fï¿½hren, die IDs sind.
 	
-		//3. Patienten in Liste zurückgeben.
+		//3. Patienten in Liste zurï¿½ckgeben.
 		/*return Persistor.instance.getPatients();*/
 	}
 	
@@ -118,7 +120,6 @@ public class PatientsResource {
 		}
 	}
 	
-	@POST //FIXME Problem im IE; der landet immer hier drin!
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response newPatientJson(
@@ -193,7 +194,11 @@ public class PatientsResource {
 		Patient p = new Patient();
 		Map<String, Field<?>> chars = new HashMap<String, Field<?>>();
 		
-		for(String s: Config.instance.getFieldKeys()){ //TODO: Testfall mit defekten/leeren Eingaben
+		for(String s: Config.instance.getFieldKeys()){
+			if (!form.containsKey(s)) {
+				logger.error("Field " + s + " not found in input data!");
+				throw new WebApplicationException(Response.status(Status.BAD_REQUEST).entity("Field " + s + " not found in input data!").build());
+			}
 			chars.put(s, Field.build(s, form.getFirst(s)));
 		}
 
@@ -241,8 +246,8 @@ public class PatientsResource {
 			break;
 	
 		default :
-			// TODO
-			return null;
+			logger.error("Illegal match result: " + match.getResultType());
+			throw new InternalErrorException();
 		}
 		
 		logger.info("Weight of best match: " + match.getBestMatchedWeight());
@@ -274,14 +279,18 @@ public class PatientsResource {
 				StringEntity reqEntity = new StringEntity(reqBodyJSON);
 				reqEntity.setContentType("application/json");
 				callbackReq.setEntity(reqEntity);				
-				httpClient.execute(callbackReq);
+				HttpResponse response = httpClient.execute(callbackReq);
+				StatusLine sline = response.getStatusLine();
+				// Accept callback if OK, CREATED or ACCEPTED is returned
+				if ((sline.getStatusCode() < 200) || sline.getStatusCode() > 202) {
+					logger.error("Received invalid status form mdat callback: " + response.getStatusLine());
+					throw new InternalErrorException("Request to callback failed!");
+				}
+						
 				// TODO: Server-Antwort auslesen, Fehler abfangen.
 			} catch (Exception e) {
 				logger.error("Request to callback " + callback + "failed: ", e);
-				throw new WebApplicationException(Response
-						.status(Status.INTERNAL_SERVER_ERROR)
-						.entity("Request to callback failed!")
-						.build());
+				throw new InternalErrorException("Request to callback failed!");
 			}
 		}
 		ret.put("id", id);
@@ -329,7 +338,7 @@ public class PatientsResource {
 	public Patient getPatient(
 			@PathParam("tid") String tid){
 		//Hier keine Auth notwendig. Wenn tid existiert, ist der Nutzer dadurch autorisiert.
-		//Patient mit TempID tid zurückgeben
+		//Patient mit TempID tid zurï¿½ckgeben
 		logger.info("Received GET /patients/tempid/" + tid);
 		throw new NotImplementedException();
 	}

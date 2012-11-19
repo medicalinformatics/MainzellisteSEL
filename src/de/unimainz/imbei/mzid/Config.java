@@ -19,7 +19,8 @@ import de.unimainz.imbei.mzid.matcher.*;
 
 /**
  * Configuration of the patient list. Implemented as a singleton object, which can be referenced
- * by Config.instance. The configuration is read from the properties file mzid.conf (TODO: location)
+ * by Config.instance. The configuration is read from the properties file specified as
+ * parameter de.unimainz.imbei.mzid.ConfigurationFile in context.xml
  * (see {@link java.util.Properties#load(InputStream) java.util.Properties}). 
  * 
  * 

@@ -91,7 +91,7 @@ public class HTMLResource {
 	}
 
 	/** Submit form for editing a patient. */
-	// Eigentlich wäre das PUT auf /pid/{pid}, aber PUT aus HTML-Formular geht nicht.
+	// Eigentlich wï¿½re das PUT auf /pid/{pid}, aber PUT aus HTML-Formular geht nicht.
 	@POST
 	@Path("/admin/editPatient")
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
@@ -103,7 +103,7 @@ public class HTMLResource {
 		
 		logger.info("Handling edit operation for patient with id " + pidString);
 		
-		// TODO: Generalisieren für mehrere IDs
+		// TODO: Generalisieren fï¿½r mehrere IDs
 		Patient pToEdit = Persistor.instance.getPatient(new PID(pidString, "pid"));
 		if (pToEdit == null)
 		{
@@ -118,7 +118,11 @@ public class HTMLResource {
 		Patient pInput = new Patient();
 		Map<String, Field<?>> chars = new HashMap<String, Field<?>>();
 
-		for(String s: Config.instance.getFieldKeys()){ //TODO: Testfall mit defekten/leeren Eingaben
+		for(String s: Config.instance.getFieldKeys()){
+			if (!form.containsKey(s)) {
+				logger.error("Field " + s + " not found in input data!");
+				throw new WebApplicationException(Response.status(Status.BAD_REQUEST).entity("Field " + s + " not found in input data!").build());
+			}
 			chars.put(s, Field.build(s, form.getFirst(s)));
 		}
 
@@ -151,7 +155,7 @@ public class HTMLResource {
 		Persistor.instance.updatePatient(pToEdit);
 		
 		return Response.ok("Patient edited successfully!").build();
-		// TODO: Redirect auf Edit-Formular für diesen Patienten
+		// TODO: Redirect auf Edit-Formular fï¿½r diesen Patienten
 		/* 
 		return Response
 				.status(Status.SEE_OTHER)
