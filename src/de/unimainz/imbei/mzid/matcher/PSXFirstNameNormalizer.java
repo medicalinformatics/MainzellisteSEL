@@ -13,6 +13,7 @@ import de.unimainz.imbei.mzid.PlainTextField;
  * @author borg
  *
  */
+@Deprecated // War nötig, solange man in der Config nicht mehrere Transformer in einem Feld angeben konnte 
 public class PSXFirstNameNormalizer extends FieldTransformer<PlainTextField, CompoundField<PlainTextField>> {
 
 	private StringNormalizer stringNormalizer = new StringNormalizer();
