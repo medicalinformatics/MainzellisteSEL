@@ -19,8 +19,23 @@ import de.unimainz.imbei.mzid.matcher.MatchResult.MatchResultType;
 
 public class EpilinkMatcher implements Matcher {
 
-	private double threshold_match;
-	private double threshold_non_match;
+	private double thresholdMatch;
+	/**
+	 * @return the thresholdMatch
+	 */
+	public double getThresholdMatch() {
+		return thresholdMatch;
+	}
+
+	/**
+	 * @return the thresholdNonMatch
+	 */
+	public double getThresholdNonMatch() {
+		return thresholdNonMatch;
+	}
+
+
+	private double thresholdNonMatch;
 	
 	private Map<String, FieldComparator> comparators;
 	private Map<String, Double> frequencies;
@@ -118,7 +133,8 @@ public class EpilinkMatcher implements Matcher {
 		return totalWeight;
 	}
 	
-	public EpilinkMatcher(Properties props) throws InternalErrorException
+	@Override
+	public void initialize(Properties props) throws InternalErrorException
 	{
 		// Get error rate (is needed for weight computation below)					
 
@@ -168,11 +184,11 @@ public class EpilinkMatcher implements Matcher {
 		assert(frequencies.keySet().equals(weights.keySet()));
 		
 		// load other config vars
-		this.threshold_match = Double.parseDouble(props.getProperty("matcher.epilink.threshold_match"));
-		this.threshold_non_match = Double.parseDouble(props.getProperty("matcher.epilink.threshold_non_match"));
+		this.thresholdMatch = Double.parseDouble(props.getProperty("matcher.epilink.threshold_match"));
+		this.thresholdNonMatch = Double.parseDouble(props.getProperty("matcher.epilink.threshold_non_match"));
 	
 		// initialize exchange groups
-		//TODO Mechanismus generalisieren für andere Matcher
+		//TODO Mechanismus generalisieren fï¿½r andere Matcher
 		this.nonExchangeFields = new HashSet<String>(this.weights.keySet());
 		this.exchangeGroups = new Vector<List<String>>();
 		for (int i = 0; props.containsKey("exchangeGroup." + i); i++)
@@ -205,19 +221,12 @@ public class EpilinkMatcher implements Matcher {
 			}						
 		}
 	
-		if (bestWeight >= threshold_match){
+		if (bestWeight >= thresholdMatch){
 			return new MatchResult(MatchResultType.MATCH, bestMatch, bestWeight);			
-		} else if (bestWeight < threshold_match && bestWeight > threshold_non_match) {
+		} else if (bestWeight < thresholdMatch && bestWeight > thresholdNonMatch) {
 			return new MatchResult(MatchResultType.POSSIBLE_MATCH, bestMatch, bestWeight);
 		} else {
 			return new MatchResult(MatchResultType.NON_MATCH, null, bestWeight);
 		}				
-	}
-
-	public static void main(String args[]){
-		LinkedList<String> elements = new LinkedList<String>(Arrays.asList("a", "b", "c"));
-		List<List<String>> permutations = permutations(elements);
-		for (List<String> thisList : permutations)
-			System.out.println(thisList.toString());
 	}
 }

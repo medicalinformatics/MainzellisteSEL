@@ -1,5 +1,7 @@
 package de.unimainz.imbei.mzid.matcher;
 
+import java.util.Properties;
+
 import de.unimainz.imbei.mzid.Patient;
 
 /**
@@ -10,6 +12,7 @@ import de.unimainz.imbei.mzid.Patient;
  */
 public interface Matcher {
 
+	public void initialize(Properties props);
 	public MatchResult match(Patient a, Iterable<Patient> patientList);
 
 }

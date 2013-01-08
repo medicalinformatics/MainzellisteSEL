@@ -3,7 +3,6 @@ package de.unimainz.imbei.mzid;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.Constructor;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -75,11 +74,11 @@ public enum Config {
 		
 		try {
 			Class<?> matcherClass = Class.forName("de.unimainz.imbei.mzid.matcher." + props.getProperty("matcher"));
-			Constructor<?> matcherConstructor = matcherClass.getConstructor(props.getClass());
-			matcher = (Matcher) matcherConstructor.newInstance(props);
+			matcher = (Matcher) matcherClass.newInstance();
+			matcher.initialize(props);
 			logger.info("Matcher of class " + matcher.getClass() + " initialized.");
 		} catch (Exception e){
-			logger.fatal("Initialization of matcher failed: ", e);
+			logger.fatal("Initialization of matcher failed: " + e.getMessage(), e);
 			throw new InternalErrorException();
 		}
 		
