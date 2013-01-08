@@ -51,11 +51,18 @@ public abstract class Field<T> {
 		return ret;
 	}
 	
-	/** Must return one of the types recognized by JSONObject.put:
-	 * Boolean, Double, Integer, JSONArray, JSONObject, Long, String, or the JSONObject.NULL object. 
+	/** 
+	 * Retrieves the value as an object compatible with JSONObject.put.
+	 * This method is used to embed the field value in a JSONObject, which is used for storing
+	 * patients in the database. 
 	 * 
-	 * Does not return a JSON-String! Call toJSON to get a JSON representation of a field.
-	 * @return
+	 * This method is not designed to return a JSON-String. See 
+	 * toJSON for this purpose.
+	 * @return An object compatible with JSONObject.put. Possible classes are:
+	 * Boolean, Double, Integer, JSONArray, JSONObject, Long, String. Null is represented
+	 * by the JSONObject.NULL object. 
+	 * 
+	 * 
 	 */
 	public abstract Object getValueJSON() throws JSONException;
 

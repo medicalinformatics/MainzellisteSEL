@@ -37,7 +37,6 @@ public class CompoundField<T extends Field<?>> extends Field<List<T>> {
 	 * of which can be empty at a given time. To get the number of non-empty fields,
 	 * call getSize() - nEmptyFields.
 	 * 
-	 * @return
 	 */
 	public int getSize() {
 		return value.size();
@@ -74,7 +73,6 @@ public class CompoundField<T extends Field<?>> extends Field<List<T>> {
 	/**
 	 * Get the i-th component.
 	 * @param i
-	 * @return
 	 */
 	public T getValueAt(int i)
 	{
@@ -124,7 +122,6 @@ public class CompoundField<T extends Field<?>> extends Field<List<T>> {
 	/**
 	 * Get the number of currently empty components. If a component is empty is
 	 * determined by calling its isEmpty() method.
-	 * @return
 	 */
 	public int nEmptyFields()
 	{

@@ -34,7 +34,8 @@ public class MatchResult {
 	
 	/**
 	 * Get the match result type of this result.
-	 * <ul>
+	 * 
+	 * @return <ul>
 	 * 	<li>MATCH: A sure match is found. getPatient() retreives the 
 	 * 	matching bestMatchedPatient.
 	 * 	<li>POSSIBLE_MATCH: An unsure match is found. getPatient() 
@@ -42,7 +43,7 @@ public class MatchResult {
 	 * 	<li> NON_MATCH: No matching bestMatchedPatient was found. getPatient
 	 * returns null.
 	 * </ul>
-	 * @return
+	 * 
 	 */
 	public MatchResultType getResultType()
 	{

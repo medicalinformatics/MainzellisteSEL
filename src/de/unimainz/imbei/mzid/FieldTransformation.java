@@ -21,7 +21,7 @@ public class FieldTransformation {
 	private static char delimiterChars[] = {' ', '.', ':', ',', ';', '-', '\''};
 	
 	/** Characters which to replace (umlauts) 
-	 * {ä, Ä, ö, Ö, ü, Ü, ß}
+	 * {ï¿½, ï¿½, ï¿½, ï¿½, ï¿½, ï¿½, ï¿½}
 	 * */
 	private static char umlauts[] = {'\u00e4', '\u00c4', '\u00f6', '\u00d6', '\u00fc', '\u00dc', '\u00df'};
 
@@ -59,12 +59,12 @@ public class FieldTransformation {
 	 *  <li> conversion of Umlauts.
 	 * 	<li> conversion to upper case,
 	 * <ul>
-	 * @param input
-	 * @return
+	 * @param Input field.
+	 * @return The transformed field.
 	 */
 	public PlainTextField normalizeString(PlainTextField input)
 	{
-		// TODO: ungültige Zeichen filtern
+		// TODO: ungï¿½ltige Zeichen filtern
 		String inputStr = input.toString();
 		StringBuffer resultString;
 
@@ -99,8 +99,8 @@ public class FieldTransformation {
 	 * Decompose surname field into components.
 	 * The field is decomposed into tokens, seperated by the delimiters defined
 	 * by DELIMITERS.
-	 * @param input
-	 * @return
+	 * @param Input fields.
+	 * @return The decomposed field.
 	 */
 	public static CompoundField<PlainTextField> decomposeSurname(PlainTextField input)
 	{
@@ -113,8 +113,8 @@ public class FieldTransformation {
 	/**
 	 * Decompose first name field into components.
 	 * TODO: Genaue Beschreibung
-	 * @param input
-	 * @return
+	 * @param Input field.
+	 * @return The decomposed field.
 	 */
 	public static CompoundField<PlainTextField> decomposeFirstName(PlainTextField input)
 	{
@@ -126,8 +126,8 @@ public class FieldTransformation {
 	
 	/**
 	 * Generates phonetic code following the "Cologne phonetics" algorithm.
-	 * @param input
-	 * @return
+	 * @param input Input field.
+	 * @return The transformed field.
 	 */
 	public static PlainTextField colognePhonetic(PlainTextField input)
 	{
@@ -139,8 +139,8 @@ public class FieldTransformation {
 
 	/**
 	 * Generates phonetic code following the "Hannover phonetics" algorithm.
-	 * @param input
-	 * @return
+	 * @param input The input field.
+	 * @return The transformed field.
 	 */
 	public static PlainTextField hannoverPhonetic(PlainTextField input)
 	{
