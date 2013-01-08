@@ -1,7 +1,6 @@
 package de.unimainz.imbei.mzid.webservice;
 
 import java.net.URI;
-import java.util.HashSet;
 import java.util.Set;
 import java.util.regex.Pattern;
 
@@ -22,12 +21,16 @@ import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriBuilder;
 
 import org.apache.log4j.Logger;
+import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 
 import de.unimainz.imbei.mzid.Config;
+import de.unimainz.imbei.mzid.PID;
+import de.unimainz.imbei.mzid.Patient;
 import de.unimainz.imbei.mzid.Servers;
 import de.unimainz.imbei.mzid.Session;
+import de.unimainz.imbei.mzid.dto.Persistor;
 
 /**
  * Resource-based access to server-side client sessions.
@@ -44,20 +47,20 @@ public class SessionsResource {
 	
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	public Set<URI> getSessionIds(@Context HttpServletRequest req){
+	public JSONArray getSessionIds(@Context HttpServletRequest req){
 		
 		logger.info("Request to list sessions received by host " + req.getRemoteHost());
 		
 		//TODO: Auth: IDAT-Admin (sieht alle Sessions) oder MDAT-Server (sieht seine eigenen).
 		Servers.instance.checkPermission(req, "showSessionIds");
 		
-		Set<URI> ret = new HashSet<URI>();
+		JSONArray ret = new JSONArray();
 		for(String s: Servers.instance.getSessionIds()){
 			URI u = UriBuilder
 				.fromUri(req.getRequestURL().toString())
 				.path("{sid}")
 				.build(s);
-			ret.add(u);
+			ret.put(u.toString());
 		}
 		
 		return ret;
@@ -92,36 +95,36 @@ public class SessionsResource {
 	
 /*
  * For future use
- *
-	@Path("/{session}")
-	@GET
-	@Produces(MediaType.APPLICATION_JSON)
-	public Session getSession(
-			@PathParam("session") SessionIdParam sid){
-		// No authentication other than knowing the session id.
-		Session s = sid.getValue();
-		synchronized (s) { // refresh
-			//TODO: Besitzt der MDAT diese Sitzung?
-			return s;
-		}
-	}
-	
-	@Path("/{session}")
-	@POST
-	@Consumes({MediaType.APPLICATION_JSON})
-	@Produces({MediaType.APPLICATION_JSON})
-	public Session updateSession(
-			@PathParam("session") SessionIdParam sid,
-			Session sNew){
-		// No authentication other than knowing the session id.
-		Session s = sid.getValue();
-		synchronized (s) { // refresh
-			//TODO: Besitzt der MDAT diese Sitzung?
-			s.putAll(sNew);
-			return s;
-		}
-	}
-*/
+ */
+//	@Path("/{session}")
+//	@GET
+//	@Produces(MediaType.APPLICATION_JSON)
+//	public Session getSession(
+//			@PathParam("session") SessionIdParam sid){
+//		// No authentication other than knowing the session id.
+//		Session s = sid.getValue();
+//		synchronized (s) { // refresh
+//			//TODO: Besitzt der MDAT diese Sitzung?
+//			return s;
+//		}
+//	}
+//	
+//	@Path("/{session}")
+//	@POST
+//	@Consumes({MediaType.APPLICATION_JSON})
+//	@Produces({MediaType.APPLICATION_JSON})
+//	public Session updateSession(
+//			@PathParam("session") SessionIdParam sid,
+//			Session sNew){
+//		// No authentication other than knowing the session id.
+//		Session s = sid.getValue();
+//		synchronized (s) { // refresh
+//			//TODO: Besitzt der MDAT diese Sitzung?
+//			s.putAll(sNew);
+//			return s;
+//		}
+//	}
+
 	
 	@Path("/{session}")
 	@DELETE
@@ -176,7 +179,7 @@ public class SessionsResource {
 			Servers.instance.checkPermission(req, "tt_" + t.getType());
 		}
 		
-		// Prüfe Callback-URL
+		// Prï¿½fe Callback-URL
 		String callback = t.getDataItem("callback");
 		if (callback != null && !callback.equals("") && 
 				!Pattern.matches(Config.instance.getProperty("callback.allowedFormat"), callback))
@@ -185,7 +188,20 @@ public class SessionsResource {
 				.entity("Callback address does not conform to allowed format.")
 				.build());
 		
-		//Token erstellen, speichern und URL zurückgeben
+		// PrÃ¼fe Existenz der ID bei Typ "readPatient"
+		if (t.getType() == "readPatient") {
+			String idString = t.getDataItem("id");
+			// TODO andere ID-Typen
+			Patient p = Persistor.instance.getPatient(new PID(idString, "pid"));
+			if (p == null) {
+				throw new WebApplicationException(Response
+						.status(Status.BAD_REQUEST)
+						.entity("No patient with id '" + idString + "'.")
+						.build());
+			}
+		}
+
+		//Token erstellen, speichern und URL zurï¿½ckgeben
 		Token t2 = Servers.instance.newToken(s.getId());
 		t2.setData(t.getData());
 		t2.setType(t.getType());
@@ -218,8 +234,17 @@ public class SessionsResource {
 			@PathParam("tokenid") String tokenId,
 			@Context HttpServletRequest req){
 		// TODO: double-check that the token is indeed part of session sid
+		Token t = Servers.instance.getTokenByTid(tokenId); 
+		// Nicht jeder, der eine Token-Id hat, sollte das Token lesen kÃ¶nnen,
+		// insbesondere bei Temp-Ids ("readPatient"): Token enthÃ¤lt echte ID
+		if (t == null)
+			throw new WebApplicationException(Response
+					.status(Status.NOT_FOUND)
+					.entity("No token with id " + tokenId + " in session " + sid + ".")
+					.build());		
+		Servers.instance.checkPermission(req, "tt_" + t.getType());
 		logger.info("Received request to get token " + tokenId + " in session " + sid +
 				" by host " + req.getRemoteHost());
-		return Servers.instance.getTokenByTid(tokenId);
+		return t;
 	}
 }
