@@ -10,7 +10,7 @@ package de.unimainz.imbei.mzid;
  *
  * @param <I>
  */
-public interface IDGenerator<I> {
+public interface IDGenerator<I extends ID> {
 	/**
 	 * Called by the IDGeneratorFactory.
 	 * 
