@@ -96,12 +96,14 @@ public enum Servers {
 		Session s;
 		synchronized (sessions) {
 			s = sessions.get(sid);
+
+			for(Token t: s.getTokens()){
+				deleteToken(sid, t.getId());
+			}
+
 			sessions.remove(sid);
 		}
 		
-		for(Token t: s.getTokens()){
-			deleteToken(sid, t.getId());
-		}
 	}
 	
 	public void checkPermission(HttpServletRequest req, String permission){
