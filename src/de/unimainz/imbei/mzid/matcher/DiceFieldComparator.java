@@ -4,6 +4,12 @@ import java.util.BitSet;
 
 import de.unimainz.imbei.mzid.HashedField;
 
+/**
+ * Compares two fields that were encrypted as bloom filters.
+ * See {@link BloomFilterTransformer} for details. 
+ * @author borg
+ *
+ */
 public class DiceFieldComparator extends FieldComparator<HashedField> {
 
 	public DiceFieldComparator (String fieldLeft, String fieldRight)

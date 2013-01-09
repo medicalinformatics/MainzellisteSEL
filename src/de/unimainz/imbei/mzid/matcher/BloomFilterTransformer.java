@@ -11,6 +11,15 @@ import de.unimainz.imbei.mzid.HashedField;
 import de.unimainz.imbei.mzid.Patient;
 import de.unimainz.imbei.mzid.PlainTextField;
 
+/**
+ * BloomFilterTransformer and DiceFieldComparator implement the method presented by
+ * Schnell et al (2009). BloomFilterTransformer splits a string enclosed in a PlainTextField
+ * into n-grams 
+ * @see <a href="http://www.biomedcentral.com/1472-6947/9/41">Rainer Schnell, Tobias Bachteler and Jörg Reiher:
+ * Privacy-preserving record linkage using Bloom filters. BMC Medical Informatics and Decision Making 2009, 9:41</a>
+ * @author borg
+ *
+ */
 public class BloomFilterTransformer extends FieldTransformer<PlainTextField, HashedField> {
 
 	public final static int hashLength = 500;

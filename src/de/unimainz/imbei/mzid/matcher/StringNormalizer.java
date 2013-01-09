@@ -16,7 +16,7 @@ public class StringNormalizer extends FieldTransformer<PlainTextField, PlainText
 	private static char delimiterChars[] = {' ', '.', ':', ',', ';', '-', '\''};
 
 	/** Characters which to replace (umlauts) 
-	 * {ä, Ä, ö, Ö, ü, Ü, ß}
+	 * {Ã¤, Ã„, Ã¶, Ã–, Ã¼, Ãœ, ÃŸ}
 	 * */
 	private static char umlauts[] = {'\u00e4', '\u00c4', '\u00f6', '\u00d6', '\u00fc', '\u00dc', '\u00df'};
 
@@ -57,7 +57,6 @@ public class StringNormalizer extends FieldTransformer<PlainTextField, PlainText
 	 * 	<li> conversion to upper case,
 	 * <ul>
 	 * @param input
-	 * @return
 	 */
 	@Override
 	public PlainTextField transform(PlainTextField input)
@@ -66,7 +65,7 @@ public class StringNormalizer extends FieldTransformer<PlainTextField, PlainText
 		if (input.getValue() == null) return new PlainTextField(null);
 		if (input.getValue().length() == 0) return new PlainTextField("");
 		
-		// TODO: ungültige Zeichen filtern
+		// TODO: ungï¿½ltige Zeichen filtern
 		String inputStr = input.toString();
 		StringBuffer resultString;
 		

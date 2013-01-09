@@ -2,18 +2,22 @@ package de.unimainz.imbei.mzid.matcher;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.jar.JarOutputStream;
+
 import de.unimainz.imbei.mzid.CompoundField;
 import de.unimainz.imbei.mzid.Field;
 import de.unimainz.imbei.mzid.Patient;
 
 
 /**
- * Represents a comparison between two input fields (Fields)
- * in a Patient. Comparison methods, such as string comparison or
+ * Represents a comparison between two input fields (Fields),
+ * usually belonging to two Patient objects. Comparison methods, such as string comparison or
  * binary comparison (equal / not equal) are implemented as
  * subclasses of this class. Every concrete comparison (for example:
  * compare first names of input by JaroWinkler string metric) is
- * represented by an object of this class  
+ * represented by an object of this class.
+ * @param <F> The type of fields that can be compared. Implementing subclasses
+ * can override this to be more restrictive (e.g. see {@link StringNormalizer}).   
  * @author borg
  *
  */
