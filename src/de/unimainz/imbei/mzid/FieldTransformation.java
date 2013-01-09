@@ -59,7 +59,7 @@ public class FieldTransformation {
 	 *  <li> conversion of Umlauts.
 	 * 	<li> conversion to upper case,
 	 * <ul>
-	 * @param Input field.
+	 * @param input Input field.
 	 * @return The transformed field.
 	 */
 	public PlainTextField normalizeString(PlainTextField input)
@@ -99,7 +99,7 @@ public class FieldTransformation {
 	 * Decompose surname field into components.
 	 * The field is decomposed into tokens, seperated by the delimiters defined
 	 * by DELIMITERS.
-	 * @param Input fields.
+	 * @param input Input fields.
 	 * @return The decomposed field.
 	 */
 	public static CompoundField<PlainTextField> decomposeSurname(PlainTextField input)
@@ -113,7 +113,7 @@ public class FieldTransformation {
 	/**
 	 * Decompose first name field into components.
 	 * TODO: Genaue Beschreibung
-	 * @param Input field.
+	 * @param input Input field.
 	 * @return The decomposed field.
 	 */
 	public static CompoundField<PlainTextField> decomposeFirstName(PlainTextField input)

@@ -48,7 +48,7 @@ public class IDRequest {
 	
 	/**
 	 * @param inputFields
-	 * @param requestedIdType
+	 * @param idType
 	 * @param matchResult
 	 * @param assignedPatient
 	 */

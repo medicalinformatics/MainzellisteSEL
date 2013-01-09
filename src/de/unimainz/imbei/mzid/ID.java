@@ -35,10 +35,19 @@ public abstract class ID {
 	@Basic
 	protected boolean tentative;
 	
+	/**
+	 * Check whether this ID is tentative, i.e. the patient to which it is assigned
+	 * might be a duplicate. 
+	 */
 	public boolean isTentative() {
 		return tentative;
 	}
 
+	/**
+	 * Set the tentative status of this ID.
+	 * @see #isTentative()
+	 * @param tentative Whether this ID should be considered tentative (true) or not (false).
+	 */
 	public void setTentative(boolean tentative) {
 		this.tentative = tentative;
 	}

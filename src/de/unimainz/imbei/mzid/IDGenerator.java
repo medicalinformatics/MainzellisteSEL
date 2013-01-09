@@ -15,7 +15,7 @@ public interface IDGenerator<I extends ID> {
 	 * Called by the IDGeneratorFactory.
 	 * 
 	 * @param mem This allows the generator to "memorize" values, e.g. sequence counters.
-	 * @param type "name" of the generated IDs, e.g. "gpohid"
+	 * @param idType "name" of the generated IDs, e.g. "gpohid"
 	 */
 	void init(IDGeneratorMemory mem, String idType);
 	
@@ -37,7 +37,7 @@ public interface IDGenerator<I extends ID> {
 	 * Checks whether a given String is a valid PID.
 	 * TODO: Verschieben
 	 * 
-	 * @param pid The PID which to check.
+	 * @param id The PID which to check.
 	 * @return true if pid is a correct PID, false otherwise.
 	 */
 	public boolean verify(String id);

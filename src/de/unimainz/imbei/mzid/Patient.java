@@ -125,7 +125,7 @@ public class Patient {
 	
 	/**
 	 * Creates a map of fields from its JSON representation. 
-	 * @param fieldsJsonString JSON string as created by {@link #fieldsToString(Map)).
+	 * @param fieldsJsonString JSON string as created by {@link #fieldsToString(Map)}.
 	 */
 	public static Map<String, Field<?>> stringToFields(String fieldsJsonString) {
 		try {
