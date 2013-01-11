@@ -1,6 +1,13 @@
 package de.unimainz.imbei.mzid;
 
+import java.util.Properties;
 import java.util.Random;
+
+import org.apache.log4j.Logger;
+
+import de.unimainz.imbei.mzid.exceptions.InternalErrorException;
+
+
 
 /**
  * Here go all the mathematics involved in generating, checking and correcting
@@ -45,6 +52,15 @@ public class PIDGenerator implements IDGenerator<PID>{
 	 */
 	static char sigma[] = "0123456789ACDEFGHJKLMNPQRTUVWXYZ".toCharArray();
 
+	private Logger logger = Logger.getLogger(this.getClass());
+	
+	/**
+	 * Empty constructor. Needed by IDGeneratorFactory in order to instantiate
+	 * an object via reflection.
+	 */
+	PIDGenerator() {		
+	}
+	
 	private PIDGenerator(int key1, int key2, int key3, int rndwidth) {
 		this.key1 = key1;
 		this.key2 = key2;
@@ -652,7 +668,7 @@ public class PIDGenerator implements IDGenerator<PID>{
 	}
 
 	@Override
-	public void init(IDGeneratorMemory mem, String idType) {
+	public void init(IDGeneratorMemory mem, String idType, Properties props) {
 		this.mem = mem;
 
 		String memCounter = mem.get("counter");
@@ -660,6 +676,24 @@ public class PIDGenerator implements IDGenerator<PID>{
 		this.counter = Integer.parseInt(memCounter);
 
 		this.idType = idType;
+		
+		try {
+			int key1 = Integer.parseInt(props.getProperty("k1"));
+			int key2 = Integer.parseInt(props.getProperty("k2"));
+			int key3 = Integer.parseInt(props.getProperty("k3"));
+			int rndwidth;
+			if (props.containsKey("rndwidth"))
+				rndwidth = Integer.parseInt(props.getProperty("rndwidth"));
+			else
+				rndwidth = 0;
+			this.key1 = key1;
+			this.key2 = key2;
+			this.key3 = key3;
+			this.rndsetup(rndwidth);			
+		} catch (NumberFormatException e) {
+			logger.fatal("Number format error in configuration of IDGenerator for ID type " + idType, e);
+			throw new InternalErrorException(e);
+		}
 	}
 
 	@Override

@@ -1,10 +1,15 @@
 package de.unimainz.imbei.mzid;
 
+import java.util.Properties;
+
 /**
  * Generator for a given type of ID (e.g. PID, SIC, LabID, ...)
  * 
  * Each type of ID needs an own generator - even if based on the same algorithm, in which case
  * there would be several instances of the same generator implementation.
+ * 
+ * Implementations of this interface must provide an empty constructor and perform necessary
+ * initializations via {@link #init(IDGeneratorMemory, String, Properties)}.
  * 
  * @author Martin Lablans
  *
@@ -16,8 +21,11 @@ public interface IDGenerator<I extends ID> {
 	 * 
 	 * @param mem This allows the generator to "memorize" values, e.g. sequence counters.
 	 * @param idType "name" of the generated IDs, e.g. "gpohid"
+	 * @param props Properties for this generator.These are the properties defined for
+	 * this generator in the config, with the prefix idgenerators.{idtype} removed
 	 */
-	void init(IDGeneratorMemory mem, String idType);
+	void init(IDGeneratorMemory mem, String idType, Properties props);
+	
 	
 	/**
 	 * This is the method to call to generate a new unique (in its type) ID.

@@ -1,6 +1,7 @@
 package de.unimainz.imbei.mzid.dto;
 
 import java.util.HashMap;
+//import java.util.LinkedList;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -22,6 +23,8 @@ import de.unimainz.imbei.mzid.Patient;
  */
 public enum Persistor {
 	instance;
+	
+//	private List<Patient> cache = null;
 	
 	private EntityManagerFactory emf;
 	
@@ -71,6 +74,8 @@ public enum Persistor {
 	public synchronized List<Patient> getPatients() { //TODO: Filtern
 		// Entities are not detached, because the IDs are lazy-loaded
 		List<Patient> pl;
+//		if (cache == null) cache = new LinkedList(this.em.createQuery("select p from Patient p", Patient.class).getResultList());
+//		return cache;
 		pl = this.em.createQuery("select p from Patient p", Patient.class).getResultList();
 		return pl;
 	}
@@ -82,6 +87,7 @@ public enum Persistor {
 	 */
 	public synchronized void addIdRequest(IDRequest req){
 		em.getTransaction().begin();
+//		if (!em.contains(req.getAssignedPatient())) cache.add(req.getAssignedPatient());
 		em.persist(req); //TODO: Fehlerbehandlung, falls PID schon existiert.		
 		em.getTransaction().commit();
 	}
@@ -114,13 +120,13 @@ public enum Persistor {
 		Patient pOriginal = getPatient(idOfOriginal);
 		pDuplicate.setOriginal(pOriginal);
 		updatePatient(pDuplicate);
-		cache = null;
+//		this.cache = null;
 	}
 	
 	/**
 	 * Load the persisted properties for an ID generator.
 	 * @param idString Identifier of the ID generator.
-	 * @return
+	 * 
 	 */
 	public IDGeneratorMemory getIDGeneratorMemory(String idString)
 	{
@@ -145,6 +151,13 @@ public enum Persistor {
 		em.merge(p);
 		em.getTransaction().commit();
 		em.close();
-		cache = null;
+//		this.cache = null;
+	}
+	
+	public synchronized void deleteAllPatients() {
+//		this.cache = null;
+		this.em.getTransaction().begin();
+		this.em.createQuery("delete from Patient", Patient.class).executeUpdate();
+		this.em.getTransaction().commit();
 	}
 }

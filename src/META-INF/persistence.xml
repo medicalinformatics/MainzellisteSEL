@@ -9,6 +9,7 @@
 		<class>de.unimainz.imbei.mzid.Patient</class>
 		<class>de.unimainz.imbei.mzid.ID</class>
 		<class>de.unimainz.imbei.mzid.PID</class>
+		<class>de.unimainz.imbei.mzid.IntegerID</class>
 		<class>de.unimainz.imbei.mzid.IDRequest</class>
 		<class>de.unimainz.imbei.mzid.matcher.MatchResult</class>
 		<class>de.unimainz.imbei.mzid.IDGeneratorMemory</class>

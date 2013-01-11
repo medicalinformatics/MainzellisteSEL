@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.prefs.Preferences;
 import java.util.regex.Pattern;
 
 import javax.servlet.ServletContext;
@@ -61,6 +62,20 @@ public enum Config {
 				configInputStream = new FileInputStream(configPath);
 			
 			props.load(configInputStream);
+			/* 
+			 * Read properties into Preferences for easier hierarchical access
+			 * (e.g. it is possible to get the subtree of all idgenerators.* properties)
+			 */
+			Preferences prefs = Preferences.userRoot().node("de/unimainz/imbei/mzid");
+			for (Object propName : props.keySet()) {
+				Preferences prefNode = prefs;
+				// Create a path in the preferences according to the property key.
+				// (Path separated by ".") The last element is used as parameter name. 
+				String prefKeys[] = propName.toString().split("\\.", 0);
+				for (int i = 0; i < prefKeys.length - 1; i++)
+					prefNode = prefNode.node(prefKeys[i]);
+				prefNode.put(prefKeys[prefKeys.length - 1], props.getProperty(propName.toString()));
+			}					
 			configInputStream.close();
 			logger.info("Config read successfully");
 			logger.debug(props);

@@ -9,6 +9,7 @@ import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
@@ -73,9 +74,9 @@ public class PatientsResource {
 		throw new NotImplementedException();
 		// FIXME
 		
-		//2. Jeden Patienten aus der DB laden. Die m�ssen vom EntityManager abgekoppelt sein und nur Felder f�hren, die IDs sind.
+		//2. Jeden Patienten aus der DB laden. Die müssen vom EntityManager abgekoppelt sein und nur Felder führen, die IDs sind.
 	
-		//3. Patienten in Liste zur�ckgeben.
+		//3. Patienten in Liste zurückgeben.
 		/*return Persistor.instance.getPatients();*/
 	}
 	
@@ -163,7 +164,10 @@ public class PatientsResource {
 	 * a new patient is created. Otherwise, return null.
 	 * @param tokenId
 	 * @param form
-	 * @return
+	 * @return A map with the following members:
+	 * 	<ul>
+	 * 		<li> id: The generated id as an object of class ID. Null, if no id was generated due to an unsure match result.
+	 * 		<li> result: Result as an object of class MatchResult. 
 	 * @throws WebApplicationException if called with an invalid token.
 	 */
 	private Map createNewPatient(
@@ -231,10 +235,9 @@ public class PatientsResource {
 				ret.put("result", match);
 				return ret;
 			}
-			id = IDGeneratorFactory.instance.getFactory("pid").getNext(); //TODO: generalisieren			
-			Set<ID> ids = new HashSet<ID>();
-			ids.add(id);
+			Set<ID> ids = IDGeneratorFactory.instance.generateIds();			
 			pNormalized.setIds(ids);
+			id = pNormalized.getId("pid");
 			logger.info("Created new ID " + id.getIdString() + " for ID request " + (t == null ? "(null)" : t.getId()));
 			if (match.getResultType() == MatchResultType.POSSIBLE_MATCH)
 			{
@@ -297,6 +300,17 @@ public class PatientsResource {
 		ret.put("id", id);
 		ret.put("result", match);
 		return ret;
+	}
+	
+	// Sehr gefährlich, aber zum Testen hilfreich
+	/**
+	 * Delete all patients. Requires permission "deleteAllPatients".
+	 */
+	@DELETE
+	public Response deleteAllPatients(@Context HttpServletRequest req) {
+		Servers.instance.checkPermission(req, "deleteAllPatients");
+		Persistor.instance.deleteAllPatients();
+		return Response.ok().build();
 	}
 	
 	@Path("/pid/{pid}")
