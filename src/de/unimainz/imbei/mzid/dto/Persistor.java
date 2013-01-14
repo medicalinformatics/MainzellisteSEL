@@ -1,6 +1,8 @@
 package de.unimainz.imbei.mzid.dto;
 
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Set;
 //import java.util.LinkedList;
 import java.util.List;
 import javax.persistence.EntityManager;
@@ -80,6 +82,21 @@ public enum Persistor {
 		return pl;
 	}
 
+	/**
+	 * Returns a detached list of the IDs of all patients.
+	 * @return A list where every item represents the IDs of one patient.
+	 */
+	public synchronized List<Set<ID>> getAllIds()
+	{
+		List<Patient> patients = this.getPatients();
+		List<Set<ID>> ret = new LinkedList<Set<ID>>();
+		for (Patient p : patients) {
+			Set<ID> thisPatientIds = p.getIds();
+			this.em.detach(thisPatientIds);
+			ret.add(thisPatientIds);
+		}
+		return ret;
+	}
 	/**
 	 * Add an ID request to the database. In cases where a new ID is created, a
 	 * new Patient object is persisted.

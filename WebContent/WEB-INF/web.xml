@@ -16,6 +16,10 @@
 			<param-name>com.sun.jersey.config.property.WebPageContentRegex</param-name>
 			<param-value>/static/.*</param-value>
 		</init-param>
+		<init-param>
+			<param-name>com.sun.jersey.api.json.POJOMappingFeature</param-name>
+			<param-value>true</param-value>
+		</init-param>
 	</filter>
 	<filter-mapping>
 		<filter-name>Mainzer ID-Framework</filter-name>
@@ -25,6 +29,16 @@
 		<web-resource-collection>
 			<web-resource-name>Formulare</web-resource-name>
 			<url-pattern>/html/admin/*</url-pattern>
+		</web-resource-collection>
+		<auth-constraint>
+			<role-name>admin</role-name>
+		</auth-constraint>
+	</security-constraint>
+	<security-constraint>
+		<web-resource-collection>
+			<web-resource-name>getAllPatiens</web-resource-name>
+			<url-pattern>/patients</url-pattern>
+			<http-method>GET</http-method>			
 		</web-resource-collection>
 		<auth-constraint>
 			<role-name>admin</role-name>

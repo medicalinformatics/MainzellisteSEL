@@ -21,7 +21,7 @@ WebContent/WEB-INF/jsp/patientCreated.jsp -text svneol=unset#text/plain
 WebContent/WEB-INF/jsp/patientFormElements.jsp -text svneol=unset#text/plain
 WebContent/WEB-INF/jsp/selectPatient.jsp -text svneol=unset#text/plain
 WebContent/WEB-INF/jsp/unsureMatch.jsp -text svneol=unset#text/plain
-WebContent/WEB-INF/web.xml -text svneol=unset#text/plain
+WebContent/WEB-INF/web.xml -text
 WebContent/static/css/patientenliste.css -text svneol=unset#text/plain
 WebContent/static/media/JGU_Uni_medizin_Logo_4c_Internet.jpg -text svneol=unset#unset
 builder_project/enhance.xml -text svneol=unset#text/plain

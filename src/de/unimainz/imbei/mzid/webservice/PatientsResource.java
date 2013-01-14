@@ -2,7 +2,6 @@ package de.unimainz.imbei.mzid.webservice;
 
 import java.net.URI;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -63,21 +62,14 @@ public class PatientsResource {
 	
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	public List<Patient> getAllPatients(@Context HttpServletRequest req) throws UnauthorizedException {
+	public List<Set<ID>> getAllPatients(@Context HttpServletRequest req) throws UnauthorizedException {
 		/* Benutzerrechte pr�fen, basierend auf Rollenzuweisung in tomcat-users.xml.
 		 * Zus�tzliche Pr�fung via security-constraint in web.xml 
 		 */
 		logger.info("Received GET /patients");
 		if (!req.isUserInRole("admin"))
 			throw new UnauthorizedException();
-		
-		throw new NotImplementedException();
-		// FIXME
-		
-		//2. Jeden Patienten aus der DB laden. Die müssen vom EntityManager abgekoppelt sein und nur Felder führen, die IDs sind.
-	
-		//3. Patienten in Liste zurückgeben.
-		/*return Persistor.instance.getPatients();*/
+		return Persistor.instance.getAllIds();
 	}
 	
 
