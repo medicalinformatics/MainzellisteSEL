@@ -233,16 +233,20 @@ public class SessionsResource {
 			@PathParam("session") SessionIdParam sid,
 			@PathParam("tokenid") String tokenId,
 			@Context HttpServletRequest req){
-		// TODO: double-check that the token is indeed part of session sid
+
+		Session s = sid.getValue();
 		Token t = Servers.instance.getTokenByTid(tokenId); 
+
 		// Nicht jeder, der eine Token-Id hat, sollte das Token lesen können,
 		// insbesondere bei Temp-Ids ("readPatient"): Token enthält echte ID
-		if (t == null)
+		Servers.instance.checkPermission(req, "tt_" + t.getType());
+
+		// Check that token exists and belongs to specified session
+		if (t == null || !s.getTokens().contains(t))
 			throw new WebApplicationException(Response
 					.status(Status.NOT_FOUND)
 					.entity("No token with id " + tokenId + " in session " + sid + ".")
 					.build());		
-		Servers.instance.checkPermission(req, "tt_" + t.getType());
 		logger.info("Received request to get token " + tokenId + " in session " + sid +
 				" by host " + req.getRemoteHost());
 		return t;
