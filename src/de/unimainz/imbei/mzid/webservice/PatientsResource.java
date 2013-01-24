@@ -40,6 +40,7 @@ import de.unimainz.imbei.mzid.Field;
 import de.unimainz.imbei.mzid.ID;
 import de.unimainz.imbei.mzid.IDGeneratorFactory;
 import de.unimainz.imbei.mzid.IDRequest;
+import de.unimainz.imbei.mzid.PID;
 import de.unimainz.imbei.mzid.Patient;
 import de.unimainz.imbei.mzid.Servers;
 import de.unimainz.imbei.mzid.dto.Persistor;
@@ -79,7 +80,7 @@ public class PatientsResource {
 	public Response newPatientBrowser(
 			@QueryParam("tokenId") String tokenId,
 			MultivaluedMap<String, String> form){
-		Map createRet = createNewPatient(tokenId, form); 
+		Map<String, Object> createRet = createNewPatient(tokenId, form); 
 		ID id = (ID) createRet.get("id");
 		MatchResult result = (MatchResult) createRet.get("result");
 		Map <String, Object> map = new HashMap<String, Object>();
@@ -121,7 +122,7 @@ public class PatientsResource {
 			@Context HttpServletRequest request,
 			@Context UriInfo context,
 			MultivaluedMap<String, String> form) throws JSONException {
-		Map responseMap = createNewPatient(tokenId, form);
+		Map<String, Object> responseMap = createNewPatient(tokenId, form);
 		logger.info("Accept: " + request.getHeader("Accept"));
 		logger.info("Content-Type: " + request.getHeader("Content-Type"));
 		ID newId = (ID) responseMap.get("id");
@@ -162,12 +163,12 @@ public class PatientsResource {
 	 * 		<li> result: Result as an object of class MatchResult. 
 	 * @throws WebApplicationException if called with an invalid token.
 	 */
-	private Map createNewPatient(
+	private Map<String, Object> createNewPatient(
 			String tokenId,
 			MultivaluedMap<String, String> form) throws WebApplicationException {
 
 		//Validator.instance.validateForm(form);
-		HashMap ret = new HashMap();
+		HashMap<String, Object> ret = new HashMap<String, Object>();
 		Token t = Servers.instance.getTokenByTid(tokenId);
 		// create a token if started in debug mode
 		if (t == null && Config.instance.debugIsOn())
@@ -175,86 +176,104 @@ public class PatientsResource {
 			t = new Token("debug");
 			t.setType("addPatient");
 		}
-		if(t == null || !t.getType().equals("addPatient")){
-			String infoLog = "Received ID request with invalid token. Token with ID: " + tokenId;
-			if(t == null)
-				infoLog += " is unknown.";
-			else
-				infoLog += " has unexpected type: " + t.getType();
-			logger.info(infoLog);
-			throw new WebApplicationException(Response
-				.status(Status.UNAUTHORIZED)
-				.entity("Please supply a valid 'addPatient' token.")
-				.build());
-		}
-		logger.info("Handling ID Request with token " + (t == null ? "(null)" : t.getId()));
-		Patient p = new Patient();
-		Map<String, Field<?>> chars = new HashMap<String, Field<?>>();
-		
-		for(String s: Config.instance.getFieldKeys()){
-			if (!form.containsKey(s)) {
-				logger.error("Field " + s + " not found in input data!");
-				throw new WebApplicationException(Response.status(Status.BAD_REQUEST).entity("Field " + s + " not found in input data!").build());
-			}
-			chars.put(s, Field.build(s, form.getFirst(s)));
-		}
 
-		p.setFields(chars);
-		
-		// Normalisierung, Transformation
-		Patient pNormalized = Config.instance.getRecordTransformer().transform(p);
-		pNormalized.setInputFields(chars);
-		
-		MatchResult match = Config.instance.getMatcher().match(pNormalized, Persistor.instance.getPatients());
-		
 		ID id;
-		Patient assignedPatient; // The "real" patient that is assigned (match result or new patient) 
-		
-		switch (match.getResultType())
-		{
-		case MATCH :
-			id = match.getBestMatchedPatient().getOriginal().getId("pid");
-			assignedPatient = match.getBestMatchedPatient();
-			// log token to separate concurrent request in the log file
-			logger.info("Found match with ID " + id.getIdString() + " for ID request " + t.getId()); 
-			break;
-			
-		case NON_MATCH :
-		case POSSIBLE_MATCH :
-			if (match.getResultType() == MatchResultType.POSSIBLE_MATCH 
-			&& (form.getFirst("sureness") == null || !Boolean.parseBoolean(form.getFirst("sureness")))) {
-				ret.put("id", null);
-				ret.put("result", match);
-				return ret;
-			}
-			Set<ID> ids = IDGeneratorFactory.instance.generateIds();			
-			pNormalized.setIds(ids);
-			id = pNormalized.getId("pid");
-			logger.info("Created new ID " + id.getIdString() + " for ID request " + (t == null ? "(null)" : t.getId()));
-			if (match.getResultType() == MatchResultType.POSSIBLE_MATCH)
+		MatchResult match;
+		// synchronize on token 
+		synchronized (t) {
+			/* Get token again and check if it still exist.
+			 * This prevents the following race condition:
+			 *  1. Thread A gets token t and enters synchronized block
+			 *  2. Thread B also gets token t, now waits for A to exit the synchronized block
+			 *  3. Thread A deletes t and exits synchronized block
+			 *  4. Thread B enters synchronized block with invalid token
+			 */
+			t = Servers.instance.getTokenByTid(tokenId);
+			// create a token if started in debug mode
+			if (t == null && Config.instance.debugIsOn())
 			{
-				pNormalized.setTentative(true);
-				id.setTentative(true);
-				logger.info("New ID " + id.getIdString() + " is tentative. Found possible match with ID " + 
-						match.getBestMatchedPatient().getId("pid").getIdString());
+				t = new Token("debug");
+				t.setType("addPatient");
 			}
-			assignedPatient = pNormalized;
-			break;
+			if(t == null || !t.getType().equals("addPatient")){
+				String infoLog = "Received ID request with invalid token. Token with ID: " + tokenId;
+				if(t == null)
+					infoLog += " is unknown.";
+				else
+					infoLog += " has unexpected type: " + t.getType();
+				logger.info(infoLog);
+				throw new WebApplicationException(Response
+					.status(Status.UNAUTHORIZED)
+					.entity("Please supply a valid 'addPatient' token.")
+					.build());
+			}
+			logger.info("Handling ID Request with token " + (t == null ? "(null)" : t.getId()));
+			Patient p = new Patient();
+			Map<String, Field<?>> chars = new HashMap<String, Field<?>>();
+			
+			for(String s: Config.instance.getFieldKeys()){
+				if (!form.containsKey(s)) {
+					logger.error("Field " + s + " not found in input data!");
+					throw new WebApplicationException(Response.status(Status.BAD_REQUEST).entity("Field " + s + " not found in input data!").build());
+				}
+				chars.put(s, Field.build(s, form.getFirst(s)));
+			}
 	
-		default :
-			logger.error("Illegal match result: " + match.getResultType());
-			throw new InternalErrorException();
+			p.setFields(chars);
+			
+			// Normalisierung, Transformation
+			Patient pNormalized = Config.instance.getRecordTransformer().transform(p);
+			pNormalized.setInputFields(chars);
+			
+			match = Config.instance.getMatcher().match(pNormalized, Persistor.instance.getPatients());
+			
+			Patient assignedPatient; // The "real" patient that is assigned (match result or new patient) 
+			
+			switch (match.getResultType())
+			{
+			case MATCH :
+				id = match.getBestMatchedPatient().getOriginal().getId("pid");
+				assignedPatient = match.getBestMatchedPatient();
+				// log token to separate concurrent request in the log file
+				logger.info("Found match with ID " + id.getIdString() + " for ID request " + t.getId()); 
+				break;
+				
+			case NON_MATCH :
+			case POSSIBLE_MATCH :
+				if (match.getResultType() == MatchResultType.POSSIBLE_MATCH 
+				&& (form.getFirst("sureness") == null || !Boolean.parseBoolean(form.getFirst("sureness")))) {
+					ret.put("id", null);
+					ret.put("result", match);
+					return ret;
+				}
+				Set<ID> ids = IDGeneratorFactory.instance.generateIds();			
+				pNormalized.setIds(ids);
+				id = pNormalized.getId("pid");
+				logger.info("Created new ID " + id.getIdString() + " for ID request " + (t == null ? "(null)" : t.getId()));
+				if (match.getResultType() == MatchResultType.POSSIBLE_MATCH)
+				{
+					pNormalized.setTentative(true);
+					id.setTentative(true);
+					logger.info("New ID " + id.getIdString() + " is tentative. Found possible match with ID " + 
+							match.getBestMatchedPatient().getId("pid").getIdString());
+				}
+				assignedPatient = pNormalized;
+				break;
+		
+			default :
+				logger.error("Illegal match result: " + match.getResultType());
+				throw new InternalErrorException();
+			}
+			
+			logger.info("Weight of best match: " + match.getBestMatchedWeight());
+			
+			IDRequest request = new IDRequest(p.getFields(), "pid", match, assignedPatient);
+			
+			Persistor.instance.addIdRequest(request);
+			
+			if(t != null)
+				Servers.instance.deleteToken(t.getId());
 		}
-		
-		logger.info("Weight of best match: " + match.getBestMatchedWeight());
-		
-		IDRequest request = new IDRequest(p.getFields(), "pid", match, assignedPatient);
-		
-		Persistor.instance.addIdRequest(request);
-		
-		if(t != null && !t.getId().equals("4223"))
-			Servers.instance.deleteToken(t.getId());
-		
 		// Callback aufrufen
 		// TODO auslagern in Funktion. Wohin?
 		// TODO Fehlerbehebung
@@ -309,11 +328,15 @@ public class PatientsResource {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getPatientViaPid(
-			@PathParam("pid") String pidString){
+			@PathParam("pid") String pidString,
+			@Context HttpServletRequest req){
 		logger.info("Received GET /patients/pid/" + pidString);
-		throw new NotImplementedException();
-		//FIXME IDAT-Admin?
-/*		PID pid = (PID) IDGeneratorFactory.instance.getFactory("pid").buildId(pidString);
+
+		if (!req.isUserInRole("admin"))
+			throw new UnauthorizedException();
+		// TODO andere ID-Typen
+		// FIXME Patient als JSON (über MessageBodyWriter oder @XMLRootElement in Field
+		PID pid = (PID) IDGeneratorFactory.instance.getFactory("pid").buildId(pidString);
 		Patient pat = Persistor.instance.getPatient(pid);
 		if(pat == null){
 			throw new WebApplicationException(Response
@@ -322,7 +345,7 @@ public class PatientsResource {
 					.build());
 		} else {
 			return Response.status(Status.OK).entity(pat).build();
-		}*/
+		}
 	}
 	
 	@Path("/pid/{pid}")
@@ -347,7 +370,14 @@ public class PatientsResource {
 		//Hier keine Auth notwendig. Wenn tid existiert, ist der Nutzer dadurch autorisiert.
 		//Patient mit TempID tid zur�ckgeben
 		logger.info("Received GET /patients/tempid/" + tid);
-		throw new NotImplementedException();
+		Token t = Servers.instance.getTokenByTid(tid);
+		if (t == null || t.getType() != "readPatient") {
+			logger.info("Tried to access GET /patients/tempid/ with invalid token " + t);
+			throw new UnauthorizedException();
+		}
+		// TODO: verallgemeinern für andere IDs
+		String pidString = t.getDataItem("pid");
+		return Persistor.instance.getPatient(IDGeneratorFactory.instance.getFactory("pid").buildId(pidString));
 	}
 	
 	@Path("/tempid/{tid}")
