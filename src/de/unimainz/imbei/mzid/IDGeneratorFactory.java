@@ -17,6 +17,8 @@ public enum IDGeneratorFactory {
 	instance;
 	
 	private final Map<String, IDGenerator<? extends ID>> generators;
+	
+	private String[] idTypes;
 
 	private Logger logger = Logger.getLogger(this.getClass());
 	private IDGeneratorFactory() {
@@ -29,7 +31,7 @@ public enum IDGeneratorFactory {
 			throw new Error("No ID generators defined!");
 		}
 		// split list of ID generators: comma-separated, ignore whitespace around commas
-		String[] idTypes = props.getProperty("idgenerators").split("\\s*,\\s*");
+		this.idTypes = props.getProperty("idgenerators").split("\\s*,\\s*");
 		// Iterate over ID types
 		for (String thisIdType : idTypes) {
 			String thisIdGenerator = prefs.get(thisIdType, "");
@@ -97,5 +99,21 @@ public enum IDGeneratorFactory {
 			ids.add(this.generators.get(idType).getNext());
 		}
 		return ids;
+	}
+	
+	/**
+	 * Get names of defined id types as array. The result must not be modified.
+	 * 
+	 */
+	public String[] getIDTypes() {
+		return this.idTypes;
+	}
+	
+	/**
+	 * Get the default id type (as of 02/2013, the first one defined in the config).
+	 * 
+	 */
+	public String getDefaultIDType() {
+		return this.idTypes[0];
 	}
 }
