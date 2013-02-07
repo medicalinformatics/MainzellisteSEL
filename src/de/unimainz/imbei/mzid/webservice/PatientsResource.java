@@ -1,7 +1,9 @@
 package de.unimainz.imbei.mzid.webservice;
 
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -22,6 +24,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
+import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 import org.apache.http.HttpResponse;
 import org.apache.http.StatusLine;
@@ -30,6 +33,7 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.log4j.Logger;
+import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 
@@ -80,6 +84,7 @@ public class PatientsResource {
 	public Response newPatientBrowser(
 			@QueryParam("tokenId") String tokenId,
 			MultivaluedMap<String, String> form){
+		Token t = Servers.instance.getTokenByTid(tokenId);
 		Map<String, Object> createRet = createNewPatient(tokenId, form); 
 		ID id = (ID) createRet.get("id");
 		MatchResult result = (MatchResult) createRet.get("result");
@@ -95,6 +100,27 @@ public class PatientsResource {
 			return Response.status(Status.ACCEPTED)
 					.entity(new Viewable("/unsureMatch.jsp", map)).build();
 		} else {
+			if (t.getData().containsKey("redirect")) {
+				URI redirectURI;
+				try {
+					String idType;
+					if (t.getData().containsKey("idtype"))
+						idType = t.getDataItem("idtype");
+					else				
+						idType = IDGeneratorFactory.instance.getDefaultIDType();
+
+					redirectURI = new URI(t.getDataItem("redirect"));
+					UriBuilder redirectBuilder = UriBuilder.fromUri(redirectURI);
+					redirectBuilder.queryParam(idType, id.getIdString());
+					return Response.status(Status.SEE_OTHER).location(redirectBuilder.build()).build();
+				} catch(URISyntaxException e) {
+					logger.error("Illegal redirect address in token: " + t.getDataItem("redirect"), e);
+					throw new WebApplicationException(e, Response.status(Status.BAD_REQUEST)
+							.entity("The MDAT server provided an illegal redirect address. Please contact the MDAT administrator!")
+							.build());
+				}
+				
+			}
 			map.put("id", id.getIdString());
 			map.put("tentative", id.isTentative());
 			
@@ -173,7 +199,7 @@ public class PatientsResource {
 		// create a token if started in debug mode
 		if (t == null && Config.instance.debugIsOn())
 		{
-			t = new Token("debug");
+			t = new Token("debug", "addPatient");
 			t.setType("addPatient");
 		}
 
@@ -192,7 +218,7 @@ public class PatientsResource {
 			// create a token if started in debug mode
 			if (t == null && Config.instance.debugIsOn())
 			{
-				t = new Token("debug");
+				t = new Token("debug", "addPatient");
 				t.setType("addPatient");
 			}
 			if(t == null || !t.getType().equals("addPatient")){
@@ -229,10 +255,17 @@ public class PatientsResource {
 			
 			Patient assignedPatient; // The "real" patient that is assigned (match result or new patient) 
 			
+			// Get ID type from token or use first defined id type
+			String idType;
+			if (t.getData().containsKey("idtype"))
+				idType = t.getDataItem("idtype");
+			else				
+				idType = IDGeneratorFactory.instance.getDefaultIDType();
+			
 			switch (match.getResultType())
 			{
 			case MATCH :
-				id = match.getBestMatchedPatient().getOriginal().getId("pid");
+				id = match.getBestMatchedPatient().getOriginal().getId(idType);
 				assignedPatient = match.getBestMatchedPatient();
 				// log token to separate concurrent request in the log file
 				logger.info("Found match with ID " + id.getIdString() + " for ID request " + t.getId()); 
@@ -248,14 +281,14 @@ public class PatientsResource {
 				}
 				Set<ID> ids = IDGeneratorFactory.instance.generateIds();			
 				pNormalized.setIds(ids);
-				id = pNormalized.getId("pid");
+				id = pNormalized.getId(idType);
 				logger.info("Created new ID " + id.getIdString() + " for ID request " + (t == null ? "(null)" : t.getId()));
 				if (match.getResultType() == MatchResultType.POSSIBLE_MATCH)
 				{
 					pNormalized.setTentative(true);
 					id.setTentative(true);
 					logger.info("New ID " + id.getIdString() + " is tentative. Found possible match with ID " + 
-							match.getBestMatchedPatient().getId("pid").getIdString());
+							match.getBestMatchedPatient().getId(idType).getIdString());
 				}
 				assignedPatient = pNormalized;
 				break;
@@ -267,7 +300,7 @@ public class PatientsResource {
 			
 			logger.info("Weight of best match: " + match.getBestMatchedWeight());
 			
-			IDRequest request = new IDRequest(p.getFields(), "pid", match, assignedPatient);
+			IDRequest request = new IDRequest(p.getFields(), idType, match, assignedPatient);
 			
 			Persistor.instance.addIdRequest(request);
 			
@@ -286,6 +319,7 @@ public class PatientsResource {
 				HttpPost callbackReq = new HttpPost(callback);
 				callbackReq.setHeader("Content-Type", MediaType.APPLICATION_JSON);
 				
+				// TODO: ID-Typ integrieren, z.B. idtype="pid", idstring="..."
 				JSONObject reqBody = new JSONObject()
 						.put("tokenId", t.getId())
 						.put("id", id);
@@ -362,6 +396,70 @@ public class PatientsResource {
 				.build();*/
 	}
 	
+	/**
+	 * Interface for Temp-ID-Resolver
+	 * 
+	 * @param callback
+	 * @param data
+	 * @return
+	 */
+	@Path("/tempid")
+	@GET
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response resolveTempIds(
+			@QueryParam("callback") String callback,
+			@QueryParam("data") JSONObject data) {
+		if (data.has("subjects")) {
+			JSONObject subjects;
+			JSONObject result = new JSONObject();
+			try {
+				subjects = data.getJSONObject("subjects");
+				Iterator subjectIt = subjects.keys();
+				while (subjectIt.hasNext()) {
+					String subject = subjectIt.next().toString();
+					JSONArray tempIds = subjects.getJSONArray(subject);
+					for (int i = 0; i < tempIds.length(); i++) {
+						String tempId = tempIds.getString(i);
+						String value = resolveTempId(tempId, subject);
+						JSONObject resultSubObject;
+						if (!result.has(subject)) {
+							resultSubObject = new JSONObject();
+							result.putOpt(subject, resultSubObject);
+						} else {
+							resultSubObject = result.getJSONObject(subject);
+						}
+						resultSubObject.put(tempId, value);							
+					}					
+				}
+				return Response.ok().entity(result.toString()).build();
+			} catch (JSONException e) {
+				throw new WebApplicationException(Response.status(Status.BAD_REQUEST).entity(e.getMessage()).build());
+			} catch (NoSuchFieldException e) {
+				throw new WebApplicationException(Response.status(Status.BAD_REQUEST).entity(e.getMessage()).build());
+			}
+		} else
+			return Response.ok().build();
+	}
+	
+	private String resolveTempId(String tempId, String subject) throws NoSuchFieldException {
+		Patient p = getPatientByTempId(tempId);
+		if (!p.getInputFields().containsKey(subject))
+			throw new NoSuchFieldException("No subject " + subject + " for Temp-ID " + tempId);
+		return p.getInputFields().get(subject).getValue().toString();
+	}
+	
+	
+	private Patient getPatientByTempId(String tid) throws UnauthorizedException {
+		Token t = Servers.instance.getTokenByTid(tid);
+		if (t == null || !t.getType().equals("readPatient")) {
+			logger.info("Tried to access GET /patients/tempid/ with invalid token " + t);
+			throw new UnauthorizedException();
+		}
+		// TODO: verallgemeinern für andere IDs
+		String pidString = t.getDataItem("id");
+		return Persistor.instance.getPatient(IDGeneratorFactory.instance.getFactory("pid").buildId(pidString));		
+	}
 	@Path("/tempid/{tid}")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
@@ -370,14 +468,7 @@ public class PatientsResource {
 		//Hier keine Auth notwendig. Wenn tid existiert, ist der Nutzer dadurch autorisiert.
 		//Patient mit TempID tid zur�ckgeben
 		logger.info("Received GET /patients/tempid/" + tid);
-		Token t = Servers.instance.getTokenByTid(tid);
-		if (t == null || t.getType() != "readPatient") {
-			logger.info("Tried to access GET /patients/tempid/ with invalid token " + t);
-			throw new UnauthorizedException();
-		}
-		// TODO: verallgemeinern für andere IDs
-		String pidString = t.getDataItem("pid");
-		return Persistor.instance.getPatient(IDGeneratorFactory.instance.getFactory("pid").buildId(pidString));
+		return getPatientByTempId(tid);
 	}
 	
 	@Path("/tempid/{tid}")

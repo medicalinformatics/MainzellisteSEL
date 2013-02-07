@@ -56,8 +56,7 @@ public enum Servers {
 			
 		if (Config.instance.getProperty("debug") == "true")
 		{
-			Token t = new Token("4223");
-			t.setType("addPatient");
+			Token t = new Token("4223", "addPatient");
 			tokensByTid.put(t.getId(), t);
 		}
 	}
@@ -143,9 +142,9 @@ public enum Servers {
 		}
 	}
 	
-	public Token newToken(String sessionId){
+	public Token newToken(String sessionId, String tokenType){
 		String tid = UUID.randomUUID().toString();
-		Token t = new Token(tid);
+		Token t = new Token(tid, tokenType);
 		
 		getSession(sessionId).addToken(t);
 

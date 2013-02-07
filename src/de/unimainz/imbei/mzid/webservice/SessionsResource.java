@@ -202,9 +202,8 @@ public class SessionsResource {
 		}
 
 		//Token erstellen, speichern und URL zur�ckgeben
-		Token t2 = Servers.instance.newToken(s.getId());
+		Token t2 = Servers.instance.newToken(s.getId(), t.getType());
 		t2.setData(t.getData());
-		t2.setType(t.getType());
 		
 		URI newUri = UriBuilder
 				.fromUri(req.getRequestURL().toString())

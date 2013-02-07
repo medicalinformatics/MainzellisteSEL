@@ -1,5 +1,6 @@
 package de.unimainz.imbei.mzid.webservice;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import de.unimainz.imbei.mzid.Session;
@@ -20,8 +21,9 @@ public class Token {
 	
 	Token() {}
 	
-	public Token(String tid) {
+	public Token(String tid, String type) {
 		this.id = tid;
+		this.data = new HashMap<String, String>();		
 	}
 	
 	public String getId() {

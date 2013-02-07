@@ -17,6 +17,7 @@ import de.unimainz.imbei.mzid.ID;
 import de.unimainz.imbei.mzid.IDGeneratorMemory;
 import de.unimainz.imbei.mzid.IDRequest;
 import de.unimainz.imbei.mzid.Patient;
+import de.unimainz.imbei.mzid.exceptions.InternalErrorException;
 
 /**
  * Handles reading and writing from and to the database.
@@ -31,6 +32,8 @@ public enum Persistor {
 	private EntityManagerFactory emf;
 	
 	private EntityManager em;
+	
+	private Logger logger = Logger.getLogger(this.getClass());
 	
 	private Persistor() {
 		
@@ -55,11 +58,24 @@ public enum Persistor {
 		Logger.getLogger(Persistor.class).info("Persistence has initialized successfully.");
 	}
 	
+	/**
+	 * Get a patient by id.
+	 * @param pid
+	 * @return
+	 */
 	public Patient getPatient(ID pid){
 		EntityManager em = emf.createEntityManager();
-		TypedQuery<Patient> q = em.createQuery("SELECT p FROM Patient p JOIN p.ids id WHERE id.idString = :idString", Patient.class);
+		TypedQuery<Patient> q = em.createQuery("SELECT p FROM Patient p JOIN p.ids id WHERE id.idString = :idString AND id.type = :idType", Patient.class);
 		q.setParameter("idString", pid.getIdString());
+		q.setParameter("idType", pid.getType());
 		List<Patient> result = q.getResultList();
+		if (result.size() > 1) {
+			logger.fatal("Found more than one patient with ID: " + pid.toString());
+			throw new InternalErrorException("Found more than one patient with ID: " + pid.toString());
+		}
+		Patient p = result.get(0);
+		// Fetch lazy loaded IDs
+		p.getIds();
 		em.close();
 		if (result.size() == 0)
 			return null;
