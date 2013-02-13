@@ -23,6 +23,7 @@ public class Token {
 	
 	public Token(String tid, String type) {
 		this.id = tid;
+		this.type = type;
 		this.data = new HashMap<String, String>();		
 	}
 	
