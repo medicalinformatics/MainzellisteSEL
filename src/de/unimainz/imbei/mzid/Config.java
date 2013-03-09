@@ -52,6 +52,7 @@ public enum Config {
 		try {
 			ServletContext context = Initializer.getServletContext();
 			String configPath = context.getInitParameter("de.unimainz.imbei.mzid.ConfigurationFile");
+			//configPath = null;//workaround warnecke
 			if (configPath == null) configPath = "/mzid.conf";
 			logger.info("Reading config from path " + configPath + "...");
 			
