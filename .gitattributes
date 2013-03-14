@@ -95,7 +95,6 @@ src/de/unimainz/imbei/mzid/CompoundField.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/Config.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/Field.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/FieldTransformation.java -text svneol=unset#text/plain
-src/de/unimainz/imbei/mzid/FieldTransformerPhonet.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/HashedField.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/ID.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/IDGenerator.java -text svneol=unset#text/plain
@@ -133,6 +132,7 @@ src/de/unimainz/imbei/mzid/matcher/EpilinkMatcher.java -text svneol=unset#text/p
 src/de/unimainz/imbei/mzid/matcher/FieldComparator.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/matcher/FieldTransformer.java -text
 src/de/unimainz/imbei/mzid/matcher/FieldTransformerChain.java -text svneol=unset#text/plain
+src/de/unimainz/imbei/mzid/matcher/FieldTransformerPhonet.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/matcher/FirstNameDecomposer.java -text
 src/de/unimainz/imbei/mzid/matcher/GermanLastNameDecomposer.java -text
 src/de/unimainz/imbei/mzid/matcher/MatchResult.java -text svneol=unset#text/plain

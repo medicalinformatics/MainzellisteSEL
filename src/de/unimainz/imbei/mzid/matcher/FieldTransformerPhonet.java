@@ -1,9 +1,13 @@
-package de.unimainz.imbei.mzid;
+package de.unimainz.imbei.mzid.matcher;
 
 import java.util.Properties;
 import java.util.Vector;
 
-import de.unimainz.imbei.mzid.matcher.FieldTransformer;
+import de.unimainz.imbei.mzid.CompoundField;
+import de.unimainz.imbei.mzid.Config;
+import de.unimainz.imbei.mzid.Phonet;
+import de.unimainz.imbei.mzid.PhonetRules;
+import de.unimainz.imbei.mzid.PlainTextField;
 
 /**
  * FieldTransformerPhonet is the transformation of one PlainTextField into another...
