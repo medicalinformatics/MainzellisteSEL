@@ -24,7 +24,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
-import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 import org.apache.http.HttpResponse;
 import org.apache.http.StatusLine;
@@ -269,8 +268,8 @@ public class PatientsResource {
 			Patient pNormalized = Config.instance.getRecordTransformer().transform(p);
 			pNormalized.setInputFields(chars);
 			
-//			match = Config.instance.getMatcher().match(pNormalized, Persistor.instance.getPatients());
-			match = Config.instance.getMatcher().match(pNormalized, Persistor.instance.getPatientsBlocking(pNormalized));			
+			match = Config.instance.getMatcher().match(pNormalized, Persistor.instance.getPatients());
+//			match = Config.instance.getMatcher().match(pNormalized, Persistor.instance.getPatientsBlocking(pNormalized));			
 			Patient assignedPatient; // The "real" patient that is assigned (match result or new patient) 
 			
 			// Get ID type from token or use first defined id type

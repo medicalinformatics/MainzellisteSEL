@@ -1,12 +1,5 @@
 package de.unimainz.imbei.mzid;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-
-import de.unimainz.imbei.mzid.Phonet;
-
 /**
  * This class provides functions for generation of phonetic codes.
  * @author warnecke

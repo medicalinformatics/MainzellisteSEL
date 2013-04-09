@@ -47,6 +47,7 @@ public class FieldTransformerPhonet extends FieldTransformer<PlainTextField, Pla
 	}
 	
 	// TODO Doku
+	@Override
 	public CompoundField<PlainTextField> transform(CompoundField<PlainTextField> input)
 	{
 		Vector<PlainTextField> outFields = new Vector<PlainTextField>(input.getSize());

@@ -11,7 +11,6 @@ import java.util.prefs.Preferences;
 import org.apache.log4j.Logger;
 
 import de.unimainz.imbei.mzid.dto.Persistor;
-import de.unimainz.imbei.mzid.exceptions.InternalErrorException;
 
 public enum IDGeneratorFactory {
 	instance;

@@ -2,8 +2,6 @@ package de.unimainz.imbei.mzid.matcher;
 
 import java.util.Iterator;
 import java.util.List;
-import java.util.jar.JarOutputStream;
-
 import de.unimainz.imbei.mzid.CompoundField;
 import de.unimainz.imbei.mzid.Field;
 import de.unimainz.imbei.mzid.Patient;
