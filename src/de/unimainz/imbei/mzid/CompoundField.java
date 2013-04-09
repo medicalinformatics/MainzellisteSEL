@@ -8,6 +8,7 @@ import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
+import javax.xml.bind.annotation.XmlRootElement;
 
 import org.apache.log4j.Logger;
 import org.codehaus.jettison.json.JSONArray;
@@ -25,6 +26,7 @@ import de.unimainz.imbei.mzid.exceptions.InternalErrorException;
  * @param <T> The class of the components (a subclass of Field<?>).
  */
 @Entity
+@XmlRootElement
 public class CompoundField<T extends Field<?>> extends Field<List<T>> {
 	
 

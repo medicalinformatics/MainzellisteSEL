@@ -8,6 +8,7 @@ import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -19,8 +20,10 @@ import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
 import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 import org.apache.log4j.Logger;
+import org.apache.openjpa.persistence.jdbc.ElementIndex;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
@@ -71,6 +74,7 @@ public class Patient {
 	 * @see #fields
 	 */
 	@Column(columnDefinition="text",length=-1)
+	@JsonIgnore
 	private String fieldsString;
 	
 	/**
@@ -78,6 +82,7 @@ public class Patient {
 	 * @see #inputFields
 	 */
 	@Column(length=4096)
+	@JsonIgnore
 	private String inputFieldsString;
 	
 	/**
@@ -157,8 +162,25 @@ public class Patient {
 	private Map<String, Field<?>> inputFields;
 	
 	@Transient
+	@JsonIgnore
 	private Logger logger = Logger.getLogger(this.getClass());
 	
+	@ElementCollection(fetch=FetchType.LAZY)
+	@ElementIndex(name="blockInd")
+	private Map<String, String> blockingFields = new HashMap<String, String>();
+	
+	private void updateBlockingFields() {
+		String geburtsmonat = this.fields.get("geburtsmonat").toString();
+		String geburtsjahr = this.fields.get("geburtsjahr").toString();
+		String geburtstag = this.fields.get("geburtstag").toString();
+		
+		this.blockingFields.put("geburtsmonat", geburtsmonat);
+		this.blockingFields.put("geburtstag", geburtstag);
+		this.blockingFields.put("geburtsjahr", geburtsjahr);
+//		this.blockingFields.put("geburtsmonat_geburtsjahr", geburtsmonat + "_" + geburtsjahr);
+//		this.blockingFields.put("geburtstag_geburtsjahr", geburtstag + "_" + geburtsjahr);
+//		this.blockingFields.put("geburtstag_geburtsmonat", geburtstag + "_" + geburtsmonat);
+	}
 	/**
 	 * Returns the input fields, i.e. as they were transmitted in the last request that
 	 * modified this patient, before transformations.
@@ -268,6 +290,7 @@ public class Patient {
 	 * 
 	 */
 	@ManyToOne(cascade={CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH}, fetch=FetchType.EAGER)
+	@JsonIgnore
 	private Patient original = null;
 	
 	
@@ -284,7 +307,7 @@ public class Patient {
 	 */
 	public Patient(Set<ID> ids, Map<String, Field<?>> c) {
 		this.ids = ids;
-		this.fields = c;
+		this.setFields(c);
 	}
 	
 	/**
@@ -333,6 +356,7 @@ public class Patient {
 	 */
 	public void setFields(Map<String, Field<?>> Fields) {
 		this.fields = Fields;
+		this.updateBlockingFields();
 	}
 	
 	/**

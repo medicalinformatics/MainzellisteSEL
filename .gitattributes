@@ -94,7 +94,6 @@ src/META-INF/persistence.xml -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/CompoundField.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/Config.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/Field.java -text svneol=unset#text/plain
-src/de/unimainz/imbei/mzid/FieldTransformation.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/HashedField.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/ID.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/IDGenerator.java -text svneol=unset#text/plain

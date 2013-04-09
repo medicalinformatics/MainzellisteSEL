@@ -98,6 +98,23 @@ public enum Persistor {
 		return pl;
 	}
 
+	public synchronized List<Patient> getPatientsBlocking(Patient p) { //TODO: Filtern
+		// Entities are not detached, because the IDs are lazy-loaded
+		List<Patient> pl;
+//		if (cache == null) cache = new LinkedList(this.em.createQuery("select p from Patient p", Patient.class).getResultList());
+//		return cache;
+		String geburtstag = p.getFields().get("geburtstag").getValue().toString();
+		String geburtsmonat = p.getFields().get("geburtsmonat").getValue().toString();
+		String geburtsjahr= p.getFields().get("geburtsjahr").getValue().toString();
+		
+		pl = this.em.createQuery("select p from Patient p JOIN p.blockingFields bf WHERE " +
+				"KEY(bf) = 'geburtsmonat' AND VALUE(bf) = '" + geburtsmonat + "' OR " +
+				"KEY(bf) = 'geburtsjahr' AND VALUE(bf) = '" + geburtsjahr + "' OR " +
+				"KEY(bf) = 'geburtstag' AND VALUE(bf) = '" + geburtstag + "'", Patient.class).getResultList();
+		logger.debug("Geblockte Patienten:" + pl.size());
+		return pl;
+	}
+
 	/**
 	 * Returns a detached list of the IDs of all patients.
 	 * @return A list where every item represents the IDs of one patient.

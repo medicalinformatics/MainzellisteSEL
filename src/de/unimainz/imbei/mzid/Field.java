@@ -6,6 +6,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
+import javax.xml.bind.annotation.XmlRootElement;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jettison.json.JSONException;
@@ -20,6 +21,7 @@ import de.unimainz.imbei.mzid.exceptions.NotImplementedException;
  *
  */
 @Entity
+@XmlRootElement
 @Inheritance(strategy = InheritanceType.JOINED)
 public abstract class Field<T> {
 	@Id

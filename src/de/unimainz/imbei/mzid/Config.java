@@ -106,10 +106,16 @@ public enum Config {
 			patternMatcher = pattern.matcher(propKey);
 			if (patternMatcher.find())
 			{
-				String fieldName = patternMatcher.group(1);	
-				String fieldClassStr = "de.unimainz.imbei.mzid." + props.getProperty(propKey).trim();
+				String fieldName = patternMatcher.group(1);					
+				String fieldClassStr = props.getProperty(propKey).trim();
 				try {
-					Class<? extends Field<?>> fieldClass = (Class<? extends Field<?>>) Class.forName(fieldClassStr);
+					Class<? extends Field<?>> fieldClass;
+					try {
+						fieldClass = (Class<? extends Field<?>>) Class.forName(fieldClassStr);
+					} catch (ClassNotFoundException e) {
+						// Try with "de.unimainz..."
+						fieldClass = (Class<? extends Field<?>>) Class.forName("de.unimainz.imbei.mzid." + fieldClassStr);
+					}
 					this.FieldTypes.put(fieldName, fieldClass);
 					logger.debug("Initialized field " + fieldName + " with class " + fieldClass);
 				} catch (Exception e) {

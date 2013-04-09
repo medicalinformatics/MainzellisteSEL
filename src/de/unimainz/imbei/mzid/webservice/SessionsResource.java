@@ -180,7 +180,7 @@ public class SessionsResource {
 		}
 		
 		// Pr�fe Callback-URL
-		String callback = t.getDataItem("callback");
+		String callback = t.getDataItemString("callback");
 		if (callback != null && !callback.equals("") && 
 				!Pattern.matches(Config.instance.getProperty("callback.allowedFormat"), callback))
 		throw new WebApplicationException(Response
@@ -190,7 +190,7 @@ public class SessionsResource {
 		
 		// Prüfe Existenz der ID bei Typ "readPatient"
 		if (t.getType() == "readPatient") {
-			String idString = t.getDataItem("id");
+			String idString = t.getDataItemString("id");
 			// TODO andere ID-Typen
 			Patient p = Persistor.instance.getPatient(new PID(idString, "pid"));
 			if (p == null) {

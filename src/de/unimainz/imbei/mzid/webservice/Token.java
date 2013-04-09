@@ -1,6 +1,7 @@
 package de.unimainz.imbei.mzid.webservice;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import de.unimainz.imbei.mzid.Session;
@@ -17,14 +18,14 @@ import de.unimainz.imbei.mzid.Session;
 public class Token {
 	private String id;
 	private String type;
-	private Map<String, String> data;
+	private Map<String, ?> data;
 	
 	Token() {}
 	
 	public Token(String tid, String type) {
 		this.id = tid;
 		this.type = type;
-		this.data = new HashMap<String, String>();		
+		this.data = new HashMap<String, Object>();		
 	}
 	
 	public String getId() {
@@ -43,7 +44,7 @@ public class Token {
 		this.type = type;
 	}
 	
-	public Map<String, String> getData() {
+	public Map<String, ?> getData() {
 		return data;
 	}
 	
@@ -54,13 +55,28 @@ public class Token {
 	 * @return The requested data item. Null if no such item exists or if no data is attached to
 	 * the token (data==null). 
 	 */
-	public String getDataItem(String item) {
+	public String getDataItemString(String item) {
 		if (this.data == null)
 			return null;
 		else
-			return data.get(item);
+			return (String) data.get(item);
 	}
-	public void setData(Map<String, String> data) {
+
+	public List getDataItemList(String item) {
+		if (this.data == null)
+			return null;
+		else
+			return (List) data.get(item);
+	}
+	
+	public Map<String, ?> getDataItemMap(String item) {
+		if (this.data == null)
+			return null;
+		else
+			return (Map) data.get(item);
+	}
+
+	public void setData(Map<String, ?> data) {
 		this.data = data;
 	}
 	

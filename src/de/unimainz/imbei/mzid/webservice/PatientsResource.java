@@ -37,6 +37,7 @@ import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 
+import com.sun.jersey.api.uri.UriTemplate;
 import com.sun.jersey.api.view.Viewable;
 
 import de.unimainz.imbei.mzid.Config;
@@ -87,6 +88,7 @@ public class PatientsResource {
 		Token t = Servers.instance.getTokenByTid(tokenId);
 		Map<String, Object> createRet = createNewPatient(tokenId, form); 
 		ID id = (ID) createRet.get("id");
+		IDRequest req = (IDRequest) createRet.get("request");
 		MatchResult result = (MatchResult) createRet.get("result");
 		Map <String, Object> map = new HashMap<String, Object>();
 		if (id == null) {
@@ -101,26 +103,22 @@ public class PatientsResource {
 					.entity(new Viewable("/unsureMatch.jsp", map)).build();
 		} else {
 			if (t.getData().containsKey("redirect")) {
-				URI redirectURI;
-				try {
-					String idType;
-					if (t.getData().containsKey("idtype"))
-						idType = t.getDataItem("idtype");
-					else				
-						idType = IDGeneratorFactory.instance.getDefaultIDType();
-
-					redirectURI = new URI(t.getDataItem("redirect"));
-					UriBuilder redirectBuilder = UriBuilder.fromUri(redirectURI);
-					redirectBuilder.queryParam(idType, id.getIdString());
-					return Response.status(Status.SEE_OTHER).location(redirectBuilder.build()).build();
-				} catch(URISyntaxException e) {
-					logger.error("Illegal redirect address in token: " + t.getDataItem("redirect"), e);
-					throw new WebApplicationException(e, Response.status(Status.BAD_REQUEST)
-							.entity("The MDAT server provided an illegal redirect address. Please contact the MDAT administrator!")
-							.build());
+				UriTemplate redirectURITempl = new UriTemplate(t.getDataItemString("redirect"));
+				HashMap<String, String> templateVarMap = new HashMap<String, String>();
+				for (String templateVar : redirectURITempl.getTemplateVariables()) {
+					ID thisID = req.getAssignedPatient().getId(templateVar);
+					String idString = thisID.getIdString();
+					templateVarMap.put(templateVar, idString);
 				}
-				
+				try {
+					URI redirectURI = new URI(redirectURITempl.createURI(templateVarMap));
+					return Response.status(Status.SEE_OTHER).location(redirectURI).build();
+				} catch (URISyntaxException e) {
+					// FIXME Bei Anlegen des Tokens prüfen
+					throw new InternalErrorException("Die übergebene Redirect-URL " + redirectURITempl.getTemplate() + "ist ungültig!");
+				}
 			}
+				
 			map.put("id", id.getIdString());
 			map.put("tentative", id.isTentative());
 			
@@ -237,6 +235,26 @@ public class PatientsResource {
 			Patient p = new Patient();
 			Map<String, Field<?>> chars = new HashMap<String, Field<?>>();
 			
+			// get fields transmitted from MDAT server
+			if (t.getData().containsKey("fields")) {
+//				try {
+					Map<String, ?> serverFields = t.getDataItemMap("fields");
+//					Iterator fieldIt = serverFields.keys();
+//					while (fieldIt.hasNext()) {
+					for (String key : serverFields.keySet()) {
+						String value = serverFields.get(key).toString();
+						// TODO check if a value is already present
+						form.add(key, value);
+					}
+//				} catch (JSONException e) {
+//					logger.error("Server provided illegal fields: ", e);
+//					throw new WebApplicationException(Response
+//							.status(Status.BAD_REQUEST)
+//							.entity("The MDAT server provided illegal fields with the token. Please contact the MDAT administrator")
+//							.build());
+//				}
+			}
+			
 			for(String s: Config.instance.getFieldKeys()){
 				if (!form.containsKey(s)) {
 					logger.error("Field " + s + " not found in input data!");
@@ -251,14 +269,14 @@ public class PatientsResource {
 			Patient pNormalized = Config.instance.getRecordTransformer().transform(p);
 			pNormalized.setInputFields(chars);
 			
-			match = Config.instance.getMatcher().match(pNormalized, Persistor.instance.getPatients());
-			
+//			match = Config.instance.getMatcher().match(pNormalized, Persistor.instance.getPatients());
+			match = Config.instance.getMatcher().match(pNormalized, Persistor.instance.getPatientsBlocking(pNormalized));			
 			Patient assignedPatient; // The "real" patient that is assigned (match result or new patient) 
 			
 			// Get ID type from token or use first defined id type
 			String idType;
 			if (t.getData().containsKey("idtype"))
-				idType = t.getDataItem("idtype");
+				idType = t.getDataItemString("idtype");
 			else				
 				idType = IDGeneratorFactory.instance.getDefaultIDType();
 			
@@ -302,6 +320,8 @@ public class PatientsResource {
 			
 			IDRequest request = new IDRequest(p.getFields(), idType, match, assignedPatient);
 			
+			ret.put("request", request);
+			
 			Persistor.instance.addIdRequest(request);
 			
 			if(t != null)
@@ -310,7 +330,7 @@ public class PatientsResource {
 		// Callback aufrufen
 		// TODO auslagern in Funktion. Wohin?
 		// TODO Fehlerbehebung
-		String callback = t.getDataItem("callback");
+		String callback = t.getDataItemString("callback");
 		if (callback != null && callback.length() > 0)
 		{
 			try {
@@ -457,7 +477,7 @@ public class PatientsResource {
 			throw new UnauthorizedException();
 		}
 		// TODO: verallgemeinern für andere IDs
-		String pidString = t.getDataItem("id");
+		String pidString = t.getDataItemString("id");
 		return Persistor.instance.getPatient(IDGeneratorFactory.instance.getFactory("pid").buildId(pidString));		
 	}
 	@Path("/tempid/{tid}")
