@@ -17,6 +17,6 @@
 			<attribute name="owner.project.facets" value="java"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="C:/Program Files (x86)/apache-tomcat-7.0.30/lib/servlet-api.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jst.server.core.container/org.eclipse.jst.server.tomcat.runtimeTarget/C-_Users_lablans_eclipseWorkspace_tomcat"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>
