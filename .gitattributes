@@ -45,7 +45,7 @@ lib/deploy/log4j-1.2.17.jar -text
 lib/deploy/openjpa/commons-codec-1.6.jar -text
 lib/deploy/openjpa/derby.jar -text
 lib/deploy/openjpa/mysql-connector-java-5.1.20-bin.jar -text
-lib/deploy/openjpa/openjpa-all-2.2.0.jar -text
+lib/deploy/openjpa/openjpa-all-2.2.1.jar -text
 lib/deploy/openjpa/postgresql-9.1-902.jdbc4.jar -text
 lib/js/bloomFilter-js/bloomFilter.js -text
 lib/js/crypto-js/aes/aes-min.js -text
