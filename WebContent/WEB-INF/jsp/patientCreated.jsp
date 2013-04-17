@@ -28,6 +28,18 @@
 	
 <%
 	Map<String, Object> map = (Map<String,Object>)request.getAttribute("it");
+	if (map.containsKey("redirect")) 
+	{
+%>
+	<form action="<%= map.get("redirect") %>" target="_top" method="get">
+		<div style="text-align:center">
+			<input type="submit" value="Patient übernehmen" />
+		</div>
+	</form>
+<% 
+	}
+%>
+<%
 	if (map.containsKey("debug"))
 	{
 %>

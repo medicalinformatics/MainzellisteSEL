@@ -112,7 +112,8 @@ public class PatientsResource {
 				}
 				try {
 					URI redirectURI = new URI(redirectURITempl.createURI(templateVarMap));
-					return Response.status(Status.SEE_OTHER).location(redirectURI).build();
+					map.put("redirect", redirectURI);
+					//return Response.status(Status.SEE_OTHER).location(redirectURI).build();
 				} catch (URISyntaxException e) {
 					// FIXME Bei Anlegen des Tokens prüfen
 					throw new InternalErrorException("Die übergebene Redirect-URL " + redirectURITempl.getTemplate() + "ist ungültig!");
