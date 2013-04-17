@@ -47,6 +47,7 @@ import de.unimainz.imbei.mzid.IDRequest;
 import de.unimainz.imbei.mzid.PID;
 import de.unimainz.imbei.mzid.Patient;
 import de.unimainz.imbei.mzid.Servers;
+import de.unimainz.imbei.mzid.Validator;
 import de.unimainz.imbei.mzid.dto.Persistor;
 import de.unimainz.imbei.mzid.exceptions.InternalErrorException;
 import de.unimainz.imbei.mzid.exceptions.NotImplementedException;
@@ -101,7 +102,7 @@ public class PatientsResource {
 			return Response.status(Status.ACCEPTED)
 					.entity(new Viewable("/unsureMatch.jsp", map)).build();
 		} else {
-			if (t.getData().containsKey("redirect")) {
+			if (t != null && t.getData() != null && t.getData().containsKey("redirect")) {
 				UriTemplate redirectURITempl = new UriTemplate(t.getDataItemString("redirect"));
 				HashMap<String, String> templateVarMap = new HashMap<String, String>();
 				for (String templateVar : redirectURITempl.getTemplateVariables()) {
@@ -190,7 +191,7 @@ public class PatientsResource {
 			String tokenId,
 			MultivaluedMap<String, String> form) throws WebApplicationException {
 
-		//Validator.instance.validateForm(form);
+		Validator.instance.validateForm(form);
 		HashMap<String, Object> ret = new HashMap<String, Object>();
 		Token t = Servers.instance.getTokenByTid(tokenId);
 		// create a token if started in debug mode
