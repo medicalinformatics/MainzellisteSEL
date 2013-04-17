@@ -119,7 +119,17 @@ public class PatientsResource {
 					throw new InternalErrorException("Die übergebene Redirect-URL " + redirectURITempl.getTemplate() + "ist ungültig!");
 				}
 			}
-				
+			
+			// If Idat are to be redisplayed in the result form...
+			if (Boolean.parseBoolean(Config.instance.getProperty("result.printIdat"))) {
+				//...copy input to JSP 
+				for (String key : form.keySet())
+				{
+					map.put(key, form.getFirst(key));
+				}
+				// and set flag for JSP to display them
+				map.put("printIdat", true);
+			}
 			map.put("id", id.getIdString());
 			map.put("tentative", id.isTentative());
 			
@@ -325,7 +335,7 @@ public class PatientsResource {
 			
 			Persistor.instance.addIdRequest(request);
 			
-			if(t != null)
+			if(t != null && ! Config.instance.debugIsOn())
 				Servers.instance.deleteToken(t.getId());
 		}
 		// Callback aufrufen
