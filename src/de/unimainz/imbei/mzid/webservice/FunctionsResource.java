@@ -9,16 +9,24 @@ import javax.ws.rs.core.Response.Status;
 /**
  * Access to functions added via pluggable modules.
  * 
- * @author Martin
+ * @author Martin Lablans
  *
  */
-@Path("/functions/{module}/.*")
+@Path("/functions")
 public class FunctionsResource {
+	
+	@Path("/barcode")
+	public BarcodeResource barcode(){
+		return new BarcodeResource();
+	}
+	
 	@GET
+	@Path("/{module}")
 	public Response delegate(
 			@PathParam("module") String subMod){
+		
 		return Response
-			.status(Status.SERVICE_UNAVAILABLE)
+			.status(Status.NOT_FOUND)
 			.entity("Module " + subMod + " is unknown.")
 			.build();
 	}

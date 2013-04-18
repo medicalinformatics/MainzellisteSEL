@@ -29,6 +29,7 @@ config/log4j.properties -text svneol=unset#text/plain
 config/mzid-viele-Felder-Klartext.conf -text
 config/mzid.conf -text
 config/mzid.conf-viele-Felder-Dice -text
+lib/deploy/barcode4j/barcode4j-light.jar -text
 lib/deploy/jersey/asm-3.1.jar -text
 lib/deploy/jersey/jackson-core-asl-1.9.2.jar -text
 lib/deploy/jersey/jackson-jaxrs-1.9.2.jar -text
@@ -116,6 +117,7 @@ src/de/unimainz/imbei/mzid/SimpleIDGenerator.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/StringPair.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/Validator.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/dto/Persistor.java -text svneol=unset#text/plain
+src/de/unimainz/imbei/mzid/exceptions/BarcodeGenerationException.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/exceptions/CircularDuplicateRelationException.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/exceptions/IncompatibleFieldTypesException.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/exceptions/InternalErrorException.java -text svneol=unset#text/plain
@@ -142,6 +144,7 @@ src/de/unimainz/imbei/mzid/matcher/PSXLastNameNormalizer.java -text
 src/de/unimainz/imbei/mzid/matcher/StringNormalizer.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/matcher/ThreadedEpilinkMatcher.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/webservice/AbstractParam.java -text svneol=unset#text/plain
+src/de/unimainz/imbei/mzid/webservice/BarcodeResource.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/webservice/FieldKeyParam.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/webservice/FunctionsResource.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/webservice/HTMLResource.java -text svneol=unset#text/plain

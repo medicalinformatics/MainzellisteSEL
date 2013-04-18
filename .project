@@ -55,6 +55,11 @@
 			<locationURI>PROJECT_LOC/lib/deploy/jersey/asm-3.1.jar</locationURI>
 		</link>
 		<link>
+			<name>WebContent/WEB-INF/lib/barcode4j-light.jar</name>
+			<type>1</type>
+			<locationURI>PROJECT_LOC/lib/deploy/barcode4j/barcode4j-light.jar</locationURI>
+		</link>
+		<link>
 			<name>WebContent/WEB-INF/lib/commons-codec-1.6.jar</name>
 			<type>1</type>
 			<locationURI>PROJECT_LOC/lib/deploy/openjpa/commons-codec-1.6.jar</locationURI>
