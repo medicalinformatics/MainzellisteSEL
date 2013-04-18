@@ -1,3 +1,4 @@
+<%@page import="javax.ws.rs.core.MultivaluedMap"%>
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
 	pageEncoding="ISO-8859-1"%>
 <%@ page import="java.util.Map"%>
@@ -83,6 +84,15 @@
 			%>
 			<p>
 				<form action="<%=map.get("redirect")%>" target="_top" method="get">
+				<%  
+				MultivaluedMap<String, String> redirectParams = (MultivaluedMap<String, String>) map.get("redirectParams"); 
+				for (String key : redirectParams.keySet()) {
+					String value = redirectParams.getFirst(key);
+					%>
+					<input type="hidden" name="<%=key %>" value="<%=value %>" />
+				<% 
+				}
+				%>				
 				<div style="text-align:center">
 				<input type="submit" onclick="window.print();"
 						value="Drucken und Patient anlegen" />

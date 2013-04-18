@@ -24,7 +24,10 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
+import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
+
+import org.apache.commons.collections.map.MultiValueMap;
 import org.apache.http.HttpResponse;
 import org.apache.http.StatusLine;
 import org.apache.http.client.HttpClient;
@@ -36,6 +39,8 @@ import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 
+import com.sun.jersey.api.uri.UriBuilderImpl;
+import com.sun.jersey.api.uri.UriComponent;
 import com.sun.jersey.api.uri.UriTemplate;
 import com.sun.jersey.api.view.Viewable;
 
@@ -112,7 +117,14 @@ public class PatientsResource {
 				}
 				try {
 					URI redirectURI = new URI(redirectURITempl.createURI(templateVarMap));
+					// Remove query parameters and pass them to JSP. The redirect is put
+					// into the "action" tag of a form and the parameters are passed as 
+					// hidden fields				
+					MultivaluedMap<String, String> queryParams = UriComponent.decodeQuery(redirectURI, true);
+					String redirectURIStripped =redirectURI.toString().substring(0,
+							redirectURI.toString().indexOf("?"));
 					map.put("redirect", redirectURI);
+					map.put("redirectParams", queryParams);
 					//return Response.status(Status.SEE_OTHER).location(redirectURI).build();
 				} catch (URISyntaxException e) {
 					// FIXME Bei Anlegen des Tokens prüfen

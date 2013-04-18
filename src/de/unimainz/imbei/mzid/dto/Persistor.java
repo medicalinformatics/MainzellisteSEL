@@ -49,7 +49,7 @@ public enum Persistor {
 		// Other settings
 		persistenceOptions.put("openjpa.jdbc.SynchronizeMappings", "buildSchema");
 		persistenceOptions.put("openjpa.jdbc.DriverDataSource", "dbcp");
-		persistenceOptions.put("openjpa.connectionProperties", "testOnBorrow=true, validationQuery=SELECT 1");
+		persistenceOptions.put("openjpa.ConnectionProperties", "testOnBorrow=true, validationQuery=SELECT 1");
 		
 		emf = Persistence.createEntityManagerFactory("mzid", persistenceOptions);
 		em = emf.createEntityManager();
