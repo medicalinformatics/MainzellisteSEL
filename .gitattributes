@@ -29,6 +29,7 @@ config/log4j.properties -text svneol=unset#text/plain
 config/mzid-viele-Felder-Klartext.conf -text
 config/mzid.conf -text
 config/mzid.conf-viele-Felder-Dice -text
+config/mzid.conf.default -text
 lib/deploy/barcode4j/barcode4j-light.jar -text
 lib/deploy/jersey/asm-3.1.jar -text
 lib/deploy/jersey/jackson-core-asl-1.9.2.jar -text
