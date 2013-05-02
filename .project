@@ -155,7 +155,7 @@
 			<locationURI>PROJECT_LOC/lib/deploy/openjpa/mysql-connector-java-5.1.20-bin.jar</locationURI>
 		</link>
 		<link>
-			<name>WebContent/WEB-INF/lib/openjpa-all-2.2.1.jar</name>
+			<name>WebContent/WEB-INF/lib/openjpa-all.jar</name>
 			<type>1</type>
 			<locationURI>PROJECT_LOC/lib/deploy/openjpa/openjpa-all-2.2.1.jar</locationURI>
 		</link>

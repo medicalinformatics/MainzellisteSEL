@@ -1,5 +1,7 @@
+/Trash
 WebContent/META-INF/context.xml
 /build
+config/mzid.conf
 /doc
 src/de/unimainz/imbei/mzid/CopyOfConfig.java
 src/de/unimainz/imbei/mzid/FormDefinition.java

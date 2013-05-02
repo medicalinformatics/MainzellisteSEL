@@ -166,7 +166,7 @@ public enum Config {
 	}
 	
 	Level getLogLevel() {
-		String level = this.props.getProperty("loglevel");
+		String level = this.props.getProperty("log.level");
 		Level ret = Level.DEBUG;
 		
 		if (level == null || level.equals("DEBUG"))
