@@ -13,5 +13,5 @@
  -->
 <Context>
         <Parameter name="de.unimainz.imbei.mzid.ConfigurationFile"
-                value="/mzid.conf" override="false" />
+                value="/etc/mzid.conf" override="false" />
 </Context>
