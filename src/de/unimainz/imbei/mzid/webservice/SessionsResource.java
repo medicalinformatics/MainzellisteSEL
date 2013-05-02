@@ -1,6 +1,7 @@
 package de.unimainz.imbei.mzid.webservice;
 
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Set;
 import java.util.regex.Pattern;
 
@@ -181,12 +182,23 @@ public class SessionsResource {
 		
 		// Pr�fe Callback-URL
 		String callback = t.getDataItemString("callback");
-		if (callback != null && !callback.equals("") && 
-				!Pattern.matches(Config.instance.getProperty("callback.allowedFormat"), callback))
-		throw new WebApplicationException(Response
-				.status(Status.BAD_REQUEST)
-				.entity("Callback address does not conform to allowed format.")
-				.build());
+		if (callback != null && !callback.equals("")) {
+			if (!Pattern.matches(Config.instance.getProperty("callback.allowedFormat"), callback)) {
+				throw new WebApplicationException(Response
+						.status(Status.BAD_REQUEST)
+						.entity("Callback address " + callback + " does not conform to allowed format.")
+						.build()); 
+			}
+			try {
+				URI callbackURI = new URI(callback);
+			} catch (URISyntaxException e) {
+				throw new WebApplicationException(Response
+						.status(Status.BAD_REQUEST)
+						.entity("Callback address " + callback + " is not a valid URI.")
+						.build());
+			}
+		}
+				
 		
 		// Prüfe Existenz der ID bei Typ "readPatient"
 		if (t.getType() == "readPatient") {
