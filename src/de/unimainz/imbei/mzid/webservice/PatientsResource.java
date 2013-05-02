@@ -96,14 +96,14 @@ public class PatientsResource {
 		IDRequest req = (IDRequest) createRet.get("request");
 		MatchResult result = (MatchResult) createRet.get("result");
 		Map <String, Object> map = new HashMap<String, Object>();
-		if (id == null) {
+		if (id == null) { // unsure case
 			// Copy form to JSP model so that input is redisplayed
 			for (String key : form.keySet())
 			{
 				map.put(key, form.getFirst(key));
 			}
-			
 			map.put("readonly", "true");
+			map.put("tokenId", tokenId);
 			return Response.status(Status.ACCEPTED)
 					.entity(new Viewable("/unsureMatch.jsp", map)).build();
 		} else {
@@ -127,7 +127,7 @@ public class PatientsResource {
 					map.put("redirectParams", queryParams);
 					//return Response.status(Status.SEE_OTHER).location(redirectURI).build();
 				} catch (URISyntaxException e) {
-					// FIXME Bei Anlegen des Tokens prüfen
+					// Wird auch beim Anlegen des Tokens geprüft.
 					throw new InternalErrorException("Die übergebene Redirect-URL " + redirectURITempl.getTemplate() + "ist ungültig!");
 				}
 			}
@@ -227,6 +227,13 @@ public class PatientsResource {
 		ID id;
 		MatchResult match;
 		// synchronize on token 
+		if (t == null) {
+			String infoLog = "Received ID request with invalid token. Token with ID: " + tokenId;
+			throw new WebApplicationException(Response
+					.status(Status.UNAUTHORIZED)
+					.entity("Please supply a valid 'addPatient' token.")
+					.build());
+		}
 		synchronized (t) {
 			/* Get token again and check if it still exist.
 			 * This prevents the following race condition:
