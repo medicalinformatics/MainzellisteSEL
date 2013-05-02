@@ -118,16 +118,14 @@ public enum Servers {
 						.entity("Please supply your API key in HTTP header field 'mzidApiKey'.")
 						.build());
 			}
-			
-			if(!Config.instance.getDist().equals("ILF-Testinstanz")){ //TODO: Entfernen!
-				if(!server.allowedRemoteAdresses.contains(req.getRemoteAddr())){
-					throw new WebApplicationException(Response
-							.status(Status.UNAUTHORIZED)
-							.entity(String.format("Rejecting your IP address %s.", req.getRemoteAddr()))
-							.build());
-				}
+		
+			if(!server.allowedRemoteAdresses.contains(req.getRemoteAddr())){
+				throw new WebApplicationException(Response
+						.status(Status.UNAUTHORIZED)
+						.entity(String.format("Rejecting your IP address %s.", req.getRemoteAddr()))
+						.build());
 			}
-			
+		
 			perms = server.permissions;
 			req.getSession().setAttribute("permissions", perms);
 			logger.info("Server " + req.getRemoteHost() + " logged in with permissions " + Arrays.toString(perms.toArray()) + ".");

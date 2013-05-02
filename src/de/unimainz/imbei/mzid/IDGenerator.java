@@ -42,25 +42,24 @@ public interface IDGenerator<I extends ID> {
 	public I buildId(String id);
 	
 	/**
-	 * Checks whether a given String is a valid PID.
-	 * TODO: Verschieben
+	 * Checks whether a given String is a valid ID.
+	 * Implementations can consist of a simple data type check
+	 * or on more sophisticated algorithms like {@link PIDGenerator#verify(String)} 
 	 * 
-	 * @param id The PID which to check.
-	 * @return true if pid is a correct PID, false otherwise.
+	 * @param idString The ID which to check.
+	 * @return true if id is a correct ID, false otherwise.
 	 */
-	public boolean verify(String id);
+	public boolean verify(String idString);
 
 	/**
-	 * Tries to correct the given PIDString.
-	 * Up to two errors are recognized, errors with one changed
-	 * character or a transposition of adjacent characters can
-	 * be corrected.
+	 * Tries to correct the given IDString.
+	 * This method is only useful if the implementation uses
+	 * an error-tolerant code which allows corrections of errors,
+	 * for example {@link PIDGenerator#correct(String)}
 	 * 
-	 * TODO: Verschieben
-	 * 
-	 * @return correct PIDString or null if impossible to correct
+	 * @return correct IDString or null if impossible to correct
 	 */
-	public String correct(String PIDString);
+	public String correct(String idString);
 	
 	/**
 	 * Gets the type ("name") of IDs this generator produces, e.g. "gpohid"

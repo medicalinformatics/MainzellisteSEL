@@ -14,7 +14,6 @@ import de.unimainz.imbei.mzid.exceptions.InternalErrorException;
  * PIDs. Methods here are private to the package. A user should call the static
  * functions of class PID.
  * 
- * TODO: Ist diese Klasse threadsicher?
  * 
  * @author Martin Lablans
  */
@@ -69,7 +68,6 @@ public class PIDGenerator implements IDGenerator<PID>{
 	}
 
 	private String createPIDString(int counter) {
-		// TODO: PID unter Verwendung des Counters erzeugen...
 		return PIDgen(counter);
 	}
 

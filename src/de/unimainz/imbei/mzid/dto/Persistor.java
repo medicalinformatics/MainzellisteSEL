@@ -95,8 +95,6 @@ public enum Persistor {
 	public synchronized List<Patient> getPatients() { //TODO: Filtern
 		// Entities are not detached, because the IDs are lazy-loaded
 		List<Patient> pl;
-//		if (cache == null) cache = new LinkedList(this.em.createQuery("select p from Patient p", Patient.class).getResultList());
-//		return cache;
 		pl = this.em.createQuery("select p from Patient p", Patient.class).getResultList();
 		return pl;
 	}
