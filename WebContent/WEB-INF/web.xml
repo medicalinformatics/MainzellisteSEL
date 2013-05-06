@@ -21,6 +21,9 @@
 			<param-value>true</param-value>
 		</init-param>
 	</filter>
+	<listener>
+		<listener-class>de.unimainz.imbei.mzid.Initializer</listener-class>
+	</listener>
 	<filter-mapping>
 		<filter-name>Mainzer ID-Framework</filter-name>
 		<url-pattern>/*</url-pattern>

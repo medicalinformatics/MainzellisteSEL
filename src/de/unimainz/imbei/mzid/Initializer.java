@@ -3,15 +3,13 @@ package de.unimainz.imbei.mzid;
 import java.io.IOException;
 import java.util.Enumeration;
 
-import javax.annotation.PostConstruct;
 import javax.servlet.ServletContext;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.ext.Provider;
+import javax.servlet.ServletContextEvent;
+import javax.servlet.ServletContextListener;
 
 import org.apache.log4j.FileAppender;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
-import com.sun.jersey.spi.inject.SingletonTypeInjectableProvider;
 
 import de.unimainz.imbei.mzid.dto.Persistor;
 
@@ -21,19 +19,25 @@ import de.unimainz.imbei.mzid.dto.Persistor;
  * 
  * @author Martin Lablans
  */
-@Provider public class Initializer extends SingletonTypeInjectableProvider<Context, Initializer> {
-	private @Context ServletContext servletContext;
+public class Initializer implements ServletContextListener {
+//	private @Context ServletContext servletContext;
 	private static ServletContext context;
 	
-	public Initializer() {
-		super(Initializer.class, null);
+	@Override
+	public void contextInitialized(ServletContextEvent sce) {
+		context = sce.getServletContext();
+		initialize();		
 	}
 	
-	@PostConstruct
+	@Override
+	public void contextDestroyed(ServletContextEvent sce) {
+		// nothing to do here.
+	}
+	
+	@SuppressWarnings("unused")
 	private void initialize(){
 		Logger logger = Logger.getLogger(Initializer.class);
-		logger.info("Initializing...");
-		Initializer.context = servletContext;
+		logger.info("#####Initializing...");
 		
 		//<DEBUG>
 		Enumeration<String> en = context.getInitParameterNames();
