@@ -16,7 +16,7 @@ import org.krysalis.barcode4j.impl.code128.Code128Bean;
 import org.krysalis.barcode4j.impl.datamatrix.DataMatrixBean;
 import org.krysalis.barcode4j.output.bitmap.BitmapCanvasProvider;
 
-import com.sun.jersey.api.client.ClientResponse.Status;
+import javax.ws.rs.core.Response.Status;
 
 import de.unimainz.imbei.mzid.exceptions.BarcodeGenerationException;
 
@@ -44,9 +44,9 @@ public class BarcodeResource {
 			bean = new Code128Bean();
 		} else {
 			return Response
-				.status(Status.NOT_IMPLEMENTED)
+				.status(Status.BAD_REQUEST)
 				.type(MediaType.TEXT_PLAIN)
-				.entity("Barcode type \"" + type + "\" unknown.")
+				.entity("Barcode type \"" + type + "\" unsupported.")
 				.build();
 		}
 		
