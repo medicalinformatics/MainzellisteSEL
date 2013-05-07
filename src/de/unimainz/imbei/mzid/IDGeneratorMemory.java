@@ -5,6 +5,7 @@ import java.util.Map;
 
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ElementCollection;
 import javax.persistence.MapKeyClass;
@@ -14,6 +15,7 @@ import de.unimainz.imbei.mzid.dto.Persistor;
 public class IDGeneratorMemory {
 	
 	@Id
+	@GeneratedValue
 	protected int fieldJpaId;
 	
 	@ElementCollection(targetClass = String.class, fetch=FetchType.EAGER)

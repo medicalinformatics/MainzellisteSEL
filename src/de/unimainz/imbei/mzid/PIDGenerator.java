@@ -7,13 +7,25 @@ import org.apache.log4j.Logger;
 
 import de.unimainz.imbei.mzid.exceptions.InternalErrorException;
 
+/*
+ * This file is a Java port of the PID generation code by Klaus Pommerening.
+ * The original copyright notice follows:
+ * 
+ *  *** PIDgen.c **************************************************/
+/*                                                             */
+/* Functions to support a pseudonymization service             */
+/*-------------------------------------------------------------*/
+/* Klaus Pommerening, IMSD, Johannes-Gutenberg-Universitaet,   */
+/*   Mainz, 3. April 2001                                      */
+/*-------------------------------------------------------------*/
+/* Version 1.00, 29. Mai 2004                                  */
+/* ************************************************************* */
 
 
 /**
  * Here go all the mathematics involved in generating, checking and correcting
  * PIDs. Methods here are private to the package. A user should call the static
  * functions of class PID.
- * 
  * 
  * @author Martin Lablans
  */
@@ -60,38 +72,9 @@ public class PIDGenerator implements IDGenerator<PID>{
 	PIDGenerator() {		
 	}
 	
-	private PIDGenerator(int key1, int key2, int key3, int rndwidth) {
-		this.key1 = key1;
-		this.key2 = key2;
-		this.key3 = key3;
-		this.rndsetup(rndwidth);
-	}
 
 	private String createPIDString(int counter) {
 		return PIDgen(counter);
-	}
-
-	/**
-	 * Returns an instance of a PIDGenerator used to create PIDs.
-	 * 
-	 * @param key1
-	 *            First encryption key.
-	 * @param key2
-	 *            Second encryption key.
-	 * @param key3
-	 *            Third encryption key.
-	 */
-	public static PIDGenerator init(int key1, int key2, int key3, int rndwidth) {
-		return new PIDGenerator(key1, key2, key3, rndwidth);
-	}
-
-	/**
-	 * Returns the next PID according to this factory's internal counter.
-	 */
-	private synchronized String getNextPIDString() {
-		String pid = createPIDString(counter++);
-		mem.set("counter", Integer.toString(counter));
-		return pid;
 	}
 
 	/**
@@ -670,7 +653,7 @@ public class PIDGenerator implements IDGenerator<PID>{
 		this.mem = mem;
 
 		String memCounter = mem.get("counter");
-		if(memCounter == null) memCounter = "1";
+		if(memCounter == null) memCounter = "0";
 		this.counter = Integer.parseInt(memCounter);
 
 		this.idType = idType;
@@ -695,10 +678,12 @@ public class PIDGenerator implements IDGenerator<PID>{
 	}
 
 	@Override
-	public PID getNext() {
-		mem.set("counter", Integer.toString(this.counter + 1));
+	public synchronized PID getNext() {
+		String pid = createPIDString(this.counter + 1);
+		this.counter++;
+		mem.set("counter", Integer.toString(this.counter));
 		mem.commit();
-		return new PID(getNextPIDString(), "pid");
+		return new PID(pid, "pid");
 	}
 
 	@Override
