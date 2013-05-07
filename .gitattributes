@@ -39,7 +39,6 @@ lib/deploy/jersey/jersey-json-1.12.jar -text
 lib/deploy/jersey/jersey-server-1.12.jar -text
 lib/deploy/jersey/jersey-servlet-1.12.jar -text
 lib/deploy/jersey/jettison-1.1.jar -text
-lib/deploy/jersey/jsr311-api-1.1.1.jar -text
 lib/deploy/log4j-1.2.17.jar -text
 lib/deploy/openjpa/commons-codec-1.6.jar -text
 lib/deploy/openjpa/derby.jar -text
