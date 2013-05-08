@@ -32,9 +32,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import de.unimainz.imbei.mzid.webservice.Token;
 
-//import de.unimainz.imbei.mzid.dto.SessionAdapter;
-
-//@XmlJavaTypeAdapter(SessionAdapter.class)
 public class Session extends ConcurrentHashMap<String, String>{
 	private String sessionId;
 	private Set<Token> tokens = new HashSet<Token>();

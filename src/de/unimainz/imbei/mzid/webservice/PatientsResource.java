@@ -292,22 +292,12 @@ public class PatientsResource {
 			
 			// get fields transmitted from MDAT server
 			if (t.getData().containsKey("fields")) {
-//				try {
 					Map<String, ?> serverFields = t.getDataItemMap("fields");
-//					Iterator fieldIt = serverFields.keys();
-//					while (fieldIt.hasNext()) {
 					for (String key : serverFields.keySet()) {
 						String value = serverFields.get(key).toString();
 						// TODO check if a value is already present
 						form.add(key, value);
 					}
-//				} catch (JSONException e) {
-//					logger.error("Server provided illegal fields: ", e);
-//					throw new WebApplicationException(Response
-//							.status(Status.BAD_REQUEST)
-//							.entity("The MDAT server provided illegal fields with the token. Please contact the MDAT administrator")
-//							.build());
-//				}
 			}
 			
 			for(String s: Config.instance.getFieldKeys()){
@@ -325,7 +315,6 @@ public class PatientsResource {
 			pNormalized.setInputFields(chars);
 			
 			match = Config.instance.getMatcher().match(pNormalized, Persistor.instance.getPatients());
-//			match = Config.instance.getMatcher().match(pNormalized, Persistor.instance.getPatientsBlocking(pNormalized));			
 			Patient assignedPatient; // The "real" patient that is assigned (match result or new patient) 
 			
 			// Get ID type from token or use first defined id type
@@ -422,16 +411,6 @@ public class PatientsResource {
 		return ret;
 	}
 	
-	// Sehr gefährlich, aber zum Testen hilfreich
-	/**
-	 * Delete all patients. Requires permission "deleteAllPatients".
-	 */
-	@DELETE
-	public Response deleteAllPatients(@Context HttpServletRequest req) {
-		Servers.instance.checkPermission(req, "deleteAllPatients");
-		Persistor.instance.deleteAllPatients();
-		return Response.ok().build();
-	}
 	
 	@Path("/pid/{pid}")
 	@GET

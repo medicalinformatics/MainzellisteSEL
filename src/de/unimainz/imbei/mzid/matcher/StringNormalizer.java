@@ -90,7 +90,7 @@ public class StringNormalizer extends FieldTransformer<PlainTextField, PlainText
 		if (input.getValue() == null) return new PlainTextField(null);
 		if (input.getValue().length() == 0) return new PlainTextField("");
 		
-		// TODO: ung�ltige Zeichen filtern
+		// TODO: ungültige Zeichen filtern
 		String inputStr = input.toString();
 		StringBuffer resultString;
 		

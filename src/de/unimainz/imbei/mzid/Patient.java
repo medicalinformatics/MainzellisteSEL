@@ -63,7 +63,7 @@ public class Patient {
 	@Id
 	@GeneratedValue
 	@JsonIgnore
-	private int patientJpaId; // JPA
+	private int patientJpaId;
 	
 
 	/**
@@ -188,22 +188,6 @@ public class Patient {
 	@JsonIgnore
 	private Logger logger = Logger.getLogger(this.getClass());
 	
-	@ElementCollection(fetch=FetchType.LAZY)
-	@ElementIndex(name="blockInd")
-	private Map<String, String> blockingFields = new HashMap<String, String>();
-	
-	private void updateBlockingFields() {
-		String geburtsmonat = this.fields.get("geburtsmonat").toString();
-		String geburtsjahr = this.fields.get("geburtsjahr").toString();
-		String geburtstag = this.fields.get("geburtstag").toString();
-		
-		this.blockingFields.put("geburtsmonat", geburtsmonat);
-		this.blockingFields.put("geburtstag", geburtstag);
-		this.blockingFields.put("geburtsjahr", geburtsjahr);
-//		this.blockingFields.put("geburtsmonat_geburtsjahr", geburtsmonat + "_" + geburtsjahr);
-//		this.blockingFields.put("geburtstag_geburtsjahr", geburtstag + "_" + geburtsjahr);
-//		this.blockingFields.put("geburtstag_geburtsmonat", geburtstag + "_" + geburtsmonat);
-	}
 	/**
 	 * Returns the input fields, i.e. as they were transmitted in the last request that
 	 * modified this patient, before transformations.
@@ -379,7 +363,6 @@ public class Patient {
 	 */
 	public void setFields(Map<String, Field<?>> Fields) {
 		this.fields = Fields;
-		this.updateBlockingFields();
 	}
 	
 	/**

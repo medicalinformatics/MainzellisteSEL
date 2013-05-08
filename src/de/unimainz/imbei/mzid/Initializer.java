@@ -45,7 +45,6 @@ import de.unimainz.imbei.mzid.dto.Persistor;
  * @author Martin Lablans
  */
 public class Initializer implements ServletContextListener {
-//	private @Context ServletContext servletContext;
 	private static ServletContext context;
 	
 	@Override

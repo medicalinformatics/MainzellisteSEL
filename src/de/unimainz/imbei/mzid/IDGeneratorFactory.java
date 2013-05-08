@@ -85,25 +85,6 @@ public enum IDGeneratorFactory {
 			}
 		}
 		Logger logger = Logger.getLogger(IDGeneratorFactory.class);
-		// TODO mehrere Generatoren aus Config lesen
-		try {
-			int k1 = Integer.parseInt(Config.instance.getProperty("idgenerator.pid.k1"));
-			int k2 = Integer.parseInt(Config.instance.getProperty("idgenerator.pid.k2"));
-			int k3 = Integer.parseInt(Config.instance.getProperty("idgenerator.pid.k3"));
-			int rndwidth = Integer.parseInt(Config.instance.getProperty("idgenerator.pid.rndwidth"));
-			
-		} catch (Exception e)
-		{
-			logger.fatal("Parsing of PID generator configuration failed", e);
-		}
-		
-//		PIDGenerator pidgen = PIDGenerator.init(1, 2, 3, 0);
-//		IDGeneratorMemory mem = Persistor.instance.getIDGeneratorMemory("pid");
-//		if (mem == null)
-//			mem = new IDGeneratorMemory("pid");
-//		//pidgen.init(mem, "pid");
-//		
-//		temp.put(pidgen.getIdType(), pidgen);
 		generators = Collections.unmodifiableMap(temp);
 		
 		logger.info("ID generators have initialized successfully.");

@@ -31,7 +31,8 @@ package de.unimainz.imbei.mzid;
 import java.util.Properties;
 
 /**
- * Simple ID generator that outputs consecutive integers. Mainly for testing purposes.
+ * Simple ID generator that outputs consecutive integers. For testing purposes
+ * or to produce IDs for a database.
  * @author borg
  *
  */

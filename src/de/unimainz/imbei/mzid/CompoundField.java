@@ -115,13 +115,6 @@ public class CompoundField<T extends Field<?>> extends Field<List<T>> {
 	@Override
 	public void setValue(String s) {
 		try {
-//			JSONObject obj = new JSONObject(s);
-//			this.value = new LinkedList<T>();
-//			Class parameterClass = Class.forName(obj.getString("parameterClass"));
-//			// One field in obj is the class of the base fields, the other are values 
-//			for (int fieldInd = 0; fieldInd < obj.length() -  1; fieldInd++) {
-//				this.value.add((T) new PlainTextField((String)obj.get("field" + fieldInd)));
-//			}
 			JSONArray arr = new JSONArray(s);
 			this.value = new LinkedList<T>();
 			for (int fieldInd = 0; fieldInd < arr.length(); fieldInd++) {

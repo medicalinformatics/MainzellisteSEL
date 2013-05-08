@@ -22,6 +22,20 @@
  * library), containing parts covered by the terms of the General Public 
  * License, version 2.0, the licensors of this Program grant you additional 
  * permission to convey the resulting work.
+ * 
+ * 
+ * This file is a Java port of the PID generation code by Klaus Pommerening.
+ * The original copyright notice follows:
+ * 
+ **** PIDgen.c *************************************************
+ *                                                             *
+ * Functions to support a pseudonymization service             *
+ *-------------------------------------------------------------*
+ * Klaus Pommerening, IMSD, Johannes-Gutenberg-Universitaet,   *
+ *   Mainz, 3. April 2001                                      *
+ *-------------------------------------------------------------*
+ * Version 1.00, 29. Mai 2004                                  * 
+ ***************************************************************
  */
 package de.unimainz.imbei.mzid;
 
@@ -32,19 +46,6 @@ import org.apache.log4j.Logger;
 
 import de.unimainz.imbei.mzid.exceptions.InternalErrorException;
 
-/*
- * This file is a Java port of the PID generation code by Klaus Pommerening.
- * The original copyright notice follows:
- * 
- *  *** PIDgen.c **************************************************/
-/*                                                             */
-/* Functions to support a pseudonymization service             */
-/*-------------------------------------------------------------*/
-/* Klaus Pommerening, IMSD, Johannes-Gutenberg-Universitaet,   */
-/*   Mainz, 3. April 2001                                      */
-/*-------------------------------------------------------------*/
-/* Version 1.00, 29. Mai 2004                                  */
-/* ************************************************************* */
 
 
 /**

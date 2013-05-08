@@ -95,10 +95,6 @@ public class NGramComparator extends FieldComparator<PlainTextField> {
 			if (larger.contains(str)) nCommon++;
 		}
 		
-//		Set<String> intersection = new HashSet<String>(nGramsLeft);
-//		intersection.retainAll(nGramsRight);
-//		int nCommon = intersection.size();
-		
 		return 2.0 * nCommon / (nLeft + nRight);
 	}
 

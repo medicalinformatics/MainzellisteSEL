@@ -29,7 +29,6 @@ import javax.persistence.Entity;
 
 import de.unimainz.imbei.mzid.exceptions.InvalidIDException;
 
-//@XmlJavaTypeAdapter(IDAdapter.class)
 @Entity
 public class PID extends ID{
 	public PID(String PIDString, String type) throws InvalidIDException {

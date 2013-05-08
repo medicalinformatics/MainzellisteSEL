@@ -126,8 +126,6 @@ src/de/unimainz/imbei/mzid/matcher/GermanLastNameDecomposer.java -text
 src/de/unimainz/imbei/mzid/matcher/MatchResult.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/matcher/Matcher.java -text
 src/de/unimainz/imbei/mzid/matcher/NGramComparator.java -text svneol=unset#text/plain
-src/de/unimainz/imbei/mzid/matcher/PSXFirstNameNormalizer.java -text
-src/de/unimainz/imbei/mzid/matcher/PSXLastNameNormalizer.java -text
 src/de/unimainz/imbei/mzid/matcher/StringNormalizer.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/matcher/ThreadedEpilinkMatcher.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/webservice/AbstractParam.java -text svneol=unset#text/plain

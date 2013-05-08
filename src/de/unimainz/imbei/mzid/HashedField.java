@@ -34,7 +34,6 @@ import de.unimainz.imbei.mzid.matcher.BloomFilterTransformer;
 
 @Entity
 public class HashedField extends Field<BitSet>{
-//	@Column(columnDefinition = "text")
 	@Column(length = BloomFilterTransformer.hashLength)
 	private String value;
 	
