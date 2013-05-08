@@ -92,7 +92,7 @@ public class Initializer implements ServletContextListener {
 			try {
 				FileAppender app;
 				app = new FileAppender(layout, logFileName);
-				app.setName("MzidFileAppender");
+				app.setName("MainzellisteFileAppender");
 				
 				// In production mode, avoid spamming the servlet container's logfile.
 				if(!Config.instance.debugIsOn()){
@@ -107,7 +107,7 @@ public class Initializer implements ServletContextListener {
 				return;
 			}
 		}
-		root.info("#####BEGIN MZID LOG SESSION");
+		root.info("#####BEGIN Mainzelliste LOG SESSION");
 	}
 	
 	static ServletContext getServletContext(){
