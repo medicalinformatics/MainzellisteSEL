@@ -11,7 +11,6 @@
 .settings/org.eclipse.wst.common.project.facet.core.xml -text svneol=unset#text/plain
 .settings/org.eclipse.wst.jsdt.ui.superType.container -text
 .settings/org.eclipse.wst.jsdt.ui.superType.name -text
-/Beschreibung[!!-~]REST-Schnittstelle -text
 /README -text
 WebContent/META-INF/MANIFEST.MF -text svneol=unset#text/plain
 WebContent/META-INF/context.xml.default -text

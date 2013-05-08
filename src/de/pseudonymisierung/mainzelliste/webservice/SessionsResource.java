@@ -228,7 +228,6 @@ public class SessionsResource {
 		// Prüfe Existenz der ID bei Typ "readPatient"
 		if (t.getType() == "readPatient") {
 			String idString = t.getDataItemString("id");
-			// TODO andere ID-Typen
 			Patient p = Persistor.instance.getPatient(new PID(idString, "pid"));
 			if (p == null) {
 				throw new WebApplicationException(Response

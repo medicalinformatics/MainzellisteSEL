@@ -189,7 +189,7 @@ public enum Servers {
 				for(Token t: sessions.get(sid).getTokens()){
 					if(tokenId.equals(t.getId())){
 						sessionId = sid;
-						break; // TODO: Das beendet nur die innere Schleife. Es bleibt teuer.
+						break;
 					}
 				}
 			}

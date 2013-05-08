@@ -272,7 +272,6 @@ public class Patient {
 		// (setting a as duplicate of b when b is a duplicate of a)
 		if (original.getOriginal().sameAs(this))
 		{
-			// TODO generalisieren f�r andere IDs
 			CircularDuplicateRelationException e = new CircularDuplicateRelationException(
 					this.getId("pid").getIdString(), original.getId("pid").getIdString());
 			logger.error(e.getMessage());

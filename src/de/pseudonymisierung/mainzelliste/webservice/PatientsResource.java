@@ -372,8 +372,6 @@ public class PatientsResource {
 				Servers.instance.deleteToken(t.getId());
 		}
 		// Callback aufrufen
-		// TODO auslagern in Funktion. Wohin?
-		// TODO Fehlerbehebung
 		String callback = t.getDataItemString("callback");
 		if (callback != null && callback.length() > 0)
 		{
@@ -411,45 +409,7 @@ public class PatientsResource {
 		return ret;
 	}
 	
-	
-	@Path("/pid/{pid}")
-	@GET
-	@Produces(MediaType.APPLICATION_JSON)
-	public Response getPatientViaPid(
-			@PathParam("pid") String pidString,
-			@Context HttpServletRequest req){
-		logger.info("Received GET /patients/pid/" + pidString);
 
-		if (!req.isUserInRole("admin"))
-			throw new UnauthorizedException();
-		// TODO andere ID-Typen
-		// FIXME Patient als JSON (über MessageBodyWriter oder @XMLRootElement in Field
-		PID pid = (PID) IDGeneratorFactory.instance.getFactory("pid").buildId(pidString);
-		Patient pat = Persistor.instance.getPatient(pid);
-		if(pat == null){
-			throw new WebApplicationException(Response
-					.status(Status.NOT_FOUND)
-					.entity("There is no patient with PID " + pid + ".")
-					.build());
-		} else {
-			return Response.status(Status.OK).entity(pat).build();
-		}
-	}
-	
-	@Path("/pid/{pid}")
-	@PUT
-	@Consumes(MediaType.APPLICATION_JSON)
-	public Response setPatientByPid(
-			@PathParam("pid") String pid,
-			Patient p){
-		throw new NotImplementedException();
-		//FIXME IDAT-Admin?
-		/*Persistor.instance.updatePatient(p);
-		return Response
-				.status(Status.NO_CONTENT)
-				.build();*/
-	}
-	
 	/**
 	 * Interface for Temp-ID-Resolver
 	 * 

@@ -30,7 +30,7 @@ package de.pseudonymisierung.mainzelliste;
  * @author borg
  *
  */
-public class StringPair { // TODO: Pairs are evil!
+public class StringPair { 
 	private String str1;
 	private String str2;
 	

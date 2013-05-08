@@ -636,7 +636,7 @@ public class PIDGenerator implements IDGenerator<PID>{
 		int i;
 		s = 0;
 		for (i = 0; i <= 5; i++)
-			s = s ^ PIDGenerator.multf32(p[i], i + 1); //FIXME NullPointerException für falsch getippte PID OOO3Y0WZ
+			s = s ^ PIDGenerator.multf32(p[i], i + 1); 
 		return s;
 	}
 

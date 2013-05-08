@@ -118,7 +118,6 @@ public enum Validator {
 						theseFields.add(thisFieldName.trim());
 					}
 					dateFields.add(theseFields);
-					// TODO: Datumsformat checken
 					dateFormat.add(props.getProperty("validator.date." + dateInd + ".format").trim());
 					} catch (NumberFormatException e) {
 					throw new InternalErrorException(e);
