@@ -12,6 +12,7 @@
 .settings/org.eclipse.wst.jsdt.ui.superType.container -text
 .settings/org.eclipse.wst.jsdt.ui.superType.name -text
 /Beschreibung[!!-~]REST-Schnittstelle -text
+/README -text
 WebContent/META-INF/MANIFEST.MF -text svneol=unset#text/plain
 WebContent/META-INF/context.xml.default -text
 WebContent/WEB-INF/jsp/createPatient.jsp -text svneol=unset#text/plain
@@ -88,6 +89,8 @@ lib/test/httpclient-4.1.3.jar -text
 lib/test/httpclient-cache-4.1.3.jar -text
 lib/test/httpcore-4.1.4.jar -text
 lib/test/httpmime-4.1.3.jar -text
+licenses/agpl-3.0.txt -text svneol=unset#text/plain
+licenses/apache-2.0.txt -text svneol=unset#text/plain
 src/META-INF/persistence.xml -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/CompoundField.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/Config.java -text svneol=unset#text/plain
