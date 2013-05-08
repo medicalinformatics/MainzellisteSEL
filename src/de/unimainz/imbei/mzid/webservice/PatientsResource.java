@@ -74,8 +74,8 @@ public class PatientsResource {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public List<Set<ID>> getAllPatients(@Context HttpServletRequest req) throws UnauthorizedException {
-		/* Benutzerrechte pr�fen, basierend auf Rollenzuweisung in tomcat-users.xml.
-		 * Zus�tzliche Pr�fung via security-constraint in web.xml 
+		/* Benutzerrechte prüfen, basierend auf Rollenzuweisung in tomcat-users.xml.
+		 * Zusätzliche Prüfung via security-constraint in web.xml 
 		 */
 		logger.info("Received GET /patients");
 		if (!req.isUserInRole("admin"))
