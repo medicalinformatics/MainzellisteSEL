@@ -1,5 +1,17 @@
 /Trash
 WebContent/META-INF/context.xml
+WebContent/WEB-INF/lib/asm-3.1.jar
+WebContent/WEB-INF/lib/jackson-core-asl-1.9.2.jar
+WebContent/WEB-INF/lib/jackson-jaxrs-1.9.2.jar
+WebContent/WEB-INF/lib/jackson-mapper-asl-1.9.2.jar
+WebContent/WEB-INF/lib/jackson-xc-1.9.2.jar
+WebContent/WEB-INF/lib/jersey-client-1.17.jar
+WebContent/WEB-INF/lib/jersey-core-1.17.jar
+WebContent/WEB-INF/lib/jersey-json-1.17.jar
+WebContent/WEB-INF/lib/jersey-server-1.17.jar
+WebContent/WEB-INF/lib/jersey-servlet-1.17.jar
+WebContent/WEB-INF/lib/jettison-1.1.jar
+WebContent/WEB-INF/lib/jsr311-api-1.1.1.jar
 /build
 config/mzid.conf
 /doc
