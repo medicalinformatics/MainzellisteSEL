@@ -906,7 +906,6 @@ public class Phonet {
     /**
      * Loads phoneticRules from File
      * 
-     * @param rule_set language code
      * 
      * Die Datei muss untereinander erstens den Suchbegriff, danach die erste Regel, danach die zweite Regel beinhalten
      * SIehe auch phonetRulesGerman
