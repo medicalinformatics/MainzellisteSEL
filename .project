@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>mzid</name>
+	<name>mainzelliste</name>
 	<comment></comment>
 	<projects>
 	</projects>
@@ -106,6 +106,15 @@
 		</link>
 	</linkedResources>
 	<filteredResources>
+		<filter>
+			<id>1368038417242</id>
+			<name></name>
+			<type>26</type>
+			<matcher>
+				<id>org.eclipse.ui.ide.multiFilter</id>
+				<arguments>1.0-name-matches-false-false-.svn</arguments>
+			</matcher>
+		</filter>
 		<filter>
 			<id>1338281630234</id>
 			<name>WebContent/static/jslib</name>
