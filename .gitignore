@@ -18,6 +18,3 @@ config/mzid.conf
 src/de/pseudonymisierung/mainzelliste/matcher/PSXMatcher.java
 src/de/pseudonymisierung/mainzelliste/matcher/PSXMatchingState.java
 src/de/pseudonymisierung/mainzelliste/matcher/PSXSpecification.java
-src/de/unimainz/imbei/mzid/CopyOfConfig.java
-src/de/unimainz/imbei/mzid/FormDefinition.java
-src/de/unimainz/imbei/mzid/PSXState.java
