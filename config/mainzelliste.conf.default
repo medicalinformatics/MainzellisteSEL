@@ -1,4 +1,4 @@
-# Template properties for mainzelliste
+﻿# Template properties for mainzelliste
 #
 # The configuration listed here provides default values which should be suitable for
 # a variety of szenarios. At least, the sections "Database setup" and "xDAT servers"
@@ -18,7 +18,7 @@
 debug = false
 
 # Name of this mainzelliste distribution instance.
-dist = MZID
+dist = Mainzelliste
 
 # Database setup
 db.driver = org.postgresql.Driver
