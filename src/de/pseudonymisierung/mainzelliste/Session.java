@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2013 Martin Lablans, Andreas Borg, Frank Ückert
  * Contact: info@mainzelliste.de
-
+ *
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free 
  * Software Foundation; either version 3 of the License, or (at your option) any
@@ -32,6 +32,9 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import de.pseudonymisierung.mainzelliste.webservice.Token;
 
+/**
+ * Bundle for a set of Tokens to be handled (i.e. invalidated) together.
+ */
 public class Session extends ConcurrentHashMap<String, String>{
 	private String sessionId;
 	private Set<Token> tokens = new HashSet<Token>();

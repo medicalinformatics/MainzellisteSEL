@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2013 Martin Lablans, Andreas Borg, Frank Ückert
  * Contact: info@mainzelliste.de
-
+ *
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free 
  * Software Foundation; either version 3 of the License, or (at your option) any
@@ -31,6 +31,8 @@ import javax.ws.rs.core.Response.Status;
 
 /**
  * Taken from http://codahale.com/what-makes-jersey-interesting-parameter-classes/
+ * 
+ * FIXME: Prüfen, ob wir diese Klasse brauchen. Sonst entfernen; Lizenz beachten!
  */
 public abstract class AbstractParam<V> {
 	private final V value;

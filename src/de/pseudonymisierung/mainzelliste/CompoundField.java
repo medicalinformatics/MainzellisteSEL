@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2013 Martin Lablans, Andreas Borg, Frank Ückert
  * Contact: info@mainzelliste.de
-
+ *
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free 
  * Software Foundation; either version 3 of the License, or (at your option) any
@@ -46,8 +46,6 @@ import de.pseudonymisierung.mainzelliste.exceptions.InternalErrorException;
  * CompoundField represents a field that is composed of several subfields. For example, 
  * a name with several components can be modeled as CompoundField<PlainTextField>.
  *   
- * @author borg
- *
  * @param <T> The class of the components (a subclass of Field<?>).
  */
 @Entity

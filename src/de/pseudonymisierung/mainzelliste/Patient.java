@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2013 Martin Lablans, Andreas Borg, Frank Ückert
  * Contact: info@mainzelliste.de
-
+ *
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free 
  * Software Foundation; either version 3 of the License, or (at your option) any
@@ -33,7 +33,6 @@ import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
-import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -46,7 +45,6 @@ import javax.persistence.PreUpdate;
 import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlRootElement;
 import org.apache.log4j.Logger;
-import org.apache.openjpa.persistence.jdbc.ElementIndex;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
@@ -56,19 +54,19 @@ import de.pseudonymisierung.mainzelliste.exceptions.InternalErrorException;
 
 @XmlRootElement
 @Entity
+/**
+ * An entity identified by an ID and described by a number of Fields.
+ */
 public class Patient {
-	/**
-	 * Internal ID. Set by JPA on first persistence.
-	 */
 	@Id
 	@GeneratedValue
 	@JsonIgnore
 	private int patientJpaId;
 	
-
 	/**
 	 * Returns the internal ID of the persistency engine.
 	 * Needed to determine if two Patient object refer to the same database entry.
+	 * 
 	 * @return the patientJpaId
 	 */
 	public int getPatientJpaId() {
@@ -159,16 +157,16 @@ public class Patient {
 		try {
 			Map<String, Field<?>> fields = new HashMap<String, Field<?>>();
 			JSONObject fieldsJson = new JSONObject(fieldsJsonString);
-			Iterator it = fieldsJson.keys();
+			Iterator<?> it = fieldsJson.keys();
 			while(it.hasNext()) {
 				String fieldName = (String) it.next();
 				JSONObject thisFieldJson = fieldsJson.getJSONObject(fieldName); 
 				String fieldClass = thisFieldJson.getString("class");
 				String fieldValue = thisFieldJson.getString("value");
-				Field<?> thisField = (Field) Class.forName(fieldClass).newInstance();
+				Field<?> thisField = (Field<?>) Class.forName(fieldClass).newInstance();
 				thisField.setValue(fieldValue);
 				fields.put(fieldName, thisField);
-			} 
+			}
 			return fields;
 		} catch (Exception e) {
 			Logger.getLogger(Patient.class).error("Exception: ", e);

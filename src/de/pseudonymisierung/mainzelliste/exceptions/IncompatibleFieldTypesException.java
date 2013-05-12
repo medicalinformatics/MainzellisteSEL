@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2013 Martin Lablans, Andreas Borg, Frank Ückert
  * Contact: info@mainzelliste.de
-
+ *
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free 
  * Software Foundation; either version 3 of the License, or (at your option) any
@@ -28,10 +28,9 @@ package de.pseudonymisierung.mainzelliste.exceptions;
 import de.pseudonymisierung.mainzelliste.Field;
 import de.pseudonymisierung.mainzelliste.matcher.FieldTransformer;
 
-/** Exception for the case that an FieldTransformer and a Field or two chained FieldTransformers
+/** 
+ * Exception for the case that an FieldTransformer and a Field or two chained FieldTransformers
  * are not compatible respective to their type parameters.
- * @author borg
- *
  */
 public class IncompatibleFieldTypesException extends Exception {
 

@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2013 Martin Lablans, Andreas Borg, Frank Ückert
  * Contact: info@mainzelliste.de
-
+ *
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free 
  * Software Foundation; either version 3 of the License, or (at your option) any
@@ -46,14 +46,15 @@ import org.apache.log4j.Logger;
 
 import de.pseudonymisierung.mainzelliste.exceptions.InternalErrorException;
 
-
-
 /**
  * Here go all the mathematics involved in generating, checking and correcting
  * PIDs. Methods here are private to the package. A user should call the static
  * functions of class PID.
  * 
- * @author Martin Lablans
+ * For the theorem, confer publication of Faldum and Pommerening.
+ * 
+ * This class is a C-to-Java-port with generous approval by its author,
+ * Klaus Pommerening.
  */
 public class PIDGenerator implements IDGenerator<PID>{
 	private String idType;
@@ -98,18 +99,14 @@ public class PIDGenerator implements IDGenerator<PID>{
 	PIDGenerator() {		
 	}
 	
-
 	private String createPIDString(int counter) {
 		return PIDgen(counter);
 	}
 
 	/**
-	 * Check PID.
+	 * Check PID. Up to two errors are recognized.
 	 * 
-	 * Up to two errors are recognized.
-	 * 
-	 * @param pid
-	 *            The PID which to check.
+	 * @param pid The PID to check.
 	 * @return true if pid is a correct PID, false otherwise.
 	 */
 	static boolean isCorrectPID(String pid) {

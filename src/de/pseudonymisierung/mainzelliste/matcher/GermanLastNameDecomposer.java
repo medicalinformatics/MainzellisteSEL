@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2013 Martin Lablans, Andreas Borg, Frank Ückert
  * Contact: info@mainzelliste.de
-
+ *
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free 
  * Software Foundation; either version 3 of the License, or (at your option) any
@@ -35,17 +35,12 @@ import de.pseudonymisierung.mainzelliste.PlainTextField;
 /**
  * Decomposition of last name into components (3 by default),
  * with recognition of German components such as "von", "Freiherr" etc.
- * 
- * @author borg
- *
  */
 public class GermanLastNameDecomposer extends FieldTransformer<PlainTextField, CompoundField<PlainTextField>>{
 	
 	private int nCcomponents = 3;
 
-	/** Delimiters to recognize when decomposing Names as regular expression.
-	 * 
-	 */
+	/** Delimiters to recognize when decomposing Names as regular expression. */
 	private String delimiters = "[ \\.:,;\\-']+";
 
 	private static String nameParticles[] = {"AL", "AM", "AN", "AUF", 
@@ -126,6 +121,4 @@ public class GermanLastNameDecomposer extends FieldTransformer<PlainTextField, C
 	{
 		return (Class<CompoundField<PlainTextField>>) new CompoundField<PlainTextField>(3).getClass();
 	}
-
-	
 }

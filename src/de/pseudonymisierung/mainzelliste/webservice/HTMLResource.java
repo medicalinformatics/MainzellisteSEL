@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2013 Martin Lablans, Andreas Borg, Frank Ückert
  * Contact: info@mainzelliste.de
-
+ *
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free 
  * Software Foundation; either version 3 of the License, or (at your option) any
@@ -54,8 +54,11 @@ import de.pseudonymisierung.mainzelliste.Servers;
 import de.pseudonymisierung.mainzelliste.dto.Persistor;
 
 @Path("/html")
+/**
+ * HTML pages (rendered via JSP) to be accessed by a human
+ * are served via this resource.
+ */
 public class HTMLResource {
-
 	Logger logger = Logger.getLogger(HTMLResource.class);
 	
 	@GET
@@ -191,6 +194,5 @@ public class HTMLResource {
 						.queryParam("id", pidString)
 						.build())
 						.build(); */
-	}	
-	
+	}
 }

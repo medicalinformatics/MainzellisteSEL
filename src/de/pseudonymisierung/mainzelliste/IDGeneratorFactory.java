@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2013 Martin Lablans, Andreas Borg, Frank Ückert
  * Contact: info@mainzelliste.de
-
+ *
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free 
  * Software Foundation; either version 3 of the License, or (at your option) any
@@ -37,6 +37,9 @@ import org.apache.log4j.Logger;
 
 import de.pseudonymisierung.mainzelliste.dto.Persistor;
 
+/**
+ * Factory for IDGenerators.
+ */
 public enum IDGeneratorFactory {
 	instance;
 	
@@ -45,17 +48,20 @@ public enum IDGeneratorFactory {
 	private String[] idTypes;
 
 	private Logger logger = Logger.getLogger(this.getClass());
+	
 	private IDGeneratorFactory() {
-		
 		HashMap<String, IDGenerator<? extends ID>> temp = new HashMap<String, IDGenerator<? extends ID>>();
 		Preferences prefs = Preferences.userRoot().node("de/pseudonymisierung/mainzelliste/idgenerator");
 		Properties props = Config.instance.getProperties();
+		
 		if(!props.containsKey("idgenerators") || props.getProperty("idgenerators").length() == 0) {
 			logger.fatal("No ID generators defined!");
 			throw new Error("No ID generators defined!");
 		}
+		
 		// split list of ID generators: comma-separated, ignore whitespace around commas
 		this.idTypes = props.getProperty("idgenerators").split("\\s*,\\s*");
+		
 		// Iterate over ID types
 		for (String thisIdType : idTypes) {
 			String thisIdGenerator = prefs.get(thisIdType, "");
@@ -108,7 +114,6 @@ public enum IDGeneratorFactory {
 	
 	/**
 	 * Get names of defined id types as array. The result must not be modified.
-	 * 
 	 */
 	public String[] getIDTypes() {
 		return this.idTypes;
@@ -116,7 +121,6 @@ public enum IDGeneratorFactory {
 	
 	/**
 	 * Get the default id type (as of 02/2013, the first one defined in the config).
-	 * 
 	 */
 	public String getDefaultIDType() {
 		return this.idTypes[0];

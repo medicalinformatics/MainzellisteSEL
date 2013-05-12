@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2013 Martin Lablans, Andreas Borg, Frank Ückert
  * Contact: info@mainzelliste.de
-
+ *
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free 
  * Software Foundation; either version 3 of the License, or (at your option) any
@@ -42,9 +42,6 @@ import de.pseudonymisierung.mainzelliste.exceptions.NotImplementedException;
 /**
  * A Field describing a person, e.g. name, date of birth, ...
  * This abstraction allows for different matching of plaintext and hashed Fields.
- * 
- * @author Martin Lablans
- *
  */
 @Entity
 @XmlRootElement
@@ -54,10 +51,10 @@ public abstract class Field<T> {
 	@GeneratedValue
 	@JsonIgnore
 	protected int fieldJpaId;
-	 
 	
 	public abstract T getValue();
 	public abstract void setValue(T value);
+	
 	@Override
 	public abstract Field<T> clone();
 	
@@ -65,10 +62,10 @@ public abstract class Field<T> {
 	public Field()
 	{		
 	}
+	
 	public Field(T s) {
 		setValue(s);
 	}
-	
 	
 	public abstract void setValue(String s);
 	
@@ -86,11 +83,10 @@ public abstract class Field<T> {
 	 * 
 	 * This method is not designed to return a JSON-String. See 
 	 * toJSON for this purpose.
+	 * 
 	 * @return An object compatible with JSONObject.put. Possible classes are:
 	 * Boolean, Double, Integer, JSONArray, JSONObject, Long, String. Null is represented
 	 * by the JSONObject.NULL object. 
-	 * 
-	 * 
 	 */
 	public abstract Object getValueJSON() throws JSONException;
 

@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2013 Martin Lablans, Andreas Borg, Frank Ückert
  * Contact: info@mainzelliste.de
-
+ *
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free 
  * Software Foundation; either version 3 of the License, or (at your option) any
@@ -41,7 +41,6 @@ import de.pseudonymisierung.mainzelliste.exceptions.InvalidIDException;
  * A person's identificator. Once created, the ID is guaranteed to be valid. Immutable.
  * 
  * @see IDGenerator to generate IDs.
- * @author Martin Lablans
  */
 @Entity
 @Table(name="ID", uniqueConstraints=@UniqueConstraint(columnNames={"idString","type"}))

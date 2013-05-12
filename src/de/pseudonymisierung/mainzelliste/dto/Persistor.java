@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2013 Martin Lablans, Andreas Borg, Frank Ückert
  * Contact: info@mainzelliste.de
-
+ *
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free 
  * Software Foundation; either version 3 of the License, or (at your option) any
@@ -46,8 +46,6 @@ import de.pseudonymisierung.mainzelliste.exceptions.InternalErrorException;
 
 /**
  * Handles reading and writing from and to the database.
- * 
- * @author Martin Lablans
  */
 public enum Persistor {
 	instance;
@@ -59,8 +57,6 @@ public enum Persistor {
 	private Logger logger = Logger.getLogger(this.getClass());
 	
 	private Persistor() {
-		
-	
 		HashMap<String, String> persistenceOptions = new HashMap<String, String>();
 		
 		// Settings from config
@@ -86,8 +82,6 @@ public enum Persistor {
 	
 	/**
 	 * Get a patient by id.
-	 * @param pid
-	 * @return
 	 */
 	public Patient getPatient(ID pid){
 		EntityManager em = emf.createEntityManager();
@@ -126,8 +120,7 @@ public enum Persistor {
 	 * Returns a detached list of the IDs of all patients.
 	 * @return A list where every item represents the IDs of one patient.
 	 */
-	public synchronized List<Set<ID>> getAllIds()
-	{
+	public synchronized List<Set<ID>> getAllIds() {
 		List<Patient> patients = this.getPatients();
 		List<Set<ID>> ret = new LinkedList<Set<ID>>();
 		for (Patient p : patients) {
@@ -137,24 +130,22 @@ public enum Persistor {
 		}
 		return ret;
 	}
+
 	/**
 	 * Add an ID request to the database. In cases where a new ID is created, a
 	 * new Patient object is persisted.
-	 * @param req
 	 */
-	public synchronized void addIdRequest(IDRequest req){
+	public synchronized void addIdRequest(IDRequest req) {
 		em.getTransaction().begin();
 		em.persist(req); //TODO: Fehlerbehandlung, falls PID schon existiert.		
 		em.getTransaction().commit();
 	}
 	
 	/**
-	 * Update the persisted properties of an ID generator (e.g. the counter from which PIDs 
-	 * are generated).
-	 * @param mem
+	 * Update the persisted properties of an ID generator (e.g. the counter 
+	 * from which PIDs are generated).
 	 */
-	public synchronized void updateIDGeneratorMemory(IDGeneratorMemory mem)
-	{
+	public synchronized void updateIDGeneratorMemory(IDGeneratorMemory mem) {
 		EntityManager em = emf.createEntityManager();
 		em.getTransaction().begin();
 		em.merge(mem);
@@ -167,11 +158,8 @@ public enum Persistor {
 	 * @see de.pseudonymisierung.mainzelliste.Patient#isDuplicate()
 	 * @see de.pseudonymisierung.mainzelliste.Patient#getOriginal()
 	 * @see de.pseudonymisierung.mainzelliste.Patient#setOriginal(Patient)
-	 * @param idOfDuplicate
-	 * @param idOfOriginal
 	 */
-	public synchronized void markAsDuplicate(ID idOfDuplicate, ID idOfOriginal)
-	{
+	public synchronized void markAsDuplicate(ID idOfDuplicate, ID idOfOriginal) {
 		Patient pDuplicate = getPatient(idOfDuplicate);
 		Patient pOriginal = getPatient(idOfOriginal);
 		pDuplicate.setOriginal(pOriginal);
@@ -181,10 +169,8 @@ public enum Persistor {
 	/**
 	 * Load the persisted properties for an ID generator.
 	 * @param idString Identifier of the ID generator.
-	 * 
 	 */
-	public IDGeneratorMemory getIDGeneratorMemory(String idString)
-	{
+	public IDGeneratorMemory getIDGeneratorMemory(String idString) {
 		EntityManager em = emf.createEntityManager();
 		TypedQuery<IDGeneratorMemory> q = em.createQuery("SELECT m FROM IDGeneratorMemory m WHERE m.idString = :idString", IDGeneratorMemory.class);
 		q.setParameter("idString", idString);
@@ -198,9 +184,8 @@ public enum Persistor {
 	
 	/**
 	 * Persist changes made to a patient.
-	 * @param p
 	 */
-	public synchronized void updatePatient(Patient p){
+	public synchronized void updatePatient(Patient p) {
 		EntityManager em = emf.createEntityManager();
 		em.getTransaction().begin();
 		em.merge(p);

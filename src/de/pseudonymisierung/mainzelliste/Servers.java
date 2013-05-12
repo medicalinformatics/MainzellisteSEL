@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2013 Martin Lablans, Andreas Borg, Frank Ückert
  * Contact: info@mainzelliste.de
-
+ *
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free 
  * Software Foundation; either version 3 of the License, or (at your option) any
@@ -43,6 +43,9 @@ import org.apache.log4j.Logger;
 
 import de.pseudonymisierung.mainzelliste.webservice.Token;
 
+/**
+ * Keeps track of servers, i.e. each communication partner that is not a user.
+ */
 public enum Servers {
 	instance;
 	
@@ -98,8 +101,6 @@ public enum Servers {
 	/**
 	 * Returns Session with sid (or null if unknown)
 	 * Caller MUST ensure proper synchronization on the session.
-	 * 
-	 * @return
 	 */
 	public Session getSession(String sid) {
 		synchronized (sessions) {
@@ -109,8 +110,6 @@ public enum Servers {
 	
 	/**
 	 * Returns all known session ids.
-	 * 
-	 * @return
 	 */
 	public Set<String> getSessionIds(){
 		return Collections.unmodifiableSet(new HashSet<String>(sessions.keySet()));
@@ -224,5 +223,4 @@ public enum Servers {
 	{
 		Servers s = Servers.instance;
 	}
-	
 }

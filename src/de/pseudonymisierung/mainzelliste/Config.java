@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2013 Martin Lablans, Andreas Borg, Frank Ückert
  * Contact: info@mainzelliste.de
-
+ *
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free 
  * Software Foundation; either version 3 of the License, or (at your option) any
@@ -46,11 +46,7 @@ import de.pseudonymisierung.mainzelliste.matcher.*;
  * Configuration of the patient list. Implemented as a singleton object, which can be referenced
  * by Config.instance. The configuration is read from the properties file specified as
  * parameter de.pseudonymisierung.mainzelliste.ConfigurationFile in context.xml
- * (see {@link java.util.Properties#load(InputStream) java.util.Properties}). 
- * 
- * 
- * @author borg
- *
+ * (see {@link java.util.Properties#load(InputStream) java.util.Properties}).
  */
 public enum Config {
 	instance;
@@ -62,7 +58,7 @@ public enum Config {
 		HASHED_NORMALIZED; // Bloomfilter with prior normalization
 	}
 	
-	private final String version = "0.9";
+	private final String version = "1.0";
 	
 	private final Map<String,Class<? extends Field<?>>> FieldTypes;
 	

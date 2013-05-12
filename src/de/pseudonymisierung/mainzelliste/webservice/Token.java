@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2013 Martin Lablans, Andreas Borg, Frank Ückert
  * Contact: info@mainzelliste.de
-
+ *
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free 
  * Software Foundation; either version 3 of the License, or (at your option) any
@@ -36,9 +36,6 @@ import de.pseudonymisierung.mainzelliste.Session;
  * Tokens are accessible via their token id (e.g. GET /patients/tempid/{tid}),
  * but also connected to a {@link Session} (e.g. DELETE /sessions/{sid}).
  * Thus, they are created using a session.
- * 
- * @author Martin Lablans
- *
  */
 public class Token {
 	private String id;

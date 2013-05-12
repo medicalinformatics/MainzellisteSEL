@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2013 Martin Lablans, Andreas Borg, Frank Ückert
  * Contact: info@mainzelliste.de
-
+ *
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free 
  * Software Foundation; either version 3 of the License, or (at your option) any
@@ -42,14 +42,16 @@ import org.codehaus.jackson.annotate.JsonIgnore;
 
 import de.pseudonymisierung.mainzelliste.matcher.MatchResult;
 
-/** Data structure for an ID request: Input fields, match result, type of ID */
+/** 
+ * Data structure for an ID request: Input fields, match result, type of ID.
+ */
 @Entity
 @Table(name="IDRequest")
 public class IDRequest {
 	@Id
 	@GeneratedValue
 	@JsonIgnore
-	private int idRequestJpaId; //JPA
+	private int idRequestJpaId;
 	
 	/** Map of fields as provided by the input form. */
 	@OneToMany(cascade={CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH}, fetch=FetchType.EAGER)
@@ -63,20 +65,12 @@ public class IDRequest {
 	@Embedded
 	private MatchResult matchResult;
 	
-	/** The patient object that was actually assigned. In case of a match this is usually equal
-	 * to matchResult.patient.
+	/** The patient object that was actually assigned. In case of a match 
+	 * this is usually equal to matchResult.patient.
 	 */
 	@ManyToOne(cascade={CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH}, fetch=FetchType.EAGER)
 	private Patient assignedPatient;
 
-	
-	
-	/**
-	 * @param inputFields
-	 * @param idType
-	 * @param matchResult
-	 * @param assignedPatient
-	 */
 	public IDRequest(Map<String, Field<?>> inputFields, String idType,
 			MatchResult matchResult, Patient assignedPatient) {
 		super();
@@ -101,6 +95,4 @@ public class IDRequest {
 	public MatchResult getMatchResult() {
 		return matchResult;
 	}
-		
-	
 }

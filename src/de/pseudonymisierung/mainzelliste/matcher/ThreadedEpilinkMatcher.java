@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2013 Martin Lablans, Andreas Borg, Frank Ückert
  * Contact: info@mainzelliste.de
-
+ *
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free 
  * Software Foundation; either version 3 of the License, or (at your option) any
@@ -32,9 +32,8 @@ import java.util.concurrent.Executors;
 import de.pseudonymisierung.mainzelliste.Patient;
 import de.pseudonymisierung.mainzelliste.matcher.MatchResult.MatchResultType;
 
+//FIXME: Kommentar
 public class ThreadedEpilinkMatcher extends EpilinkMatcher {
-
-	
 	private class MatchResultContainer {
 		public MatchResult matchResult;
 	}

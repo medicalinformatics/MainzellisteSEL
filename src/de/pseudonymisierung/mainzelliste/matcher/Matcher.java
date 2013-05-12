@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2013 Martin Lablans, Andreas Borg, Frank Ückert
  * Contact: info@mainzelliste.de
-
+ *
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free 
  * Software Foundation; either version 3 of the License, or (at your option) any
@@ -30,14 +30,10 @@ import java.util.Properties;
 import de.pseudonymisierung.mainzelliste.Patient;
 
 /**
- * This class is reponsible for comparing a given patient to those present in the local database.
- * 
- * @author Martin
- *
+ * This interface is reponsible for comparing a given patient 
+ * to those present in the local database.
  */
 public interface Matcher {
-
 	public void initialize(Properties props);
 	public MatchResult match(Patient a, Iterable<Patient> patientList);
-
 }

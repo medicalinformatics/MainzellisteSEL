@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2013 Martin Lablans, Andreas Borg, Frank Ückert
  * Contact: info@mainzelliste.de
-
+ *
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free 
  * Software Foundation; either version 3 of the License, or (at your option) any
@@ -30,7 +30,10 @@ import javax.persistence.Entity;
 import de.pseudonymisierung.mainzelliste.exceptions.InvalidIDException;
 
 @Entity
-public class PID extends ID{
+/**
+ * An ID as proposed by Faldum and Pommerening. Also known as Faldum-Code.
+ */
+public class PID extends ID {
 	public PID(String PIDString, String type) throws InvalidIDException {
 		super(PIDString, type);
 	}

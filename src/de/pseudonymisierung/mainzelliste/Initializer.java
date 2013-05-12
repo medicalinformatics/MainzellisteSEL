@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2013 Martin Lablans, Andreas Borg, Frank Ückert
  * Contact: info@mainzelliste.de
-
+ *
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free 
  * Software Foundation; either version 3 of the License, or (at your option) any
@@ -41,8 +41,6 @@ import de.pseudonymisierung.mainzelliste.dto.Persistor;
 /**
  * This class is responsible for setting up all singletons in the right order
  * and to fail early if anything goes wrong.
- * 
- * @author Martin Lablans
  */
 public class Initializer implements ServletContextListener {
 	private static ServletContext context;
@@ -63,13 +61,12 @@ public class Initializer implements ServletContextListener {
 		Logger logger = Logger.getLogger(Initializer.class);
 		logger.info("#####Initializing...");
 		
-		//<DEBUG>
+		//Output effective config to logfile.
 		Enumeration<String> en = context.getInitParameterNames();
 		while(en.hasMoreElements()){
 			String paramName = en.nextElement();
 			logger.debug("Init param " + paramName + "=" + context.getInitParameter(paramName));
 		}
-		//</DEBUG>
 		
 		Config c = Config.instance;
 		log4jSetup();

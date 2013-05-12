@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2013 Martin Lablans, Andreas Borg, Frank Ückert
  * Contact: info@mainzelliste.de
-
+ *
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free 
  * Software Foundation; either version 3 of the License, or (at your option) any
@@ -63,18 +63,15 @@ import de.pseudonymisierung.mainzelliste.dto.Persistor;
  * A server-side client session is a set of key-value pairs about a given client session
  * shared between Mainzelliste and an xDAT server. Apart from listing and creating sessions, 
  * knowing the session ID is deemed authentication for session access.
- * 
- * @author Martin Lablans
  */
 @Path("/sessions")
 public class SessionsResource {
-	
 	private Logger logger = Logger.getLogger(this.getClass());
 	
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
+	//FIXME: Prüfen, ob benötigt, ggfls. entfernen
 	public JSONArray getSessionIds(@Context HttpServletRequest req){
-		
 		logger.info("Request to list sessions received by host " + req.getRemoteHost());
 		
 		//TODO: Auth: IDAT-Admin (sieht alle Sessions) oder MDAT-Server (sieht seine eigenen).
@@ -95,7 +92,6 @@ public class SessionsResource {
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response newSession(@Context HttpServletRequest req) throws ServletException, JSONException{
-		
 		logger.info("Request to create session received by host " + req.getRemoteHost());
 		
 		Servers.instance.checkPermission(req, "createSession");
@@ -118,40 +114,7 @@ public class SessionsResource {
 			.location(newUri)
 			.build();
 	}
-	
-/*
- * For future use
- */
-//	@Path("/{session}")
-//	@GET
-//	@Produces(MediaType.APPLICATION_JSON)
-//	public Session getSession(
-//			@PathParam("session") SessionIdParam sid){
-//		// No authentication other than knowing the session id.
-//		Session s = sid.getValue();
-//		synchronized (s) { // refresh
-//			//TODO: Besitzt der MDAT diese Sitzung?
-//			return s;
-//		}
-//	}
-//	
-//	@Path("/{session}")
-//	@POST
-//	@Consumes({MediaType.APPLICATION_JSON})
-//	@Produces({MediaType.APPLICATION_JSON})
-//	public Session updateSession(
-//			@PathParam("session") SessionIdParam sid,
-//			Session sNew){
-//		// No authentication other than knowing the session id.
-//		Session s = sid.getValue();
-//		synchronized (s) { // refresh
-//			//TODO: Besitzt der MDAT diese Sitzung?
-//			s.putAll(sNew);
-//			return s;
-//		}
-//	}
-
-	
+		
 	@Path("/{session}")
 	@DELETE
 	public Response deleteSession(

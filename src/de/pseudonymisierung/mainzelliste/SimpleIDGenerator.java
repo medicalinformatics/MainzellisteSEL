@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2013 Martin Lablans, Andreas Borg, Frank Ückert
  * Contact: info@mainzelliste.de
-
+ *
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free 
  * Software Foundation; either version 3 of the License, or (at your option) any
@@ -31,10 +31,8 @@ package de.pseudonymisierung.mainzelliste;
 import java.util.Properties;
 
 /**
- * Simple ID generator that outputs consecutive integers. For testing purposes
+ * Simple ID generator that outputs consecutive IntegerIDs. For testing purposes
  * or to produce IDs for a database.
- * @author borg
- *
  */
 public class SimpleIDGenerator implements IDGenerator<IntegerID> {
 
@@ -91,5 +89,4 @@ public class SimpleIDGenerator implements IDGenerator<IntegerID> {
 	public String getIdType() {
 		return idType;
 	}
-
 }

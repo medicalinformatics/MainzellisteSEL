@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2013 Martin Lablans, Andreas Borg, Frank Ückert
  * Contact: info@mainzelliste.de
-
+ *
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free 
  * Software Foundation; either version 3 of the License, or (at your option) any
@@ -45,9 +45,6 @@ import javax.ws.rs.core.MultivaluedMap;
 import de.pseudonymisierung.mainzelliste.exceptions.InternalErrorException;
 import de.pseudonymisierung.mainzelliste.exceptions.ValidatorException;
 
-
-
-
 /**
  * Form validation.
  * Validation checks are stored in a Properties object passed to the constructor.
@@ -58,10 +55,8 @@ import de.pseudonymisierung.mainzelliste.exceptions.ValidatorException;
  * 		field <i> fieldname</i> as required.
  *  <li> Check format: validator.field.<i>fieldname</i>.format defines a regular expression against
  *  	which the specified field is checked.
- *  <li> 
- * 
- * @author borg
- *
+ *  <li>
+ * </ul>
  */
 public enum Validator {
 

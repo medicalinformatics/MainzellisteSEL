@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2013 Martin Lablans, Andreas Borg, Frank Ückert
  * Contact: info@mainzelliste.de
-
+ *
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free 
  * Software Foundation; either version 3 of the License, or (at your option) any
@@ -31,14 +31,10 @@ import de.pseudonymisierung.mainzelliste.PlainTextField;
 
 /**
  * Decomposition of first name into components (3 by default)
- * @author borg
- *
  */
 public class FirstNameDecomposer extends FieldTransformer<PlainTextField, CompoundField<PlainTextField>> {
 
-	/** Delimiters to recognize when decomposing Names as regular expression.
-	 * 
-	 */
+	/** Delimiters to recognize when decomposing Names as regular expression. */
 	private String delimiters = "[ \\.:,;\\-']+";
 
 	private int nComponents = 3;

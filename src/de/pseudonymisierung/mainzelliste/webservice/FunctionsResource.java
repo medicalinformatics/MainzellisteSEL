@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2013 Martin Lablans, Andreas Borg, Frank Ückert
  * Contact: info@mainzelliste.de
-
+ *
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free 
  * Software Foundation; either version 3 of the License, or (at your option) any
@@ -32,16 +32,13 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
 /**
- * Access to functions added via pluggable modules.
- * 
- * @author Martin Lablans
- *
+ * Access to functions. In the future, pluggable modules can register here.
  */
 @Path("/functions")
 public class FunctionsResource {
 	
 	@Path("/barcode")
-	public BarcodeResource barcode(){
+	public BarcodeResource barcode(){ //FIXME: Entfernen!
 		return new BarcodeResource();
 	}
 	

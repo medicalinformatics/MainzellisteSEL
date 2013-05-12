@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2013 Martin Lablans, Andreas Borg, Frank Ückert
  * Contact: info@mainzelliste.de
-
+ *
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free 
  * Software Foundation; either version 3 of the License, or (at your option) any
@@ -36,8 +36,6 @@ import de.pseudonymisierung.mainzelliste.matcher.*;
 /**
  * Stores the field transformers for a set of fields, implemented as a HashMap.
  * Keys are the field names, values the corresponding FieldTransformer objects.
- * @author borg
- *
  */
 public class RecordTransformer {
 	
@@ -100,5 +98,4 @@ public class RecordTransformer {
 		output.setFields(outFields);
 		return output;
 	}
-	
 }

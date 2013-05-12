@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2013 Martin Lablans, Andreas Borg, Frank Ückert
  * Contact: info@mainzelliste.de
-
+ *
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free 
  * Software Foundation; either version 3 of the License, or (at your option) any
@@ -42,8 +42,6 @@ import de.pseudonymisierung.mainzelliste.PlainTextField;
  * into n-grams 
  * @see <a href="http://www.biomedcentral.com/1472-6947/9/41">Rainer Schnell, Tobias Bachteler and Jörg Reiher:
  * Privacy-preserving record linkage using Bloom filters. BMC Medical Informatics and Decision Making 2009, 9:41</a>
- * @author borg
- *
  */
 public class BloomFilterTransformer extends FieldTransformer<PlainTextField, HashedField> {
 

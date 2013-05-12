@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2013 Martin Lablans, Andreas Borg, Frank Ückert
  * Contact: info@mainzelliste.de
-
+ *
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free 
  * Software Foundation; either version 3 of the License, or (at your option) any
@@ -32,6 +32,7 @@ import javax.ws.rs.core.Response.Status;
 import de.pseudonymisierung.mainzelliste.Servers;
 import de.pseudonymisierung.mainzelliste.Session;
 
+//FIXME: Prüfen, ob nötig, ggfls. entfernen
 public class SessionIdParam extends AbstractParam<Session> {
 	public SessionIdParam(String s) {
 		super(s);
