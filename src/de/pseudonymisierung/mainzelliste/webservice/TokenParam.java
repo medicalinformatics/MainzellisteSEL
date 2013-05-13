@@ -34,7 +34,6 @@ import javax.ws.rs.core.Response.Status;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jettison.json.JSONObject;
 
-//FIXME: Prüfen, ob benötigt, ggfls. entfernen
 public class TokenParam extends AbstractParam<Token> {
 
 	public TokenParam(String param) throws WebApplicationException {

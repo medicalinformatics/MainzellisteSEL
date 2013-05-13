@@ -125,7 +125,6 @@ src/de/pseudonymisierung/mainzelliste/matcher/NGramComparator.java -text svneol=
 src/de/pseudonymisierung/mainzelliste/matcher/StringNormalizer.java -text svneol=unset#text/plain
 src/de/pseudonymisierung/mainzelliste/matcher/ThreadedEpilinkMatcher.java -text svneol=unset#text/plain
 src/de/pseudonymisierung/mainzelliste/webservice/AbstractParam.java -text svneol=unset#text/plain
-src/de/pseudonymisierung/mainzelliste/webservice/BarcodeResource.java -text svneol=unset#text/plain
 src/de/pseudonymisierung/mainzelliste/webservice/FieldKeyParam.java -text svneol=unset#text/plain
 src/de/pseudonymisierung/mainzelliste/webservice/FunctionsResource.java -text svneol=unset#text/plain
 src/de/pseudonymisierung/mainzelliste/webservice/HTMLResource.java -text svneol=unset#text/plain

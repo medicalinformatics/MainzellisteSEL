@@ -32,7 +32,6 @@ import javax.ws.rs.core.Response.Status;
 import de.pseudonymisierung.mainzelliste.Servers;
 import de.pseudonymisierung.mainzelliste.Session;
 
-//FIXME: Prüfen, ob nötig, ggfls. entfernen
 public class SessionIdParam extends AbstractParam<Session> {
 	public SessionIdParam(String s) {
 		super(s);

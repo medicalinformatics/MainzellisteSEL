@@ -30,7 +30,13 @@ import java.util.Map;
 import de.pseudonymisierung.mainzelliste.Field;
 import de.pseudonymisierung.mainzelliste.Patient;
 
-//FIXME: Kommentar
+/**
+ * BinaryFieldComparator implements a simple equal/unequal-comparison on fields.
+ * Comparison is performed with the field's .equals method. For equal field,
+ * 1.0 is returned as comparison value, 0 otherwise.
+ * @author borg
+ *
+ */
 public class BinaryFieldComparator extends FieldComparator<Field<?>> {
 
 	public BinaryFieldComparator (String fieldLeft, String fieldRight)
@@ -46,10 +52,13 @@ public class BinaryFieldComparator extends FieldComparator<Field<?>> {
 		return compare(cLeft.get(this.fieldLeft), cRight.get(this.fieldRight));
 	}
 
+	/**
+	 * @return 1.0 if fieldLeft is not null and fieldLeft.equals(fieldRight), 0 otherwise.
+	 */
 	@Override
 	public double compareBackend(Field<?> fieldLeft, Field<?> fieldRight)
 	{
-		if (fieldLeft.equals(fieldRight))
+		if (fieldLeft != null && fieldLeft.equals(fieldRight))
 			return 1.0;
 		else
 			return 0.0;		

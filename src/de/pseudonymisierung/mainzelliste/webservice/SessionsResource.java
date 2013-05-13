@@ -68,27 +68,6 @@ import de.pseudonymisierung.mainzelliste.dto.Persistor;
 public class SessionsResource {
 	private Logger logger = Logger.getLogger(this.getClass());
 	
-	@GET
-	@Produces(MediaType.APPLICATION_JSON)
-	//FIXME: Prüfen, ob benötigt, ggfls. entfernen
-	public JSONArray getSessionIds(@Context HttpServletRequest req){
-		logger.info("Request to list sessions received by host " + req.getRemoteHost());
-		
-		//TODO: Auth: IDAT-Admin (sieht alle Sessions) oder MDAT-Server (sieht seine eigenen).
-		Servers.instance.checkPermission(req, "showSessionIds");
-		
-		JSONArray ret = new JSONArray();
-		for(String s: Servers.instance.getSessionIds()){
-			URI u = UriBuilder
-				.fromUri(req.getRequestURL().toString())
-				.path("{sid}")
-				.build(s);
-			ret.put(u.toString());
-		}
-		
-		return ret;
-	}
-	
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response newSession(@Context HttpServletRequest req) throws ServletException, JSONException{

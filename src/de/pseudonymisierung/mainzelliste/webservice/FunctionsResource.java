@@ -37,11 +37,6 @@ import javax.ws.rs.core.Response.Status;
 @Path("/functions")
 public class FunctionsResource {
 	
-	@Path("/barcode")
-	public BarcodeResource barcode(){ //FIXME: Entfernen!
-		return new BarcodeResource();
-	}
-	
 	@GET
 	@Path("/{module}")
 	public Response delegate(

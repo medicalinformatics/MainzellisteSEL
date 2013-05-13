@@ -30,9 +30,11 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
 /**
- * Taken from http://codahale.com/what-makes-jersey-interesting-parameter-classes/
+ * Taken from https://github.com/codahale/dropwizard, file link:
+ * https://github.com/codahale/dropwizard/blob/master/dropwizard-jersey/src/main/java/com/codahale/dropwizard/jersey/params/AbstractParam.java
  * 
- * FIXME: Prüfen, ob wir diese Klasse brauchen. Sonst entfernen; Lizenz beachten!
+ * Originally released under the Apache License 2.0 (see project root).
+ * 
  */
 public abstract class AbstractParam<V> {
 	private final V value;
