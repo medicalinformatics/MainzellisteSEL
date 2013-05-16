@@ -12,7 +12,9 @@ WebContent/WEB-INF/lib/jersey-server-1.17.jar
 WebContent/WEB-INF/lib/jersey-servlet-1.17.jar
 WebContent/WEB-INF/lib/jettison-1.1.jar
 WebContent/WEB-INF/lib/jsr311-api-1.1.1.jar
+WebContent/WEB-INF/lib/postgresql-9.1-902.jdbc4.jar
 /build
+config/mainzelliste.conf
 config/mzid.conf
 /doc
 lib/deploy/jersey
