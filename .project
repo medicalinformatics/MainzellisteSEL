@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>mzid</name>
+	<name>mainzelliste</name>
 	<comment></comment>
 	<projects>
 	</projects>
@@ -90,22 +90,21 @@
 			<locationURI>PROJECT_LOC/lib/deploy/log4j-1.2.17.jar</locationURI>
 		</link>
 		<link>
-			<name>WebContent/WEB-INF/lib/mysql-connector-java-5.1.20-bin.jar</name>
-			<type>1</type>
-			<locationURI>PROJECT_LOC/lib/deploy/openjpa/mysql-connector-java-5.1.20-bin.jar</locationURI>
-		</link>
-		<link>
 			<name>WebContent/WEB-INF/lib/openjpa-all.jar</name>
 			<type>1</type>
 			<locationURI>PROJECT_LOC/lib/deploy/openjpa/openjpa-all-2.2.1.jar</locationURI>
 		</link>
-		<link>
-			<name>WebContent/WEB-INF/lib/postgresql-9.1-902.jdbc4.jar</name>
-			<type>1</type>
-			<locationURI>PROJECT_LOC/lib/deploy/openjpa/postgresql-9.1-902.jdbc4.jar</locationURI>
-		</link>
 	</linkedResources>
 	<filteredResources>
+		<filter>
+			<id>1368038417242</id>
+			<name></name>
+			<type>26</type>
+			<matcher>
+				<id>org.eclipse.ui.ide.multiFilter</id>
+				<arguments>1.0-name-matches-false-false-.svn</arguments>
+			</matcher>
+		</filter>
 		<filter>
 			<id>1338281630234</id>
 			<name>WebContent/static/jslib</name>

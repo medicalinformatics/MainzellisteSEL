@@ -11,7 +11,6 @@
 .settings/org.eclipse.wst.common.project.facet.core.xml -text svneol=unset#text/plain
 .settings/org.eclipse.wst.jsdt.ui.superType.container -text
 .settings/org.eclipse.wst.jsdt.ui.superType.name -text
-/Beschreibung[!!-~]REST-Schnittstelle -text
 /README -text
 WebContent/META-INF/MANIFEST.MF -text svneol=unset#text/plain
 WebContent/META-INF/context.xml.default -text
@@ -27,14 +26,12 @@ WebContent/static/css/patientenliste.css -text svneol=unset#text/plain
 WebContent/static/media/JGU_Uni_medizin_Logo_4c_Internet.jpg -text svneol=unset#unset
 builder_project/enhance.xml -text svneol=unset#text/plain
 config/log4j.properties -text svneol=unset#text/plain
-config/mzid.conf.default -text
+config/mainzelliste.conf.default -text
 lib/deploy/barcode4j/barcode4j-light.jar -text
 lib/deploy/log4j-1.2.17.jar -text
 lib/deploy/openjpa/commons-codec-1.6.jar -text
 lib/deploy/openjpa/derby.jar -text
-lib/deploy/openjpa/mysql-connector-java-5.1.20-bin.jar -text
 lib/deploy/openjpa/openjpa-all-2.2.1.jar -text
-lib/deploy/openjpa/postgresql-9.1-902.jdbc4.jar -text
 lib/js/jquery/jquery-1.7.2.js -text svneol=unset#text/plain
 lib/js/validation.js -text svneol=unset#text/plain
 lib/test/httpclient-4.1.3.jar -text
@@ -44,6 +41,63 @@ lib/test/httpmime-4.1.3.jar -text
 licenses/agpl-3.0.txt -text svneol=unset#text/plain
 licenses/apache-2.0.txt -text svneol=unset#text/plain
 src/META-INF/persistence.xml -text svneol=unset#text/plain
+src/de/pseudonymisierung/mainzelliste/CompoundField.java -text svneol=unset#text/plain
+src/de/pseudonymisierung/mainzelliste/Config.java -text svneol=unset#text/plain
+src/de/pseudonymisierung/mainzelliste/Field.java -text svneol=unset#text/plain
+src/de/pseudonymisierung/mainzelliste/HashedField.java -text svneol=unset#text/plain
+src/de/pseudonymisierung/mainzelliste/ID.java -text svneol=unset#text/plain
+src/de/pseudonymisierung/mainzelliste/IDGenerator.java -text svneol=unset#text/plain
+src/de/pseudonymisierung/mainzelliste/IDGeneratorFactory.java -text svneol=unset#text/plain
+src/de/pseudonymisierung/mainzelliste/IDGeneratorMemory.java -text svneol=unset#text/plain
+src/de/pseudonymisierung/mainzelliste/IDRequest.java -text svneol=unset#text/plain
+src/de/pseudonymisierung/mainzelliste/Initializer.java -text svneol=unset#text/plain
+src/de/pseudonymisierung/mainzelliste/IntegerField.java -text svneol=unset#text/plain
+src/de/pseudonymisierung/mainzelliste/IntegerID.java -text svneol=unset#text/plain
+src/de/pseudonymisierung/mainzelliste/PID.java -text svneol=unset#text/plain
+src/de/pseudonymisierung/mainzelliste/PIDGenerator.java -text svneol=unset#text/plain
+src/de/pseudonymisierung/mainzelliste/Patient.java -text svneol=unset#text/plain
+src/de/pseudonymisierung/mainzelliste/PlainTextField.java -text svneol=unset#text/plain
+src/de/pseudonymisierung/mainzelliste/RecordTransformer.java -text svneol=unset#text/plain
+src/de/pseudonymisierung/mainzelliste/Servers.java -text svneol=unset#text/plain
+src/de/pseudonymisierung/mainzelliste/Session.java -text svneol=unset#text/plain
+src/de/pseudonymisierung/mainzelliste/SimpleIDGenerator.java -text svneol=unset#text/plain
+src/de/pseudonymisierung/mainzelliste/StringPair.java -text svneol=unset#text/plain
+src/de/pseudonymisierung/mainzelliste/Validator.java -text svneol=unset#text/plain
+src/de/pseudonymisierung/mainzelliste/dto/Persistor.java -text svneol=unset#text/plain
+src/de/pseudonymisierung/mainzelliste/exceptions/BarcodeGenerationException.java -text svneol=unset#text/plain
+src/de/pseudonymisierung/mainzelliste/exceptions/CircularDuplicateRelationException.java -text svneol=unset#text/plain
+src/de/pseudonymisierung/mainzelliste/exceptions/IncompatibleFieldTypesException.java -text svneol=unset#text/plain
+src/de/pseudonymisierung/mainzelliste/exceptions/InternalErrorException.java -text svneol=unset#text/plain
+src/de/pseudonymisierung/mainzelliste/exceptions/InvalidIDException.java -text svneol=unset#text/plain
+src/de/pseudonymisierung/mainzelliste/exceptions/NotImplementedException.java -text svneol=unset#text/plain
+src/de/pseudonymisierung/mainzelliste/exceptions/UnauthorizedException.java -text svneol=unset#text/plain
+src/de/pseudonymisierung/mainzelliste/exceptions/ValidatorException.java -text svneol=unset#text/plain
+src/de/pseudonymisierung/mainzelliste/matcher/ArrayFieldComparator.java -text
+src/de/pseudonymisierung/mainzelliste/matcher/BinaryFieldComparator.java -text
+src/de/pseudonymisierung/mainzelliste/matcher/BloomFilterTransformer.java -text svneol=unset#text/plain
+src/de/pseudonymisierung/mainzelliste/matcher/DiceFieldComparator.java -text
+src/de/pseudonymisierung/mainzelliste/matcher/EpilinkMatcher.java -text svneol=unset#text/plain
+src/de/pseudonymisierung/mainzelliste/matcher/FieldComparator.java -text svneol=unset#text/plain
+src/de/pseudonymisierung/mainzelliste/matcher/FieldTransformer.java -text
+src/de/pseudonymisierung/mainzelliste/matcher/FieldTransformerChain.java -text svneol=unset#text/plain
+src/de/pseudonymisierung/mainzelliste/matcher/FirstNameDecomposer.java -text
+src/de/pseudonymisierung/mainzelliste/matcher/GermanLastNameDecomposer.java -text
+src/de/pseudonymisierung/mainzelliste/matcher/MatchResult.java -text svneol=unset#text/plain
+src/de/pseudonymisierung/mainzelliste/matcher/Matcher.java -text
+src/de/pseudonymisierung/mainzelliste/matcher/NGramComparator.java -text svneol=unset#text/plain
+src/de/pseudonymisierung/mainzelliste/matcher/StringNormalizer.java -text svneol=unset#text/plain
+src/de/pseudonymisierung/mainzelliste/matcher/ThreadedEpilinkMatcher.java -text svneol=unset#text/plain
+src/de/pseudonymisierung/mainzelliste/webservice/AbstractParam.java -text svneol=unset#text/plain
+src/de/pseudonymisierung/mainzelliste/webservice/FieldKeyParam.java -text svneol=unset#text/plain
+src/de/pseudonymisierung/mainzelliste/webservice/FunctionsResource.java -text svneol=unset#text/plain
+src/de/pseudonymisierung/mainzelliste/webservice/HTMLResource.java -text svneol=unset#text/plain
+src/de/pseudonymisierung/mainzelliste/webservice/PatientsResource.java -text svneol=unset#text/plain
+src/de/pseudonymisierung/mainzelliste/webservice/RootResource.java -text svneol=unset#text/plain
+src/de/pseudonymisierung/mainzelliste/webservice/SessionIdParam.java -text svneol=unset#text/plain
+src/de/pseudonymisierung/mainzelliste/webservice/SessionsResource.java -text svneol=unset#text/plain
+src/de/pseudonymisierung/mainzelliste/webservice/Token.java -text svneol=unset#text/plain
+src/de/pseudonymisierung/mainzelliste/webservice/TokenMessageBodyWriter.java -text svneol=unset#text/plain
+src/de/pseudonymisierung/mainzelliste/webservice/TokenParam.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/CompoundField.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/Config.java -text svneol=unset#text/plain
 src/de/unimainz/imbei/mzid/Field.java -text svneol=unset#text/plain

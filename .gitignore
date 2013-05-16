@@ -15,6 +15,12 @@ WebContent/WEB-INF/lib/jsr311-api-1.1.1.jar
 /build
 config/mzid.conf
 /doc
+lib/deploy/jersey
+lib/deploy/openjpa/mysql-connector-java-*.jar
+lib/deploy/openjpa/postgresql-*.jar
+src/de/pseudonymisierung/mainzelliste/matcher/PSXMatcher.java
+src/de/pseudonymisierung/mainzelliste/matcher/PSXMatchingState.java
+src/de/pseudonymisierung/mainzelliste/matcher/PSXSpecification.java
 src/de/unimainz/imbei/mzid/CopyOfConfig.java
 src/de/unimainz/imbei/mzid/FormDefinition.java
 src/de/unimainz/imbei/mzid/PSXState.java

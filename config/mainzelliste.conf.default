@@ -1,4 +1,4 @@
-# Template properties for mzid
+﻿# Template properties for mainzelliste
 #
 # The configuration listed here provides default values which should be suitable for
 # a variety of szenarios. At least, the sections "Database setup" and "xDAT servers"
@@ -17,21 +17,21 @@
 # debug mode: If set to true, token handling is disabled (i.e. no tokens are necessary).
 debug = false
 
-# Name of this mzid distribution instance.
-dist = MZID
+# Name of this mainzelliste distribution instance.
+dist = Mainzelliste
 
 # Database setup
 db.driver = org.postgresql.Driver
-db.url = jdbc:postgresql://localhost:5432/mzid
-db.username = mzid
-db.password = mzid
+db.url = jdbc:postgresql://localhost:5432/mainzelliste
+db.username = mainzelliste
+db.password = mainzelliste
 
 # Logging
 #
 # By default, logs are written to stdout. Uncomment the following values to log to a file
 # instead.
  
-#log.filename = /var/log/tomcat6/mzid.log
+#log.filename = /var/log/tomcat6/mainzelliste.log
 #log.level = DEBUG
 
 # Field definitions
