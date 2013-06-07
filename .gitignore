@@ -1,4 +1,6 @@
-/Trash
+/.classpath
+/.project
+/.settings
 WebContent/META-INF/context.xml
 WebContent/WEB-INF/lib/asm-3.1.jar
 WebContent/WEB-INF/lib/jackson-core-asl-1.9.2.jar
@@ -13,13 +15,9 @@ WebContent/WEB-INF/lib/jersey-servlet-1.17.jar
 WebContent/WEB-INF/lib/jettison-1.1.jar
 WebContent/WEB-INF/lib/jsr311-api-1.1.1.jar
 WebContent/WEB-INF/lib/postgresql-9.1-902.jdbc4.jar
-/build
 config/mainzelliste.conf
 config/mzid.conf
-/doc
-lib/deploy/jersey
-lib/deploy/openjpa/mysql-connector-java-*.jar
-lib/deploy/openjpa/postgresql-*.jar
 src/de/pseudonymisierung/mainzelliste/matcher/PSXMatcher.java
 src/de/pseudonymisierung/mainzelliste/matcher/PSXMatchingState.java
 src/de/pseudonymisierung/mainzelliste/matcher/PSXSpecification.java
+/target

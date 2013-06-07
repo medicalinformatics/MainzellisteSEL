@@ -108,7 +108,8 @@ public enum Config {
 			logger.debug(props);
 			
 		} catch (IOException e)	{
-			logger.fatal("Error reading configuration file: ", e);
+			//TODO: Hilfreichere Fehlermeldung ausgeben. Am besten direkt crashen, damit Meldung ganz unten steht.
+			logger.fatal("Error reading configuration file. Please configure according to installation manual.", e);
 			throw new InternalErrorException();
 		}
 		
