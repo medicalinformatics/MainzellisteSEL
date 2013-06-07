@@ -85,7 +85,6 @@ public enum Config {
 			if (configInputStream == null)
 				configInputStream = new FileInputStream(configPath);
 			
-			props.load(configInputStream);
 			Reader reader = new InputStreamReader(configInputStream, "UTF-8");
 			props.load(reader);
 
