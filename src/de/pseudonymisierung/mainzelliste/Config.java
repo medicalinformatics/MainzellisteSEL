@@ -139,7 +139,7 @@ public enum Config {
 					try {
 						fieldClass = (Class<? extends Field<?>>) Class.forName(fieldClassStr);
 					} catch (ClassNotFoundException e) {
-						// Try with "de.unimainz..."
+						// Try with "de.pseudonymisierung.mainzelliste..."
 						fieldClass = (Class<? extends Field<?>>) Class.forName("de.pseudonymisierung.mainzelliste." + fieldClassStr);
 					}
 					this.FieldTypes.put(fieldName, fieldClass);
