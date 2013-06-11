@@ -1,0 +1,9 @@
+Version 1.1
+	-Introduced "readPatients", allows retrieving IDAT and IDs of an existing
+	 patient, identified by on of his IDs.
+	-Tokens are checked for validity upon creation.
+	-ID requests with Accept: application/json returns IDs of all types that are
+	 specified by data field "idTypes" of the corresponding token.  
+
+Version 1.0
+	-Initial release
