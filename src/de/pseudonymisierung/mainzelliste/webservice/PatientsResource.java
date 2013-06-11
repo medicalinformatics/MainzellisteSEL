@@ -29,6 +29,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -77,6 +78,7 @@ import de.pseudonymisierung.mainzelliste.IDRequest;
 import de.pseudonymisierung.mainzelliste.PID;
 import de.pseudonymisierung.mainzelliste.Patient;
 import de.pseudonymisierung.mainzelliste.Servers;
+import de.pseudonymisierung.mainzelliste.Session;
 import de.pseudonymisierung.mainzelliste.Validator;
 import de.pseudonymisierung.mainzelliste.dto.Persistor;
 import de.pseudonymisierung.mainzelliste.exceptions.InternalErrorException;
@@ -114,11 +116,11 @@ public class PatientsResource {
 			MultivaluedMap<String, String> form){
 		Token t = Servers.instance.getTokenByTid(tokenId);
 		Map<String, Object> createRet = createNewPatient(tokenId, form); 
-		ID id = (ID) createRet.get("id");
+		List<ID> ids = (List<ID>) createRet.get("ids");
 		IDRequest req = (IDRequest) createRet.get("request");
 		MatchResult result = (MatchResult) createRet.get("result");
 		Map <String, Object> map = new HashMap<String, Object>();
-		if (id == null) { // unsure case
+		if (ids == null) { // unsure case
 			// Copy form to JSP model so that input is redisplayed
 			for (String key : form.keySet())
 			{
@@ -164,8 +166,9 @@ public class PatientsResource {
 				// and set flag for JSP to display them
 				map.put("printIdat", true);
 			}
-			map.put("id", id.getIdString());
-			map.put("tentative", id.isTentative());
+			// FIXME alle IDs übergeben und anzeigen
+			map.put("id", ids.get(0).getIdString());
+			map.put("tentative", ids.get(0).isTentative());
 			
 			if (Config.instance.debugIsOn() && result.getResultType() != MatchResultType.NON_MATCH)
 			{
@@ -194,26 +197,27 @@ public class PatientsResource {
 		Map<String, Object> responseMap = createNewPatient(tokenId, form);
 		logger.info("Accept: " + request.getHeader("Accept"));
 		logger.info("Content-Type: " + request.getHeader("Content-Type"));
-		ID newId = (ID) responseMap.get("id");
+		List<ID> newIds = (List<ID>) responseMap.get("ids");
 		MatchResult result = (MatchResult) responseMap.get("result");
 		
-		URI newUri = context.getBaseUriBuilder()
-				.path(PatientsResource.class)
-				.path("/{idtype}/{idvalue}")
-				.build(newId.getType(), newId.getIdString());
 		
-		JSONObject ret = new JSONObject()
-				.put("newId", newId.getIdString())
-				.put("tentative", newId.isTentative())
-				.put("uri", newUri);
+		JSONArray ret = new JSONArray();
+		for (ID thisID : newIds) {
+			URI newUri = context.getBaseUriBuilder()
+					.path(PatientsResource.class)
+					.path("/{idtype}/{idvalue}")
+					.build(thisID.getType(), thisID.getIdString());
+
+			ret.put(new JSONObject()
+				.put("idType", thisID.getType())
+				.put("idString", thisID.getIdString())
+				.put("tentative", thisID.isTentative())
+				.put("uri", newUri));
+		}
 				
-		if (Config.instance.debugIsOn())
-			ret.put("max_weight", result.getBestMatchedWeight());
-		
 		return Response
 			.status(Status.CREATED)
 			.entity(ret)
-			.location(newUri)
 			.build();
 	}
 
@@ -238,15 +242,18 @@ public class PatientsResource {
 
 		Validator.instance.validateForm(form);
 		HashMap<String, Object> ret = new HashMap<String, Object>();
-		Token t = Servers.instance.getTokenByTid(tokenId);
 		// create a token if started in debug mode
-		if (t == null && Config.instance.debugIsOn())
+		Token t;
+		if (Config.instance.debugIsOn())
 		{
-			t = new Token("debug", "addPatient");
-			t.setType("addPatient");
+			Session s = Servers.instance.newSession();
+			t = Servers.instance.newToken(s.getId(), "addPatient");
+			tokenId = t.getId();
+		} else {
+			t = Servers.instance.getTokenByTid(tokenId);
 		}
 
-		ID id;
+		List<ID> returnIds = new LinkedList<ID>();
 		MatchResult match;
 		// synchronize on token 
 		if (t == null) {
@@ -314,20 +321,28 @@ public class PatientsResource {
 			match = Config.instance.getMatcher().match(pNormalized, Persistor.instance.getPatients());
 			Patient assignedPatient; // The "real" patient that is assigned (match result or new patient) 
 			
-			// Get ID type from token or use first defined id type
-			String idType;
-			if (t.getData().containsKey("idtype"))
-				idType = t.getDataItemString("idtype");
-			else				
-				idType = IDGeneratorFactory.instance.getDefaultIDType();
-			
+			List<String> idTypes;
+			// If a list of ID types is given in token, return these types
+			if (t.getData().containsKey("idtypes"))				
+					idTypes = (List<String>) t.getDataItemList("idtypes");
+			else { // otherwise...
+				// FIXME prüfen, ob ID-Typen definiert
+				idTypes = new LinkedList<String>();
+				// ...check for the deprecated way of requesting a single ID type
+				if (t.getData().containsKey("idtype"))
+					idTypes.add(t.getDataItemString("idtype"));
+				else // if no information is given, use the default ID type
+					idTypes.add(IDGeneratorFactory.instance.getDefaultIDType());
+			}
 			switch (match.getResultType())
 			{
 			case MATCH :
-				id = match.getBestMatchedPatient().getOriginal().getId(idType);
+				for (String idType : idTypes)
+					returnIds.add(match.getBestMatchedPatient().getOriginal().getId(idType));
+				
 				assignedPatient = match.getBestMatchedPatient();
 				// log token to separate concurrent request in the log file
-				logger.info("Found match with ID " + id.getIdString() + " for ID request " + t.getId()); 
+				logger.info("Found match with ID " + returnIds.get(0).getIdString() + " for ID request " + t.getId()); 
 				break;
 				
 			case NON_MATCH :
@@ -338,16 +353,21 @@ public class PatientsResource {
 					ret.put("result", match);
 					return ret;
 				}
-				Set<ID> ids = IDGeneratorFactory.instance.generateIds();			
-				pNormalized.setIds(ids);
-				id = pNormalized.getId(idType);
-				logger.info("Created new ID " + id.getIdString() + " for ID request " + (t == null ? "(null)" : t.getId()));
+				Set<ID> newIds = IDGeneratorFactory.instance.generateIds();			
+				pNormalized.setIds(newIds);
+				
+				for (String idType : idTypes) {
+					ID thisID = pNormalized.getId(idType);
+					returnIds.add(thisID);				
+					logger.info("Created new ID " + thisID.getIdString() + " for ID request " + (t == null ? "(null)" : t.getId()));
+				}
 				if (match.getResultType() == MatchResultType.POSSIBLE_MATCH)
 				{
 					pNormalized.setTentative(true);
-					id.setTentative(true);
-					logger.info("New ID " + id.getIdString() + " is tentative. Found possible match with ID " + 
-							match.getBestMatchedPatient().getId(idType).getIdString());
+					for (ID thisId : returnIds)
+						thisId.setTentative(true);
+					logger.info("New ID " + returnIds.get(0).getIdString() + " is tentative. Found possible match with ID " + 
+							match.getBestMatchedPatient().getId(IDGeneratorFactory.instance.getDefaultIDType()).getIdString());
 				}
 				assignedPatient = pNormalized;
 				break;
@@ -359,7 +379,7 @@ public class PatientsResource {
 			
 			logger.info("Weight of best match: " + match.getBestMatchedWeight());
 			
-			IDRequest request = new IDRequest(p.getFields(), idType, match, assignedPatient);
+			IDRequest request = new IDRequest(p.getFields(), idTypes, match, assignedPatient);
 			
 			ret.put("request", request);
 			
@@ -381,7 +401,8 @@ public class PatientsResource {
 				// TODO: ID-Typ integrieren, z.B. idtype="pid", idstring="..."
 				JSONObject reqBody = new JSONObject()
 						.put("tokenId", t.getId())
-						.put("id", id);
+						//FIXME mehrere IDs zurückgeben -> bricht API, die ILF mitgeteilt wurde
+						.put("id", returnIds.get(0).getIdString());
 				
 				String reqBodyJSON = reqBody.toString();
 				StringEntity reqEntity = new StringEntity(reqBodyJSON);
@@ -401,7 +422,7 @@ public class PatientsResource {
 				throw new InternalErrorException("Request to callback failed!");
 			}
 		}
-		ret.put("id", id);
+		ret.put("ids", returnIds);
 		ret.put("result", match);
 		return ret;
 	}
