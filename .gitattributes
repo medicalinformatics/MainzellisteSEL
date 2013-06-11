@@ -49,6 +49,7 @@ src/de/pseudonymisierung/mainzelliste/exceptions/CircularDuplicateRelationExcept
 src/de/pseudonymisierung/mainzelliste/exceptions/IncompatibleFieldTypesException.java -text svneol=unset#text/plain
 src/de/pseudonymisierung/mainzelliste/exceptions/InternalErrorException.java -text svneol=unset#text/plain
 src/de/pseudonymisierung/mainzelliste/exceptions/InvalidIDException.java -text svneol=unset#text/plain
+src/de/pseudonymisierung/mainzelliste/exceptions/InvalidTokenException.java -text svneol=unset#text/plain
 src/de/pseudonymisierung/mainzelliste/exceptions/NotImplementedException.java -text svneol=unset#text/plain
 src/de/pseudonymisierung/mainzelliste/exceptions/UnauthorizedException.java -text svneol=unset#text/plain
 src/de/pseudonymisierung/mainzelliste/exceptions/ValidatorException.java -text svneol=unset#text/plain

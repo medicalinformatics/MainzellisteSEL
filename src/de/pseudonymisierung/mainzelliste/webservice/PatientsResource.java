@@ -36,7 +36,6 @@ import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
@@ -50,10 +49,8 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
-import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 
-import org.apache.commons.collections.map.MultiValueMap;
 import org.apache.http.HttpResponse;
 import org.apache.http.StatusLine;
 import org.apache.http.client.HttpClient;
@@ -65,7 +62,6 @@ import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 
-import com.sun.jersey.api.uri.UriBuilderImpl;
 import com.sun.jersey.api.uri.UriComponent;
 import com.sun.jersey.api.uri.UriTemplate;
 import com.sun.jersey.api.view.Viewable;
@@ -75,7 +71,6 @@ import de.pseudonymisierung.mainzelliste.Field;
 import de.pseudonymisierung.mainzelliste.ID;
 import de.pseudonymisierung.mainzelliste.IDGeneratorFactory;
 import de.pseudonymisierung.mainzelliste.IDRequest;
-import de.pseudonymisierung.mainzelliste.PID;
 import de.pseudonymisierung.mainzelliste.Patient;
 import de.pseudonymisierung.mainzelliste.Servers;
 import de.pseudonymisierung.mainzelliste.Session;
@@ -97,14 +92,23 @@ public class PatientsResource {
 	
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	public List<Set<ID>> getAllPatients(@Context HttpServletRequest req) throws UnauthorizedException {
-		/* Benutzerrechte prüfen, basierend auf Rollenzuweisung in tomcat-users.xml.
-		 * Zusätzliche Prüfung via security-constraint in web.xml 
-		 */
+	public Response getAllPatients(@Context HttpServletRequest req,
+			@QueryParam("tokenId") String tokenId) throws UnauthorizedException {		
+		
 		logger.info("Received GET /patients");
+		
+		/*
+		 * If a token (type "readPatients") is provided, use this 
+		 */
+		if (tokenId != null)
+			return this.getPatientsToken(tokenId);
+		
+		/* 
+		 * Unrestricted access for user role 'admin' via tomcat-users.xml. 
+		 */
 		if (!req.isUserInRole("admin"))
 			throw new UnauthorizedException();
-		return Persistor.instance.getAllIds();
+		return Response.ok().entity(Persistor.instance.getAllIds()).build();
 	}
 	
 
@@ -427,7 +431,6 @@ public class PatientsResource {
 		return ret;
 	}
 	
-
 	/**
 	 * Interface for Temp-ID-Resolver
 	 * 
@@ -492,15 +495,67 @@ public class PatientsResource {
 		String pidString = t.getDataItemString("id");
 		return Persistor.instance.getPatient(IDGeneratorFactory.instance.getFactory("pid").buildId(pidString));		
 	}
-	@Path("/tempid/{tid}")
+	
+	/**
+	 * Get patient via readPatient token
+	 * @param tid
+	 * @return
+	 */
+	@Path("/tokenId/{tid}")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	public Patient getPatient(
+	public Response getPatientsToken(
 			@PathParam("tid") String tid){
-		//Hier keine Auth notwendig. Wenn tid existiert, ist der Nutzer dadurch autorisiert.
-		//Patient mit TempID tid zur�ckgeben
-		logger.info("Received GET /patients/tempid/" + tid);
-		return getPatientByTempId(tid);
+		logger.info("Reveived request to get patient with token " + tid);
+		// Check if token exists and has the right type. 
+		// Validity of token is checked upon creation
+		Token t = Servers.instance.getTokenByTid(tid);
+		t.checkTokenType("readPatients");
+		List requests = t.getDataItemList("searchIds");
+		
+		JSONArray ret = new JSONArray();
+		for (Object item : requests) {
+			JSONObject thisPatient = new JSONObject();
+			String idType;
+			String idString;
+			Map<String, String> thisSearchId = (Map<String, String>) item; 
+			idType = thisSearchId.get("idType");
+			idString = thisSearchId.get("idString");
+			ID id = IDGeneratorFactory.instance.getFactory(idType).buildId(idString);
+			Patient patient = Persistor.instance.getPatient(id);
+			if (t.hasDataItem("fields")) {
+				// get fields for output
+				Map<String, String> outputFields = new HashMap<String, String>();
+				List<String> fieldNames = (List<String>) t.getDataItemList("fields");
+				for (String thisFieldName : fieldNames) {
+					outputFields.put(thisFieldName, patient.getInputFields().get(thisFieldName).toString());
+				}
+				try {
+					thisPatient.put("fields", outputFields);
+				} catch (JSONException e) {
+					logger.error("Error while transforming patient fields into JSON", e);
+					throw new InternalErrorException("Error while transforming patient fields into JSON");
+				}
+			}
+			
+			if (t.hasDataItem("resultIds")) {
+				try {
+					List<String> idTypes = (List<String>) t.getDataItemList("resultIds");
+					List<JSONObject> returnIds = new LinkedList<JSONObject>();
+					for (String thisIdType : idTypes) {
+						returnIds.add(patient.getId(thisIdType).toJSON());
+					}
+					thisPatient.put("ids", returnIds);
+				} catch (JSONException e) {
+					logger.error("Error while transforming patient ids into JSON", e);
+					throw new InternalErrorException("Error while transforming patient ids into JSON");
+				}			
+			}
+			
+			ret.put(thisPatient);
+		}
+		
+		return Response.ok().entity(ret).build();
 	}
 	
 	@Path("/tempid/{tid}")
