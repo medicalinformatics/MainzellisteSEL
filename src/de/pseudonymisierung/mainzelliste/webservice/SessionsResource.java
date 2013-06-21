@@ -147,39 +147,10 @@ public class SessionsResource {
 			Servers.instance.checkPermission(req, "tt_" + t.getType());
 		}
 		
-		// Pr�fe Callback-URL
-		String callback = t.getDataItemString("callback");
-		if (callback != null && !callback.equals("")) {
-			if (!Pattern.matches(Config.instance.getProperty("callback.allowedFormat"), callback)) {
-				throw new WebApplicationException(Response
-						.status(Status.BAD_REQUEST)
-						.entity("Callback address " + callback + " does not conform to allowed format.")
-						.build()); 
-			}
-			try {
-				URI callbackURI = new URI(callback);
-			} catch (URISyntaxException e) {
-				throw new WebApplicationException(Response
-						.status(Status.BAD_REQUEST)
-						.entity("Callback address " + callback + " is not a valid URI.")
-						.build());
-			}
-		}
-				
-		
-		// Prüfe Existenz der ID bei Typ "readPatient"
-		if (t.getType() == "readPatient") {
-			String idString = t.getDataItemString("id");
-			Patient p = Persistor.instance.getPatient(new PID(idString, "pid"));
-			if (p == null) {
-				throw new WebApplicationException(Response
-						.status(Status.BAD_REQUEST)
-						.entity("No patient with id '" + idString + "'.")
-						.build());
-			}
-		}
+		// Check validity of token (i.e. data items have correct format etc.)
+		t.checkValidity();
 
-		//Token erstellen, speichern und URL zur�ckgeben
+		//Token erstellen, speichern und URL zurückgeben
 		Token t2 = Servers.instance.newToken(s.getId(), t.getType());
 		t2.setData(t.getData());
 		
