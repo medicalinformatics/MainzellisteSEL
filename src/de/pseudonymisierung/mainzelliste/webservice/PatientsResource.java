@@ -244,7 +244,6 @@ public class PatientsResource {
 			String tokenId,
 			MultivaluedMap<String, String> form) throws WebApplicationException {
 
-		Validator.instance.validateForm(form);
 		HashMap<String, Object> ret = new HashMap<String, Object>();
 		// create a token if started in debug mode
 		Token t;
@@ -307,6 +306,8 @@ public class PatientsResource {
 						form.add(key, value);
 					}
 			}
+
+			Validator.instance.validateForm(form);
 			
 			for(String s: Config.instance.getFieldKeys()){
 				if (!form.containsKey(s)) {
