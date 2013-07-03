@@ -179,7 +179,11 @@ public enum Persistor {
 		if (result.size() == 0)
 			return null;
 		else
-			return result.get(0);
+			/*
+			 * Due to a former bug, there might be multiple objects in the database.
+			 * Use the last one in order to (hopefully) get the most current values.
+			 */			
+			return result.get(result.size());
 	}
 	
 	/**
