@@ -25,11 +25,7 @@
  */
 package de.pseudonymisierung.mainzelliste;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
+import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -84,10 +80,8 @@ public enum Config {
 			// Else: read from file System			
 			if (configInputStream == null)
 				configInputStream = new FileInputStream(configPath);
-			
 			Reader reader = new InputStreamReader(configInputStream, "UTF-8");
 			props.load(reader);
-
 			/* 
 			 * Read properties into Preferences for easier hierarchical access
 			 * (e.g. it is possible to get the subtree of all idgenerators.* properties)
@@ -107,9 +101,8 @@ public enum Config {
 			logger.debug(props);
 			
 		} catch (IOException e)	{
-			//TODO: Hilfreichere Fehlermeldung ausgeben. Am besten direkt crashen, damit Meldung ganz unten steht.
 			logger.fatal("Error reading configuration file. Please configure according to installation manual.", e);
-			throw new InternalErrorException();
+			throw new Error(e);
 		}
 		
 		this.recordTransformer = new RecordTransformer(props);
