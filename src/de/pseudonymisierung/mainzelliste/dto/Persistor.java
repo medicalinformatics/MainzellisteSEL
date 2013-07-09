@@ -64,7 +64,6 @@ public enum Persistor {
 	private Logger logger = Logger.getLogger(this.getClass());
 	
 	private Persistor() {
-		
 		HashMap<String, String> persistenceOptions = new HashMap<String, String>();
 		
 		// Settings from config
@@ -205,14 +204,14 @@ public enum Persistor {
 	
 	
 	/**
-	 * Performes database updates after JPA initialization
+	 * Performs database updates after JPA initialization
 	 */
 	private void updateDatabaseSchemaJPA(String fromVersion)
 	{
 		EntityManager em = emf.createEntityManager();
 		em.getTransaction().begin();
 		
-		if ("1.0".equals(fromVersion)) {
+		if ("1.0".equals(fromVersion)) { // 1.0 -> 1.1
 				em.createNativeQuery("UPDATE IDGeneratorMemory SET idType=idstring").executeUpdate();
 				em.createNativeQuery("ALTER TABLE IDGeneratorMemory DROP COLUMN idString").executeUpdate();
 				
@@ -238,8 +237,8 @@ public enum Persistor {
 					}
 				}
 			}
-			this.updateSchemaVersion("1.1", em);
-			em.getTransaction().commit();
+			this.setSchemaVersion("1.1", em);
+			em.getTransaction().commit(); //FIXME: Müsste der hier nicht (genau wie begin) HINTER die Klammer?
 		} // End of update 1.0 -> 1.1
 	}
 	
@@ -267,7 +266,7 @@ public enum Persistor {
 			String version = "1.0";
 			if (!rs.next()) {
 				// Create table				
-				conn.createStatement().execute("CREATE table mainzelliste_properties" +
+				conn.createStatement().execute("CREATE TABLE mainzelliste_properties" +
 						"(property varchar(256), value varchar(256))");
 			} 
 			rs = conn.createStatement().executeQuery("SELECT value FROM mainzelliste_properties " +
@@ -290,14 +289,13 @@ public enum Persistor {
 	}
 	
 	/**
-	 * Udate version information in the database. Should be run in one transaction 
+	 * Update version information in the database. Should be run in one transaction 
 	 * on the provided EntityManager together with the changes made for this version
 	 * so that no inconsistencies arise if any of the update statements fail.
 	 * @param toVersion The version string to set.
 	 * @param em A valid EntityManager object.
 	 */
-	private void updateSchemaVersion(String toVersion, EntityManager em) {
-
+	private void setSchemaVersion(String toVersion, EntityManager em) {
 		em.createNativeQuery("UPDATE mainzelliste_properties SET value='" + toVersion + 
 				"' WHERE property='version'").executeUpdate(); 
 	}
