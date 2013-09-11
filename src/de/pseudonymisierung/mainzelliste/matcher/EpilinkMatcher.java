@@ -180,29 +180,32 @@ public class EpilinkMatcher implements Matcher {
 			m = p.matcher((String) key);
 			if (m.find()){
 				String fieldName = m.group(1);
-				String fieldCompStr = props.getProperty("field." + fieldName + ".comparator").trim();
-
-				try {
-					Class<FieldComparator> fieldCompClass = (Class<FieldComparator>) Class.forName("de.pseudonymisierung.mainzelliste.matcher." + fieldCompStr);
-					Constructor<FieldComparator> fieldCompConstr = fieldCompClass.getConstructor(String.class, String.class);
-					FieldComparator fieldComp = fieldCompConstr.newInstance(fieldName, fieldName);
-					comparators.put(fieldName, fieldComp);
-				} catch (Exception e) {
-					System.err.println(e.getMessage());
-					throw new InternalErrorException();
+				String fieldCompStr = props.getProperty("field." + fieldName + ".comparator");
+				if (fieldCompStr != null)
+				{
+					fieldCompStr = fieldCompStr.trim();
+					try {
+						Class<FieldComparator> fieldCompClass = (Class<FieldComparator>) Class.forName("de.pseudonymisierung.mainzelliste.matcher." + fieldCompStr);
+						Constructor<FieldComparator> fieldCompConstr = fieldCompClass.getConstructor(String.class, String.class);
+						FieldComparator fieldComp = fieldCompConstr.newInstance(fieldName, fieldName);
+						comparators.put(fieldName, fieldComp);
+					} catch (Exception e) {
+						System.err.println(e.getMessage());
+						throw new InternalErrorException();
+					}
+					// set error rate
+					double error_rate = Double.parseDouble(props.getProperty("matcher.epilink."+ fieldName + ".errorRate"));
+					errorRates.put(fieldName, error_rate);
+					// set frequency
+					double frequency = Double.parseDouble(props.getProperty("matcher.epilink." + fieldName + ".frequency"));
+					frequencies.put(fieldName, frequency);
+					// calculate field weights
+					// log_2 ((1 - e_i) / f_i)
+					// all e_i have same value in this implementation
+					double weight = (1 - error_rate) / frequency;
+					weight = Math.log(weight) / Math.log(2);
+					weights.put(fieldName, weight);
 				}
-				// set error rate
-				double error_rate = Double.parseDouble(props.getProperty("matcher.epilink."+ fieldName + ".errorRate"));
-				errorRates.put(fieldName, error_rate);
-				// set frequency
-				double frequency = Double.parseDouble(props.getProperty("matcher.epilink." + fieldName + ".frequency"));
-				frequencies.put(fieldName, frequency);
-				// calculate field weights
-				// log_2 ((1 - e_i) / f_i)
-				// all e_i have same value in this implementation
-				double weight = (1 - error_rate) / frequency;
-				weight = Math.log(weight) / Math.log(2);
-				weights.put(fieldName, weight);
 			}
 		}
 		// assert that Maps have the same keys
