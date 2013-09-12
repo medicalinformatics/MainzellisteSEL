@@ -1,3 +1,7 @@
+Version 1.1-1
+	-A field can now be defined but not used for matching (i.e. stored only). 
+	 This caused an exception in EpilinkMatcher in former versions.
+
 Version 1.1
 	-Conversion to Maven Project (contributed by Jens Schwanke)
 	-Added information to context.xml template for running the application from Netbeans
