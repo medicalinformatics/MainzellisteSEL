@@ -25,13 +25,19 @@
  */
 package de.pseudonymisierung.mainzelliste;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.TimeZone;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
@@ -58,6 +64,11 @@ public enum Servers {
 	private final Map<String, Server> servers = new HashMap<String, Server>();
 	private final Map<String, Session> sessions = new HashMap<String, Session>();
 	private final Map<String, Token> tokensByTid = new HashMap<String, Token>();
+	
+	private final long sessionTimeout;
+	
+	/** The regular time interval after which to check for timed out sessions */
+	private final long sessionCleanupInterval = 60000;
 	
 	Logger logger = Logger.getLogger(Servers.class);
 	
@@ -86,6 +97,27 @@ public enum Servers {
 		{
 			Token t = new Token("4223", "addPatient");
 			tokensByTid.put(t.getId(), t);
+		}
+		String sessionTimeout = Config.instance.getProperty("sessionTimeout");
+		if (sessionTimeout == null) {
+			this.sessionTimeout = Long.MAX_VALUE; // Not infinity, but longer than mankind will probably exist
+		} else {
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+			sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+			
+			try {
+				Date timeoutDate = sdf.parse("1970-01-01 " + sessionTimeout);			
+				this.sessionTimeout = timeoutDate.getTime();
+				TimerTask sessionsCleanupThread = new TimerTask() {				
+					@Override
+					public void run() {
+						Servers.this.cleanUpSessions();
+					}									
+				};
+				new Timer().schedule(sessionsCleanupThread, new Date(), sessionCleanupInterval);
+			} catch (ParseException e) {
+				throw new Error("Invalid session timout: " + sessionTimeout + ". Please use format 'HH:mm'.");
+			}
 		}
 	}
 	
@@ -128,6 +160,16 @@ public enum Servers {
 		}
 		
 	}
+	
+	
+	public void cleanUpSessions() {
+		Date now = new Date();
+		for (Session s : this.sessions.values()) {
+			if (now.getTime() - s.getLastAccess().getTime() > this.sessionTimeout)
+				this.deleteSession(s.getId());
+		}
+	}
+	
 	
 	public void checkPermission(HttpServletRequest req, String permission){
 		Set<String> perms = (Set<String>) req.getSession(true).getAttribute("permissions");
@@ -218,9 +260,5 @@ public enum Servers {
 		synchronized (tokensByTid) {
 			return tokensByTid.get(tokenId);
 		}
-	}
-	public static void main(String args[])
-	{
-		Servers s = Servers.instance;
 	}
 }
