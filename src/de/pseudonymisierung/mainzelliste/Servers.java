@@ -179,6 +179,7 @@ public enum Servers {
 			Server server = servers.get(apiKey);
 			
 			if(server == null){
+				logger.info("No server found with provided API key " + apiKey);
 				throw new WebApplicationException(Response
 						.status(Status.UNAUTHORIZED)
 						.entity("Please supply your API key in HTTP header field 'mainzellisteApiKey'.")
@@ -186,6 +187,7 @@ public enum Servers {
 			}
 		
 			if(!server.allowedRemoteAdresses.contains(req.getRemoteAddr())){
+				logger.info("IP address " + req.getRemoteAddr() +  " rejected");
 				throw new WebApplicationException(Response
 						.status(Status.UNAUTHORIZED)
 						.entity(String.format("Rejecting your IP address %s.", req.getRemoteAddr()))
