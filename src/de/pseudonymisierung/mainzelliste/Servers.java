@@ -25,8 +25,6 @@
  */
 package de.pseudonymisierung.mainzelliste;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
@@ -35,7 +33,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
-import java.util.TimeZone;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.UUID;
@@ -98,27 +95,29 @@ public enum Servers {
 			Token t = new Token("4223", "addPatient");
 			tokensByTid.put(t.getId(), t);
 		}
+
+		// Read session timeout (maximum time a session can be inactive) from config
 		String sessionTimeout = Config.instance.getProperty("sessionTimeout");
 		if (sessionTimeout == null) {
-			this.sessionTimeout = Long.MAX_VALUE; // Not infinity, but longer than mankind will probably exist
+			this.sessionTimeout = 600000; // 10 min
 		} else {
-			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-			sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
-			
 			try {
-				Date timeoutDate = sdf.parse("1970-01-01 " + sessionTimeout);			
-				this.sessionTimeout = timeoutDate.getTime();
-				TimerTask sessionsCleanupThread = new TimerTask() {				
-					@Override
-					public void run() {
-						Servers.this.cleanUpSessions();
-					}									
-				};
-				new Timer().schedule(sessionsCleanupThread, new Date(), sessionCleanupInterval);
-			} catch (ParseException e) {
-				throw new Error("Invalid session timout: " + sessionTimeout + ". Please use format 'HH:mm'.");
+				this.sessionTimeout = Long.parseLong(sessionTimeout) * 1000;
+				if (this.sessionTimeout <= 0)
+					throw new NumberFormatException();
+			} catch (NumberFormatException e) {
+				throw new Error("Invalid session timout: " + sessionTimeout + ". Please specify a positive whole number.");
 			}
 		}
+			
+		// schedule a regular task to delete timed out sessions
+		TimerTask sessionsCleanupThread = new TimerTask() {				
+			@Override
+			public void run() {
+				Servers.this.cleanUpSessions();
+			}									
+		};
+		new Timer().schedule(sessionsCleanupThread, new Date(), sessionCleanupInterval);
 	}
 	
 	public Session newSession(){
@@ -164,9 +163,11 @@ public enum Servers {
 	
 	public void cleanUpSessions() {
 		Date now = new Date();
-		for (Session s : this.sessions.values()) {
-			if (now.getTime() - s.getLastAccess().getTime() > this.sessionTimeout)
-				this.deleteSession(s.getId());
+		synchronized (sessions) {
+			for (Session s : this.sessions.values()) {
+				if (now.getTime() - s.getLastAccess().getTime() > this.sessionTimeout)
+					this.deleteSession(s.getId());
+			}
 		}
 	}
 	
