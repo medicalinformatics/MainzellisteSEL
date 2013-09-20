@@ -238,6 +238,6 @@ servers.0.allowedRemoteAdresses = 127.0.0.1;0:0:0:0:0:0:0:1
 callback.allowedFormat = https://.* 
 
 # Session timeout
-# A session will be deleted if not accessed for this amount of time, specified in format HH:mm
-# If not provided, sessions will live as long as the application is running
-sessionTimeout = 01:00 
+# A session will be deleted if not accessed for this amount of time, specified in minutes
+# Default value if not specified: 10
+# sessionTimeout = 10
