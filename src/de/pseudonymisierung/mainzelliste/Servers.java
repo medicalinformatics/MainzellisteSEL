@@ -143,7 +143,9 @@ public enum Servers {
 	 * Returns all known session ids.
 	 */
 	public Set<String> getSessionIds(){
-		return Collections.unmodifiableSet(new HashSet<String>(sessions.keySet()));
+		synchronized (sessions) {
+			return Collections.unmodifiableSet(new HashSet<String>(sessions.keySet()));
+		}
 	}
 	
 	public void deleteSession(String sid){
