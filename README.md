@@ -7,6 +7,12 @@ Weitere Informationen und Dokumentation zur Mainzelliste finden Sie auf der [Pro
 ## Releaseinformationen
 Detailliertes Changelog siehe Datei NEWS im Quellcode.
 
+### 1.2
+- Sessions verfallen nach einer konfigurierbaren Zeit
+- Kleinere Bugfixes
+
+Beim Update ist zu beachten, dass in Version 1.2 Sessions standardmäßig nach 10 Minuten Inaktivität gelöscht werden. Falls dies nicht erwünscht ist, ist der Konfigurationsparameter "sessionTimeout" anzupassen.
+
 ### 1.1
 - Umstellung von Abhängigkeitsmanagement und Build auf Maven sowie diverse kleinere Korrekturen.
 
