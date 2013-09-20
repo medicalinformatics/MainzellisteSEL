@@ -148,16 +148,18 @@ public enum Servers {
 	
 	public void deleteSession(String sid){
 		Session s;
-		synchronized (sessions) {
+		synchronized (sessions) {			
 			s = sessions.get(sid);
-
+			// silently return if session does not exist
+			if (s == null)
+				return;
+			
 			for(Token t: s.getTokens()){
 				deleteToken(sid, t.getId());
 			}
 
 			sessions.remove(sid);
 		}
-		
 	}
 	
 	
