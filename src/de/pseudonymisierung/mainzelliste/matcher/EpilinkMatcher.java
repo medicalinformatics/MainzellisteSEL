@@ -116,6 +116,7 @@ public class EpilinkMatcher implements Matcher {
 			
 			double bestPermWeight = Double.NEGATIVE_INFINITY; 
 			double bestPermWeightSum = 0.0;
+			double bestPermWeightRatio = 0.0;
 			for (List<String> permutation : permutations)
 			{
 				double thisPermWeight = 0.0;
@@ -133,11 +134,13 @@ public class EpilinkMatcher implements Matcher {
 					double meanFieldWeight = 0.5 * (weights.get(fieldName) + weights.get(fieldNamePerm));
 					thisPermWeight += comparators.get(fieldName).compare(left.getFields().get(fieldName),
 							right.getFields().get(fieldNamePerm)) * meanFieldWeight;
-					thisPermWeightSum += meanFieldWeight;
+					thisPermWeightSum += meanFieldWeight;					
 				}
-				if (thisPermWeight >= bestPermWeight) {
+				double thisPermWeightRatio = thisPermWeight / thisPermWeightSum;
+				if (thisPermWeightRatio >= bestPermWeightRatio) {
 					bestPermWeight = thisPermWeight;
 					bestPermWeightSum = thisPermWeightSum;
+					bestPermWeightRatio = thisPermWeightRatio;
 				}
 			}
 			totalWeight += bestPermWeight;
