@@ -181,6 +181,8 @@ public enum Servers {
 
 		if(perms == null){ // Login
 			String apiKey = req.getHeader("mainzellisteApiKey");
+			if (apiKey == null) // Compatibility to pre 1.0 (needed by secuTrial interface)
+				apiKey = req.getHeader("mzidApiKey");
 			Server server = servers.get(apiKey);
 			
 			if(server == null){
