@@ -6,7 +6,8 @@ Version 1.2
 	 "sessionTimeout". A session is inactive as long as no request is made to it or its tokens. See
 	 the documentation files for details.
 	-Fixed NullPointerException and "Internal Server Error" on deleting a session that does not exist.
-	     
+	-A bug in EpiLinkMatcher lead to overestimation of matching weights, which could lead to false 
+	 matches in some cases.	  
 
 Version 1.1
 	-Conversion to Maven Project (contributed by Jens Schwanke)
