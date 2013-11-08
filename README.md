@@ -4,6 +4,8 @@ Die Mainzelliste ist ein webbasierter Pseudonymisierungsdienst erster Stufe. Sie
 
 Weitere Informationen und Dokumentation zur Mainzelliste finden Sie auf der [Projektseite der Universitätsmedizin Mainz](http://www.mainzelliste.de).
 
+Um immer auf dem aktuellen Stand zu bleiben, registrieren Sie sich auf unserer [Mailingliste](https://lists.uni-mainz.de/sympa/subscribe/mainzelliste).
+
 ## Releaseinformationen
 Detailliertes Changelog siehe Datei NEWS im Quellcode.
 
