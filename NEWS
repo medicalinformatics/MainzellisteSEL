@@ -1,3 +1,7 @@
+Version ...
+	-Data in callback did not match documentation (reported by Mathias Storck).
+	-Session timeout was calculated in seconds instead of minutes (as documented).
+
 Version 1.2
 	-A field can now be defined but not used for matching (i.e. stored only). 
 	 This caused an exception in EpilinkMatcher in former versions.
