@@ -77,6 +77,7 @@ import de.pseudonymisierung.mainzelliste.Session;
 import de.pseudonymisierung.mainzelliste.Validator;
 import de.pseudonymisierung.mainzelliste.dto.Persistor;
 import de.pseudonymisierung.mainzelliste.exceptions.InternalErrorException;
+import de.pseudonymisierung.mainzelliste.exceptions.InvalidTokenException;
 import de.pseudonymisierung.mainzelliste.exceptions.NotImplementedException;
 import de.pseudonymisierung.mainzelliste.exceptions.UnauthorizedException;
 import de.pseudonymisierung.mainzelliste.matcher.MatchResult;
@@ -246,28 +247,30 @@ public class PatientsResource {
 
 		HashMap<String, Object> ret = new HashMap<String, Object>();
 		// create a token if started in debug mode
-		Token t;
+		AddPatientToken t;
 		if (Config.instance.debugIsOn())
 		{
 			Session s = Servers.instance.newSession();
-			t = new Token(null, "addPatient");
+			t = new AddPatientToken();
 			Servers.instance.registerToken(s.getId(), t);
 			tokenId = t.getId();
 		} else {
-			t = Servers.instance.getTokenByTid(tokenId);
+			Token tt = Servers.instance.getTokenByTid(tokenId);
+			if (tt == null) {
+				logger.error("No token with id " + tokenId + " found");
+				throw new InvalidTokenException("Please supply a valid 'addPatient' token.");
+			}
+			if (!(tt instanceof AddPatientToken)) {
+				logger.error("Token " + tt.getId() + " is not of type 'addPatient' but +'" + tt.getType() + "'");
+				throw new InvalidTokenException("Please supply a valid 'addPatient' token.");
+			}
+			t = (AddPatientToken) tt;
 		}
 
 		List<ID> returnIds = new LinkedList<ID>();
 		MatchResult match;
+
 		// synchronize on token 
-		if (t == null) {
-			String infoLog = "Received ID request with invalid token. Token-ID: " + tokenId;
-			logger.info(infoLog);
-			throw new WebApplicationException(Response
-					.status(Status.UNAUTHORIZED)
-					.entity("Please supply a valid 'addPatient' token.")
-					.build());
-		}
 		synchronized (t) {
 			/* Get token again and check if it still exist.
 			 * This prevents the following race condition:
@@ -276,46 +279,29 @@ public class PatientsResource {
 			 *  3. Thread A deletes t and exits synchronized block
 			 *  4. Thread B enters synchronized block with invalid token
 			 */
-			t = Servers.instance.getTokenByTid(tokenId);
-			// create a token if started in debug mode
-			if (t == null && Config.instance.debugIsOn())
-			{
-				t = new Token("debug", "addPatient");
-				t.setType("addPatient");
-			}
-			if(t == null || !t.getType().equals("addPatient")){
-				String infoLog = "Received ID request with invalid token. Token with ID: " + tokenId;
-				if(t == null)
-					infoLog += " is unknown.";
-				else
-					infoLog += " has unexpected type: " + t.getType();
+			t = (AddPatientToken) Servers.instance.getTokenByTid(tokenId);
+
+			if(t == null){
+				String infoLog = "Token with ID " + tokenId + " is invalid. It was invalidated by a concurrent request or the session timed out during this request.";
 				logger.info(infoLog);
 				throw new WebApplicationException(Response
 					.status(Status.UNAUTHORIZED)
 					.entity("Please supply a valid 'addPatient' token.")
 					.build());
 			}
-			logger.info("Handling ID Request with token " + (t == null ? "(null)" : t.getId()));
+			logger.info("Handling ID Request with token " + t.getId());
 			Patient p = new Patient();
 			Map<String, Field<?>> chars = new HashMap<String, Field<?>>();
 			
 			// get fields transmitted from MDAT server
-			if (t.getData().containsKey("fields")) {
-					Map<String, ?> serverFields = t.getDataItemMap("fields");
-					for (String key : serverFields.keySet()) {
-						String value = serverFields.get(key).toString();
-						// TODO check if a value is already present
-						form.add(key, value);
-					}
+			for (String key : t.getFields().keySet())
+			{
+				form.add(key, t.getFields().get(key));
 			}
-
+			
 			Validator.instance.validateForm(form);
 			
 			for(String s: Config.instance.getFieldKeys()){
-				if (!form.containsKey(s)) {
-					logger.error("Field " + s + " not found in input data!");
-					throw new WebApplicationException(Response.status(Status.BAD_REQUEST).entity("Field " + s + " not found in input data!").build());
-				}
 				chars.put(s, Field.build(s, form.getFirst(s)));
 			}
 	

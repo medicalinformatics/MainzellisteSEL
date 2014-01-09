@@ -42,14 +42,21 @@ public class TokenParam extends AbstractParam<Token> {
 
 	@Override
 	protected Token parse(String param) throws WebApplicationException {
-		Token t = new Token();
+		
 		try {
 			JSONObject jsob = new JSONObject(param);
+			String tokenType = jsob.optString("id");
+			Token t;
+			if (tokenType.equals("addPatient"))
+				t = new AddPatientToken();
+			else
+				t = new Token();
 			if(!("".equals(jsob.optString("id"))))
 				t.setId(jsob.getString("id"));
 			t.setType(jsob.getString("type"));
 			HashMap<String, String> data = new ObjectMapper().readValue(jsob.getString("data"), HashMap.class);
 			t.setData(data);
+			return t;
 		} catch (Exception e) {
 			throw new WebApplicationException(Response
 					.status(Status.BAD_REQUEST)
@@ -57,7 +64,5 @@ public class TokenParam extends AbstractParam<Token> {
 					.build()
 				);
 		}
-		
-		return t;
 	}
 }

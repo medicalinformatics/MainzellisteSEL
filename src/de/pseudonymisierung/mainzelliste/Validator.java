@@ -39,7 +39,12 @@ import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
+
+import org.apache.log4j.Logger;
 
 
 import de.pseudonymisierung.mainzelliste.exceptions.InternalErrorException;
@@ -66,6 +71,7 @@ public enum Validator {
 	private Map<String, String> formats = new HashMap<String, String>();
 	private List<List<String>> dateFields = new LinkedList<List<String>>();
 	private List<String> dateFormat = new LinkedList<String>();
+	private Logger logger = Logger.getLogger(this.getClass());
 	
 	private Validator() {
 
@@ -163,6 +169,15 @@ public enum Validator {
 	}
 	
 	public void validateForm(MultivaluedMap<String, String> form) {
+		
+		// Check if all fields are present as values (whether they are empty or not)
+		for(String s: Config.instance.getFieldKeys()){
+			if (!form.containsKey(s)) {
+				logger.error("Field " + s + " not found in input data!");
+				throw new ValidatorException("Field " + s + " not found in input data!");
+			}
+		}
+		
 		for (String key : form.keySet()) {
 			for (String value : form.get(key)) {
 				validateField(key, value);

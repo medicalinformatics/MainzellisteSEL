@@ -15,15 +15,25 @@ public class AddPatientToken extends Token {
 
 		// read fields from JSON data
 		this.fields = new HashMap<String, String>();
+	}
+	
+	AddPatientToken() {
+		super();
+		this.setType("addPatient");
+	}
+
+	public void setData(Map<String, ?> data) {
+		super.setData(data);
+		// read fields from JSON data
+		this.fields = new HashMap<String, String>();
 		if (this.getData().containsKey("fields")) {
 			Map<String, ?> serverFields = this.getDataItemMap("fields");
 			for (String key : serverFields.keySet()) {
 				String value = serverFields.get(key).toString();
 				fields.put(key, value);
 			}
-		}
+		}		
 	}
-
 	/**
 	 * Return the fields transmitted on token creation.
 	 */

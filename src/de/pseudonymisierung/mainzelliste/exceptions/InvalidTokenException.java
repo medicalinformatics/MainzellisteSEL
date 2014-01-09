@@ -4,6 +4,7 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+// TODO: Statuscode einfügen. Lohnt dann eigene Exception noch?
 public class InvalidTokenException extends WebApplicationException {
 
 	public InvalidTokenException(String message) {
