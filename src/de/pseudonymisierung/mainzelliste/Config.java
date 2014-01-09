@@ -109,7 +109,7 @@ public enum Config {
 		} catch (IOException e)	{
 			//TODO: Hilfreichere Fehlermeldung ausgeben. Am besten direkt crashen, damit Meldung ganz unten steht.
 			logger.fatal("Error reading configuration file. Please configure according to installation manual.", e);
-			throw new InternalErrorException();
+			throw new Error(e);
 		}
 		
 		this.recordTransformer = new RecordTransformer(props);

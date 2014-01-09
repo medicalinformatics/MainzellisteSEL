@@ -163,17 +163,19 @@ public enum Servers {
 			sessions.remove(sid);
 		}
 	}
-
-    public void cleanUpSessions() {
-            Date now = new Date();
-            synchronized (sessions) {
-                    for (Session s : this.sessions.values()) {
-                            if (now.getTime() - s.getLastAccess().getTime() > this.sessionTimeout)
-                                    this.deleteSession(s.getId());
-                    }
-            }
-    }
-
+	
+	
+	public void cleanUpSessions() {
+		Date now = new Date();
+		synchronized (sessions) {
+			for (Session s : this.sessions.values()) {
+				if (now.getTime() - s.getLastAccess().getTime() > this.sessionTimeout)
+					this.deleteSession(s.getId());
+			}
+		}
+	}
+	
+	
 	public void checkPermission(HttpServletRequest req, String permission){
 		Set<String> perms = (Set<String>) req.getSession(true).getAttribute("permissions");
 
