@@ -125,6 +125,15 @@ public abstract class ID {
 		return String.format("%s=%s", getType(), getIdString());
 	}
 	
+// alte Version, behalten für Kompatibilität?	
+//	public JSONObject toJSON() throws JSONException {
+//		JSONObject result = new JSONObject();
+//		result.put("type", this.getType());
+//		result.put("idString", this.getIdString());
+//		result.put("tentative", this.isTentative());
+//		return result;
+//	}
+	
 	@Override
 	public int hashCode() {
 		return toString().hashCode();

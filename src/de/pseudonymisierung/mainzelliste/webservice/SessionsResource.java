@@ -157,13 +157,13 @@ public class SessionsResource {
 		URI newUri = UriBuilder
 				.fromUri(req.getRequestURL().toString())
 				.path("/{tid}")
-				.build(t2.getId());
+				.build(t.getId());
 		
 		JSONObject ret = new JSONObject()
-				.put("tokenId", t2.getId())
+				.put("tokenId", t.getId())
 				.put("uri", newUri);
 		
-		logger.info("Created token of type " + t2.getType() + " with id " + t2.getId() + 
+		logger.info("Created token of type " + t.getType() + " with id " + t.getId() + 
 				" in session " + s.getId() + "\n" +
 				"Returned data: " + ret);
 

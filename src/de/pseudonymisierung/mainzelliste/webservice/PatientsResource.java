@@ -260,7 +260,8 @@ public class PatientsResource {
 		MatchResult match;
 		// synchronize on token 
 		if (t == null) {
-			String infoLog = "Received ID request with invalid token. Token with ID: " + tokenId;
+			String infoLog = "Received ID request with invalid token. Token-ID: " + tokenId;
+			logger.info(infoLog);
 			throw new WebApplicationException(Response
 					.status(Status.UNAUTHORIZED)
 					.entity("Please supply a valid 'addPatient' token.")
@@ -408,6 +409,7 @@ public class PatientsResource {
 						.put("tokenId", t.getId())
 						//FIXME mehrere IDs zurückgeben -> bricht API, die ILF mitgeteilt wurde
 						.put("id", returnIds.get(0).getIdString());
+//						.put("id", id.toJSON());
 				
 				String reqBodyJSON = reqBody.toString();
 				StringEntity reqEntity = new StringEntity(reqBodyJSON);
