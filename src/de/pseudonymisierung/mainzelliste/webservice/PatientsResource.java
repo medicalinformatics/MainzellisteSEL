@@ -250,7 +250,8 @@ public class PatientsResource {
 		if (Config.instance.debugIsOn())
 		{
 			Session s = Servers.instance.newSession();
-			t = Servers.instance.newToken(s.getId(), "addPatient");
+			t = new Token(null, "addPatient");
+			Servers.instance.registerToken(s.getId(), t);
 			tokenId = t.getId();
 		} else {
 			t = Servers.instance.getTokenByTid(tokenId);

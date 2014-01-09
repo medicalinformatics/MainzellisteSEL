@@ -215,17 +215,15 @@ public enum Servers {
 		}
 	}
 	
-	public Token newToken(String sessionId, String tokenType){
+	public void registerToken(String sessionId, Token t){
 		String tid = UUID.randomUUID().toString();
-		Token t = new Token(tid, tokenType);
+		t.setId(tid);
 		
 		getSession(sessionId).addToken(t);
 
 		synchronized(tokensByTid){
 			tokensByTid.put(t.getId(), t);
 		}
-
-		return t;
 	}
 
 	/**

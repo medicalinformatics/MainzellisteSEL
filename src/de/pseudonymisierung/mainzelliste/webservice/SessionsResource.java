@@ -151,8 +151,7 @@ public class SessionsResource {
 		t.checkValidity();
 
 		//Token erstellen, speichern und URL zurückgeben
-		Token t2 = Servers.instance.newToken(s.getId(), t.getType());
-		t2.setData(t.getData());
+  		Servers.instance.registerToken(s.getId(), t);
 		
 		URI newUri = UriBuilder
 				.fromUri(req.getRequestURL().toString())
