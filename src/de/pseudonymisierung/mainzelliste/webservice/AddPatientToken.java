@@ -1,14 +1,18 @@
 package de.pseudonymisierung.mainzelliste.webservice;
 
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class AddPatientToken extends Token {
 
 	/**
 	 * Fields transmitted on token creation
 	 */
-	private Map<String, String> fields;
+	private Map<String, String> fields = new HashMap<String, String>();
+	private Set<String> requestedIdTypes = new HashSet<String>();
 
 	public AddPatientToken(String tid, String type) {
 		super(tid, type);
@@ -22,6 +26,7 @@ public class AddPatientToken extends Token {
 		this.setType("addPatient");
 	}
 
+	@Override
 	public void setData(Map<String, ?> data) {
 		super.setData(data);
 		// read fields from JSON data
@@ -32,12 +37,25 @@ public class AddPatientToken extends Token {
 				String value = serverFields.get(key).toString();
 				fields.put(key, value);
 			}
-		}		
+		}
+		this.requestedIdTypes = new HashSet<String>();
+		if (this.hasDataItem("idtypes")) {
+			List<?> idtypes = this.getDataItemList("idtypes");
+			for (Object o : idtypes) {
+				this.requestedIdTypes.add(o.toString());
+			}
+		} else if (this.hasDataItem("idtype")) { // ...check for the deprecated way of requesting a single ID type
+				requestedIdTypes.add(this.getDataItemString("idtype"));
+		}
 	}
 	/**
 	 * Return the fields transmitted on token creation.
 	 */
 	public Map<String, String> getFields() {
 		return this.fields;
+	}
+	
+	public Set<String> getRequestedIdTypes() {
+		return this.requestedIdTypes;
 	}
 }

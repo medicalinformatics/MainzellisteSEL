@@ -45,7 +45,7 @@ public class TokenParam extends AbstractParam<Token> {
 		
 		try {
 			JSONObject jsob = new JSONObject(param);
-			String tokenType = jsob.optString("id");
+			String tokenType = jsob.optString("type");
 			Token t;
 			if (tokenType.equals("addPatient"))
 				t = new AddPatientToken();

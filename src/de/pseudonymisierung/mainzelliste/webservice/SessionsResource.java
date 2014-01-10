@@ -26,10 +26,7 @@
 package de.pseudonymisierung.mainzelliste.webservice;
 
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.Set;
-import java.util.regex.Pattern;
-
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
@@ -47,16 +44,11 @@ import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriBuilder;
 
 import org.apache.log4j.Logger;
-import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 
-import de.pseudonymisierung.mainzelliste.Config;
-import de.pseudonymisierung.mainzelliste.PID;
-import de.pseudonymisierung.mainzelliste.Patient;
 import de.pseudonymisierung.mainzelliste.Servers;
 import de.pseudonymisierung.mainzelliste.Session;
-import de.pseudonymisierung.mainzelliste.dto.Persistor;
 
 /**
  * Resource-based access to server-side client sessions.

@@ -25,8 +25,9 @@
  */
 package de.pseudonymisierung.mainzelliste;
 
-import java.util.List;
+import java.util.Collection;
 import java.util.Map;
+import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.ElementCollection;
@@ -60,7 +61,7 @@ public class IDRequest {
 	
 	/** Type of the requested ID */
 	@ElementCollection
-	private List<String> requestedIdTypes;
+	private Set<String> requestedIdTypes;
 	
 	/** The match result, including the matched patient */
 	@Embedded
@@ -72,7 +73,7 @@ public class IDRequest {
 	@ManyToOne(cascade={CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH}, fetch=FetchType.EAGER)
 	private Patient assignedPatient;
 
-	public IDRequest(Map<String, Field<?>> inputFields, List<String> idTypes,
+	public IDRequest(Map<String, Field<?>> inputFields, Set<String> idTypes,
 			MatchResult matchResult, Patient assignedPatient) {
 		super();
 		this.inputFields = inputFields;
@@ -89,7 +90,7 @@ public class IDRequest {
 		return inputFields;
 	}
 
-	public List<String> getRequestedIdTypes() {
+	public Collection<String> getRequestedIdTypes() {
 		return requestedIdTypes;
 	}
 

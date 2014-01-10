@@ -33,6 +33,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
@@ -248,23 +249,28 @@ public class PatientsResource {
 		HashMap<String, Object> ret = new HashMap<String, Object>();
 		// create a token if started in debug mode
 		AddPatientToken t;
-		if (Config.instance.debugIsOn())
-		{
-			Session s = Servers.instance.newSession();
-			t = new AddPatientToken();
-			Servers.instance.registerToken(s.getId(), t);
-			tokenId = t.getId();
-		} else {
-			Token tt = Servers.instance.getTokenByTid(tokenId);
-			if (tt == null) {
+
+		Token tt = Servers.instance.getTokenByTid(tokenId);
+		// Try reading token from session.
+		if (tt == null) {
+			// If no token found and debug mode is on, create token, otherwise fail
+			if (Config.instance.debugIsOn())
+			{
+				Session s = Servers.instance.newSession();
+				t = new AddPatientToken();
+				Servers.instance.registerToken(s.getId(), t);
+				tokenId = t.getId();
+			} else {
 				logger.error("No token with id " + tokenId + " found");
 				throw new InvalidTokenException("Please supply a valid 'addPatient' token.");
 			}
+		} else { // correct token type?
 			if (!(tt instanceof AddPatientToken)) {
-				logger.error("Token " + tt.getId() + " is not of type 'addPatient' but +'" + tt.getType() + "'");
+				logger.error("Token " + tt.getId() + " is not of type 'addPatient' but '" + tt.getType() + "'");
 				throw new InvalidTokenException("Please supply a valid 'addPatient' token.");
+			} else {
+				t = (AddPatientToken) tt;
 			}
-			t = (AddPatientToken) tt;
 		}
 
 		List<ID> returnIds = new LinkedList<ID>();
@@ -314,19 +320,14 @@ public class PatientsResource {
 			match = Config.instance.getMatcher().match(pNormalized, Persistor.instance.getPatients());
 			Patient assignedPatient; // The "real" patient that is assigned (match result or new patient) 
 			
-			List<String> idTypes;
 			// If a list of ID types is given in token, return these types
-			if (t.getData().containsKey("idtypes"))				
-					idTypes = (List<String>) t.getDataItemList("idtypes");
-			else { // otherwise...
-				// FIXME prüfen, ob ID-Typen definiert
-				idTypes = new LinkedList<String>();
-				// ...check for the deprecated way of requesting a single ID type
-				if (t.getData().containsKey("idtype"))
-					idTypes.add(t.getDataItemString("idtype"));
-				else // if no information is given, use the default ID type
-					idTypes.add(IDGeneratorFactory.instance.getDefaultIDType());
+			Set<String> idTypes;
+			idTypes = t.getRequestedIdTypes();
+			if (idTypes.size() == 0) { // otherwise use the default ID type
+				idTypes = new CopyOnWriteArraySet<String>();
+				idTypes.add(IDGeneratorFactory.instance.getDefaultIDType());
 			}
+
 			switch (match.getResultType())
 			{
 			case MATCH :
