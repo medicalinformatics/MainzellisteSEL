@@ -121,10 +121,9 @@ public class PatientsResource {
 			@QueryParam("tokenId") String tokenId,
 			MultivaluedMap<String, String> form){
 		Token t = Servers.instance.getTokenByTid(tokenId);
-		Map<String, Object> createRet = createNewPatient(tokenId, form); 
-		List<ID> ids = (List<ID>) createRet.get("ids");
-		IDRequest req = (IDRequest) createRet.get("request");
-		MatchResult result = (MatchResult) createRet.get("result");
+		IDRequest createRet = createNewPatient(tokenId, form); 
+		Set<ID> ids = createRet.getRequestedIds();
+		MatchResult result = createRet.getMatchResult();
 		Map <String, Object> map = new HashMap<String, Object>();
 		if (ids == null) { // unsure case
 			// Copy form to JSP model so that input is redisplayed
@@ -141,7 +140,7 @@ public class PatientsResource {
 				UriTemplate redirectURITempl = new UriTemplate(t.getDataItemString("redirect"));
 				HashMap<String, String> templateVarMap = new HashMap<String, String>();
 				for (String templateVar : redirectURITempl.getTemplateVariables()) {
-					ID thisID = req.getAssignedPatient().getId(templateVar);
+					ID thisID = createRet.getAssignedPatient().getId(templateVar);
 					String idString = thisID.getIdString();
 					templateVarMap.put(templateVar, idString);
 				}
@@ -173,8 +172,9 @@ public class PatientsResource {
 				map.put("printIdat", true);
 			}
 			// FIXME alle IDs übergeben und anzeigen
-			map.put("id", ids.get(0).getIdString());
-			map.put("tentative", ids.get(0).isTentative());
+			ID retId = ids.toArray(new ID[0])[0];
+			map.put("id", retId.getIdString());
+			map.put("tentative", retId.isTentative());
 			
 			if (Config.instance.debugIsOn() && result.getResultType() != MatchResultType.NON_MATCH)
 			{
@@ -200,11 +200,11 @@ public class PatientsResource {
 			@Context HttpServletRequest request,
 			@Context UriInfo context,
 			MultivaluedMap<String, String> form) throws JSONException {
-		Map<String, Object> responseMap = createNewPatient(tokenId, form);
+		IDRequest response = createNewPatient(tokenId, form);
 		logger.info("Accept: " + request.getHeader("Accept"));
 		logger.info("Content-Type: " + request.getHeader("Content-Type"));
-		List<ID> newIds = (List<ID>) responseMap.get("ids");
-		MatchResult result = (MatchResult) responseMap.get("result");
+		List<ID> newIds = new LinkedList<ID>(response.getRequestedIds());
+		MatchResult result = (MatchResult) response.getMatchResult();
 		
 		
 		JSONArray ret = new JSONArray();
@@ -242,7 +242,7 @@ public class PatientsResource {
 	 * 		<li> result: Result as an object of class MatchResult. 
 	 * @throws WebApplicationException if called with an invalid token.
 	 */
-	private Map<String, Object> createNewPatient(
+	private IDRequest createNewPatient(
 			String tokenId,
 			MultivaluedMap<String, String> form) throws WebApplicationException {
 
@@ -275,6 +275,7 @@ public class PatientsResource {
 
 		List<ID> returnIds = new LinkedList<ID>();
 		MatchResult match;
+		IDRequest request;
 
 		// synchronize on token 
 		synchronized (t) {
@@ -285,6 +286,7 @@ public class PatientsResource {
 			 *  3. Thread A deletes t and exits synchronized block
 			 *  4. Thread B enters synchronized block with invalid token
 			 */
+			
 			t = (AddPatientToken) Servers.instance.getTokenByTid(tokenId);
 
 			if(t == null){
@@ -343,9 +345,7 @@ public class PatientsResource {
 			case POSSIBLE_MATCH :
 				if (match.getResultType() == MatchResultType.POSSIBLE_MATCH 
 				&& (form.getFirst("sureness") == null || !Boolean.parseBoolean(form.getFirst("sureness")))) {
-					ret.put("id", null);
-					ret.put("result", match);
-					return ret;
+					return new IDRequest(p.getFields(), idTypes, match, null);
 				}
 				Set<ID> newIds = IDGeneratorFactory.instance.generateIds();			
 				pNormalized.setIds(newIds);
@@ -373,7 +373,7 @@ public class PatientsResource {
 			
 			logger.info("Weight of best match: " + match.getBestMatchedWeight());
 			
-			IDRequest request = new IDRequest(p.getFields(), idTypes, match, assignedPatient);
+			request = new IDRequest(p.getFields(), idTypes, match, assignedPatient);
 			
 			ret.put("request", request);
 			
@@ -417,9 +417,7 @@ public class PatientsResource {
 				throw new InternalErrorException("Request to callback failed!");
 			}
 		}
-		ret.put("ids", returnIds);
-		ret.put("result", match);
-		return ret;
+		return request;
 	}
 	
 	/**

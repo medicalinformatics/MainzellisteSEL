@@ -26,8 +26,10 @@
 package de.pseudonymisierung.mainzelliste;
 
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 import javax.persistence.CascadeType;
 import javax.persistence.ElementCollection;
@@ -96,5 +98,18 @@ public class IDRequest {
 
 	public MatchResult getMatchResult() {
 		return matchResult;
+	}
+	
+	public Set<ID> getRequestedIds() {
+
+		if (this.assignedPatient == null)
+			return null;
+		
+		LinkedList<ID> idList = new LinkedList<ID>();
+		
+		for (String thisType : this.requestedIdTypes) {
+			idList.add(this.assignedPatient.getId(thisType));
+		}
+		return new CopyOnWriteArraySet<ID>(idList);
 	}
 }
