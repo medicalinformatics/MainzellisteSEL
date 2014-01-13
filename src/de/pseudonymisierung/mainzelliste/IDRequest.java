@@ -52,6 +52,7 @@ import de.pseudonymisierung.mainzelliste.matcher.MatchResult;
 @Entity
 @Table(name="IDRequest")
 public class IDRequest {
+	@SuppressWarnings("unused")
 	@Id
 	@GeneratedValue
 	@JsonIgnore

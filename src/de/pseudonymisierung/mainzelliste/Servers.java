@@ -177,6 +177,7 @@ public enum Servers {
 	
 	
 	public void checkPermission(HttpServletRequest req, String permission){
+		@SuppressWarnings("unchecked")
 		Set<String> perms = (Set<String>) req.getSession(true).getAttribute("permissions");
 
 		if(perms == null){ // Login

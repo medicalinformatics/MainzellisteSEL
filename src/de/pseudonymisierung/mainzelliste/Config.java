@@ -70,6 +70,7 @@ public enum Config {
 	
 	private Logger logger = Logger.getLogger(Config.class);
 	
+	@SuppressWarnings("unchecked")
 	Config() throws InternalErrorException {
 		props = new Properties();
 		try {

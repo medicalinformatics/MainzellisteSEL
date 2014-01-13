@@ -33,8 +33,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.CopyOnWriteArraySet;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -52,12 +50,6 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.StatusLine;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.log4j.Logger;
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
@@ -75,11 +67,8 @@ import de.pseudonymisierung.mainzelliste.IDRequest;
 import de.pseudonymisierung.mainzelliste.Patient;
 import de.pseudonymisierung.mainzelliste.PatientBackend;
 import de.pseudonymisierung.mainzelliste.Servers;
-import de.pseudonymisierung.mainzelliste.Session;
-import de.pseudonymisierung.mainzelliste.Validator;
 import de.pseudonymisierung.mainzelliste.dto.Persistor;
 import de.pseudonymisierung.mainzelliste.exceptions.InternalErrorException;
-import de.pseudonymisierung.mainzelliste.exceptions.InvalidTokenException;
 import de.pseudonymisierung.mainzelliste.exceptions.NotImplementedException;
 import de.pseudonymisierung.mainzelliste.exceptions.UnauthorizedException;
 import de.pseudonymisierung.mainzelliste.matcher.MatchResult;
@@ -151,8 +140,6 @@ public class PatientsResource {
 					// into the "action" tag of a form and the parameters are passed as 
 					// hidden fields				
 					MultivaluedMap<String, String> queryParams = UriComponent.decodeQuery(redirectURI, true);
-					String redirectURIStripped =redirectURI.toString().substring(0,
-							redirectURI.toString().indexOf("?"));
 					map.put("redirect", redirectURI);
 					map.put("redirectParams", queryParams);
 					//return Response.status(Status.SEE_OTHER).location(redirectURI).build();
@@ -205,8 +192,6 @@ public class PatientsResource {
 		logger.info("Accept: " + request.getHeader("Accept"));
 		logger.info("Content-Type: " + request.getHeader("Content-Type"));
 		List<ID> newIds = new LinkedList<ID>(response.getRequestedIds());
-		MatchResult result = response.getMatchResult();
-		
 		
 		JSONArray ret = new JSONArray();
 		for (ID thisID : newIds) {
@@ -248,7 +233,7 @@ public class PatientsResource {
 			JSONObject result = new JSONObject();
 			try {
 				subjects = data.getJSONObject("subjects");
-				Iterator subjectIt = subjects.keys();
+				Iterator<?> subjectIt = subjects.keys();
 				while (subjectIt.hasNext()) {
 					String subject = subjectIt.next().toString();
 					JSONArray tempIds = subjects.getJSONArray(subject);
@@ -309,13 +294,14 @@ public class PatientsResource {
 		// Validity of token is checked upon creation
 		Token t = Servers.instance.getTokenByTid(tid);
 		t.checkTokenType("readPatients");
-		List requests = t.getDataItemList("searchIds");
+		List<?> requests = t.getDataItemList("searchIds");
 		
 		JSONArray ret = new JSONArray();
 		for (Object item : requests) {
 			JSONObject thisPatient = new JSONObject();
 			String idType;
 			String idString;
+			@SuppressWarnings("unchecked")
 			Map<String, String> thisSearchId = (Map<String, String>) item; 
 			idType = thisSearchId.get("idType");
 			idString = thisSearchId.get("idString");
@@ -324,6 +310,7 @@ public class PatientsResource {
 			if (t.hasDataItem("fields")) {
 				// get fields for output
 				Map<String, String> outputFields = new HashMap<String, String>();
+				@SuppressWarnings("unchecked")
 				List<String> fieldNames = (List<String>) t.getDataItemList("fields");
 				for (String thisFieldName : fieldNames) {
 					outputFields.put(thisFieldName, patient.getInputFields().get(thisFieldName).toString());
@@ -338,6 +325,7 @@ public class PatientsResource {
 			
 			if (t.hasDataItem("resultIds")) {
 				try {
+					@SuppressWarnings("unchecked")
 					List<String> idTypes = (List<String>) t.getDataItemList("resultIds");
 					List<JSONObject> returnIds = new LinkedList<JSONObject>();
 					for (String thisIdType : idTypes) {

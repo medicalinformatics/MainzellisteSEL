@@ -54,6 +54,7 @@ public class TokenParam extends AbstractParam<Token> {
 			if(!("".equals(jsob.optString("id"))))
 				t.setId(jsob.getString("id"));
 			t.setType(jsob.getString("type"));
+			@SuppressWarnings("unchecked")
 			HashMap<String, String> data = new ObjectMapper().readValue(jsob.getString("data"), HashMap.class);
 			t.setData(data);
 			return t;
