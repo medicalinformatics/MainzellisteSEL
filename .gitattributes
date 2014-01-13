@@ -38,6 +38,7 @@ src/de/pseudonymisierung/mainzelliste/IntegerID.java -text svneol=unset#text/pla
 src/de/pseudonymisierung/mainzelliste/PID.java -text svneol=unset#text/plain
 src/de/pseudonymisierung/mainzelliste/PIDGenerator.java -text svneol=unset#text/plain
 src/de/pseudonymisierung/mainzelliste/Patient.java -text svneol=unset#text/plain
+src/de/pseudonymisierung/mainzelliste/PatientBackend.java -text svneol=unset#text/plain
 src/de/pseudonymisierung/mainzelliste/PlainTextField.java -text svneol=unset#text/plain
 src/de/pseudonymisierung/mainzelliste/RecordTransformer.java -text svneol=unset#text/plain
 src/de/pseudonymisierung/mainzelliste/Servers.java -text svneol=unset#text/plain
