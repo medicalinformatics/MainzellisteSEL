@@ -85,7 +85,30 @@ public class SessionsResource {
 			.location(newUri)
 			.build();
 	}
+
+	@Path("/{session}")
+	@GET
+	public Response readSession (
+			 @PathParam("session") String sid,
+			 @Context HttpServletRequest req) throws JSONException {
+		logger.info(String.format("Request to read session %s received by host %s", sid, req.getRemoteHost()));
+		// Berechtigung?
+		Session s = Servers.instance.getSession(sid);
+		if (s == null) {
+			return Response.status(
+					Status.NOT_FOUND)
+					.entity(String.format("No session with id %s", sid))
+					.build();
+		}
+		JSONObject ret = new JSONObject()
+			.put("sessionId", sid)
+			.put("uri", req.getRequestURL().toString());
 		
+		return Response.status(Status.OK)
+				.entity(ret)
+				.build();
+	}
+	
 	@Path("/{session}")
 	@DELETE
 	public Response deleteSession(
