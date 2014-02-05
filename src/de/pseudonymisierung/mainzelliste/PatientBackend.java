@@ -20,6 +20,7 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.log4j.Logger;
+import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONObject;
 
 import de.pseudonymisierung.mainzelliste.dto.Persistor;
@@ -199,12 +200,22 @@ public enum PatientBackend {
 				HttpPost callbackReq = new HttpPost(callback);
 				callbackReq.setHeader("Content-Type", MediaType.APPLICATION_JSON);
 				
-				// TODO: ID-Typ integrieren, z.B. idtype="pid", idstring="..."
+				// Collect ids for Callback object
+				JSONArray idsJson = new JSONArray(); 
+				for (ID thisID : returnIds) {
+						idsJson.put(thisID.toJSON()); 
+				}
+
+				/* FIXME FOlgendes für ApiVersion < 1.3
 				JSONObject reqBody = new JSONObject()
 						.put("tokenId", t.getId())
 						//FIXME mehrere IDs zurückgeben -> bricht API, die ILF mitgeteilt wurde
 						.put("id", returnIds.get(0).getIdString());
 //						.put("id", id.toJSON());
+ */
+				JSONObject reqBody = new JSONObject()
+					.put("tokenId", t.getId())
+					.put("ids", idsJson);
 				
 				String reqBodyJSON = reqBody.toString();
 				StringEntity reqEntity = new StringEntity(reqBodyJSON);
@@ -213,7 +224,7 @@ public enum PatientBackend {
 				HttpResponse response = httpClient.execute(callbackReq);
 				StatusLine sline = response.getStatusLine();
 				// Accept callback if OK, CREATED or ACCEPTED is returned
-				if ((sline.getStatusCode() < 200) || sline.getStatusCode() > 202) {
+				if ((sline.getStatusCode() < 200) || sline.getStatusCode() >= 300) {
 					logger.error("Received invalid status form mdat callback: " + response.getStatusLine());
 					throw new InternalErrorException("Request to callback failed!");
 				}
