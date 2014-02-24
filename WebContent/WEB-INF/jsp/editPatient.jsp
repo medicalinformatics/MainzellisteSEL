@@ -120,7 +120,7 @@ function validateForm()
 						<td><input type="text" id="original" name="original" value="${it.original}"/></td>
 					</tr>
 				</table>
-				
+				<input type="submit" value="Speichern" />
 				</div>
 			</form>
 		</div>
