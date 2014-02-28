@@ -305,7 +305,7 @@ public class PatientsResource {
 			Map<String, String> thisSearchId = (Map<String, String>) item; 
 			idType = thisSearchId.get("idType");
 			idString = thisSearchId.get("idString");
-			ID id = IDGeneratorFactory.instance.getFactory(idType).buildId(idString);
+			ID id = IDGeneratorFactory.instance.buildId(idType, idString);
 			Patient patient = Persistor.instance.getPatient(id);
 			if (t.hasDataItem("fields")) {
 				// get fields for output
