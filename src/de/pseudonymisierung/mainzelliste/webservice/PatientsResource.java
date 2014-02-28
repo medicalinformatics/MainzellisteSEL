@@ -307,11 +307,11 @@ public class PatientsResource {
 			idString = thisSearchId.get("idString");
 			ID id = IDGeneratorFactory.instance.buildId(idType, idString);
 			Patient patient = Persistor.instance.getPatient(id);
-			if (t.hasDataItem("fields")) {
+			if (t.hasDataItem("resultFields")) {
 				// get fields for output
 				Map<String, String> outputFields = new HashMap<String, String>();
 				@SuppressWarnings("unchecked")
-				List<String> fieldNames = (List<String>) t.getDataItemList("fields");
+				List<String> fieldNames = (List<String>) t.getDataItemList("resultFields");
 				for (String thisFieldName : fieldNames) {
 					outputFields.put(thisFieldName, patient.getInputFields().get(thisFieldName).toString());
 				}
