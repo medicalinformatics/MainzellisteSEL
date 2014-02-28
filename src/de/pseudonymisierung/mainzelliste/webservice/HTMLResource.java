@@ -41,13 +41,17 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
+import javax.ws.rs.core.UriBuilder;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import com.sun.jersey.api.view.Viewable;
 
 import de.pseudonymisierung.mainzelliste.Config;
 import de.pseudonymisierung.mainzelliste.Field;
+import de.pseudonymisierung.mainzelliste.ID;
+import de.pseudonymisierung.mainzelliste.IDGeneratorFactory;
 import de.pseudonymisierung.mainzelliste.PID;
 import de.pseudonymisierung.mainzelliste.Patient;
 import de.pseudonymisierung.mainzelliste.Servers;
@@ -86,29 +90,27 @@ public class HTMLResource {
 	@GET
 	@Produces(MediaType.TEXT_HTML)
 	public Response editPatientForm(
-			@QueryParam("id") String pidString
+			@QueryParam("idType") String idType,
+			@QueryParam("idString") String idString
 			) {
 		// Authentication by Tomcat
-		if (pidString == null || pidString.length() == 0)
+		
+		if (StringUtils.isEmpty(idType) || StringUtils.isEmpty(idString))  
 			return Response.ok(new Viewable("/selectPatient.jsp")).build();
 
-		/* TODO: Nach ID-Typ differenzieren (Typ als Parameter mitgeben)
-		 	hier dann etwa folgendes:
-			Class<? extends ID> idClass = IDGeneratorFactory.instance.getIDClass(Config.instance.getProperty("))
-			// Instanz von idClass erzeugen...
-			*/ 
-		PID pid = new PID(pidString, "pid");
-		Patient p = Persistor.instance.getPatient(pid);
+		ID patId = IDGeneratorFactory.instance.buildId(idType, idString);
+		Patient p = Persistor.instance.getPatient(patId);
 
 		if (p == null)
 			throw new WebApplicationException(Response
 					.status(Status.NOT_FOUND)
-					.entity("Found no patient with PID " + pidString + ".")
+					.entity(String.format("No patient found with ID of type %s and value %s!",
+							idType, idString))
 					.build());
 
 		Map <String, Object> map = new HashMap<String, Object>();
 		map.putAll(p.getInputFields());
-		map.put("id", pid.getIdString());
+		map.put("id", patId.getIdString());
 		map.put("tentative", p.getId("pid").isTentative());
 		if (p.getOriginal() != p)
 			map.put("original", p.getOriginal().getId("pid").getIdString());
@@ -119,7 +121,7 @@ public class HTMLResource {
 	}
 
 	/** Submit form for editing a patient. */
-	// Eigentlich w�re das PUT auf /pid/{pid}, aber PUT aus HTML-Formular geht nicht.
+	// Eigentlich wäre das PUT auf /pid/{pid}, aber PUT aus HTML-Formular geht nicht.
 	@POST
 	@Path("/admin/editPatient")
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
@@ -163,16 +165,17 @@ public class HTMLResource {
 		
 		// assign changed fields to patient in database, persist
 		pToEdit.setFields(pNormalized.getFields());
+		pToEdit.setInputFields(pNormalized.getInputFields());
 
 		// assign tentative status
 		pToEdit.setTentative(form.getFirst("tentative") != null);
-		
 		// assign original
 		// TODO: andere IDs, Checkbox dazu
-		String idOriginal = form.getFirst("original");
-		if (idOriginal != null && !idOriginal.equals(""))
-		{
-			Patient pOriginal = Persistor.instance.getPatient(new PID(idOriginal, "pid"));
+		String idStringOriginal = form.getFirst("idStringOriginal");
+		String idTypeOriginal = form.getFirst("idTypeOriginal");
+		if (!StringUtils.isEmpty(idStringOriginal) && ! StringUtils.isEmpty(idTypeOriginal))
+		{			
+			Patient pOriginal = Persistor.instance.getPatient(IDGeneratorFactory.instance.buildId(idTypeOriginal, idStringOriginal));
 			pToEdit.setOriginal(pOriginal);
 		} else
 		{
@@ -182,17 +185,16 @@ public class HTMLResource {
 		
 		Persistor.instance.updatePatient(pToEdit);
 		
-		return Response.ok("Patient edited successfully!").build();
+//		return Response.ok("Patient edited successfully!").build();
 		// TODO: Redirect auf Edit-Formular für diesen Patienten
-		/* 
 		return Response
 				.status(Status.SEE_OTHER)
-//				.header("Cache-control", "must-revalidate")
+				.header("Cache-control", "must-revalidate")
 				.location(UriBuilder
 						.fromUri(req.getRequestURL().toString())
 						.path("")
 						.queryParam("id", pidString)
 						.build())
-						.build(); */
+						.build();
 	}
 }

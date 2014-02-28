@@ -1,5 +1,11 @@
+<%@page import="de.pseudonymisierung.mainzelliste.IDGeneratorFactory"%>
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
 	pageEncoding="ISO-8859-1"%>
+<%
+	String idTypes[] = IDGeneratorFactory.instance.getIDTypes();
+	String defaultIdType = IDGeneratorFactory.instance.getDefaultIDType();
+%>
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
@@ -11,9 +17,6 @@
 <title>Patienten bearbeiten</title>
 </head>
 
-<!-- JQuery -->
-<script type="text/javascript"
-	src="<%=request.getContextPath() %>/static/jslib/jquery/jquery-1.7.2.js"></script>
 
 <script type="text/javascript">
 
@@ -116,8 +119,30 @@ function validateForm()
 							/></td>
 					</tr>
 					<tr>
-						<td><label for="original">Duplikat von:</label>
-						<td><input type="text" id="original" name="original" value="${it.original}"/></td>
+						<td rowspan="2"><label for="original">Duplikat von:</label></td>
+						<td><label for="idTypeOriginal">ID-Typ:</label></td>
+						<td>
+							<select name="idType">
+								<%
+								for (String idType : idTypes)
+								{
+									String selected = idType.equals(defaultIdType) ?
+											"selected=\"selected\"" : "";
+								%>
+									<option value="<%=idType %>" <%=selected %>>
+										<%=idType %>
+									</option>
+								<%
+								}
+								%>
+							</select>
+						</td>
+					</tr>
+					<tr>
+						<td><label for="idString">ID-Wert:</label>
+						</td>
+						<td><input type="text" name="idStringOriginal">
+						</td>
 					</tr>
 				</table>
 				<input type="submit" value="Speichern" />

@@ -109,7 +109,7 @@ public class IDRequest {
 		LinkedList<ID> idList = new LinkedList<ID>();
 		
 		for (String thisType : this.requestedIdTypes) {
-			idList.add(this.assignedPatient.getId(thisType));
+			idList.add(this.assignedPatient.getOriginal().getId(thisType));
 		}
 		return new CopyOnWriteArraySet<ID>(idList);
 	}
