@@ -30,6 +30,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
@@ -159,18 +160,24 @@ public enum Servers {
 			for(Token t: s.getTokens()){
 				deleteToken(sid, t.getId());
 			}
-
 			sessions.remove(sid);
 		}
 	}
 	
 	
 	public void cleanUpSessions() {
+		logger.debug("Cleaning up sessions...");
+		LinkedList<String> sessionsToDelete = new LinkedList<String>();
 		Date now = new Date();
 		synchronized (sessions) {
 			for (Session s : this.sessions.values()) {
 				if (now.getTime() - s.getLastAccess().getTime() > this.sessionTimeout)
-					this.deleteSession(s.getId());
+					sessionsToDelete.add(s.getId());
+			}
+			// Delete sessions in a separate loop to avoid ConcurrentModificationException
+			for (String sessionId : sessionsToDelete) {
+				this.deleteSession(sessionId);
+				logger.info(String.format("Session %s timed out", sessionId));
 			}
 		}
 	}
