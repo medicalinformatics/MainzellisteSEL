@@ -52,7 +52,6 @@ import de.pseudonymisierung.mainzelliste.Config;
 import de.pseudonymisierung.mainzelliste.Field;
 import de.pseudonymisierung.mainzelliste.ID;
 import de.pseudonymisierung.mainzelliste.IDGeneratorFactory;
-import de.pseudonymisierung.mainzelliste.PID;
 import de.pseudonymisierung.mainzelliste.Patient;
 import de.pseudonymisierung.mainzelliste.Servers;
 import de.pseudonymisierung.mainzelliste.dto.Persistor;
@@ -113,9 +112,7 @@ public class HTMLResource {
 		map.put("id", patId.getIdString());
 		map.put("tentative", p.getId("pid").isTentative());
 		if (p.getOriginal() != p)
-			map.put("original", p.getOriginal().getId("pid").getIdString());
-		else
-			map.put("original","");
+			map.put("original", p);
 
 		return Response.ok(new Viewable("/editPatient.jsp", map)).build();
 	}
@@ -127,20 +124,25 @@ public class HTMLResource {
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 	@Produces(MediaType.TEXT_HTML)
 	public Response editPatient(
-			@QueryParam("id") String pidString,
+			@QueryParam("idType") String idType,
+			@QueryParam("idString") String idString,
 			MultivaluedMap<String, String> form,
 			@Context HttpServletRequest req){
 		
-		logger.info("Handling edit operation for patient with id " + pidString);
+		logger.info(String.format("Handling edit operation for patient with id of type %s and value %s.",
+					idType, idString));
 		
 		// TODO: Generalisieren für mehrere IDs
-		Patient pToEdit = Persistor.instance.getPatient(new PID(pidString, "pid"));
+		ID idPatToEdit = IDGeneratorFactory.instance.buildId(idType, idString);
+		Patient pToEdit = Persistor.instance.getPatient(idPatToEdit);
 		if (pToEdit == null)
 		{
-			logger.error("No patient found with id " + pidString);
+			logger.info(String.format("Request to edit patient with unknown ID of type %s and value %s.",
+					idType, idString));
 			throw new WebApplicationException(Response
 					.status(Status.NOT_FOUND)
-					.entity("Found no patient with PID " + pidString + ".")
+					.entity(String.format("No patient found with ID of type %s and value %s!",
+							idType, idString))
 					.build());
 		}
 		
@@ -172,10 +174,11 @@ public class HTMLResource {
 		// assign original
 		// TODO: andere IDs, Checkbox dazu
 		String idStringOriginal = form.getFirst("idStringOriginal");
-		String idTypeOriginal = form.getFirst("idTypeOriginal");
+		String idTypeOriginal = form.getFirst("idTypeOriginal");		
 		if (!StringUtils.isEmpty(idStringOriginal) && ! StringUtils.isEmpty(idTypeOriginal))
 		{			
-			Patient pOriginal = Persistor.instance.getPatient(IDGeneratorFactory.instance.buildId(idTypeOriginal, idStringOriginal));
+			ID originalId = IDGeneratorFactory.instance.buildId(idTypeOriginal, idStringOriginal);
+			Patient pOriginal = Persistor.instance.getPatient(originalId);
 			pToEdit.setOriginal(pOriginal);
 		} else
 		{
@@ -193,7 +196,8 @@ public class HTMLResource {
 				.location(UriBuilder
 						.fromUri(req.getRequestURL().toString())
 						.path("")
-						.queryParam("id", pidString)
+						.queryParam("idType", idType)
+						.queryParam("idString", idString)
 						.build())
 						.build();
 	}
