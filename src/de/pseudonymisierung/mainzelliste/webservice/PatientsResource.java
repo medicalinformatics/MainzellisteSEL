@@ -123,7 +123,7 @@ public class PatientsResource {
 			}
 			map.put("readonly", "true");
 			map.put("tokenId", tokenId);
-			return Response.status(Status.ACCEPTED)
+			return Response.status(Status.CONFLICT)
 					.entity(new Viewable("/unsureMatch.jsp", map)).build();
 		} else {
 			if (t != null && t.getData() != null && t.getData().containsKey("redirect")) {
@@ -189,6 +189,13 @@ public class PatientsResource {
 			@Context UriInfo context,
 			MultivaluedMap<String, String> form) throws JSONException {
 		IDRequest response = PatientBackend.instance.createNewPatient(tokenId, form);
+		if (response.getMatchResult().getResultType() == MatchResultType.POSSIBLE_MATCH && response.getRequestedIds() == null) {
+			return Response
+					.status(Status.CONFLICT)
+					.entity("It could not be determined definetely if the data refers to an existing or to a new patient. " +
+							"Please check data or resubmit with sureness=true to get a tentative result. Please check documentation for details.")
+					.build();
+		}
 		logger.info("Accept: " + request.getHeader("Accept"));
 		logger.info("Content-Type: " + request.getHeader("Content-Type"));
 		List<ID> newIds = new LinkedList<ID>(response.getRequestedIds());
