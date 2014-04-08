@@ -46,7 +46,6 @@ import javax.ws.rs.core.Response.Status;
 
 import org.apache.log4j.Logger;
 
-import de.pseudonymisierung.mainzelliste.matcher.Matcher;
 import de.pseudonymisierung.mainzelliste.webservice.Token;
 
 /**

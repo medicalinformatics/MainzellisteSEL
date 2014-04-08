@@ -64,7 +64,7 @@ public class EpilinkMatcher implements Matcher {
 
 	private double thresholdNonMatch;
 	
-	private Map<String, FieldComparator> comparators;
+	private Map<String, FieldComparator<Field<?>>> comparators;
 	private Map<String, Double> frequencies;
 	private Map<String, Double> errorRates;
 
@@ -202,7 +202,7 @@ public class EpilinkMatcher implements Matcher {
 		// Get error rate (is needed for weight computation below)					
 
 		// Initialize internal maps
-		this.comparators = new HashMap<String, FieldComparator>();
+		this.comparators = new HashMap<String, FieldComparator<Field<?>>>();
 		this.frequencies = new HashMap<String, Double>();
 		this.errorRates = new HashMap<String, Double>();
 		this.weights = new HashMap<String, Double>();
@@ -222,9 +222,10 @@ public class EpilinkMatcher implements Matcher {
 				{
 					fieldCompStr = fieldCompStr.trim();
 					try {
-						Class<FieldComparator> fieldCompClass = (Class<FieldComparator>) Class.forName("de.pseudonymisierung.mainzelliste.matcher." + fieldCompStr);
-						Constructor<FieldComparator> fieldCompConstr = fieldCompClass.getConstructor(String.class, String.class);
-						FieldComparator fieldComp = fieldCompConstr.newInstance(fieldName, fieldName);
+						@SuppressWarnings("unchecked")
+						Class<FieldComparator<Field<?>>> fieldCompClass = (Class<FieldComparator<Field<?>>>) Class.forName("de.pseudonymisierung.mainzelliste.matcher." + fieldCompStr);
+						Constructor<FieldComparator<Field<?>>> fieldCompConstr = fieldCompClass.getConstructor(String.class, String.class);
+						FieldComparator<Field<?>> fieldComp = fieldCompConstr.newInstance(fieldName, fieldName);
 						comparators.put(fieldName, fieldComp);
 					} catch (Exception e) {
 						System.err.println(e.getMessage());
