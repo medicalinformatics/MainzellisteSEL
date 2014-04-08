@@ -37,6 +37,7 @@ import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.UUID;
+import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.WebApplicationException;
@@ -45,6 +46,7 @@ import javax.ws.rs.core.Response.Status;
 
 import org.apache.log4j.Logger;
 
+import de.pseudonymisierung.mainzelliste.matcher.Matcher;
 import de.pseudonymisierung.mainzelliste.webservice.Token;
 
 /**
@@ -275,5 +277,43 @@ public enum Servers {
 		synchronized (tokensByTid) {
 			return tokensByTid.get(tokenId);
 		}
+	}
+	
+	public String getRequestApiVersion(HttpServletRequest req) {
+		// First try to read saved version String (prevents multiple parsing of header etc.)
+		String version = req.getAttribute("de.pseudonymisierung.mainzelliste.apiVersion").toString(); 
+		if (version == null) {
+			// Try to read from header
+			version = req.getHeader("mainzellisteApiVersion");
+			// Try to read from URL parameter
+			if (version == null) {
+				version = req.getParameter("mainzellisteApiVersion");
+			}
+			// Otherwise assume 1.0
+			if (version == null) {
+				version = "1.0";
+			}
+			if (!Pattern.matches("\\n+\\.\\n+", version)) {
+				throw new WebApplicationException(
+						Response.status(Status.BAD_REQUEST)
+						.entity(String.format("'%s' is not a valid API version. Please " +
+								"supply API version in format MAJOR.MINOR as HTTP header or " +
+								"URL parameter 'mainzellisteApiVersion'."))
+						.build());
+			}
+			// Save in request scope
+			req.setAttribute("de.pseudonymisierung.mainzelliste.apiVersion", version);
+		}
+		return version;
+	}
+	
+	public int getRequestMajorApiVersion(HttpServletRequest req) {
+		String versionString = this.getRequestApiVersion(req);
+		return Integer.parseInt(versionString.split("\\.")[0]);
+	}
+
+	public int getRequestMinorApiVersion(HttpServletRequest req) {
+		String versionString = this.getRequestApiVersion(req);
+		return Integer.parseInt(versionString.split("\\.")[1]);
 	}
 }
