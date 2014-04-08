@@ -196,8 +196,8 @@ public class PatientsResource {
 							"Please check data or resubmit with sureness=true to get a tentative result. Please check documentation for details.")
 					.build();
 		}
-		logger.info("Accept: " + request.getHeader("Accept"));
-		logger.info("Content-Type: " + request.getHeader("Content-Type"));
+		logger.debug("Accept: " + request.getHeader("Accept"));
+		logger.debug("Content-Type: " + request.getHeader("Content-Type"));
 		List<ID> newIds = new LinkedList<ID>(response.getRequestedIds());
 		
 		JSONArray ret = new JSONArray();
