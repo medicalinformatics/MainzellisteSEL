@@ -280,8 +280,11 @@ public enum Servers {
 	
 	public String getRequestApiVersion(HttpServletRequest req) {
 		// First try to read saved version String (prevents multiple parsing of header etc.)
-		String version = req.getAttribute("de.pseudonymisierung.mainzelliste.apiVersion").toString(); 
-		if (version == null) {
+		String version = null;
+		Object versionHeader =req.getAttribute("de.pseudonymisierung.mainzelliste.apiVersion");
+		if (versionHeader != null) {
+			version = versionHeader.toString();
+		} else {
 			// Try to read from header
 			version = req.getHeader("mainzellisteApiVersion");
 			// Try to read from URL parameter
@@ -292,12 +295,12 @@ public enum Servers {
 			if (version == null) {
 				version = "1.0";
 			}
-			if (!Pattern.matches("\\n+\\.\\n+", version)) {
+			if (!Pattern.matches("\\d+\\.\\d+", version)) {
 				throw new WebApplicationException(
 						Response.status(Status.BAD_REQUEST)
 						.entity(String.format("'%s' is not a valid API version. Please " +
 								"supply API version in format MAJOR.MINOR as HTTP header or " +
-								"URL parameter 'mainzellisteApiVersion'."))
+								"URL parameter 'mainzellisteApiVersion'.", version))
 						.build());
 			}
 			// Save in request scope

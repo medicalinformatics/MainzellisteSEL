@@ -200,24 +200,59 @@ public class PatientsResource {
 		logger.debug("Content-Type: " + request.getHeader("Content-Type"));
 		List<ID> newIds = new LinkedList<ID>(response.getRequestedIds());
 		
-		JSONArray ret = new JSONArray();
-		for (ID thisID : newIds) {
+		int apiMajorVersion = Servers.instance.getRequestMajorApiVersion(request);
+		
+		if (apiMajorVersion >= 2) {
+			JSONArray ret = new JSONArray();
+			for (ID thisID : newIds) {
+				URI newUri = context.getBaseUriBuilder()
+						.path(PatientsResource.class)
+						.path("/{idtype}/{idvalue}")
+						.build(thisID.getType(), thisID.getIdString());
+	
+				ret.put(new JSONObject()
+					.put("idType", thisID.getType())
+					.put("idString", thisID.getIdString())
+					.put("tentative", thisID.isTentative())
+					.put("uri", newUri));
+			}
+					
+			return Response
+				.status(Status.CREATED)
+				.entity(ret)
+				.build();
+		} else {
+			/*
+			 *  Old api permits only one ID in response. If several
+			 *  have been requested, which one to choose?
+			 */
+			if (newIds.size() > 1) {
+				throw new WebApplicationException(
+						Response.status(Status.BAD_REQUEST)
+						.entity("Selected API version 1.0 permits only one ID in response, " +
+								"but several were requested. Set mainzellisteApiVersion to a " +
+								"value >= 2.0 or request only one ID type in token.")
+								.build());
+			}
+			
+			ID newId = newIds.get(0);
+			
 			URI newUri = context.getBaseUriBuilder()
 					.path(PatientsResource.class)
 					.path("/{idtype}/{idvalue}")
-					.build(thisID.getType(), thisID.getIdString());
+					.build(newId.getType(), newId.getIdString());
+			
+			JSONObject ret = new JSONObject()
+					.put("newId", newId.getIdString())
+					.put("tentative", newId.isTentative())
+					.put("uri", newUri);
 
-			ret.put(new JSONObject()
-				.put("idType", thisID.getType())
-				.put("idString", thisID.getIdString())
-				.put("tentative", thisID.isTentative())
-				.put("uri", newUri));
+			return Response
+				.status(Status.CREATED)
+				.entity(ret)
+				.location(newUri)
+				.build();
 		}
-				
-		return Response
-			.status(Status.CREATED)
-			.entity(ret)
-			.build();
 	}
 
 	
