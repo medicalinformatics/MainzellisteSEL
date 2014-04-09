@@ -109,9 +109,10 @@ public class PatientsResource {
 	@Produces(MediaType.TEXT_HTML)
 	public Response newPatientBrowser(
 			@QueryParam("tokenId") String tokenId,
-			MultivaluedMap<String, String> form){
+			MultivaluedMap<String, String> form,
+			@Context HttpServletRequest request){
 		Token t = Servers.instance.getTokenByTid(tokenId);
-		IDRequest createRet = PatientBackend.instance.createNewPatient(tokenId, form); 
+		IDRequest createRet = PatientBackend.instance.createNewPatient(tokenId, form, Servers.instance.getRequestApiVersion(request)); 
 		Set<ID> ids = createRet.getRequestedIds();
 		MatchResult result = createRet.getMatchResult();
 		Map <String, Object> map = new HashMap<String, Object>();
@@ -188,7 +189,7 @@ public class PatientsResource {
 			@Context HttpServletRequest request,
 			@Context UriInfo context,
 			MultivaluedMap<String, String> form) throws JSONException {
-		IDRequest response = PatientBackend.instance.createNewPatient(tokenId, form);
+		IDRequest response = PatientBackend.instance.createNewPatient(tokenId, form, Servers.instance.getRequestApiVersion(request));
 		if (response.getMatchResult().getResultType() == MatchResultType.POSSIBLE_MATCH && response.getRequestedIds() == null) {
 			return Response
 					.status(Status.CONFLICT)

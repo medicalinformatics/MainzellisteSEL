@@ -278,7 +278,17 @@ public enum Servers {
 		}
 	}
 	
-	public String getRequestApiVersion(HttpServletRequest req) {
+	public class ApiVersion {
+		public final int majorVersion;
+		public final int minorVersion;
+		
+		protected ApiVersion(String versionString) {
+			majorVersion = Integer.parseInt(versionString.split("\\.")[0]);
+			minorVersion = Integer.parseInt(versionString.split("\\.")[1]);
+		}
+	}
+	
+	public ApiVersion getRequestApiVersion(HttpServletRequest req) {
 		// First try to read saved version String (prevents multiple parsing of header etc.)
 		String version = null;
 		Object versionHeader =req.getAttribute("de.pseudonymisierung.mainzelliste.apiVersion");
@@ -306,16 +316,14 @@ public enum Servers {
 			// Save in request scope
 			req.setAttribute("de.pseudonymisierung.mainzelliste.apiVersion", version);
 		}
-		return version;
+		return new ApiVersion(version);
 	}
 	
 	public int getRequestMajorApiVersion(HttpServletRequest req) {
-		String versionString = this.getRequestApiVersion(req);
-		return Integer.parseInt(versionString.split("\\.")[0]);
+		return this.getRequestApiVersion(req).majorVersion;
 	}
 
 	public int getRequestMinorApiVersion(HttpServletRequest req) {
-		String versionString = this.getRequestApiVersion(req);
-		return Integer.parseInt(versionString.split("\\.")[1]);
+		return this.getRequestApiVersion(req).minorVersion;
 	}
 }
