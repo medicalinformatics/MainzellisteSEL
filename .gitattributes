@@ -16,7 +16,6 @@ WebContent/static/css/patientenliste.css -text svneol=unset#text/plain
 WebContent/static/media/JGU_Uni_medizin_Logo_4c_Internet.jpg -text svneol=unset#unset
 config/META-INF/persistence.xml -text svneol=unset#text/plain
 config/log4j.properties -text svneol=unset#text/plain
-config/mainzelliste-dktk-test.conf -text
 config/mainzelliste.conf.default -text
 lib/js/jquery/jquery-1.7.2.js -text svneol=unset#text/plain
 lib/js/validation.js -text svneol=unset#text/plain
