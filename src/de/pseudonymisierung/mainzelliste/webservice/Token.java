@@ -206,7 +206,7 @@ public class Token {
 			
 			List<String> definedIdTypes = Arrays.asList(IDGeneratorFactory.instance.getIDTypes());
 			for (String templateVar : redirectURITempl.getTemplateVariables()) {
-				if (!definedIdTypes.contains(templateVar))
+				if (!templateVar.equals("tokenId") && !definedIdTypes.contains(templateVar))
 					throw new InvalidTokenException("The URI template for the redirect address contains the undefined id type " + templateVar + ".");
 			}
 		}

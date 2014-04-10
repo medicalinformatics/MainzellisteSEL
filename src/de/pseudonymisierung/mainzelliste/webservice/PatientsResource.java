@@ -131,9 +131,13 @@ public class PatientsResource {
 				UriTemplate redirectURITempl = new UriTemplate(t.getDataItemString("redirect"));
 				HashMap<String, String> templateVarMap = new HashMap<String, String>();
 				for (String templateVar : redirectURITempl.getTemplateVariables()) {
-					ID thisID = createRet.getAssignedPatient().getId(templateVar);
-					String idString = thisID.getIdString();
-					templateVarMap.put(templateVar, idString);
+					if (templateVar.equals("tokenId")) {
+						templateVarMap.put(templateVar, tokenId);
+					} else {
+						ID thisID = createRet.getAssignedPatient().getId(templateVar);
+						String idString = thisID.getIdString();
+						templateVarMap.put(templateVar, idString);
+					}
 				}
 				try {
 					URI redirectURI = new URI(redirectURITempl.createURI(templateVarMap));
