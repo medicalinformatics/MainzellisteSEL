@@ -197,7 +197,7 @@ public class PatientsResource {
 		if (response.getMatchResult().getResultType() == MatchResultType.POSSIBLE_MATCH && response.getRequestedIds() == null) {
 			return Response
 					.status(Status.CONFLICT)
-					.entity("It could not be determined definetely if the data refers to an existing or to a new patient. " +
+					.entity("Unable to definitely determined whether the data refers to an existing or to a new patient. " +
 							"Please check data or resubmit with sureness=true to get a tentative result. Please check documentation for details.")
 					.build();
 		}
