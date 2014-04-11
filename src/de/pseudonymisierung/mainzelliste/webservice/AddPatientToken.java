@@ -39,12 +39,18 @@ public class AddPatientToken extends Token {
 			}
 		}
 		this.requestedIdTypes = new HashSet<String>();
-		if (this.hasDataItem("idtypes")) {
-			List<?> idtypes = this.getDataItemList("idtypes");
+		if (this.hasDataItem("idTypes")) {
+			List<?> idtypes = this.getDataItemList("idTypes");
 			for (Object o : idtypes) {
 				this.requestedIdTypes.add(o.toString());
 			}
-		} else if (this.hasDataItem("idtype")) { // ...check for the deprecated way of requesting a single ID type
+		} else if (this.hasDataItem("idtypes")) { // pre-2.0 API
+			List<?> idtypes = this.getDataItemList("idtypes");
+			for (Object o : idtypes) {
+				this.requestedIdTypes.add(o.toString());
+			}			
+		}
+		else if (this.hasDataItem("idtype")) { // even older api
 				requestedIdTypes.add(this.getDataItemString("idtype"));
 		}
 	}

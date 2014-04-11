@@ -167,9 +167,11 @@ public class Token {
 	@SuppressWarnings("unchecked")
 	private void checkAddPatient(ApiVersion apiVersion)  {
 		// check requested id types
-		if (apiVersion.majorVersion >= 2)
+		if (apiVersion.majorVersion >= 2) {
 			this.checkIdTypes((List<String>) this.getDataItemList("idTypes"));
-		else {
+		} else if (this.hasDataItem("idtypes")) {
+			this.checkIdTypes((List<String>) this.getDataItemList("idtypes"));
+		} else if (this.hasDataItem("idtype")) {
 			LinkedList<String> idTypes= new LinkedList<String>();
 			String requestedIdType = this.getDataItemString("idtype");
 			// If id type is not specified in api version 1.0, the default id type is used
