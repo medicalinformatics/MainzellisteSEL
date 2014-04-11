@@ -209,9 +209,6 @@ public class SessionsResource {
 					.status(Status.NOT_FOUND)
 					.entity("No token with id " + tokenId + " in session " + sid + ".")
 					.build());		
-		// Nicht jeder, der eine Token-Id hat, sollte das Token lesen können,
-		// insbesondere bei Temp-Ids ("readPatient"): Token enthält echte ID
-		Servers.instance.checkPermission(req, "tt_" + t.getType());
 
 		try {
 			JSONObject ret = t.toJSON(Servers.instance.getRequestApiVersion(req));
