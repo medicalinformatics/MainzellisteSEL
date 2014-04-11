@@ -126,25 +126,22 @@ public class EpilinkMatcher implements Matcher {
 			Iterator<Map.Entry<String, Field<?>>> itRight = fieldsToCompareRight.entrySet().iterator(); 
 			Iterator<Map.Entry<String, Field<?>>> itLeft = fieldsToCompareLeft.entrySet().iterator();
 			
-		outer:	
-			while (itRight.hasNext()) {
-				// search for next empty field on right side
-				if (!itRight.next().getValue().isEmpty())
-					continue;
-				// now go to next empty field on the left 
-				while (itLeft.hasNext()) {
-					// if empty field was found on each side, 
-					// remove them and continue with search on right side 
-					if (itLeft.next().getValue().isEmpty()) {
-						itRight.remove();
-						itLeft.remove();
-						continue outer;
-					}
-				}
-				// if search on left side reached the end, no need to keep
-				// searching on right side
-				break;
-			}
+            // process fields (left and right) until end is reached on one side
+            while (itRight.hasNext() && itLeft.hasNext()) {
+                // Search for next empty field on right side
+                if (itRight.next().getValue().isEmpty()) {
+                    // Now go to next empty field on the left 
+                    while (itLeft.hasNext()) {
+                        if (itLeft.next().getValue().isEmpty()) {
+                            // If empty fields have been found on each side, 
+                            // remove them and continue with search on right side         
+                            itRight.remove();
+                            itLeft.remove();
+                            break;
+                        }
+                    }
+                }
+            }        
 							
 			List<List<String>> permutations = permutations(new LinkedList<String>(fieldsToCompareRight.keySet()));
 			
