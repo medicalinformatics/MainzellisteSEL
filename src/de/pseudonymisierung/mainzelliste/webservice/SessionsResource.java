@@ -174,9 +174,7 @@ public class SessionsResource {
 				.path("/{tid}")
 				.build(t.getId());
 		
-		JSONObject ret = new JSONObject()
-				.put("tokenId", t.getId())
-				.put("uri", newUri);
+		JSONObject ret = getSingleToken(sid, t.getId(), req);
 		
 		logger.info("Created token of type " + t.getType() + " with id " + t.getId() + 
 				" in session " + s.getId() + "\n" +

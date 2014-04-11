@@ -314,12 +314,17 @@ public class Token {
 	
 	public JSONObject toJSON(ApiVersion apiVersion) throws Exception {
 		JSONObject ret = new JSONObject();
-		ret.put("id", this.id)
-		.put("type", this.type);
-		
-		ObjectMapper mapper = new ObjectMapper();
-		String dataString = mapper.writeValueAsString(data);
-		ret.put("data", new JSONObject(dataString));
+		// uri not known in this context -> assing in SessionsResource
+		if (apiVersion.majorVersion >= 2) {
+			ret.put("id", this.id)
+			.put("type", this.type);
+			
+			ObjectMapper mapper = new ObjectMapper();
+			String dataString = mapper.writeValueAsString(data);
+			ret.put("data", new JSONObject(dataString));
+		} else {
+			ret.put("tokenId", this.id);		
+		}
 		return ret;
 	}
 
