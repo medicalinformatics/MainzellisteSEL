@@ -30,9 +30,13 @@ import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
+
+import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jettison.json.JSONObject;
 
 import com.sun.jersey.api.uri.UriTemplate;
 
@@ -41,6 +45,7 @@ import de.pseudonymisierung.mainzelliste.IDGeneratorFactory;
 import de.pseudonymisierung.mainzelliste.PID;
 import de.pseudonymisierung.mainzelliste.Patient;
 import de.pseudonymisierung.mainzelliste.Session;
+import de.pseudonymisierung.mainzelliste.Servers.ApiVersion;
 import de.pseudonymisierung.mainzelliste.dto.Persistor;
 import de.pseudonymisierung.mainzelliste.exceptions.InvalidTokenException;
 
@@ -70,9 +75,9 @@ public class Token {
 	 * @throws InvalidTokenException if the format is incorrect. A specific error message
 	 * is returned to the client with status code 400 (bad request).
 	 */
-	public void checkValidity() throws InvalidTokenException {
+	public void checkValidity(ApiVersion apiVersion) throws InvalidTokenException {
 		if (this.type.equals("addPatient"))
-			this.checkAddPatient();
+			this.checkAddPatient(apiVersion);
 		else if (this.type.equals("readPatients"))
 			this.checkReadPatients();
 		else
@@ -160,9 +165,22 @@ public class Token {
 	}
 	
 	@SuppressWarnings("unchecked")
-	private void checkAddPatient()  {
+	private void checkAddPatient(ApiVersion apiVersion)  {
 		// check requested id types
-		this.checkIdTypes((List<String>) this.getDataItemList("idTypes"));
+		if (apiVersion.majorVersion >= 2) {
+			this.checkIdTypes((List<String>) this.getDataItemList("idTypes"));
+		} else if (this.hasDataItem("idtypes")) {
+			this.checkIdTypes((List<String>) this.getDataItemList("idtypes"));
+		} else if (this.hasDataItem("idtype")) {
+			LinkedList<String> idTypes= new LinkedList<String>();
+			String requestedIdType = this.getDataItemString("idtype");
+			// If id type is not specified in api version 1.0, the default id type is used
+			if (requestedIdType != null) {
+				idTypes.add(requestedIdType);
+				this.checkIdTypes(idTypes);
+			}
+		}
+
 		
 		// Check callback URL
 		String callback = this.getDataItemString("callback");
@@ -190,7 +208,7 @@ public class Token {
 			
 			List<String> definedIdTypes = Arrays.asList(IDGeneratorFactory.instance.getIDTypes());
 			for (String templateVar : redirectURITempl.getTemplateVariables()) {
-				if (!definedIdTypes.contains(templateVar))
+				if (!templateVar.equals("tokenId") && !definedIdTypes.contains(templateVar))
 					throw new InvalidTokenException("The URI template for the redirect address contains the undefined id type " + templateVar + ".");
 			}
 		}
@@ -293,4 +311,21 @@ public class Token {
 		if (!definedIdTypes.contains(idType))
 			throw new InvalidTokenException("'" + idType + "'" + " is not a known ID type!");
 	}
+	
+	public JSONObject toJSON(ApiVersion apiVersion) throws Exception {
+		JSONObject ret = new JSONObject();
+		// uri not known in this context -> assing in SessionsResource
+		if (apiVersion.majorVersion >= 2) {
+			ret.put("id", this.id)
+			.put("type", this.type);
+			
+			ObjectMapper mapper = new ObjectMapper();
+			String dataString = mapper.writeValueAsString(data);
+			ret.put("data", new JSONObject(dataString));
+		} else {
+			ret.put("tokenId", this.id);		
+		}
+		return ret;
+	}
+
 }

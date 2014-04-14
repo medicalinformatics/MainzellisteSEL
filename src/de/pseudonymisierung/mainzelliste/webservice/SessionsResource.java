@@ -49,6 +49,7 @@ import org.codehaus.jettison.json.JSONObject;
 
 import de.pseudonymisierung.mainzelliste.Servers;
 import de.pseudonymisierung.mainzelliste.Session;
+import de.pseudonymisierung.mainzelliste.exceptions.InternalErrorException;
 
 /**
  * Resource-based access to server-side client sessions.
@@ -163,7 +164,7 @@ public class SessionsResource {
 		}
 		
 		// Check validity of token (i.e. data items have correct format etc.)
-		t.checkValidity();
+		t.checkValidity(Servers.instance.getRequestApiVersion(req));
 
 		//Token erstellen, speichern und URL zurückgeben
   		Servers.instance.registerToken(s.getId(), t);
@@ -173,9 +174,7 @@ public class SessionsResource {
 				.path("/{tid}")
 				.build(t.getId());
 		
-		JSONObject ret = new JSONObject()
-				.put("tokenId", t.getId())
-				.put("uri", newUri);
+		JSONObject ret = getSingleToken(sid, t.getId(), req);
 		
 		logger.info("Created token of type " + t.getType() + " with id " + t.getId() + 
 				" in session " + s.getId() + "\n" +
@@ -191,17 +190,16 @@ public class SessionsResource {
 	@Path("/{session}/tokens/{tokenid}")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	public Token getSingleToken(
+	public JSONObject getSingleToken(
 			@PathParam("session") SessionIdParam sid,
 			@PathParam("tokenid") String tokenId,
 			@Context HttpServletRequest req){
 
+		logger.info("Received request to get token " + tokenId + " in session " + sid +
+				" by host " + req.getRemoteHost());
+
 		Session s = sid.getValue();
 		Token t = Servers.instance.getTokenByTid(tokenId); 
-
-		// Nicht jeder, der eine Token-Id hat, sollte das Token lesen können,
-		// insbesondere bei Temp-Ids ("readPatient"): Token enthält echte ID
-		Servers.instance.checkPermission(req, "tt_" + t.getType());
 
 		// Check that token exists and belongs to specified session
 		if (t == null || !s.getTokens().contains(t))
@@ -209,8 +207,13 @@ public class SessionsResource {
 					.status(Status.NOT_FOUND)
 					.entity("No token with id " + tokenId + " in session " + sid + ".")
 					.build());		
-		logger.info("Received request to get token " + tokenId + " in session " + sid +
-				" by host " + req.getRemoteHost());
-		return t;
+
+		try {
+			JSONObject ret = t.toJSON(Servers.instance.getRequestApiVersion(req));
+			ret.put("uri", req.getRequestURL());
+			return ret;
+		} catch (Exception e) {
+			throw new InternalErrorException(e);
+		}
 	}
 }

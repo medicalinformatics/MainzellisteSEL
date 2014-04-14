@@ -23,6 +23,7 @@ import org.apache.log4j.Logger;
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONObject;
 
+import de.pseudonymisierung.mainzelliste.Servers.ApiVersion;
 import de.pseudonymisierung.mainzelliste.dto.Persistor;
 import de.pseudonymisierung.mainzelliste.exceptions.InternalErrorException;
 import de.pseudonymisierung.mainzelliste.exceptions.InvalidTokenException;
@@ -52,7 +53,8 @@ public enum PatientBackend {
 	 */
 	public IDRequest createNewPatient(
 			String tokenId,
-			MultivaluedMap<String, String> form) throws WebApplicationException {
+			MultivaluedMap<String, String> form,
+			ApiVersion apiVersion) throws WebApplicationException {
 
 		HashMap<String, Object> ret = new HashMap<String, Object>();
 		// create a token if started in debug mode
@@ -196,29 +198,37 @@ public enum PatientBackend {
 		{
 			try {
 				logger.debug("Sending request to callback " + callback);
+
+				JSONObject reqBody = new JSONObject();
+				
+				if (apiVersion.majorVersion >= 2) {
+					// Collect ids for Callback object
+					JSONArray idsJson = new JSONArray(); 
+					
+					for (ID thisID : returnIds) {
+						idsJson.put(thisID.toJSON()); 
+					}
+					
+					reqBody.put("tokenId", t.getId())
+					.put("ids", idsJson);
+
+				} else {  // API version 1.0 
+					if (returnIds.size() > 1) {
+						throw new WebApplicationException(
+								Response.status(Status.BAD_REQUEST)
+								.entity("Selected API version 1.0 permits only one ID in callback, " +
+										"but several were requested. Set mainzellisteApiVersion to a " +
+										"value >= 2.0 or request only one ID type in token.")
+										.build());
+					}					
+					reqBody.put("tokenId", t.getId())
+					.put("id", returnIds.get(0).getIdString());
+				}
+
 				HttpClient httpClient = new DefaultHttpClient();
 				HttpPost callbackReq = new HttpPost(callback);
 				callbackReq.setHeader("Content-Type", MediaType.APPLICATION_JSON);
-				
-				// Collect ids for Callback object
-				JSONArray idsJson = new JSONArray(); 
-				for (ID thisID : returnIds) {
-						idsJson.put(thisID.toJSON()); 
-				}
-
-				/* FIXME FOlgendes für ApiVersion < 1.3
-				JSONObject reqBody = new JSONObject()
-						.put("tokenId", t.getId())
-						//FIXME mehrere IDs zurückgeben -> bricht API, die ILF mitgeteilt wurde
-						.put("id", returnIds.get(0).getIdString());
-//						.put("id", id.toJSON());
- */
-				JSONObject reqBody = new JSONObject()
-					.put("tokenId", t.getId())
-					.put("ids", idsJson);
-				
-				String reqBodyJSON = reqBody.toString();
-				StringEntity reqEntity = new StringEntity(reqBodyJSON);
+				StringEntity reqEntity = new StringEntity(reqBody.toString());
 				reqEntity.setContentType("application/json");
 				callbackReq.setEntity(reqEntity);				
 				HttpResponse response = httpClient.execute(callbackReq);

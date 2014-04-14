@@ -109,9 +109,10 @@ public class PatientsResource {
 	@Produces(MediaType.TEXT_HTML)
 	public Response newPatientBrowser(
 			@QueryParam("tokenId") String tokenId,
-			MultivaluedMap<String, String> form){
+			MultivaluedMap<String, String> form,
+			@Context HttpServletRequest request){
 		Token t = Servers.instance.getTokenByTid(tokenId);
-		IDRequest createRet = PatientBackend.instance.createNewPatient(tokenId, form); 
+		IDRequest createRet = PatientBackend.instance.createNewPatient(tokenId, form, Servers.instance.getRequestApiVersion(request)); 
 		Set<ID> ids = createRet.getRequestedIds();
 		MatchResult result = createRet.getMatchResult();
 		Map <String, Object> map = new HashMap<String, Object>();
@@ -123,16 +124,20 @@ public class PatientsResource {
 			}
 			map.put("readonly", "true");
 			map.put("tokenId", tokenId);
-			return Response.status(Status.ACCEPTED)
+			return Response.status(Status.CONFLICT)
 					.entity(new Viewable("/unsureMatch.jsp", map)).build();
 		} else {
 			if (t != null && t.getData() != null && t.getData().containsKey("redirect")) {
 				UriTemplate redirectURITempl = new UriTemplate(t.getDataItemString("redirect"));
 				HashMap<String, String> templateVarMap = new HashMap<String, String>();
 				for (String templateVar : redirectURITempl.getTemplateVariables()) {
-					ID thisID = createRet.getAssignedPatient().getId(templateVar);
-					String idString = thisID.getIdString();
-					templateVarMap.put(templateVar, idString);
+					if (templateVar.equals("tokenId")) {
+						templateVarMap.put(templateVar, tokenId);
+					} else {
+						ID thisID = createRet.getAssignedPatient().getId(templateVar);
+						String idString = thisID.getIdString();
+						templateVarMap.put(templateVar, idString);
+					}
 				}
 				try {
 					URI redirectURI = new URI(redirectURITempl.createURI(templateVarMap));
@@ -188,29 +193,71 @@ public class PatientsResource {
 			@Context HttpServletRequest request,
 			@Context UriInfo context,
 			MultivaluedMap<String, String> form) throws JSONException {
-		IDRequest response = PatientBackend.instance.createNewPatient(tokenId, form);
-		logger.info("Accept: " + request.getHeader("Accept"));
-		logger.info("Content-Type: " + request.getHeader("Content-Type"));
+		IDRequest response = PatientBackend.instance.createNewPatient(tokenId, form, Servers.instance.getRequestApiVersion(request));
+		if (response.getMatchResult().getResultType() == MatchResultType.POSSIBLE_MATCH && response.getRequestedIds() == null) {
+			return Response
+					.status(Status.CONFLICT)
+					.entity("Unable to definitely determined whether the data refers to an existing or to a new patient. " +
+							"Please check data or resubmit with sureness=true to get a tentative result. Please check documentation for details.")
+					.build();
+		}
+		logger.debug("Accept: " + request.getHeader("Accept"));
+		logger.debug("Content-Type: " + request.getHeader("Content-Type"));
 		List<ID> newIds = new LinkedList<ID>(response.getRequestedIds());
 		
-		JSONArray ret = new JSONArray();
-		for (ID thisID : newIds) {
+		int apiMajorVersion = Servers.instance.getRequestMajorApiVersion(request);
+		
+		if (apiMajorVersion >= 2) {
+			JSONArray ret = new JSONArray();
+			for (ID thisID : newIds) {
+				URI newUri = context.getBaseUriBuilder()
+						.path(PatientsResource.class)
+						.path("/{idtype}/{idvalue}")
+						.build(thisID.getType(), thisID.getIdString());
+	
+				ret.put(new JSONObject()
+					.put("idType", thisID.getType())
+					.put("idString", thisID.getIdString())
+					.put("tentative", thisID.isTentative())
+					.put("uri", newUri));
+			}
+					
+			return Response
+				.status(Status.CREATED)
+				.entity(ret)
+				.build();
+		} else {
+			/*
+			 *  Old api permits only one ID in response. If several
+			 *  have been requested, which one to choose?
+			 */
+			if (newIds.size() > 1) {
+				throw new WebApplicationException(
+						Response.status(Status.BAD_REQUEST)
+						.entity("Selected API version 1.0 permits only one ID in response, " +
+								"but several were requested. Set mainzellisteApiVersion to a " +
+								"value >= 2.0 or request only one ID type in token.")
+								.build());
+			}
+			
+			ID newId = newIds.get(0);
+			
 			URI newUri = context.getBaseUriBuilder()
 					.path(PatientsResource.class)
 					.path("/{idtype}/{idvalue}")
-					.build(thisID.getType(), thisID.getIdString());
+					.build(newId.getType(), newId.getIdString());
+			
+			JSONObject ret = new JSONObject()
+					.put("newId", newId.getIdString())
+					.put("tentative", newId.isTentative())
+					.put("uri", newUri);
 
-			ret.put(new JSONObject()
-				.put("idType", thisID.getType())
-				.put("idString", thisID.getIdString())
-				.put("tentative", thisID.isTentative())
-				.put("uri", newUri));
+			return Response
+				.status(Status.CREATED)
+				.entity(ret)
+				.location(newUri)
+				.build();
 		}
-				
-		return Response
-			.status(Status.CREATED)
-			.entity(ret)
-			.build();
 	}
 
 	

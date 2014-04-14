@@ -37,6 +37,7 @@ import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.UUID;
+import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.WebApplicationException;
@@ -275,5 +276,54 @@ public enum Servers {
 		synchronized (tokensByTid) {
 			return tokensByTid.get(tokenId);
 		}
+	}
+	
+	public class ApiVersion {
+		public final int majorVersion;
+		public final int minorVersion;
+		
+		protected ApiVersion(String versionString) {
+			majorVersion = Integer.parseInt(versionString.split("\\.")[0]);
+			minorVersion = Integer.parseInt(versionString.split("\\.")[1]);
+		}
+	}
+	
+	public ApiVersion getRequestApiVersion(HttpServletRequest req) {
+		// First try to read saved version String (prevents multiple parsing of header etc.)
+		String version = null;
+		Object versionHeader =req.getAttribute("de.pseudonymisierung.mainzelliste.apiVersion");
+		if (versionHeader != null) {
+			version = versionHeader.toString();
+		} else {
+			// Try to read from header
+			version = req.getHeader("mainzellisteApiVersion");
+			// Try to read from URL parameter
+			if (version == null) {
+				version = req.getParameter("mainzellisteApiVersion");
+			}
+			// Otherwise assume 1.0
+			if (version == null) {
+				version = "1.0";
+			}
+			if (!Pattern.matches("\\d+\\.\\d+", version)) {
+				throw new WebApplicationException(
+						Response.status(Status.BAD_REQUEST)
+						.entity(String.format("'%s' is not a valid API version. Please " +
+								"supply API version in format MAJOR.MINOR as HTTP header or " +
+								"URL parameter 'mainzellisteApiVersion'.", version))
+						.build());
+			}
+			// Save in request scope
+			req.setAttribute("de.pseudonymisierung.mainzelliste.apiVersion", version);
+		}
+		return new ApiVersion(version);
+	}
+	
+	public int getRequestMajorApiVersion(HttpServletRequest req) {
+		return this.getRequestApiVersion(req).majorVersion;
+	}
+
+	public int getRequestMinorApiVersion(HttpServletRequest req) {
+		return this.getRequestApiVersion(req).minorVersion;
 	}
 }
