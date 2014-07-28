@@ -235,7 +235,7 @@ servers.0.allowedRemoteAdresses = 127.0.0.1;0:0:0:0:0:0:0:1
 
 
 # Allowed Format of callback
-callback.allowedFormat = https://.* 
+callback.allowedFormat = https://.*
 
 # Session timeout
 # A session will be deleted if not accessed for this amount of time, specified in minutes
