@@ -139,6 +139,23 @@ public enum Persistor {
 	}
 
 	/**
+	 * Check whether a patient with a given ID exists
+	 * @param idType
+	 * @param idString
+	 */
+	public boolean existsPatient(String idType, String idString) {
+		EntityManager em = emf.createEntityManager();
+		TypedQuery<Long> q = em.createQuery("SELECT COUNT(p) FROM Patient p JOIN p.ids id WHERE id.idString = :idString AND id.type = :idType", Long.class);
+		q.setParameter("idString", idString);
+		q.setParameter("idType", idType);
+		Long count = q.getSingleResult();
+		if (count > 0)
+			return true;
+		else 
+			return false;
+	}
+
+	/**
 	 * Returns a detached list of the IDs of all patients.
 	 * @return A list where every item represents the IDs of one patient.
 	 */
@@ -356,6 +373,5 @@ public enum Persistor {
 			logger.fatal("Could not find database driver!", e);
 			throw new Error(e);
 		}			
-		
 	}
 }
