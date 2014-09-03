@@ -240,12 +240,12 @@ public enum Persistor {
 	private void updateDatabaseSchemaJPA(String fromVersion)
 	{
 		EntityManager em = emf.createEntityManager();
-		em.getTransaction().begin();
-		
+
 		if ("1.0".equals(fromVersion)) { // 1.0 -> 1.1
-				em.createNativeQuery("UPDATE IDGeneratorMemory SET idType=idstring").executeUpdate();
-				em.createNativeQuery("ALTER TABLE IDGeneratorMemory DROP COLUMN idString").executeUpdate();
-				
+			em.getTransaction().begin();
+			em.createNativeQuery("UPDATE IDGeneratorMemory SET idType=idstring").executeUpdate();
+			em.createNativeQuery("ALTER TABLE IDGeneratorMemory DROP COLUMN idString").executeUpdate();
+
 			/*
 			 * Delete invalid instances of IDGeneratorMemory (caused by Bug #3007
 			 * Both id generators of version 1.0 use a field "counter". The memory object
@@ -269,8 +269,19 @@ public enum Persistor {
 				}
 			}
 			this.setSchemaVersion("1.1", em);
-			em.getTransaction().commit(); //FIXME: Müsste der hier nicht (genau wie begin) HINTER die Klammer?
+			fromVersion = "1.1";
+			em.getTransaction().commit();
 		} // End of update 1.0 -> 1.1
+		if ("1.1".equals(fromVersion)) {
+			em.getTransaction().begin();
+			em.createNativeQuery("CREATE INDEX i_id_idstring ON ID (idString)").executeUpdate();
+
+			// Update schema version. Corresponds to Mainzelliste version, therefore the gap
+			this.setSchemaVersion("1.3.1", em);
+			fromVersion = "1.3.1";
+			
+			em.getTransaction().commit();
+		} // End of update 1.1 -> 1.3.1
 	}
 	
 	/**

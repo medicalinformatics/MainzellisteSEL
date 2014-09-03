@@ -54,7 +54,7 @@ public abstract class ID {
 	protected int idJpaId;
 	
 	@Basic
-	@Index
+	@Index(name="i_id_idstring")
 	protected String idString;
 	
 	@Basic
