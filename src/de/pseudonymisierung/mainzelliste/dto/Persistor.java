@@ -274,6 +274,7 @@ public enum Persistor {
 		} // End of update 1.0 -> 1.1
 		if ("1.1".equals(fromVersion)) {
 			em.getTransaction().begin();
+			// Add index on idString for more efficient access to patients by ID
 			em.createNativeQuery("CREATE INDEX i_id_idstring ON ID (idString)").executeUpdate();
 
 			// Update schema version. Corresponds to Mainzelliste version, therefore the gap
