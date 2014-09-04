@@ -8,6 +8,15 @@ Um immer auf dem aktuellen Stand zu bleiben, registrieren Sie sich auf unserer [
 
 ## Releaseinformationen
 
+### 1.3.1
+- Bugfixes und Verbesserungen:
+	- GET request auf /patients mit ungültigem "readPatients"-Token verursachte eine NullPointerException.
+	- Die Erstellung von "readPatients"-Tokens konnte durch Optimierung einer Datenbankabfrage und Einführung
+	 eines Index beschleunigt werden.
+	- Korrekturen in der Konfigurationsvorlage: 
+		- Leerzeichen am Zeilenende bei "callback.allowedFormat" entfernt.
+	  	- Tokenbezeichnung "readPatient" zu "readPatients" korrigiert.    
+
 ### 1.3
 - Mit Erscheinen dieser Version liegt erstmals eine umfassende Schnittstellenbeschreibung vor.
   Sie kann als PDF-Dokument von der Projektseite (s.o.) heruntergeladen werden. Softwareversion 1.3
