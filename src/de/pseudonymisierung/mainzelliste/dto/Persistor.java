@@ -143,7 +143,7 @@ public enum Persistor {
 	 * @param idType
 	 * @param idString
 	 */
-	public boolean existsPatient(String idType, String idString) {
+	public boolean patientExists(String idType, String idString) {
 		EntityManager em = emf.createEntityManager();
 		TypedQuery<Long> q = em.createQuery("SELECT COUNT(p) FROM Patient p JOIN p.ids id WHERE id.idString = :idString AND id.type = :idType", Long.class);
 		q.setParameter("idString", idString);
