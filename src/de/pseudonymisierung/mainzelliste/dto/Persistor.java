@@ -272,7 +272,7 @@ public enum Persistor {
 			fromVersion = "1.1";
 			em.getTransaction().commit();
 		} // End of update 1.0 -> 1.1
-		if ("1.1".equals(fromVersion)) {
+		if ("1.1".equals(fromVersion)) { // 1.1 -> 1.3.1
 			em.getTransaction().begin();
 			// Add index on idString for more efficient access to patients by ID
 			em.createNativeQuery("CREATE INDEX i_id_idstring ON ID (idString)").executeUpdate();
