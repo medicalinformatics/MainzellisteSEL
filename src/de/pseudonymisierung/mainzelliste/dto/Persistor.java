@@ -59,7 +59,7 @@ public enum Persistor {
 	instance;
 	
 	/** Version of the database schema used by this application instance */
-	private static final String schemaVersion = "1.1";
+	private static final String schemaVersion = "1.3.1";
 	
 	private EntityManagerFactory emf;
 	
