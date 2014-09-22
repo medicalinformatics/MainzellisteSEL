@@ -136,7 +136,7 @@ public enum IDGeneratorFactory {
 	
 	public ID buildId(String idType, String idString) {
 		if (this.getFactory(idType) == null)
-			throw new InvalidIDException(String.format("No ID type %s defined!", idString));
+			throw new InvalidIDException(String.format("No ID type %s defined!", idType));
 		return this.getFactory(idType).buildId(idString);
 	}
 }
