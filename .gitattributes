@@ -51,6 +51,7 @@ src/de/pseudonymisierung/mainzelliste/exceptions/BarcodeGenerationException.java
 src/de/pseudonymisierung/mainzelliste/exceptions/CircularDuplicateRelationException.java -text svneol=unset#text/plain
 src/de/pseudonymisierung/mainzelliste/exceptions/IncompatibleFieldTypesException.java -text svneol=unset#text/plain
 src/de/pseudonymisierung/mainzelliste/exceptions/InternalErrorException.java -text svneol=unset#text/plain
+src/de/pseudonymisierung/mainzelliste/exceptions/InvalidFieldException.java -text svneol=unset#text/plain
 src/de/pseudonymisierung/mainzelliste/exceptions/InvalidIDException.java -text svneol=unset#text/plain
 src/de/pseudonymisierung/mainzelliste/exceptions/InvalidTokenException.java -text svneol=unset#text/plain
 src/de/pseudonymisierung/mainzelliste/exceptions/NotImplementedException.java -text svneol=unset#text/plain
@@ -73,6 +74,7 @@ src/de/pseudonymisierung/mainzelliste/matcher/StringNormalizer.java -text svneol
 src/de/pseudonymisierung/mainzelliste/matcher/ThreadedEpilinkMatcher.java -text svneol=unset#text/plain
 src/de/pseudonymisierung/mainzelliste/webservice/AbstractParam.java -text svneol=unset#text/plain
 src/de/pseudonymisierung/mainzelliste/webservice/AddPatientToken.java -text svneol=unset#text/plain
+src/de/pseudonymisierung/mainzelliste/webservice/EditPatientToken.java -text svneol=unset#text/plain
 src/de/pseudonymisierung/mainzelliste/webservice/FieldKeyParam.java -text svneol=unset#text/plain
 src/de/pseudonymisierung/mainzelliste/webservice/FunctionsResource.java -text svneol=unset#text/plain
 src/de/pseudonymisierung/mainzelliste/webservice/HTMLResource.java -text svneol=unset#text/plain

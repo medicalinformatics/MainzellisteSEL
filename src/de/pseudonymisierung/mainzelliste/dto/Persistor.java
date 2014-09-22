@@ -137,7 +137,7 @@ public enum Persistor {
 	}
 
 	/**
-	 * Check whether a patient with a given ID exists
+	 * Check whether a patient with a given ID exists.
 	 * @param idType
 	 * @param idString
 	 */
@@ -151,6 +151,14 @@ public enum Persistor {
 			return true;
 		else 
 			return false;
+	}
+	
+	/**
+	 * Check whether a patient with a given ID exists.
+	 * @param id
+	 */
+	public boolean patientExists(ID id) {
+		return this.patientExists(id.getType(), id.getIdString());
 	}
 
 	/**

@@ -178,6 +178,13 @@ public enum Config {
 		return FieldTypes.get(FieldKey);
 	}
 	
+	/**
+	 * Check whether a field with the given name is configured.
+	 */
+	public boolean fieldExists(String fieldName) {
+		return this.FieldTypes.containsKey(fieldName);
+	}
+	
 	public String getDist() {
 		return getProperty("dist");
 	}

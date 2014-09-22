@@ -78,6 +78,8 @@ public class Token {
 			this.checkAddPatient(apiVersion);
 		else if (this.type.equals("readPatients"))
 			this.checkReadPatients();
+		else if (this.type.equals("editPatient"))
+			this.checkEditPatient();
 		else
 			throw new InvalidTokenException("Token type " + this.type + " unknown!");		
 	}
@@ -278,6 +280,11 @@ public class Token {
 		}
 	}
 	
+	private void checkEditPatient() {
+		// All checks for editPatient are made on creation
+		return;
+	}
+
 	/**
 	 * Check that the provided list contains only valid id types.
 	 * 
