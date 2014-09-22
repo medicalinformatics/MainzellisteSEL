@@ -26,6 +26,7 @@ import org.codehaus.jettison.json.JSONObject;
 import de.pseudonymisierung.mainzelliste.Servers.ApiVersion;
 import de.pseudonymisierung.mainzelliste.dto.Persistor;
 import de.pseudonymisierung.mainzelliste.exceptions.InternalErrorException;
+import de.pseudonymisierung.mainzelliste.exceptions.InvalidIDException;
 import de.pseudonymisierung.mainzelliste.exceptions.InvalidTokenException;
 import de.pseudonymisierung.mainzelliste.matcher.MatchResult;
 import de.pseudonymisierung.mainzelliste.matcher.MatchResult.MatchResultType;
@@ -248,5 +249,54 @@ public enum PatientBackend {
 		return request;
 	}
 	
+	/**
+	 * Set fields of a patient to new values.
+	 * @param patientId ID of the patient to edit.
+	 * @param newFieldValues Field values to set. Fields that do not appear as map keys are
+	 *            left as they are. In order to delete a field value, provide an
+	 *            empty string. All values are processed by field transformation as
+	 *            defined in the configuration file.
+	 */
+	public void editPatient(ID patientId, Map<String, String> newFieldValues) {
+		// Check that provided ID is valid
+		if (patientId == null) {
+			// Calling methods should provide a legal id, therefore log an error if id is null 
+			logger.error("editPatient called with null id.");
+			throw new InternalErrorException("An internal error occured: editPatients called with null. Please contact the administrator.");
+		}
+		Patient pToEdit = Persistor.instance.getPatient(patientId);
+		if (pToEdit == null)
+		{
+			logger.info("Request to edit patient with unknown ID " + patientId.toString());
+			throw new InvalidIDException("No patient found with ID " + patientId.toString());
+		}
+		
+		// read input fields from form
+		Patient pInput = new Patient();
+		Map<String, Field<?>> chars = new HashMap<String, Field<?>>();
+
+		for(String fieldName : Config.instance.getFieldKeys()){
+			// If a field is not in the map, keep the old value
+			if (!newFieldValues.containsKey(fieldName))
+				chars.put(fieldName, pToEdit.getInputFields().get(fieldName));
+			else {
+				chars.put(fieldName, Field.build(fieldName, newFieldValues.get(fieldName)));
+			}
+		}
+
+		pInput.setFields(chars);
+		
+		// transform input fields
+		Patient pNormalized = Config.instance.getRecordTransformer().transform(pInput);
+		// set input fields
+		pNormalized.setInputFields(chars);
+		
+		// assign changed fields to patient in database, persist
+		pToEdit.setFields(pNormalized.getFields());
+		pToEdit.setInputFields(pNormalized.getInputFields());
+
+		// Save to database
+		Persistor.instance.updatePatient(pToEdit);
+	}
 
 }

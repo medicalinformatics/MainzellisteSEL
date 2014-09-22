@@ -53,6 +53,7 @@ src/de/pseudonymisierung/mainzelliste/exceptions/IncompatibleFieldTypesException
 src/de/pseudonymisierung/mainzelliste/exceptions/InternalErrorException.java -text svneol=unset#text/plain
 src/de/pseudonymisierung/mainzelliste/exceptions/InvalidFieldException.java -text svneol=unset#text/plain
 src/de/pseudonymisierung/mainzelliste/exceptions/InvalidIDException.java -text svneol=unset#text/plain
+src/de/pseudonymisierung/mainzelliste/exceptions/InvalidJSONException.java -text svneol=unset#text/plain
 src/de/pseudonymisierung/mainzelliste/exceptions/InvalidTokenException.java -text svneol=unset#text/plain
 src/de/pseudonymisierung/mainzelliste/exceptions/NotImplementedException.java -text svneol=unset#text/plain
 src/de/pseudonymisierung/mainzelliste/exceptions/UnauthorizedException.java -text svneol=unset#text/plain

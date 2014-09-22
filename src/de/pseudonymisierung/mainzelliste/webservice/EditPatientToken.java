@@ -30,10 +30,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
-
 import de.pseudonymisierung.mainzelliste.Config;
 import de.pseudonymisierung.mainzelliste.ID;
 import de.pseudonymisierung.mainzelliste.IDGeneratorFactory;
@@ -54,6 +50,22 @@ public class EditPatientToken extends Token {
 	 */
 	Set<String> fields;
 	
+	/**
+	 * Get ID of the patient that can be edited with this token. The patient
+	 * is identified by the ID that was provided on token creation.
+	 */
+	public ID getPatientId() {
+		return patientId;
+	}
+
+	/**
+	 * Get the fields that can be changed with this token. If null,
+	 * all fields can be changed.
+	 */
+	public Set<String> getFields() {
+		return fields;
+	}
+
 	@Override
 	public void setData(Map<String, ?> data) {
 		super.setData(data);

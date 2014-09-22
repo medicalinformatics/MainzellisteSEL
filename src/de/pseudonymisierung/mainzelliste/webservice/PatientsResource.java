@@ -69,8 +69,9 @@ import de.pseudonymisierung.mainzelliste.PatientBackend;
 import de.pseudonymisierung.mainzelliste.Servers;
 import de.pseudonymisierung.mainzelliste.dto.Persistor;
 import de.pseudonymisierung.mainzelliste.exceptions.InternalErrorException;
+import de.pseudonymisierung.mainzelliste.exceptions.InvalidFieldException;
+import de.pseudonymisierung.mainzelliste.exceptions.InvalidJSONException;
 import de.pseudonymisierung.mainzelliste.exceptions.InvalidTokenException;
-import de.pseudonymisierung.mainzelliste.exceptions.NotImplementedException;
 import de.pseudonymisierung.mainzelliste.exceptions.UnauthorizedException;
 import de.pseudonymisierung.mainzelliste.matcher.MatchResult;
 import de.pseudonymisierung.mainzelliste.matcher.MatchResult.MatchResultType;
@@ -396,16 +397,102 @@ public class PatientsResource {
 		
 		return Response.ok().entity(ret).build();
 	}
-	
-	@Path("/tempid/{tid}")
+
+	@Path("/tokenId/{tokenId}")
+	@PUT
+	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+	public Response editPatientBrowser(@PathParam("tokenId") String tokenId,
+			MultivaluedMap<String, String> form,
+			@Context HttpServletRequest request) {
+
+		// Collect fields from input form
+		Map<String, String> newFieldValues = new HashMap<String, String>();
+		for (String fieldName : form.keySet()) {
+			newFieldValues.put(fieldName, form.getFirst(fieldName));
+		}
+
+		this.editPatient(tokenId, newFieldValues, request);
+
+		return Response.ok().build();
+	}
+
+	@Path("/tokenId/{tokenId}")
 	@PUT
 	@Consumes(MediaType.APPLICATION_JSON)
-	public void setPatientByTempId(
-			@PathParam("tid") String tid,
-			Patient p){
-		//Hier keine Auth notwendig. Wenn tid existiert, ist der Nutzer dadurch autorisiert.
-		//Charakteristika des Patients in DB mit TempID tid austauschen durch die von p
-		logger.info("Received PUT /patients/tempid/" + tid);
-		throw new NotImplementedException();
+	public Response editPatientJSON(@PathParam("tokenId") String tokenId,
+			String data,
+			@Context HttpServletRequest request) {
+
+		// Collect fields from input form
+		try {
+			JSONObject newFieldValuesJSON = new JSONObject(data);
+			Map<String, String> newFieldValues = new HashMap<String, String>();
+			Iterator<?> i = newFieldValuesJSON.keys();
+			while (i.hasNext()) {
+				String fieldName = i.next().toString();			
+				newFieldValues.put(fieldName, newFieldValuesJSON.get(fieldName).toString());
+			}
+			this.editPatient(tokenId, newFieldValues, request);	
+			return Response.ok().build();
+		} catch (JSONException e) {
+			throw new InvalidJSONException(e);
+		}
+	}
+
+	/**
+	 * Handles requests to edit a patient (i.e. change IDAT fields). Methods for
+	 * specific media types should delegate all processing apart from converting
+	 * the input (e.g. form fields) to this function, including error handling
+	 * for invalid tokens etc.
+	 * 
+	 * @param tokenId
+	 *            Id of a valid editPatient token.
+	 * @param newFieldValues
+	 *            Field values to set. Fields that do not appear as map keys are
+	 *            left as they are. In order to delete a field value, provide an
+	 *            empty string.
+	 * @param request
+	 *            The injected HttpServletRequest.
+	 */
+	private void editPatient(String tokenId, Map<String, String> newFieldValues, HttpServletRequest request) {
+		
+		Token t = Servers.instance.getTokenByTid(tokenId);
+		if (t == null || !"editPatient".equals(t.getType()) ) {
+				logger.info("Token with id " + t == null ? "is unknown." : "has wrong type '" + t.getType() + "'");
+				throw new InvalidTokenException("Please supply a valid 'editPatient' token.");
+		}
+		// synchronize on token 
+		synchronized (t) {
+			/* Get token again and check if it still exist.
+			 * This prevents the following race condition:
+			 *  1. Thread A gets token t and enters synchronized block
+			 *  2. Thread B also gets token t, now waits for A to exit the synchronized block
+			 *  3. Thread A deletes t and exits synchronized block
+			 *  4. Thread B enters synchronized block with invalid token
+			 */
+			EditPatientToken tt = (EditPatientToken) Servers.instance.getTokenByTid(tokenId);
+			if(tt == null){
+				String infoLog = "Token with ID " + tokenId + " is invalid. It was invalidated by a concurrent request or the session timed out during this request.";
+				logger.info(infoLog);
+				throw new WebApplicationException(Response
+						.status(Status.UNAUTHORIZED)
+						.entity("Please supply a valid 'editPatient' token.")
+						.build());
+			}
+
+			// Check that the caller is allowed to change the provided fields
+			if (tt.getFields() != null) {
+				for (String fieldName : newFieldValues.keySet()) {
+					if (!tt.getFields().contains(fieldName))
+						throw new InvalidFieldException("No authorization to edit field " + fieldName +
+								" with this token.");
+				}
+			}
+			
+			PatientBackend.instance.editPatient(tt.getPatientId(), newFieldValues);
+		} // end of synchronized block
+		
+		if (!Config.instance.debugIsOn())
+			Servers.instance.deleteToken(t.getId());
 	}
 }
