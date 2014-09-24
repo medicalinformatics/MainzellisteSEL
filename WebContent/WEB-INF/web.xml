@@ -20,6 +20,8 @@
 			<param-name>com.sun.jersey.api.json.POJOMappingFeature</param-name>
 			<param-value>true</param-value>
 		</init-param>
+		<!-- Allows to convert POST requests to other methods via header "X-HTTP-Method-Override" 
+			or parameter "_method" -->
  		<init-param>
 	         <param-name>com.sun.jersey.spi.container.ContainerRequestFilters</param-name>
 	         <param-value>com.sun.jersey.api.container.filter.PostReplaceFilter</param-value>
