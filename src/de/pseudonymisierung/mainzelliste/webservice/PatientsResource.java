@@ -413,7 +413,7 @@ public class PatientsResource {
 
 		this.editPatient(tokenId, newFieldValues, request);
 
-		return Response.ok().build();
+		return Response.status(Status.NO_CONTENT).build();
 	}
 
 	@Path("/tokenId/{tokenId}")
@@ -433,7 +433,7 @@ public class PatientsResource {
 				newFieldValues.put(fieldName, newFieldValuesJSON.get(fieldName).toString());
 			}
 			this.editPatient(tokenId, newFieldValues, request);	
-			return Response.ok().build();
+			return Response.status(Status.NO_CONTENT).build();
 		} catch (JSONException e) {
 			throw new InvalidJSONException(e);
 		}
