@@ -236,7 +236,7 @@ servers.0.allowedRemoteAdresses = 127.0.0.1;0:0:0:0:0:0:0:1
 
 # Allowed origins for cross origin resource sharing (CORS), multiple values separated by ";"
 
-servers.allowedOrigins = 
+servers.allowedOrigins = https://mdat-server.example.org 
 
 # Allowed Format of callback
 callback.allowedFormat = https://.*
