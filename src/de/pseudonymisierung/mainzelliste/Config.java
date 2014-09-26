@@ -30,7 +30,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
@@ -38,6 +40,7 @@ import java.util.prefs.Preferences;
 import java.util.regex.Pattern;
 
 import javax.servlet.ServletContext;
+
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
@@ -60,7 +63,7 @@ public enum Config {
 		HASHED_NORMALIZED; // Bloomfilter with prior normalization
 	}
 	
-	private final String version = "1.3.2";
+	private final String version = "1.4.0";
 	
 	private final Map<String,Class<? extends Field<?>>> FieldTypes;
 	
@@ -69,6 +72,8 @@ public enum Config {
 	private Matcher matcher;
 	
 	private Logger logger = Logger.getLogger(Config.class);
+	
+	private Set<String> allowedOrigins;
 	
 	@SuppressWarnings("unchecked")
 	Config() throws InternalErrorException {
@@ -151,6 +156,11 @@ public enum Config {
 				}
 			}
 		}
+		
+		allowedOrigins = new HashSet<String>();
+		String allowedOriginsString = props.getProperty("servers.allowedOrigins"); 
+		if (allowedOriginsString != null)			
+			allowedOrigins.addAll(Arrays.asList(allowedOriginsString.trim().split(";")));
 	}
 	
 	public RecordTransformer getRecordTransformer() {
@@ -197,6 +207,10 @@ public enum Config {
 	{
 		String debugMode = this.props.getProperty("debug");
 		return (debugMode != null && debugMode.equals("true"));
+	}
+	
+	public boolean originAllowed(String origin) {
+		return this.allowedOrigins.contains(origin);
 	}
 	
 	Level getLogLevel() {

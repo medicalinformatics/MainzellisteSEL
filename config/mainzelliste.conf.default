@@ -234,6 +234,9 @@ servers.0.permissions = createSession;showSessionIds;deleteAllPatients;createTok
 # Accepted origin addresses
 servers.0.allowedRemoteAdresses = 127.0.0.1;0:0:0:0:0:0:0:1
 
+# Allowed origins for cross origin resource sharing (CORS), multiple values separated by ";"
+
+servers.allowedOrigins = 
 
 # Allowed Format of callback
 callback.allowedFormat = https://.*

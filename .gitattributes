@@ -25,6 +25,7 @@ licenses/bsd-serp.txt -text svneol=unset#text/plain
 /pom.xml -text
 src/de/pseudonymisierung/mainzelliste/CompoundField.java -text svneol=unset#text/plain
 src/de/pseudonymisierung/mainzelliste/Config.java -text svneol=unset#text/plain
+src/de/pseudonymisierung/mainzelliste/CorsResponseFilter.java -text svneol=unset#text/plain
 src/de/pseudonymisierung/mainzelliste/Field.java -text svneol=unset#text/plain
 src/de/pseudonymisierung/mainzelliste/HashedField.java -text svneol=unset#text/plain
 src/de/pseudonymisierung/mainzelliste/ID.java -text svneol=unset#text/plain
