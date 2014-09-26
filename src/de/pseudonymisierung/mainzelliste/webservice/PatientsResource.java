@@ -458,7 +458,7 @@ public class PatientsResource {
 		
 		Token t = Servers.instance.getTokenByTid(tokenId);
 		if (t == null || !"editPatient".equals(t.getType()) ) {
-				logger.info("Token with id " + t == null ? "is unknown." : "has wrong type '" + t.getType() + "'");
+				logger.info("Token with id " + tokenId + " " + (t == null ? "is unknown." : ("has wrong type '" + t.getType() + "'")));
 				throw new InvalidTokenException("Please supply a valid 'editPatient' token.");
 		}
 		// synchronize on token 
