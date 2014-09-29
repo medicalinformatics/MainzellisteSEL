@@ -44,7 +44,6 @@ import javax.servlet.http.HttpServletResponse;
  * checked against a list of configured hosts (see {@link Config#originAllowed(String)}).
  * If the host is listed as an allowed origin, the header "Access-Control-Allow-Origin" 
  * in the response is set to this value. 
- * @author Andreas Borg
  *
  */
 public class CorsResponseFilter implements Filter {
