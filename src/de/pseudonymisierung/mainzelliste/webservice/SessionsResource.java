@@ -40,6 +40,7 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriBuilder;
 
@@ -142,6 +143,7 @@ public class SessionsResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response newToken(
 			@Context HttpServletRequest req,
+			@Context UriInfo uriInfo,
 			@PathParam("session") SessionIdParam sid,
 			String tp) throws JSONException {
 		
@@ -174,7 +176,7 @@ public class SessionsResource {
 				.path("/{tid}")
 				.build(t.getId());
 		
-		JSONObject ret = getSingleToken(sid, t.getId(), req);
+		JSONObject ret = getSingleToken(sid, t.getId(), req, uriInfo);
 		
 		logger.info("Created token of type " + t.getType() + " with id " + t.getId() + 
 				" in session " + s.getId() + "\n" +
@@ -193,7 +195,8 @@ public class SessionsResource {
 	public JSONObject getSingleToken(
 			@PathParam("session") SessionIdParam sid,
 			@PathParam("tokenid") String tokenId,
-			@Context HttpServletRequest req){
+			@Context HttpServletRequest req,
+			@Context UriInfo uriInfo){
 
 		logger.info("Received request to get token " + tokenId + " in session " + sid +
 				" by host " + req.getRemoteHost());
@@ -210,7 +213,7 @@ public class SessionsResource {
 
 		try {
 			JSONObject ret = t.toJSON(Servers.instance.getRequestApiVersion(req));
-			ret.put("uri", req.getRequestURL());
+			ret.put("uri", uriInfo.getBaseUri().toString() + "sessions/" + s.getId() + "/tokens/" + tokenId);
 			return ret;
 		} catch (Exception e) {
 			throw new InternalErrorException(e);
