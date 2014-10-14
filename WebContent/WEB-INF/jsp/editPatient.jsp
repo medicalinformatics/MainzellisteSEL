@@ -4,23 +4,6 @@
 <%@page import="de.pseudonymisierung.mainzelliste.IDGeneratorFactory"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="ISO-8859-1"%>
-<%
-	String idTypes[] = IDGeneratorFactory.instance.getIDTypes();
-	String defaultIdType = IDGeneratorFactory.instance.getDefaultIDType();
-	JSONObject originalIds;
-	{
-		@SuppressWarnings("unchecked")
-		Map<String, Object> map = (Map<String, Object>) request
-			.getAttribute("it");
-	
-		Patient original = (Patient) map.get("original");
-	 	originalIds = new JSONObject();
-		if (original != null) {
-			for (ID thisId : original.getIds())
-				originalIds.put(thisId.getType(), thisId.getIdString());
-		}
-	}
-%>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
@@ -34,20 +17,6 @@
 </head>
 
 
-<script type="text/javascript">
-
-var originalIds = <%=originalIds.toString() %>;
-
-function fillOriginalId() {
-	var idType = document.getElementById("idTypeOriginal").value;
-	var idString = originalIds[idType];
-	if (idString === undefined)
-		idString = "";
-	
-	document.getElementById("idStringOriginal").value = idString;
-}
-
-</script>
 
 <body>
 	<div class="kopfzeile">
@@ -56,48 +25,11 @@ function fillOriginalId() {
 	<div class="inhalt">
 		<div>&nbsp;</div>
 		<div class="formular">
-			<form method="post" id="form_person">
+<!-- 			<form method="post" id="form_person"> -->
+			<form method="post" action="<%=request.getContextPath() %>/patients/tokenId/${it.tokenId}?_method=PUT" id="form_person">
 				<h1>Patienten bearbeiten</h1>
 				<%@ include file="patientFormElements.jsp" %>
-				<div id ="form_elements_admin">
-				<table class="daten_tabelle">
-					<tr>
-						<td><label for="tentative">Vorläufig</label></td>
-						<td><input type="checkbox" id="tentative" name="tentative" 
-							<% if (map.get("tentative").equals(true)) {%>
-							checked="${it.tentative}" <% } %>
-							/></td>
-					</tr>
-					<tr>
-						<td rowspan="2"><label for="original">Duplikat von:</label></td>
-						<td><label for="idTypeOriginal">ID-Typ:</label></td>
-						<td>
-							<select name="idTypeOriginal" id="idTypeOriginal" onchange="fillOriginalId();s">
-								<%
-								for (String idType : idTypes)
-								{
-									String selected = idType.equals(defaultIdType) ?
-											"selected=\"selected\"" : "";
-								%>
-									<option value="<%=idType %>" <%=selected %>>
-										<%=idType %>
-									</option>
-								<%
-								}
-								%>
-							</select>
-						</td>
-					</tr>
-					<tr>
-						<td><label for="idString">ID-Wert:</label>
-						</td>
-						<td><input type="text" name="idStringOriginal" id="idStringOriginal"
-							value="<%= originalIds.has(defaultIdType) ? originalIds.get(defaultIdType) : "" %>">
-						</td>
-					</tr>
-				</table>
 				<input type="submit" value="Speichern" />
-				</div>
 			</form>
 		</div>
 		<div>&nbsp;</div>
