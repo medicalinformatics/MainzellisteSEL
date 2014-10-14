@@ -25,6 +25,8 @@
  */
 package de.pseudonymisierung.mainzelliste.webservice;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -36,19 +38,25 @@ import de.pseudonymisierung.mainzelliste.IDGeneratorFactory;
 import de.pseudonymisierung.mainzelliste.dto.Persistor;
 import de.pseudonymisierung.mainzelliste.exceptions.InvalidFieldException;
 import de.pseudonymisierung.mainzelliste.exceptions.InvalidIDException;
+import de.pseudonymisierung.mainzelliste.exceptions.InvalidTokenException;
 
 public class EditPatientToken extends Token {
 	
 	/**
 	 * ID of the patient that can be edited with this token.
 	 */
-	ID patientId;
+	private ID patientId;
 	
 	/**
 	 * Names of fields that can be changed with this token. If null,
 	 * all fields can be changed.
 	 */
-	Set<String> fields;
+	private Set<String> fields;
+	
+	/**
+	 * URL to redirect to after using the token.
+	 */
+	private URL redirect = null;
 	
 	/**
 	 * Get ID of the patient that can be edited with this token. The patient
@@ -65,6 +73,15 @@ public class EditPatientToken extends Token {
 	public Set<String> getFields() {
 		return fields;
 	}
+	
+	/**
+	 * Return the URL to which the user should be redirected after the
+	 * token has been used.
+	 * @return The redirect URL or null if none is set.
+	 */
+	public URL getRedirect() {
+		return this.redirect;
+	}
 
 	@Override
 	public void setData(Map<String, ?> data) {
@@ -80,6 +97,16 @@ public class EditPatientToken extends Token {
 		
 		if (!Persistor.instance.patientExists(patientId))
 			throw new InvalidIDException("No patient exists with id " + patientId.toString());
+		
+		// Read redirect URL
+		String redirectURLString = this.getDataItemString("redirect");
+		if (redirectURLString != null) {
+			try {
+				this.redirect = new URL(redirectURLString);
+			} catch (MalformedURLException e) {
+				throw new InvalidTokenException("Redirect URL " + redirectURLString + " is not a valid URL.");
+			}
+		}
 		
 		// Read field list (if present) from data and check if valid
 		List<?> fieldsJSON = this.getDataItemList("fields");
