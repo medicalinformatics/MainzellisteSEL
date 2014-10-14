@@ -258,7 +258,7 @@ public enum Servers {
 	
 	public void deleteToken(String sessionId, String tokenId) {
 		if(sessionId != null){
-			getSession(sessionId).deleteToken(tokenId);
+			getSession(sessionId).deleteToken(tokensByTid.get(tokenId));
 		}
 		
 		synchronized (tokensByTid) {

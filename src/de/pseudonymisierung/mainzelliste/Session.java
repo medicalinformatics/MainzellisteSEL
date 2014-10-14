@@ -91,9 +91,9 @@ public class Session extends ConcurrentHashMap<String, String>{
 		this.refresh();
 	}
 
-	public void deleteToken(String tokenId) {
+	public void deleteToken(Token t) {
 		synchronized(tokens){
-			tokens.remove(tokenId);
+			tokens.remove(t);
 		}
 		this.refresh();
 	}
