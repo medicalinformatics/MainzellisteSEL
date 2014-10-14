@@ -212,6 +212,12 @@ idgenerator.intid = SimpleIDGenerator
 
 # Output of result
 
+# Whether to show a result page (defaults to true)
+# Set to false if you use a redirect address with "addPatient"-Tokens
+# and want the user to be immediately redirected to the calling application.
+# Only applicable if a redirect address is defined in a token
+result.show = true
+
 # Whether to include Idat in the result page.
 result.printIdat = true
 

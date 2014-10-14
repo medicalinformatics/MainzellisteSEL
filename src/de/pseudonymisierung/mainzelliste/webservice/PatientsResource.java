@@ -143,7 +143,8 @@ public class PatientsResource {
 				}
 				try {
 					URI redirectURI = new URI(redirectURITempl.createURI(templateVarMap));
-					if (!Boolean.parseBoolean(Config.instance.getProperty("result.show"))) {
+					String showResult = Config.instance.getProperty("result.show");
+					if (showResult != null && !Boolean.parseBoolean(showResult)) {
 						return Response.status(Status.SEE_OTHER)
 								.location(redirectURI)
 								.build();
