@@ -85,10 +85,24 @@ public class HTMLResource {
 				.build());
 	}
 	
+	@Path("editPatient")
+	@GET
+	@Produces(MediaType.TEXT_HTML)
+	public Response editPatient(@QueryParam("tokenId") String tokenId) {
+		Servers.instance.checkToken(tokenId, "editPatient");
+		EditPatientToken t = (EditPatientToken) Servers.instance.getTokenByTid(tokenId);
+		Patient p = Persistor.instance.getPatient(t.getPatientId());
+		Map <String, Object> map = new HashMap<String, Object>();
+		map.put("tokenId", tokenId);
+		map.putAll(p.getInputFields());
+		
+		return Response.ok(new Viewable("/editPatient.jsp", map)).build();
+	}
+	
 	@Path("/admin/editPatient")
 	@GET
 	@Produces(MediaType.TEXT_HTML)
-	public Response editPatientForm(
+	public Response editPatientAdmin(
 			@QueryParam("idType") String idType,
 			@QueryParam("idString") String idString
 			) {
@@ -110,11 +124,12 @@ public class HTMLResource {
 		Map <String, Object> map = new HashMap<String, Object>();
 		map.putAll(p.getInputFields());
 		map.put("id", patId.getIdString());
+		map.put("tokenId", "abc");
 		map.put("tentative", p.getId("pid").isTentative());
 		if (p.getOriginal() != p)
 			map.put("original", p);
 
-		return Response.ok(new Viewable("/editPatient.jsp", map)).build();
+		return Response.ok(new Viewable("/editPatientAdmin.jsp", map)).build();
 	}
 
 	/** Submit form for editing a patient. */
