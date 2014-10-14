@@ -143,6 +143,11 @@ public class PatientsResource {
 				}
 				try {
 					URI redirectURI = new URI(redirectURITempl.createURI(templateVarMap));
+					if (!Boolean.parseBoolean(Config.instance.getProperty("result.show"))) {
+						return Response.status(Status.SEE_OTHER)
+								.location(redirectURI)
+								.build();
+					}
 					// Remove query parameters and pass them to JSP. The redirect is put
 					// into the "action" tag of a form and the parameters are passed as 
 					// hidden fields				
@@ -411,8 +416,13 @@ public class PatientsResource {
 			newFieldValues.put(fieldName, form.getFirst(fieldName));
 		}
 
-		this.editPatient(tokenId, newFieldValues, request);
+		EditPatientToken t = this.editPatient(tokenId, newFieldValues, request);
 
+		if (t.getRedirect() != null) {
+			return Response.status(Status.SEE_OTHER)
+					.header("Location", t.getRedirect().toString())
+					.build();
+		}
 		return Response.status(Status.NO_CONTENT).build();
 	}
 
@@ -453,10 +463,12 @@ public class PatientsResource {
 	 *            empty string.
 	 * @param request
 	 *            The injected HttpServletRequest.
+	 * @return The token that is as authorization the patient. Used for retreiving the redirect URL afterwards.
 	 */
-	private void editPatient(String tokenId, Map<String, String> newFieldValues, HttpServletRequest request) {
+	private EditPatientToken editPatient(String tokenId, Map<String, String> newFieldValues, HttpServletRequest request) {
 		
 		Token t = Servers.instance.getTokenByTid(tokenId);
+		EditPatientToken tt;
 		if (t == null || !"editPatient".equals(t.getType()) ) {
 				logger.info("Token with id " + tokenId + " " + (t == null ? "is unknown." : ("has wrong type '" + t.getType() + "'")));
 				throw new InvalidTokenException("Please supply a valid 'editPatient' token.");
@@ -470,7 +482,7 @@ public class PatientsResource {
 			 *  3. Thread A deletes t and exits synchronized block
 			 *  4. Thread B enters synchronized block with invalid token
 			 */
-			EditPatientToken tt = (EditPatientToken) Servers.instance.getTokenByTid(tokenId);
+			tt = (EditPatientToken) Servers.instance.getTokenByTid(tokenId);
 			if(tt == null){
 				String infoLog = "Token with ID " + tokenId + " is invalid. It was invalidated by a concurrent request or the session timed out during this request.";
 				logger.info(infoLog);
@@ -494,5 +506,7 @@ public class PatientsResource {
 		
 		if (!Config.instance.debugIsOn())
 			Servers.instance.deleteToken(t.getId());
+		
+		return tt;
 	}
 }
