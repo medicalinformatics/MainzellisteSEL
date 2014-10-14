@@ -108,7 +108,7 @@ public class PatientsResource {
 
 	@POST
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-	@Produces(MediaType.TEXT_HTML)
+	@Produces({MediaType.TEXT_HTML, MediaType.WILDCARD})
 	public Response newPatientBrowser(
 			@QueryParam("tokenId") String tokenId,
 			MultivaluedMap<String, String> form,
