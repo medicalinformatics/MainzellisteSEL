@@ -112,7 +112,7 @@ public class HTMLResource {
 		map.put("id", patId.getIdString());
 		map.put("tentative", p.getId("pid").isTentative());
 		if (p.getOriginal() != p)
-			map.put("original", p);
+			map.put("original", p.getOriginal());
 
 		return Response.ok(new Viewable("/editPatient.jsp", map)).build();
 	}
