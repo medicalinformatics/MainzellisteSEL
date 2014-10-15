@@ -229,6 +229,12 @@ public enum Persistor {
 		em.merge(p);
 		em.getTransaction().commit();
 		em.close();
+		/* 
+		 * Recreate open EntityManager so that getPatients() re-reads from 
+		 * the database instead of returning objects from the cache 
+		 */
+		this.em.close();
+		this.em = this.emf.createEntityManager();
 	}
 	
 	
