@@ -32,7 +32,9 @@ import java.util.concurrent.Executors;
 import de.pseudonymisierung.mainzelliste.Patient;
 import de.pseudonymisierung.mainzelliste.matcher.MatchResult.MatchResultType;
 
-//FIXME: Kommentar
+/**
+ * Multithreaded version of {@link EpilinkMatcher EpilinkMatcher}. 
+ */
 public class ThreadedEpilinkMatcher extends EpilinkMatcher {
 	private class MatchResultContainer {
 		public MatchResult matchResult;

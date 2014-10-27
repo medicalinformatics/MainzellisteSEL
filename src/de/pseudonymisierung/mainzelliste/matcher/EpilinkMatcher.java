@@ -43,7 +43,23 @@ import de.pseudonymisierung.mainzelliste.Patient;
 import de.pseudonymisierung.mainzelliste.exceptions.InternalErrorException;
 import de.pseudonymisierung.mainzelliste.matcher.MatchResult.MatchResultType;
 
-//FIXME: Kommentar
+/**
+ * Performs record linkage by using the algorithm of Epilink et al. This is a simple weight based algorithm
+ * (similar to the method of Fellegi and Sunter) with support for string metrics.
+ * 
+ * The weight for a record pair (x1,x2) is computed by the formula
+ * 
+ * sum_i (w_1 * s(x1_i, x2_i)) / sum_i w_i
+ * where s(x1_i, x2_i) is the value of a string comparison of records x1 and x2 in the i-th field
+ * and w_i is a weighting factor computed by
+ * 
+ * w_i = log_2 (1-e_i) / f_i
+ * 
+ * where f_i denotes the average frequency of values and e_i the estimated error rate for field i. 
+ * @see "P. Contiero et al., The EpiLink record linkage software, in: Methods of Information in Medicine 2005, 44 (1), 66–71." 
+ * 
+ *
+ */
 public class EpilinkMatcher implements Matcher {
 
 	private double thresholdMatch;

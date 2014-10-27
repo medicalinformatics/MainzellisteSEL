@@ -32,7 +32,15 @@ import java.util.Set;
 
 import de.pseudonymisierung.mainzelliste.PlainTextField;
 
-//FIXME: Kommentar
+/**
+ * Performs the following normalization on strings:
+ * <ul>
+ *   <li> Trailing delimiters such as blanks, colons, dashes etc. are removed.</li>
+ *   <li> German umlauts are replaced: ä -> ae, ö -> oe etc., ß -> ss </li>
+ *   <li> Conversion to uppercase. </li>
+ * </ul>
+ *     
+ */
 public class StringNormalizer extends FieldTransformer<PlainTextField, PlainTextField> {
 
 	/** Delimiters to remove from start and end.

@@ -147,7 +147,6 @@ public class HTMLResource {
 		logger.info(String.format("Handling edit operation for patient with id of type %s and value %s.",
 					idType, idString));
 		
-		// TODO: Generalisieren für mehrere IDs
 		ID idPatToEdit = IDGeneratorFactory.instance.buildId(idType, idString);
 		Patient pToEdit = Persistor.instance.getPatient(idPatToEdit);
 		if (pToEdit == null)
