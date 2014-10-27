@@ -219,4 +219,18 @@ public class SessionsResource {
 			throw new InternalErrorException(e);
 		}
 	}
+	
+	@Path("/{session}/tokens/{tokenid}")
+	@DELETE
+	public Response deleteToken(@PathParam("session") SessionIdParam session,
+			@PathParam("tokenid") String tokenId) {
+		/*
+		 * Knowing the session and the token id authorizes to delete a token.
+		 * Check that session exists in order to prevent requests by users who
+		 * only know the token id.
+		 */
+		session.getValue();
+		Servers.instance.deleteToken(tokenId);
+		return Response.status(Status.NO_CONTENT).build();
+	}
 }
