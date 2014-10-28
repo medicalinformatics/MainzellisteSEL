@@ -229,7 +229,7 @@ public class SessionsResource {
 		 * Check that session exists in order to prevent requests by users who
 		 * only know the token id.
 		 */
-		session.getValue();
+		session.getValue(); // returns 404 if session does not exist
 		Servers.instance.deleteToken(tokenId);
 		return Response.status(Status.NO_CONTENT).build();
 	}
