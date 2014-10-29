@@ -230,8 +230,18 @@ result.printIdat = true
 servers.0.apiKey = 
 servers.0.permissions = createSession;showSessionIds;deleteAllPatients;createToken;tt_addPatient;tt_readPatients
 
+
 # Accepted origin addresses or IPv4 address ranges in CIDR notation, separated by ";"
-servers.0.allowedRemoteAdresses = 127.0.0.1;0:0:0:0:0:0:0:1;192.168.56.0/24
+
+# Allow only requests from localhost (e.g. for developing)
+# servers.0.allowedRemoteAdresses = 127.0.0.1;0:0:0:0:0:0:0:1
+
+# Allow requests from a typical private network
+# servers.0.allowedRemoteAdresses = 192.168.56.0/24
+
+# Allow combination of both
+# servers.0.allowedRemoteAdresses = 127.0.0.1;0:0:0:0:0:0:0:1;192.168.56.0/24
+
 
 # Allowed Format of callback
 callback.allowedFormat = https://.*
