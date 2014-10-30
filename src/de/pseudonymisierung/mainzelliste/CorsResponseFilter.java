@@ -37,6 +37,8 @@ import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.log4j.Logger;
+
 /**
  * Adds header "Access-Control-Allow-Origin" for Cross-origin resource sharing
  * 
@@ -48,6 +50,7 @@ import javax.servlet.http.HttpServletResponse;
  */
 public class CorsResponseFilter implements Filter {
 
+	private Logger logger = Logger.getLogger(this.getClass());
 	/**
 	 * Not used in this implementation.
 	 */
@@ -68,8 +71,13 @@ public class CorsResponseFilter implements Filter {
 			HttpServletResponse httpResponse = (HttpServletResponse) response;
 			
 			String origin = httpRequest.getHeader("Origin");
-			if (origin != null && Config.instance.originAllowed(origin))
-				httpResponse.addHeader("Access-Control-Allow-Origin", origin);
+			if (origin != null) {
+				if (Config.instance.originAllowed(origin)) {
+					httpResponse.addHeader("Access-Control-Allow-Origin", origin);
+				} else {
+					logger.info("Rejecting cross domain request from origin " + origin);
+				}
+			}
 		}
 		chain.doFilter(request, response);
 	}
