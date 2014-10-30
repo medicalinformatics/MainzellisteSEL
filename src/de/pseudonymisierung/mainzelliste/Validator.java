@@ -141,45 +141,91 @@ public enum Validator {
 		}
 	}
 	
+	/**
+	 * Validates dates in input form according to format definition in configuration.
+	 */
 	public void validateDates(MultivaluedMap<String, String> form) {
-		assert dateFields.size() == dateFormat.size();
-		Iterator<List<String>> fieldIt = dateFields.iterator();
-		Iterator<String> formatIt = dateFormat.iterator();
-		
-		while (fieldIt.hasNext()) {
-			SimpleDateFormat sdf = new SimpleDateFormat(formatIt.next());
-			sdf.setLenient(false);
+		// List to collect all dates in the form
+		List<String> dateStrings = new LinkedList<String>();
+		for (List<String> thisDateFields : this.dateFields) {
 			StringBuffer dateString = new StringBuffer();
-			for (String dateElement : fieldIt.next()) {
-				dateString.append(form.getFirst(dateElement));
+			for (String fieldName : thisDateFields) {
+				dateString.append(form.getFirst(fieldName));				
 			}
-			try {
-				Date date = sdf.parse(dateString.toString()); 
-				if (date == null)
-					throw new ValidatorException(dateString + " is not a valid date!");
-			} catch (ParseException e) {
-				throw new ValidatorException(dateString + " is not a valid date!");
-			}
-		}
-		
+			dateStrings.add(dateString.toString());
+		}		
+		checkDates(this.dateFormat, dateStrings);
 	}
 	
-	public void validateForm(MultivaluedMap<String, String> form) {
-		
-		// Check if all fields are present as values (whether they are empty or not)
-		for(String s: Config.instance.getFieldKeys()){
-			if (!form.containsKey(s)) {
-				logger.error("Field " + s + " not found in input data!");
-				throw new ValidatorException("Field " + s + " not found in input data!");
+	/**
+	 * Validates dates in input form according to format definition in configuration.
+	 */
+	public void validateDates(Map<String, String> form) {
+
+		// List to collect all dates in the form
+		List<String> dateStrings = new LinkedList<String>();
+		for (List<String> thisDateFields : this.dateFields) {
+			StringBuffer dateString = new StringBuffer();
+			for (String fieldName : thisDateFields) {
+				dateString.append(form.get(fieldName));				
 			}
-		}
-		
+			dateStrings.add(dateString.toString());
+		}		
+		checkDates(this.dateFormat, dateStrings);
+	}
+
+	/**
+	 * Validate input form according to the format definitions in the configuration.
+	 */
+	public void validateForm(MultivaluedMap<String, String> form) {
+		// Check that all fields are present in form
+		checkFieldKeys(form);
+		// Check fields values
 		for (String key : form.keySet()) {
 			for (String value : form.get(key)) {
 				validateField(key, value);
 			}			
 		}
 		validateDates(form);
+	}
+	
+	/**
+	 * Validate input form according to the format definitions in the configuration.
+	 */
+	public void validateForm(Map<String, String> form) {
+		// Check that all fields are present in form
+		checkFieldKeys(form);
+		// Check fields values
+		for (String key : form.keySet()) {
+			validateField(key, form.get(key));
+		}
+		validateDates(form);
+	}
+
+	private void checkFieldKeys(Map<String, ?> form) {
+		for(String s: Config.instance.getFieldKeys()){
+			if (!form.containsKey(s)) {
+				logger.error("Field " + s + " not found in input data!");
+				throw new ValidatorException("Field " + s + " not found in input data!");
+			}
+		}
+	}
+	
+	private void checkDates(Iterable<String> formatStrings, Iterable<String> dateStrings) {		
+		Iterator<String> formatIt = formatStrings.iterator();
+		Iterator<String> dateIt = dateStrings.iterator();
 		
+		while (formatIt.hasNext() && dateIt.hasNext()) {
+			SimpleDateFormat sdf = new SimpleDateFormat(formatIt.next());
+			sdf.setLenient(false);
+			String dateString = dateIt.next();
+			try {				
+				Date date = sdf.parse(dateString); 
+				if (date == null)
+					throw new ValidatorException(dateString + " is not a valid date!");
+			} catch (ParseException e) {
+				throw new ValidatorException(dateString + " is not a valid date!");
+			}			
+		}
 	}
 }

@@ -271,6 +271,8 @@ public enum PatientBackend {
 			throw new InvalidIDException("No patient found with ID " + patientId.toString());
 		}
 		
+		// validate input
+		Validator.instance.validateForm(newFieldValues);
 		// read input fields from form
 		Patient pInput = new Patient();
 		Map<String, Field<?>> chars = new HashMap<String, Field<?>>();
