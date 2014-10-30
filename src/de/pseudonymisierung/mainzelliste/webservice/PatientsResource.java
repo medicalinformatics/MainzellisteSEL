@@ -424,7 +424,7 @@ public class PatientsResource {
 					.header("Location", t.getRedirect().toString())
 					.build();
 		}
-		return Response.status(Status.NO_CONTENT).build();
+		return Response.ok(new Viewable("/patientEdited.jsp")).build();
 	}
 
 	@Path("/tokenId/{tokenId}")

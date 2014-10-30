@@ -29,7 +29,12 @@
 			<form method="post" action="<%=request.getContextPath() %>/patients/tokenId/${it.tokenId}?_method=PUT" id="form_person">
 				<h1>Patienten bearbeiten</h1>
 				<%@ include file="patientFormElements.jsp" %>
-				<input type="submit" value="Speichern" />
+				<div align="center">
+					<td>&nbsp;</td>
+				</div>
+				<div align="center">
+					<input type="submit" value="Speichern" />
+				</div>
 			</form>
 		</div>
 		<div>&nbsp;</div>
