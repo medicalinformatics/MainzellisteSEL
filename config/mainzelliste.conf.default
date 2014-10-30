@@ -231,8 +231,8 @@ servers.0.apiKey =
 servers.0.permissions = createSession;showSessionIds;deleteAllPatients;createToken;tt_addPatient;tt_readPatients
 
 
-# Accepted origin addresses or IPv4 address ranges in CIDR notation, separated by ";"
-
+# Accepted origin addresses (IPv4 and/or IPv6) or address ranges in CIDR notation (IPv4 only)
+ 
 # Allow only requests from localhost (e.g. for developing)
 # servers.0.allowedRemoteAdresses = 127.0.0.1;0:0:0:0:0:0:0:1
 
