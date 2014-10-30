@@ -127,7 +127,7 @@ public class HTMLResource {
 		map.put("tokenId", "abc");
 		map.put("tentative", p.getId("pid").isTentative());
 		if (p.getOriginal() != p)
-			map.put("original", p);
+			map.put("original", p.getOriginal());
 
 		return Response.ok(new Viewable("/editPatientAdmin.jsp", map)).build();
 	}

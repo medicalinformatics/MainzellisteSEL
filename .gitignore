@@ -16,6 +16,7 @@ WebContent/WEB-INF/lib/jettison-1.1.jar
 WebContent/WEB-INF/lib/jsr311-api-1.1.1.jar
 WebContent/WEB-INF/lib/postgresql-9.1-902.jdbc4.jar
 config/*.conf
+/doc
 src/de/pseudonymisierung/mainzelliste/matcher/PSXMatcher.java
 src/de/pseudonymisierung/mainzelliste/matcher/PSXMatchingState.java
 src/de/pseudonymisierung/mainzelliste/matcher/PSXSpecification.java

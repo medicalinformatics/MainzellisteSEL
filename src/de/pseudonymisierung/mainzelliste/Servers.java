@@ -31,6 +31,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
@@ -44,6 +45,7 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import org.apache.commons.net.util.SubnetUtils;
 import org.apache.log4j.Logger;
 
 import de.pseudonymisierung.mainzelliste.exceptions.InvalidTokenException;
@@ -59,6 +61,7 @@ public enum Servers {
 		String apiKey;
 		Set<String> permissions;
 		Set<String> allowedRemoteAdresses;
+		List<SubnetUtils> allowedRemoteAdressRanges;
 	}
 	
 	private final Map<String, Server> servers = new HashMap<String, Server>();
@@ -89,7 +92,18 @@ public enum Servers {
 			s.permissions = new HashSet<String>(Arrays.asList(permissions));
 			
 			String allowedRemoteAdresses[] = props.getProperty("servers." + i + ".allowedRemoteAdresses").split("[;,]");
-			s.allowedRemoteAdresses = new HashSet<String>(Arrays.asList(allowedRemoteAdresses));
+			s.allowedRemoteAdressRanges = new LinkedList<SubnetUtils>();
+			s.allowedRemoteAdresses = new HashSet<String>();
+			for (String thisAddress : allowedRemoteAdresses) {
+				// Check whether this is an IP mask in CIDR notation
+				try {
+					SubnetUtils thisAddressRange = new SubnetUtils(thisAddress);
+					s.allowedRemoteAdressRanges.add(thisAddressRange);
+				} catch (IllegalArgumentException e) {
+					// If not, store as plain IP address
+					s.allowedRemoteAdresses.add(thisAddress);
+				}
+			}
 			servers.put(s.apiKey, s);
 		}
 			
@@ -204,11 +218,26 @@ public enum Servers {
 			}
 		
 			if(!server.allowedRemoteAdresses.contains(req.getRemoteAddr())){
-				logger.info("IP address " + req.getRemoteAddr() +  " rejected");
-				throw new WebApplicationException(Response
-						.status(Status.UNAUTHORIZED)
-						.entity(String.format("Rejecting your IP address %s.", req.getRemoteAddr()))
-						.build());
+				boolean addressInRange = false;
+				for (SubnetUtils thisAddressRange : server.allowedRemoteAdressRanges) {
+					try {
+						if (thisAddressRange.getInfo().isInRange(req.getRemoteAddr())) {
+							addressInRange = true;
+							break;
+						}
+					} catch (IllegalArgumentException e) {
+						// Occurs if an IPv6 address was transmitted
+						logger.error("Could not parse IP address " + req.getRemoteAddr(), e);
+						break;
+					}
+				}
+				if (!addressInRange) {
+					logger.info("IP address " + req.getRemoteAddr() +  " rejected");
+					throw new WebApplicationException(Response
+							.status(Status.UNAUTHORIZED)
+							.entity(String.format("Rejecting your IP address %s.", req.getRemoteAddr()))
+							.build());
+				}
 			}
 		
 			perms = server.permissions;
