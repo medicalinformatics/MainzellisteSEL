@@ -177,9 +177,10 @@ public enum Validator {
 	/**
 	 * Validate input form according to the format definitions in the configuration.
 	 */
-	public void validateForm(MultivaluedMap<String, String> form) {
+	public void validateForm(MultivaluedMap<String, String> form, boolean checkFieldKeys) {
 		// Check that all fields are present in form
-		checkFieldKeys(form);
+		if (checkFieldKeys) 
+			checkFieldKeys(form);
 		// Check fields values
 		for (String key : form.keySet()) {
 			for (String value : form.get(key)) {
@@ -192,9 +193,10 @@ public enum Validator {
 	/**
 	 * Validate input form according to the format definitions in the configuration.
 	 */
-	public void validateForm(Map<String, String> form) {
+	public void validateForm(Map<String, String> form, boolean checkFieldKeys) {
 		// Check that all fields are present in form
-		checkFieldKeys(form);
+		if (checkFieldKeys) 
+			checkFieldKeys(form);
 		// Check fields values
 		for (String key : form.keySet()) {
 			validateField(key, form.get(key));

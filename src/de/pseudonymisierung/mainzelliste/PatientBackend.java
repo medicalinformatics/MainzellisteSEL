@@ -118,7 +118,7 @@ public enum PatientBackend {
 				form.add(key, t.getFields().get(key));
 			}
 			
-			Validator.instance.validateForm(form);
+			Validator.instance.validateForm(form, true);
 			
 			for(String s: Config.instance.getFieldKeys()){
 				chars.put(s, Field.build(s, form.getFirst(s)));
@@ -272,7 +272,7 @@ public enum PatientBackend {
 		}
 		
 		// validate input
-		Validator.instance.validateForm(newFieldValues);
+		Validator.instance.validateForm(newFieldValues, false);
 		// read input fields from form
 		Patient pInput = new Patient();
 		Map<String, Field<?>> chars = new HashMap<String, Field<?>>();
