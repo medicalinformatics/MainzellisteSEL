@@ -57,7 +57,7 @@ function fillOriginalId() {
 		<div>&nbsp;</div>
 		<div class="formular">
 <!-- 			<form method="post" id="form_person"> -->
-			<form method="post" action="<%=request.getContextPath() %>/patients/tokenId/${it.tokenId}?_method=PUT" id="form_person">
+			<form method="post" id="form_person">
 				<h1>Patienten bearbeiten</h1>
 				<%@ include file="patientFormElements.jsp" %>
 				<div id ="form_elements_admin">

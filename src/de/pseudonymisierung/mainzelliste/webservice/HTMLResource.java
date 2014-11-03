@@ -164,12 +164,13 @@ public class HTMLResource {
 		Patient pInput = new Patient();
 		Map<String, Field<?>> chars = new HashMap<String, Field<?>>();
 
-		for(String s: Config.instance.getFieldKeys()){
-			if (!form.containsKey(s)) {
-				logger.error("Field " + s + " not found in input data!");
-				throw new WebApplicationException(Response.status(Status.BAD_REQUEST).entity("Field " + s + " not found in input data!").build());
+		for(String fieldName : Config.instance.getFieldKeys()){
+			// If a field is not in the map, keep the old value
+			if (!form.containsKey(fieldName))
+				chars.put(fieldName, pToEdit.getInputFields().get(fieldName));
+			else {
+				chars.put(fieldName, Field.build(fieldName, form.getFirst(fieldName)));
 			}
-			chars.put(s, Field.build(s, form.getFirst(s)));
 		}
 
 		pInput.setFields(chars);
