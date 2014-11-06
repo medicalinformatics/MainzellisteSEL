@@ -216,4 +216,13 @@ public class HTMLResource {
 						.build())
 						.build();
 	}
+
+	/**
+	 * Show a list of possible matches.
+	 */
+	@GET
+	@Path("/admin/possibleMatches")
+	public Response getPossibleMatches() {
+		return Response.ok(new Viewable("/possibleMatches.jsp")).build();
+	}
 }
