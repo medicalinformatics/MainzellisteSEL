@@ -97,8 +97,13 @@ function fillOriginalId() {
 						</td>
 					</tr>
 				</table>
-				<input type="submit" value="Speichern" />
 				</div>
+				<div align="center">
+					<td>&nbsp;</td>
+				</div>
+				<div align="center">
+					<input type="submit" value="Speichern" />
+				</div>				
 			</form>
 		</div>
 		<div>&nbsp;</div>
