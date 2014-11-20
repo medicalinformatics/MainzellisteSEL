@@ -90,11 +90,12 @@ public class SessionsResource {
 
 	@Path("/{session}")
 	@GET
+	@Produces(MediaType.APPLICATION_JSON)
 	public Response readSession (
 			 @PathParam("session") String sid,
 			 @Context HttpServletRequest req) throws JSONException {
 		logger.info(String.format("Request to read session %s received by host %s", sid, req.getRemoteHost()));
-		// Berechtigung?
+		// No authorization except for knowing the session id
 		Session s = Servers.instance.getSession(sid);
 		if (s == null) {
 			return Response.status(
@@ -134,6 +135,7 @@ public class SessionsResource {
 			@Context HttpServletRequest req){
 		logger.info("Received request to list tokens for session " + sid + " from host " + 
 			req.getRemoteHost());
+		// No authorization except for knowing the session id
 		return Servers.instance.getAllTokens(sid.getValue().getId());
 	}
 	
