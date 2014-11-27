@@ -44,6 +44,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
+import javax.ws.rs.core.UriBuilder;
 
 import org.apache.commons.net.util.SubnetUtils;
 import org.apache.log4j.Logger;
@@ -255,8 +256,10 @@ public enum Servers {
 	}
 	
 	public void registerToken(String sessionId, Token t){
+		Session s = getSession(sessionId);
 		String tid = UUID.randomUUID().toString();
 		t.setId(tid);
+		t.setURI(s.getURI().resolve("tokens/" + tid));
 		
 		getSession(sessionId).addToken(t);
 

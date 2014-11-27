@@ -55,6 +55,7 @@ import de.pseudonymisierung.mainzelliste.exceptions.InvalidTokenException;
  */
 public class Token {
 	private String id;
+	private URI uri = null;
 	private String type;
 	private Map<String, ?> data;
 	
@@ -102,6 +103,13 @@ public class Token {
 		this.id = id;
 	}
 	
+	public URI getURI() {
+		return this.uri;
+	}
+	
+	public void setURI(URI uri) {
+		this.uri = uri;
+	}
 	public String getType() {
 		return type;
 	}
@@ -316,20 +324,26 @@ public class Token {
 			throw new InvalidTokenException("'" + idType + "'" + " is not a known ID type!");
 	}
 	
-	public JSONObject toJSON(ApiVersion apiVersion) throws Exception {
+	public JSONObject toJSON(ApiVersion apiVersion) {
 		JSONObject ret = new JSONObject();
 		// uri not known in this context -> assing in SessionsResource
-		if (apiVersion.majorVersion >= 2) {
-			ret.put("id", this.id)
-			.put("type", this.type);
-			
-			ObjectMapper mapper = new ObjectMapper();
-			String dataString = mapper.writeValueAsString(data);
-			ret.put("data", new JSONObject(dataString));
-		} else {
-			ret.put("tokenId", this.id);		
+		try {
+				if (apiVersion.majorVersion >= 2) {
+				ret.put("id", this.id)
+				.put("type", this.type);
+				
+				ObjectMapper mapper = new ObjectMapper();
+				String dataString = mapper.writeValueAsString(data);
+				ret.put("data", new JSONObject(dataString));
+			} else {
+				ret.put("tokenId", this.id);		
+			}
+			return ret;
+		} catch (Exception e) {
+			// As no external data is processed, this method should not fail.
+			// If it does, this indicates a bug
+			throw new Error(e);
 		}
-		return ret;
 	}
 
 }

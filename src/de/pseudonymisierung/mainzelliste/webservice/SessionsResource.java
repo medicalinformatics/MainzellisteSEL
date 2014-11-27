@@ -27,6 +27,7 @@ package de.pseudonymisierung.mainzelliste.webservice;
 
 import java.net.URI;
 import java.util.Set;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
@@ -50,7 +51,6 @@ import org.codehaus.jettison.json.JSONObject;
 
 import de.pseudonymisierung.mainzelliste.Servers;
 import de.pseudonymisierung.mainzelliste.Session;
-import de.pseudonymisierung.mainzelliste.exceptions.InternalErrorException;
 
 /**
  * Resource-based access to server-side client sessions.
@@ -68,13 +68,15 @@ public class SessionsResource {
 		logger.info("Request to create session received by host " + req.getRemoteHost());
 		
 		Servers.instance.checkPermission(req, "createSession");
-		String sid = Servers.instance.newSession().getId();
 		
+		Session s = Servers.instance.newSession();
+		String sid = s.getId();
 		URI newUri = UriBuilder
 				.fromUri(req.getRequestURL().toString())
-				.path("{sid}")
+				.path("{sid}/")
 				.build(sid);
-		
+		s.setURI(newUri);
+
 		logger.info("Created session " + sid);
 		
 		JSONObject ret = new JSONObject()
@@ -105,7 +107,7 @@ public class SessionsResource {
 		}
 		JSONObject ret = new JSONObject()
 			.put("sessionId", sid)
-			.put("uri", req.getRequestURL().toString());
+			.put("uri", s.getURI());
 		
 		return Response.status(Status.OK)
 				.entity(ret)
@@ -178,23 +180,21 @@ public class SessionsResource {
 				.path("/{tid}")
 				.build(t.getId());
 		
-		JSONObject ret = getSingleToken(sid, t.getId(), req, uriInfo);
-		
 		logger.info("Created token of type " + t.getType() + " with id " + t.getId() + 
 				" in session " + s.getId() + "\n" +
-				"Returned data: " + ret);
+				"Returned data: " + t.toJSON(Servers.instance.getRequestApiVersion(req)));
 
 		return Response
 			.status(Status.CREATED)
 			.location(newUri)
-			.entity(ret)
+			.entity(t)
 			.build();
 	}
 	
 	@Path("/{session}/tokens/{tokenid}")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	public JSONObject getSingleToken(
+	public Token getSingleToken(
 			@PathParam("session") SessionIdParam sid,
 			@PathParam("tokenid") String tokenId,
 			@Context HttpServletRequest req,
@@ -212,14 +212,7 @@ public class SessionsResource {
 					.status(Status.NOT_FOUND)
 					.entity("No token with id " + tokenId + " in session " + sid + ".")
 					.build());		
-
-		try {
-			JSONObject ret = t.toJSON(Servers.instance.getRequestApiVersion(req));
-			ret.put("uri", uriInfo.getBaseUri().toString() + "sessions/" + s.getId() + "/tokens/" + tokenId);
-			return ret;
-		} catch (Exception e) {
-			throw new InternalErrorException(e);
-		}
+		return t;
 	}
 	
 	@Path("/{session}/tokens/{tokenid}")
