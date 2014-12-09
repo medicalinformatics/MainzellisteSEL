@@ -1,0 +1,44 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="ISO-8859-1"%>
+    
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<link rel="stylesheet" type="text/css" href="<%=request.getContextPath() %>/static/css/patientenliste.css">
+
+<title>Fehler</title>
+</head>
+
+<!-- JQuery -->
+<script type="text/javascript" src="<%=request.getContextPath() %>/static/jslib/jquery/jquery-1.7.2.js"></script>
+
+<script type="text/javascript" src="<%=request.getContextPath() %>/static/jslib/validation.js"></script>
+
+<body>
+		<div class="kopfzeile">
+			<div class="logo">
+			<img src="<%=request.getContextPath() %>/static/media/JGU_Uni_medizin_Logo_4c_Internet.jpg" align="right"
+				height="80%">
+			</div>
+		</div>
+		<div class="inhalt">
+			<div>&nbsp;</div>
+			<div class="formular">
+				<h1>Es ist ein Fehler aufgetreten</h1>
+				<h3 class="header_left">Fehlermeldung:</h3>
+				<p>
+					${it.message}
+				</p>
+				<p>
+					<input type="button" onclick="history.back()" value="Zurück" />
+				</p>
+				<p>
+				  &nbsp;
+				</p>
+			</div>
+		</div>
+		<%@ include file="footer.jsp" %>
+	</body>
+</html>

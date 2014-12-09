@@ -113,83 +113,90 @@ public class PatientsResource {
 			@QueryParam("tokenId") String tokenId,
 			MultivaluedMap<String, String> form,
 			@Context HttpServletRequest request){
-		Token t = Servers.instance.getTokenByTid(tokenId);
-		IDRequest createRet = PatientBackend.instance.createNewPatient(tokenId, form, Servers.instance.getRequestApiVersion(request)); 
-		Set<ID> ids = createRet.getRequestedIds();
-		MatchResult result = createRet.getMatchResult();
-		Map <String, Object> map = new HashMap<String, Object>();
-		if (ids == null) { // unsure case
-			// Copy form to JSP model so that input is redisplayed
-			for (String key : form.keySet())
-			{
-				map.put(key, form.getFirst(key));
-			}
-			map.put("readonly", "true");
-			map.put("tokenId", tokenId);
-			return Response.status(Status.CONFLICT)
-					.entity(new Viewable("/unsureMatch.jsp", map)).build();
-		} else {
-			if (t != null && t.getData() != null && t.getData().containsKey("redirect")) {
-				UriTemplate redirectURITempl = new UriTemplate(t.getDataItemString("redirect"));
-				HashMap<String, String> templateVarMap = new HashMap<String, String>();
-				for (String templateVar : redirectURITempl.getTemplateVariables()) {
-					if (templateVar.equals("tokenId")) {
-						templateVarMap.put(templateVar, tokenId);
-					} else {
-						ID thisID = createRet.getAssignedPatient().getId(templateVar);
-						String idString = thisID.getIdString();
-						templateVarMap.put(templateVar, idString);
-					}
-				}
-				try {
-					URI redirectURI = new URI(redirectURITempl.createURI(templateVarMap));
-					String showResult = Config.instance.getProperty("result.show");
-					if (showResult != null && !Boolean.parseBoolean(showResult)) {
-						return Response.status(Status.SEE_OTHER)
-								.location(redirectURI)
-								.build();
-					}
-					// Remove query parameters and pass them to JSP. The redirect is put
-					// into the "action" tag of a form and the parameters are passed as 
-					// hidden fields				
-					MultivaluedMap<String, String> queryParams = UriComponent.decodeQuery(redirectURI, true);
-					map.put("redirect", redirectURI);
-					map.put("redirectParams", queryParams);
-					//return Response.status(Status.SEE_OTHER).location(redirectURI).build();
-				} catch (URISyntaxException e) {
-					// Wird auch beim Anlegen des Tokens geprüft.
-					throw new InternalErrorException("Die übergebene Redirect-URL " + redirectURITempl.getTemplate() + "ist ungültig!");
-				}
-			}
-			
-			// If Idat are to be redisplayed in the result form...
-			if (Boolean.parseBoolean(Config.instance.getProperty("result.printIdat"))) {
-				//...copy input to JSP 
+		try {
+			Token t = Servers.instance.getTokenByTid(tokenId);
+			IDRequest createRet = PatientBackend.instance.createNewPatient(tokenId, form, Servers.instance.getRequestApiVersion(request)); 
+			Set<ID> ids = createRet.getRequestedIds();
+			MatchResult result = createRet.getMatchResult();
+			Map <String, Object> map = new HashMap<String, Object>();
+			if (ids == null) { // unsure case
+				// Copy form to JSP model so that input is redisplayed
 				for (String key : form.keySet())
 				{
 					map.put(key, form.getFirst(key));
 				}
-				// and set flag for JSP to display them
-				map.put("printIdat", true);
-			}
-			// FIXME alle IDs übergeben und anzeigen
-			ID retId = ids.toArray(new ID[0])[0];
-			map.put("id", retId.getIdString());
-			map.put("tentative", retId.isTentative());
-			
-			if (Config.instance.debugIsOn() && result.getResultType() != MatchResultType.NON_MATCH)
-			{
-				map.put("debug", "on");
-				map.put("weight", Double.toString(result.getBestMatchedWeight()));
-				Map<String, Field<?>> matchedFields = result.getBestMatchedPatient().getFields();
-				Map<String, String> bestMatch= new HashMap<String, String>();
-				for(String fieldName : matchedFields.keySet())
-				{
-					bestMatch.put(fieldName, matchedFields.get(fieldName).toString());
+				map.put("readonly", "true");
+				map.put("tokenId", tokenId);
+				return Response.status(Status.CONFLICT)
+						.entity(new Viewable("/unsureMatch.jsp", map)).build();
+			} else {
+				if (t != null && t.getData() != null && t.getData().containsKey("redirect")) {
+					UriTemplate redirectURITempl = new UriTemplate(t.getDataItemString("redirect"));
+					HashMap<String, String> templateVarMap = new HashMap<String, String>();
+					for (String templateVar : redirectURITempl.getTemplateVariables()) {
+						if (templateVar.equals("tokenId")) {
+							templateVarMap.put(templateVar, tokenId);
+						} else {
+							ID thisID = createRet.getAssignedPatient().getId(templateVar);
+							String idString = thisID.getIdString();
+							templateVarMap.put(templateVar, idString);
+						}
+					}
+					try {
+						URI redirectURI = new URI(redirectURITempl.createURI(templateVarMap));
+						String showResult = Config.instance.getProperty("result.show");
+						if (showResult != null && !Boolean.parseBoolean(showResult)) {
+							return Response.status(Status.SEE_OTHER)
+									.location(redirectURI)
+									.build();
+						}
+						// Remove query parameters and pass them to JSP. The redirect is put
+						// into the "action" tag of a form and the parameters are passed as 
+						// hidden fields				
+						MultivaluedMap<String, String> queryParams = UriComponent.decodeQuery(redirectURI, true);
+						map.put("redirect", redirectURI);
+						map.put("redirectParams", queryParams);
+						//return Response.status(Status.SEE_OTHER).location(redirectURI).build();
+					} catch (URISyntaxException e) {
+						// Wird auch beim Anlegen des Tokens geprüft.
+						throw new InternalErrorException("Die übergebene Redirect-URL " + redirectURITempl.getTemplate() + "ist ungültig!");
+					}
 				}
-				map.put("bestMatch", bestMatch);
+
+				// If Idat are to be redisplayed in the result form...
+				if (Boolean.parseBoolean(Config.instance.getProperty("result.printIdat"))) {
+					//...copy input to JSP 
+					for (String key : form.keySet())
+					{
+						map.put(key, form.getFirst(key));
+					}
+					// and set flag for JSP to display them
+					map.put("printIdat", true);
+				}
+				// FIXME alle IDs übergeben und anzeigen
+				ID retId = ids.toArray(new ID[0])[0];
+				map.put("id", retId.getIdString());
+				map.put("tentative", retId.isTentative());
+
+				if (Config.instance.debugIsOn() && result.getResultType() != MatchResultType.NON_MATCH)
+				{
+					map.put("debug", "on");
+					map.put("weight", Double.toString(result.getBestMatchedWeight()));
+					Map<String, Field<?>> matchedFields = result.getBestMatchedPatient().getFields();
+					Map<String, String> bestMatch= new HashMap<String, String>();
+					for(String fieldName : matchedFields.keySet())
+					{
+						bestMatch.put(fieldName, matchedFields.get(fieldName).toString());
+					}
+					map.put("bestMatch", bestMatch);
+				}
+				return Response.ok(new Viewable("/patientCreated.jsp", map)).build();
 			}
-			return Response.ok(new Viewable("/patientCreated.jsp", map)).build();
+		} catch (WebApplicationException e) {
+			Map <String, Object> map = new HashMap<String, Object>();
+			map.put("message", e.getResponse().getEntity());
+			return Response.status(e.getResponse().getStatus())
+					.entity(new Viewable("/errorPage.jsp", map)).build();
 		}
 	}
 	
@@ -345,20 +352,27 @@ public class PatientsResource {
 			MultivaluedMap<String, String> form,
 			@Context HttpServletRequest request) {
 
-		// Collect fields from input form
-		Map<String, String> newFieldValues = new HashMap<String, String>();
-		for (String fieldName : form.keySet()) {
-			newFieldValues.put(fieldName, form.getFirst(fieldName));
+		try {
+			// Collect fields from input form
+			Map<String, String> newFieldValues = new HashMap<String, String>();
+			for (String fieldName : form.keySet()) {
+				newFieldValues.put(fieldName, form.getFirst(fieldName));
+			}
+	
+			EditPatientToken t = this.editPatient(tokenId, newFieldValues, request);
+	
+			if (t.getRedirect() != null) {
+				return Response.status(Status.SEE_OTHER)
+						.header("Location", t.getRedirect().toString())
+						.build();
+			}
+			return Response.ok(new Viewable("/patientEdited.jsp")).build();
+		} catch (WebApplicationException e) {
+			Map <String, Object> map = new HashMap<String, Object>();
+			map.put("message", e.getResponse().getEntity());
+			return Response.status(e.getResponse().getStatus())
+					.entity(new Viewable("/errorPage.jsp", map)).build();
 		}
-
-		EditPatientToken t = this.editPatient(tokenId, newFieldValues, request);
-
-		if (t.getRedirect() != null) {
-			return Response.status(Status.SEE_OTHER)
-					.header("Location", t.getRedirect().toString())
-					.build();
-		}
-		return Response.ok(new Viewable("/patientEdited.jsp")).build();
 	}
 
 	@Path("/tokenId/{tokenId}")

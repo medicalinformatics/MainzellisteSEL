@@ -66,6 +66,7 @@ public enum Config {
 	private final String version = "1.4.0";
 	
 	private final Map<String,Class<? extends Field<?>>> FieldTypes;
+	private final Map<String, String> FieldLabels;
 	
 	private Properties props;
 	private RecordTransformer recordTransformer;
@@ -134,6 +135,7 @@ public enum Config {
 		Pattern pattern = Pattern.compile("field\\.(\\w+)\\.type");
 		java.util.regex.Matcher patternMatcher;
 		this.FieldTypes = new HashMap<String, Class<? extends Field<?>>>();
+		this.FieldLabels = new HashMap<String, String>();
 		for (String propKey : props.stringPropertyNames()) {
 			patternMatcher = pattern.matcher(propKey);
 			if (patternMatcher.find())
@@ -153,6 +155,15 @@ public enum Config {
 				} catch (Exception e) {
 					logger.fatal("Initialization of field " + fieldName + " failed: ", e);
 					throw new InternalErrorException();
+				}
+				
+				// Initialize field labels (names that are displayed in the form
+				String label = props.getProperty("field." + fieldName + ".label");
+				if (label == null) {
+					// use field name if no label defined
+					FieldLabels.put(fieldName, fieldName);
+				} else {
+					FieldLabels.put(fieldName, label);
 				}
 			}
 		}
@@ -193,6 +204,11 @@ public enum Config {
 	 */
 	public boolean fieldExists(String fieldName) {
 		return this.FieldTypes.containsKey(fieldName);
+	}
+	
+	public String getFieldLabel(String fieldKey) {
+		assert FieldLabels.keySet().contains(fieldKey);
+		return FieldLabels.get(fieldKey);
 	}
 	
 	public String getDist() {

@@ -7,6 +7,7 @@ WebContent/META-INF/context.xml.default -text
 WebContent/WEB-INF/jsp/createPatient.jsp -text svneol=unset#text/plain
 WebContent/WEB-INF/jsp/editPatient.jsp -text svneol=unset#text/plain
 WebContent/WEB-INF/jsp/editPatientAdmin.jsp -text svneol=unset#text/plain
+WebContent/WEB-INF/jsp/errorPage.jsp -text svneol=unset#text/plain
 WebContent/WEB-INF/jsp/footer.jsp -text svneol=unset#text/plain
 WebContent/WEB-INF/jsp/patientCreated.jsp -text svneol=unset#text/plain
 WebContent/WEB-INF/jsp/patientEdited.jsp -text svneol=unset#text/plain
