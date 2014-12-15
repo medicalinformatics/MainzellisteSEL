@@ -114,7 +114,6 @@ public enum Config {
 			logger.debug(props);
 			
 		} catch (IOException e)	{
-			//TODO: Hilfreichere Fehlermeldung ausgeben. Am besten direkt crashen, damit Meldung ganz unten steht.
 			logger.fatal("Error reading configuration file. Please configure according to installation manual.", e);
 			throw new Error(e);
 		}
@@ -168,28 +167,50 @@ public enum Config {
 			}
 		}
 		
+		// Read allowed origins for cross domain resource sharing (CORS)
 		allowedOrigins = new HashSet<String>();
 		String allowedOriginsString = props.getProperty("servers.allowedOrigins"); 
 		if (allowedOriginsString != null)			
 			allowedOrigins.addAll(Arrays.asList(allowedOriginsString.trim().split(";")));
 	}
 	
+	/**
+	 * Get the {@link RecordTransformer} instance configured for this instance.
+	 * @return The {@link RecordTransformer} instance configured for this instance.
+	 */
 	public RecordTransformer getRecordTransformer() {
 		return recordTransformer;
 	}
 
+	/**
+	 * Get configuration as Properties object.
+	 * @return Properties object as read from the configuration file.
+	 */
 	public Properties getProperties() {
 		return props;
 	}
 
+	/**
+	 * Get the matcher configured for this instance.
+	 * @return The matcher configured for this instance.
+	 */
 	public Matcher getMatcher() {
 		return matcher;
 	}
 
+	/**
+	 * Get the specified property from the configuration.
+	 * @param propKey Property name.
+	 * @return The property value or null if no such property exists. 
+	 */
 	public String getProperty(String propKey){
 		return props.getProperty(propKey);
 	}
 	
+	/**
+	 * Get the names of fields configured for this instance.
+	 * @return The names of fields configured for this instance.
+	 */
 	public Set<String> getFieldKeys(){
 		return FieldTypes.keySet();
 	}
