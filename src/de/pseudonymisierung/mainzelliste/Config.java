@@ -25,6 +25,7 @@
  */
 package de.pseudonymisierung.mainzelliste;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -65,6 +66,9 @@ public enum Config {
 	
 	private final String version = "1.4.0";
 	
+	/** Default paths from where configuration is read if no path is given in the context descriptor */ 
+	private final String defaultConfigPaths[] = {"/etc/mainzelliste/mainzelliste.conf", "/WEB-INF/classes/mainzelliste.conf"};
+	
 	private final Map<String,Class<? extends Field<?>>> FieldTypes;
 	private final Map<String, String> FieldLabels;
 	
@@ -80,20 +84,32 @@ public enum Config {
 	Config() throws InternalErrorException {
 		props = new Properties();
 		try {
+			// Check if path to configuration file is given in context descriptor
 			ServletContext context = Initializer.getServletContext();
 			String configPath = context.getInitParameter("de.pseudonymisierung.mainzelliste.ConfigurationFile");
 
-			if (configPath == null) configPath = "/WEB-INF/classes/mainzelliste.conf";
-			logger.info("Reading config from path " + configPath + "...");
-			
-			// First, try to read from resource (e.g. within the war file)
-			InputStream configInputStream = context.getResourceAsStream(configPath);
-			// Else: read from file System			
-			if (configInputStream == null)
-				configInputStream = new FileInputStream(configPath);
-			
-			Reader reader = new InputStreamReader(configInputStream, "UTF-8");
-			props.load(reader);
+			// try to read config from configured path  
+			if (configPath != null) { 
+				logger.info("Reading config from path " + configPath + "...");
+				props = readConfigFromFile(configPath);
+				if (props == null) {
+					throw new Error("Configuration file could not be read from provided location " + configPath);
+				}
+			} else {
+				// otherwise, try default locations
+				logger.info("No configuration file configured. Try to read from default locations...");
+				for (String defaultConfigPath : defaultConfigPaths) {
+					logger.info("Try to read configuration from default location " + defaultConfigPath);
+					props = readConfigFromFile(defaultConfigPath);
+					if (props != null) {
+						logger.info("Found configuration file at default location " + defaultConfigPath);
+						break;
+					}
+				}
+				if (props == null) {
+					throw new Error("Configuration file could not be found at any default location");
+				}
+			}			
 
 			/* 
 			 * Read properties into Preferences for easier hierarchical access
@@ -109,7 +125,6 @@ public enum Config {
 					prefNode = prefNode.node(prefKeys[i]);
 				prefNode.put(prefKeys[prefKeys.length - 1], props.getProperty(propName.toString()));
 			}					
-			configInputStream.close();
 			logger.info("Config read successfully");
 			logger.debug(props);
 			
@@ -248,6 +263,25 @@ public enum Config {
 	
 	public boolean originAllowed(String origin) {
 		return this.allowedOrigins.contains(origin);
+	}
+	
+	private Properties readConfigFromFile(String configPath) throws IOException {
+		ServletContext context = Initializer.getServletContext();
+		// First, try to read from resource (e.g. within the war file)
+		InputStream configInputStream = context.getResourceAsStream(configPath);
+		// Else: read from file System
+		if (configInputStream == null) {
+			File f = new File(configPath);
+			if (f.exists()) 
+				configInputStream = new FileInputStream(configPath);
+			else return null;
+		}
+		
+		Reader reader = new InputStreamReader(configInputStream, "UTF-8");
+		Properties props = new Properties();
+		props.load(reader);
+		configInputStream.close();
+		return props;
 	}
 	
 	Level getLogLevel() {
