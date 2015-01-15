@@ -415,15 +415,19 @@ public enum Persistor {
 			
 			// Check if there is a properties table 
 			metaData = conn.getMetaData();
+			// "value" is a reserved word so it must be quoted in SQL queries
+			String identifierQuote = metaData.getIdentifierQuoteString();
+			String valueQuoted = identifierQuote + "value" + identifierQuote;
+			logger.debug("Quoted: " + valueQuoted);
 			rs = metaData.getTables(null, null, "mainzelliste_properties", null);
 			// Assume version 1.0 if none is provided
 			if (!rs.next()) {
 				// Create table				
 				conn.createStatement().execute("CREATE TABLE mainzelliste_properties" +
-						"(property varchar(256), value varchar(256))");
+						"(property varchar(256), " + valueQuoted +" varchar(256))");
 			} 
-			rs = conn.createStatement().executeQuery("SELECT value FROM mainzelliste_properties " +
-					"WHERE property='version'");
+			rs = conn.createStatement().executeQuery("SELECT " + valueQuoted + 
+					" FROM mainzelliste_properties WHERE property='version'");
 			if (!rs.next()) {
 				// Properties table exists, but no version information
 				String setVersion = firstRun ? Config.instance.getVersion() : "1.0";
