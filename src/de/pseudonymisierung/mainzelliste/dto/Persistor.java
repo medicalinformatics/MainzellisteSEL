@@ -42,6 +42,7 @@ import javax.persistence.NoResultException;
 import javax.persistence.Persistence;
 import javax.persistence.TypedQuery;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 
@@ -51,6 +52,7 @@ import de.pseudonymisierung.mainzelliste.IDGeneratorMemory;
 import de.pseudonymisierung.mainzelliste.IDRequest;
 import de.pseudonymisierung.mainzelliste.Patient;
 import de.pseudonymisierung.mainzelliste.exceptions.InternalErrorException;
+import de.pseudonymisierung.mainzelliste.matcher.MatchResult.MatchResultType;
 
 /**
  * Handles reading and writing from and to the database.
@@ -137,7 +139,7 @@ public enum Persistor {
 	}
 
 	/**
-	 * Check whether a patient with a given ID exists
+	 * Check whether a patient with a given ID exists.
 	 * @param idType
 	 * @param idString
 	 */
@@ -151,6 +153,14 @@ public enum Persistor {
 			return true;
 		else 
 			return false;
+	}
+	
+	/**
+	 * Check whether a patient with a given ID exists.
+	 * @param id
+	 */
+	public boolean patientExists(ID id) {
+		return this.patientExists(id.getType(), id.getIdString());
 	}
 
 	/**
@@ -177,7 +187,40 @@ public enum Persistor {
 		em.persist(req); //TODO: Fehlerbehandlung, falls PID schon existiert.		
 		em.getTransaction().commit();
 	}
+
+	public List<IDRequest> getIDIdRequests(MatchResultType matchResult, Double minWeight, Double maxWeight) {
+		StringBuffer queryString = new StringBuffer();
+		LinkedList<String> filterClauses = new LinkedList<String>();
+		queryString.append("SELECT req FROM IDRequest req");
+		if (matchResult != null)
+			filterClauses.add("req.matchResult.type=:type");
+		if (minWeight != null)
+			filterClauses.add("req.matchResult.bestMatchedWeight >= :minWeight");
+		if (maxWeight != null)
+			filterClauses.add("req.matchResult.bestMatchedWeight <= :maxWeight");
 	
+		if (filterClauses.size() > 0) {
+			queryString.append(" WHERE ");
+			queryString.append(StringUtils.join(filterClauses, " AND "));
+		}
+		queryString.append(" ORDER BY req.matchResult.bestMatchedWeight DESC");		
+		EntityManager em = emf.createEntityManager();
+		TypedQuery<IDRequest> query = em.createQuery(queryString.toString(), IDRequest.class);
+		if (matchResult != null) 
+			query.setParameter("type", matchResult);
+		if (minWeight != null)
+			query.setParameter("minWeight", minWeight);
+		if (maxWeight != null)
+			query.setParameter("maxWeight", maxWeight);
+		return query.getResultList();
+		
+	}
+	/**
+	 * Get all IDRequests that yielded a "possible match".
+	 */
+	public List<IDRequest> getPossibleMatches() {
+		return getIDIdRequests(MatchResultType.POSSIBLE_MATCH, null, null);
+	}
 	/**
 	 * Update the persisted properties of an ID generator (e.g. the counter 
 	 * from which PIDs are generated).

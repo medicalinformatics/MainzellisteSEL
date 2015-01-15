@@ -69,7 +69,7 @@ public class TokenMessageBodyWriter implements
 		JSONObject ret = new JSONObject();
 		
 		try {
-			ret.put("tokenId", arg0.getId());
+			ret.put("id", arg0.getId());
 			ret.put("type", arg0.getType());
 			ret.put("data", new JSONObject(arg0.getData()));			
 		} catch (JSONException e) {

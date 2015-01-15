@@ -18,8 +18,7 @@
 		<div class="inhalt">
 			<div>&nbsp;</div>
 			<div class="formular">
-				<form action="<%=request.getContextPath() %>/patients?tokenId=${it.tokenId}&callback=${it.callback}" method="post" id="form_person"
-					onsubmit="return validateForm();">
+				<form action="<%=request.getContextPath() %>/patients?tokenId=${it.tokenId}&callback=${it.callback}" method="post" id="form_person">
 				<h1>Unsicherer Fall</h1>
 				<p>Zu den eingegeben Daten wurde ein ähnlicher Patient gefunden,
 					der aber nicht mit hinreichender Sicherheit zugeordnet werden kann.</p>

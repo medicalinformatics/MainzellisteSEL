@@ -44,10 +44,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
-
+import org.apache.commons.net.util.SubnetUtils;
 import org.apache.commons.net.util.SubnetUtils;
 import org.apache.log4j.Logger;
 
+import de.pseudonymisierung.mainzelliste.exceptions.InvalidTokenException;
 import de.pseudonymisierung.mainzelliste.webservice.Token;
 
 /**
@@ -254,8 +255,10 @@ public enum Servers {
 	}
 	
 	public void registerToken(String sessionId, Token t){
+		Session s = getSession(sessionId);
 		String tid = UUID.randomUUID().toString();
 		t.setId(tid);
+		t.setURI(s.getURI().resolve("tokens/" + tid));
 		
 		getSession(sessionId).addToken(t);
 
@@ -286,7 +289,7 @@ public enum Servers {
 	
 	public void deleteToken(String sessionId, String tokenId) {
 		if(sessionId != null){
-			getSession(sessionId).deleteToken(tokenId);
+			getSession(sessionId).deleteToken(tokensByTid.get(tokenId));
 		}
 		
 		synchronized (tokensByTid) {
@@ -307,6 +310,14 @@ public enum Servers {
 		}
 	}
 	
+	public void checkToken(String tid, String type) {
+		Token t = getTokenByTid(tid);
+		if (t == null || !type.equals(t.getType()) ) {
+			logger.info("Token with id " + tid + " " + (t == null ? "is unknown." : ("has wrong type '" + t.getType() + "'")));
+			throw new InvalidTokenException("Please supply a valid '" + type + "' token.");
+	}
+		
+	}
 	public class ApiVersion {
 		public final int majorVersion;
 		public final int minorVersion;

@@ -26,6 +26,7 @@
 package de.pseudonymisierung.mainzelliste;
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
@@ -52,7 +53,6 @@ import de.pseudonymisierung.mainzelliste.matcher.MatchResult;
 @Entity
 @Table(name="IDRequest")
 public class IDRequest {
-	@SuppressWarnings("unused")
 	@Id
 	@GeneratedValue
 	@JsonIgnore
@@ -76,6 +76,11 @@ public class IDRequest {
 	@ManyToOne(cascade={CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH}, fetch=FetchType.EAGER)
 	private Patient assignedPatient;
 
+	/**
+	 * Date and time of this reqest.
+	 */
+	private Date timestamp;
+	
 	public IDRequest(Map<String, Field<?>> inputFields, Set<String> idTypes,
 			MatchResult matchResult, Patient assignedPatient) {
 		super();
@@ -83,6 +88,7 @@ public class IDRequest {
 		this.requestedIdTypes = idTypes;
 		this.matchResult = matchResult;
 		this.assignedPatient = assignedPatient;
+		this.timestamp = new Date();
 	}
 
 	public Patient getAssignedPatient() {
@@ -113,4 +119,9 @@ public class IDRequest {
 		}
 		return new CopyOnWriteArraySet<ID>(idList);
 	}
+
+	Date getTimestamp() {
+		return timestamp;
+	}
+
 }

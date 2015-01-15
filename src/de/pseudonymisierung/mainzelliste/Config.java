@@ -25,12 +25,15 @@
  */
 package de.pseudonymisierung.mainzelliste;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
@@ -38,6 +41,7 @@ import java.util.prefs.Preferences;
 import java.util.regex.Pattern;
 
 import javax.servlet.ServletContext;
+
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
@@ -60,9 +64,13 @@ public enum Config {
 		HASHED_NORMALIZED; // Bloomfilter with prior normalization
 	}
 	
-	private final String version = "1.3.2";
+	private final String version = "1.4.0";
+	
+	/** Default paths from where configuration is read if no path is given in the context descriptor */ 
+	private final String defaultConfigPaths[] = {"/etc/mainzelliste/mainzelliste.conf", "/WEB-INF/classes/mainzelliste.conf"};
 	
 	private final Map<String,Class<? extends Field<?>>> FieldTypes;
+	private final Map<String, String> FieldLabels;
 	
 	private Properties props;
 	private RecordTransformer recordTransformer;
@@ -70,24 +78,38 @@ public enum Config {
 	
 	private Logger logger = Logger.getLogger(Config.class);
 	
+	private Set<String> allowedOrigins;
+	
 	@SuppressWarnings("unchecked")
 	Config() throws InternalErrorException {
 		props = new Properties();
 		try {
+			// Check if path to configuration file is given in context descriptor
 			ServletContext context = Initializer.getServletContext();
 			String configPath = context.getInitParameter("de.pseudonymisierung.mainzelliste.ConfigurationFile");
 
-			if (configPath == null) configPath = "/WEB-INF/classes/mainzelliste.conf";
-			logger.info("Reading config from path " + configPath + "...");
-			
-			// First, try to read from resource (e.g. within the war file)
-			InputStream configInputStream = context.getResourceAsStream(configPath);
-			// Else: read from file System			
-			if (configInputStream == null)
-				configInputStream = new FileInputStream(configPath);
-			
-			Reader reader = new InputStreamReader(configInputStream, "UTF-8");
-			props.load(reader);
+			// try to read config from configured path  
+			if (configPath != null) { 
+				logger.info("Reading config from path " + configPath + "...");
+				props = readConfigFromFile(configPath);
+				if (props == null) {
+					throw new Error("Configuration file could not be read from provided location " + configPath);
+				}
+			} else {
+				// otherwise, try default locations
+				logger.info("No configuration file configured. Try to read from default locations...");
+				for (String defaultConfigPath : defaultConfigPaths) {
+					logger.info("Try to read configuration from default location " + defaultConfigPath);
+					props = readConfigFromFile(defaultConfigPath);
+					if (props != null) {
+						logger.info("Found configuration file at default location " + defaultConfigPath);
+						break;
+					}
+				}
+				if (props == null) {
+					throw new Error("Configuration file could not be found at any default location");
+				}
+			}			
 
 			/* 
 			 * Read properties into Preferences for easier hierarchical access
@@ -103,12 +125,10 @@ public enum Config {
 					prefNode = prefNode.node(prefKeys[i]);
 				prefNode.put(prefKeys[prefKeys.length - 1], props.getProperty(propName.toString()));
 			}					
-			configInputStream.close();
 			logger.info("Config read successfully");
 			logger.debug(props);
 			
 		} catch (IOException e)	{
-			//TODO: Hilfreichere Fehlermeldung ausgeben. Am besten direkt crashen, damit Meldung ganz unten steht.
 			logger.fatal("Error reading configuration file. Please configure according to installation manual.", e);
 			throw new Error(e);
 		}
@@ -129,6 +149,7 @@ public enum Config {
 		Pattern pattern = Pattern.compile("field\\.(\\w+)\\.type");
 		java.util.regex.Matcher patternMatcher;
 		this.FieldTypes = new HashMap<String, Class<? extends Field<?>>>();
+		this.FieldLabels = new HashMap<String, String>();
 		for (String propKey : props.stringPropertyNames()) {
 			patternMatcher = pattern.matcher(propKey);
 			if (patternMatcher.find())
@@ -149,26 +170,62 @@ public enum Config {
 					logger.fatal("Initialization of field " + fieldName + " failed: ", e);
 					throw new InternalErrorException();
 				}
+				
+				// Initialize field labels (names that are displayed in the form
+				String label = props.getProperty("field." + fieldName + ".label");
+				if (label == null) {
+					// use field name if no label defined
+					FieldLabels.put(fieldName, fieldName);
+				} else {
+					FieldLabels.put(fieldName, label);
+				}
 			}
 		}
+		
+		// Read allowed origins for cross domain resource sharing (CORS)
+		allowedOrigins = new HashSet<String>();
+		String allowedOriginsString = props.getProperty("servers.allowedOrigins"); 
+		if (allowedOriginsString != null)			
+			allowedOrigins.addAll(Arrays.asList(allowedOriginsString.trim().split(";")));
 	}
 	
+	/**
+	 * Get the {@link RecordTransformer} instance configured for this instance.
+	 * @return The {@link RecordTransformer} instance configured for this instance.
+	 */
 	public RecordTransformer getRecordTransformer() {
 		return recordTransformer;
 	}
 
+	/**
+	 * Get configuration as Properties object.
+	 * @return Properties object as read from the configuration file.
+	 */
 	public Properties getProperties() {
 		return props;
 	}
 
+	/**
+	 * Get the matcher configured for this instance.
+	 * @return The matcher configured for this instance.
+	 */
 	public Matcher getMatcher() {
 		return matcher;
 	}
 
+	/**
+	 * Get the specified property from the configuration.
+	 * @param propKey Property name.
+	 * @return The property value or null if no such property exists. 
+	 */
 	public String getProperty(String propKey){
 		return props.getProperty(propKey);
 	}
 	
+	/**
+	 * Get the names of fields configured for this instance.
+	 * @return The names of fields configured for this instance.
+	 */
 	public Set<String> getFieldKeys(){
 		return FieldTypes.keySet();
 	}
@@ -176,6 +233,18 @@ public enum Config {
 	public Class<? extends Field<?>> getFieldType(String FieldKey){
 		assert FieldTypes.keySet().contains(FieldKey);
 		return FieldTypes.get(FieldKey);
+	}
+	
+	/**
+	 * Check whether a field with the given name is configured.
+	 */
+	public boolean fieldExists(String fieldName) {
+		return this.FieldTypes.containsKey(fieldName);
+	}
+	
+	public String getFieldLabel(String fieldKey) {
+		assert FieldLabels.keySet().contains(fieldKey);
+		return FieldLabels.get(fieldKey);
 	}
 	
 	public String getDist() {
@@ -190,6 +259,29 @@ public enum Config {
 	{
 		String debugMode = this.props.getProperty("debug");
 		return (debugMode != null && debugMode.equals("true"));
+	}
+	
+	public boolean originAllowed(String origin) {
+		return this.allowedOrigins.contains(origin);
+	}
+	
+	private Properties readConfigFromFile(String configPath) throws IOException {
+		ServletContext context = Initializer.getServletContext();
+		// First, try to read from resource (e.g. within the war file)
+		InputStream configInputStream = context.getResourceAsStream(configPath);
+		// Else: read from file System
+		if (configInputStream == null) {
+			File f = new File(configPath);
+			if (f.exists()) 
+				configInputStream = new FileInputStream(configPath);
+			else return null;
+		}
+		
+		Reader reader = new InputStreamReader(configInputStream, "UTF-8");
+		Properties props = new Properties();
+		props.load(reader);
+		configInputStream.close();
+		return props;
 	}
 	
 	Level getLogLevel() {

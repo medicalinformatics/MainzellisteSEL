@@ -27,6 +27,7 @@ package de.pseudonymisierung.mainzelliste.webservice;
 
 import java.net.URI;
 import java.util.Set;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
@@ -40,6 +41,7 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriBuilder;
 
@@ -49,7 +51,6 @@ import org.codehaus.jettison.json.JSONObject;
 
 import de.pseudonymisierung.mainzelliste.Servers;
 import de.pseudonymisierung.mainzelliste.Session;
-import de.pseudonymisierung.mainzelliste.exceptions.InternalErrorException;
 
 /**
  * Resource-based access to server-side client sessions.
@@ -67,13 +68,15 @@ public class SessionsResource {
 		logger.info("Request to create session received by host " + req.getRemoteHost());
 		
 		Servers.instance.checkPermission(req, "createSession");
-		String sid = Servers.instance.newSession().getId();
 		
+		Session s = Servers.instance.newSession();
+		String sid = s.getId();
 		URI newUri = UriBuilder
 				.fromUri(req.getRequestURL().toString())
-				.path("{sid}")
+				.path("{sid}/")
 				.build(sid);
-		
+		s.setURI(newUri);
+
 		logger.info("Created session " + sid);
 		
 		JSONObject ret = new JSONObject()
@@ -89,11 +92,12 @@ public class SessionsResource {
 
 	@Path("/{session}")
 	@GET
+	@Produces(MediaType.APPLICATION_JSON)
 	public Response readSession (
 			 @PathParam("session") String sid,
 			 @Context HttpServletRequest req) throws JSONException {
 		logger.info(String.format("Request to read session %s received by host %s", sid, req.getRemoteHost()));
-		// Berechtigung?
+		// No authorization except for knowing the session id
 		Session s = Servers.instance.getSession(sid);
 		if (s == null) {
 			return Response.status(
@@ -103,7 +107,7 @@ public class SessionsResource {
 		}
 		JSONObject ret = new JSONObject()
 			.put("sessionId", sid)
-			.put("uri", req.getRequestURL().toString());
+			.put("uri", s.getURI());
 		
 		return Response.status(Status.OK)
 				.entity(ret)
@@ -133,6 +137,7 @@ public class SessionsResource {
 			@Context HttpServletRequest req){
 		logger.info("Received request to list tokens for session " + sid + " from host " + 
 			req.getRemoteHost());
+		// No authorization except for knowing the session id
 		return Servers.instance.getAllTokens(sid.getValue().getId());
 	}
 	
@@ -142,6 +147,7 @@ public class SessionsResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response newToken(
 			@Context HttpServletRequest req,
+			@Context UriInfo uriInfo,
 			@PathParam("session") SessionIdParam sid,
 			String tp) throws JSONException {
 		
@@ -174,26 +180,25 @@ public class SessionsResource {
 				.path("/{tid}")
 				.build(t.getId());
 		
-		JSONObject ret = getSingleToken(sid, t.getId(), req);
-		
 		logger.info("Created token of type " + t.getType() + " with id " + t.getId() + 
 				" in session " + s.getId() + "\n" +
-				"Returned data: " + ret);
+				"Returned data: " + t.toJSON(Servers.instance.getRequestApiVersion(req)));
 
 		return Response
 			.status(Status.CREATED)
 			.location(newUri)
-			.entity(ret)
+			.entity(t)
 			.build();
 	}
 	
 	@Path("/{session}/tokens/{tokenid}")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	public JSONObject getSingleToken(
+	public Token getSingleToken(
 			@PathParam("session") SessionIdParam sid,
 			@PathParam("tokenid") String tokenId,
-			@Context HttpServletRequest req){
+			@Context HttpServletRequest req,
+			@Context UriInfo uriInfo){
 
 		logger.info("Received request to get token " + tokenId + " in session " + sid +
 				" by host " + req.getRemoteHost());
@@ -207,13 +212,20 @@ public class SessionsResource {
 					.status(Status.NOT_FOUND)
 					.entity("No token with id " + tokenId + " in session " + sid + ".")
 					.build());		
-
-		try {
-			JSONObject ret = t.toJSON(Servers.instance.getRequestApiVersion(req));
-			ret.put("uri", req.getRequestURL());
-			return ret;
-		} catch (Exception e) {
-			throw new InternalErrorException(e);
-		}
+		return t;
+	}
+	
+	@Path("/{session}/tokens/{tokenid}")
+	@DELETE
+	public Response deleteToken(@PathParam("session") SessionIdParam session,
+			@PathParam("tokenid") String tokenId) {
+		/*
+		 * Knowing the session and the token id authorizes to delete a token.
+		 * Check that session exists in order to prevent requests by users who
+		 * only know the token id.
+		 */
+		session.getValue(); // returns 404 if session does not exist
+		Servers.instance.deleteToken(tokenId);
+		return Response.status(Status.NO_CONTENT).build();
 	}
 }

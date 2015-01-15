@@ -25,6 +25,7 @@
  */
 package de.pseudonymisierung.mainzelliste;
 
+import java.net.URI;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
@@ -39,6 +40,7 @@ import de.pseudonymisierung.mainzelliste.webservice.Token;
  */
 public class Session extends ConcurrentHashMap<String, String>{
 	private String sessionId;
+	private URI uri;
 	private Set<Token> tokens = new HashSet<Token>();
 	
 	/** 
@@ -70,6 +72,14 @@ public class Session extends ConcurrentHashMap<String, String>{
 		return sessionId;
 	}
 
+	public void setURI(URI uri) {
+		this.uri = uri;
+	}
+	
+	public URI getURI() {
+		return uri;
+	}
+
 	/**
 	 * Delete this session and unregister all its tokens.
 	 */
@@ -91,9 +101,9 @@ public class Session extends ConcurrentHashMap<String, String>{
 		this.refresh();
 	}
 
-	public void deleteToken(String tokenId) {
+	public void deleteToken(Token t) {
 		synchronized(tokens){
-			tokens.remove(tokenId);
+			tokens.remove(t);
 		}
 		this.refresh();
 	}

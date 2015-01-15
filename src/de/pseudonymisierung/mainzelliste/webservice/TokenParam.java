@@ -52,6 +52,8 @@ public class TokenParam extends AbstractParam<Token> {
 			Token t;
 			if (tokenType.equals("addPatient"))
 				t = new AddPatientToken();
+			else if (tokenType.equals("editPatient"))
+				t = new EditPatientToken();
 			else
 				t = new Token();
 			if(!("".equals(jsob.optString("id"))))
@@ -72,6 +74,8 @@ public class TokenParam extends AbstractParam<Token> {
 			t.setData(data);
 			
 			return t;
+		} catch (WebApplicationException e) {
+			throw (e);
 		} catch (Exception e) {
 			throw new WebApplicationException(Response
 					.status(Status.BAD_REQUEST)

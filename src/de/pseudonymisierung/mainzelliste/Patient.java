@@ -99,8 +99,14 @@ public class Patient {
 				fields.put(fieldName, thisField);
 			}
 			return fields;
+		} catch (JSONException e) {
+			Logger.getLogger(Patient.class).error("JSON error while parsing patient fields: "
+					+ e.getMessage(), e);
+			throw new InternalErrorException();
 		} catch (Exception e) {
-			Logger.getLogger(Patient.class).error("Exception: ", e);
+			Logger logger = Logger.getLogger(Patient.class);
+			logger.error("Exception while parsing patient fields from string: " + fieldsJsonString);
+			Logger.getLogger(Patient.class).error("Cause: " + e.getMessage(), e);
 			throw new InternalErrorException();
 		}
 	}

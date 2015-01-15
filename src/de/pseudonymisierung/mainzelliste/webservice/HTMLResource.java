@@ -68,16 +68,13 @@ public class HTMLResource {
 	@Path("createPatient")
 	@Produces(MediaType.TEXT_HTML)
 	public Response createPatientForm(
-			@QueryParam("tokenId") String tokenId,
-			@QueryParam("callback") String callback){
+			@QueryParam("tokenId") String tokenId) {
 		Token t = Servers.instance.getTokenByTid(tokenId);
 		if (Config.instance.debugIsOn() ||
 				(t != null && t.getType().equals("addPatient")))
 		{
 			HashMap<String, Object> map = new HashMap<String, Object>();
 			map.put("tokenId", tokenId);
-			map.put("callback", callback);
-			map.put("adminPhone", Config.instance.getProperty("adminPhone"));
 			return Response.ok(new Viewable("/createPatient.jsp", map)).build();
 		} else throw new WebApplicationException(Response
 				.status(Status.UNAUTHORIZED)
@@ -85,10 +82,24 @@ public class HTMLResource {
 				.build());
 	}
 	
+	@Path("editPatient")
+	@GET
+	@Produces(MediaType.TEXT_HTML)
+	public Response editPatient(@QueryParam("tokenId") String tokenId) {
+		Servers.instance.checkToken(tokenId, "editPatient");
+		EditPatientToken t = (EditPatientToken) Servers.instance.getTokenByTid(tokenId);
+		Patient p = Persistor.instance.getPatient(t.getPatientId());
+		Map <String, Object> map = new HashMap<String, Object>();
+		map.put("tokenId", tokenId);
+		map.putAll(p.getInputFields());
+		
+		return Response.ok(new Viewable("/editPatient.jsp", map)).build();
+	}
+	
 	@Path("/admin/editPatient")
 	@GET
 	@Produces(MediaType.TEXT_HTML)
-	public Response editPatientForm(
+	public Response editPatientAdmin(
 			@QueryParam("idType") String idType,
 			@QueryParam("idString") String idString
 			) {
@@ -110,11 +121,12 @@ public class HTMLResource {
 		Map <String, Object> map = new HashMap<String, Object>();
 		map.putAll(p.getInputFields());
 		map.put("id", patId.getIdString());
+		map.put("tokenId", "abc");
 		map.put("tentative", p.getId("pid").isTentative());
 		if (p.getOriginal() != p)
 			map.put("original", p.getOriginal());
 
-		return Response.ok(new Viewable("/editPatient.jsp", map)).build();
+		return Response.ok(new Viewable("/editPatientAdmin.jsp", map)).build();
 	}
 
 	/** Submit form for editing a patient. */
@@ -149,12 +161,13 @@ public class HTMLResource {
 		Patient pInput = new Patient();
 		Map<String, Field<?>> chars = new HashMap<String, Field<?>>();
 
-		for(String s: Config.instance.getFieldKeys()){
-			if (!form.containsKey(s)) {
-				logger.error("Field " + s + " not found in input data!");
-				throw new WebApplicationException(Response.status(Status.BAD_REQUEST).entity("Field " + s + " not found in input data!").build());
+		for(String fieldName : Config.instance.getFieldKeys()){
+			// If a field is not in the map, keep the old value
+			if (!form.containsKey(fieldName))
+				chars.put(fieldName, pToEdit.getInputFields().get(fieldName));
+			else {
+				chars.put(fieldName, Field.build(fieldName, form.getFirst(fieldName)));
 			}
-			chars.put(s, Field.build(s, form.getFirst(s)));
 		}
 
 		pInput.setFields(chars);
@@ -199,5 +212,14 @@ public class HTMLResource {
 						.queryParam("idString", idString)
 						.build())
 						.build();
+	}
+
+	/**
+	 * Show a list of possible matches.
+	 */
+	@GET
+	@Path("/admin/possibleMatches")
+	public Response getPossibleMatches() {
+		return Response.ok(new Viewable("/possibleMatches.jsp")).build();
 	}
 }

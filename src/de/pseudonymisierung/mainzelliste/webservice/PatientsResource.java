@@ -69,8 +69,9 @@ import de.pseudonymisierung.mainzelliste.PatientBackend;
 import de.pseudonymisierung.mainzelliste.Servers;
 import de.pseudonymisierung.mainzelliste.dto.Persistor;
 import de.pseudonymisierung.mainzelliste.exceptions.InternalErrorException;
+import de.pseudonymisierung.mainzelliste.exceptions.InvalidFieldException;
+import de.pseudonymisierung.mainzelliste.exceptions.InvalidJSONException;
 import de.pseudonymisierung.mainzelliste.exceptions.InvalidTokenException;
-import de.pseudonymisierung.mainzelliste.exceptions.NotImplementedException;
 import de.pseudonymisierung.mainzelliste.exceptions.UnauthorizedException;
 import de.pseudonymisierung.mainzelliste.matcher.MatchResult;
 import de.pseudonymisierung.mainzelliste.matcher.MatchResult.MatchResultType;
@@ -107,82 +108,95 @@ public class PatientsResource {
 
 	@POST
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-	@Produces(MediaType.TEXT_HTML)
+	@Produces({MediaType.TEXT_HTML, MediaType.WILDCARD})
 	public Response newPatientBrowser(
 			@QueryParam("tokenId") String tokenId,
 			MultivaluedMap<String, String> form,
 			@Context HttpServletRequest request){
-		Token t = Servers.instance.getTokenByTid(tokenId);
-		IDRequest createRet = PatientBackend.instance.createNewPatient(tokenId, form, Servers.instance.getRequestApiVersion(request)); 
-		Set<ID> ids = createRet.getRequestedIds();
-		MatchResult result = createRet.getMatchResult();
-		Map <String, Object> map = new HashMap<String, Object>();
-		if (ids == null) { // unsure case
-			// Copy form to JSP model so that input is redisplayed
-			for (String key : form.keySet())
-			{
-				map.put(key, form.getFirst(key));
-			}
-			map.put("readonly", "true");
-			map.put("tokenId", tokenId);
-			return Response.status(Status.CONFLICT)
-					.entity(new Viewable("/unsureMatch.jsp", map)).build();
-		} else {
-			if (t != null && t.getData() != null && t.getData().containsKey("redirect")) {
-				UriTemplate redirectURITempl = new UriTemplate(t.getDataItemString("redirect"));
-				HashMap<String, String> templateVarMap = new HashMap<String, String>();
-				for (String templateVar : redirectURITempl.getTemplateVariables()) {
-					if (templateVar.equals("tokenId")) {
-						templateVarMap.put(templateVar, tokenId);
-					} else {
-						ID thisID = createRet.getAssignedPatient().getId(templateVar);
-						String idString = thisID.getIdString();
-						templateVarMap.put(templateVar, idString);
-					}
-				}
-				try {
-					URI redirectURI = new URI(redirectURITempl.createURI(templateVarMap));
-					// Remove query parameters and pass them to JSP. The redirect is put
-					// into the "action" tag of a form and the parameters are passed as 
-					// hidden fields				
-					MultivaluedMap<String, String> queryParams = UriComponent.decodeQuery(redirectURI, true);
-					map.put("redirect", redirectURI);
-					map.put("redirectParams", queryParams);
-					//return Response.status(Status.SEE_OTHER).location(redirectURI).build();
-				} catch (URISyntaxException e) {
-					// Wird auch beim Anlegen des Tokens geprüft.
-					throw new InternalErrorException("Die übergebene Redirect-URL " + redirectURITempl.getTemplate() + "ist ungültig!");
-				}
-			}
-			
-			// If Idat are to be redisplayed in the result form...
-			if (Boolean.parseBoolean(Config.instance.getProperty("result.printIdat"))) {
-				//...copy input to JSP 
+		try {
+			Token t = Servers.instance.getTokenByTid(tokenId);
+			IDRequest createRet = PatientBackend.instance.createNewPatient(tokenId, form, Servers.instance.getRequestApiVersion(request)); 
+			Set<ID> ids = createRet.getRequestedIds();
+			MatchResult result = createRet.getMatchResult();
+			Map <String, Object> map = new HashMap<String, Object>();
+			if (ids == null) { // unsure case
+				// Copy form to JSP model so that input is redisplayed
 				for (String key : form.keySet())
 				{
 					map.put(key, form.getFirst(key));
 				}
-				// and set flag for JSP to display them
-				map.put("printIdat", true);
-			}
-			// FIXME alle IDs übergeben und anzeigen
-			ID retId = ids.toArray(new ID[0])[0];
-			map.put("id", retId.getIdString());
-			map.put("tentative", retId.isTentative());
-			
-			if (Config.instance.debugIsOn() && result.getResultType() != MatchResultType.NON_MATCH)
-			{
-				map.put("debug", "on");
-				map.put("weight", Double.toString(result.getBestMatchedWeight()));
-				Map<String, Field<?>> matchedFields = result.getBestMatchedPatient().getFields();
-				Map<String, String> bestMatch= new HashMap<String, String>();
-				for(String fieldName : matchedFields.keySet())
-				{
-					bestMatch.put(fieldName, matchedFields.get(fieldName).toString());
+				map.put("readonly", "true");
+				map.put("tokenId", tokenId);
+				return Response.status(Status.CONFLICT)
+						.entity(new Viewable("/unsureMatch.jsp", map)).build();
+			} else {
+				if (t != null && t.getData() != null && t.getData().containsKey("redirect")) {
+					UriTemplate redirectURITempl = new UriTemplate(t.getDataItemString("redirect"));
+					HashMap<String, String> templateVarMap = new HashMap<String, String>();
+					for (String templateVar : redirectURITempl.getTemplateVariables()) {
+						if (templateVar.equals("tokenId")) {
+							templateVarMap.put(templateVar, tokenId);
+						} else {
+							ID thisID = createRet.getAssignedPatient().getId(templateVar);
+							String idString = thisID.getIdString();
+							templateVarMap.put(templateVar, idString);
+						}
+					}
+					try {
+						URI redirectURI = new URI(redirectURITempl.createURI(templateVarMap));
+						String showResult = Config.instance.getProperty("result.show");
+						if (showResult != null && !Boolean.parseBoolean(showResult)) {
+							return Response.status(Status.SEE_OTHER)
+									.location(redirectURI)
+									.build();
+						}
+						// Remove query parameters and pass them to JSP. The redirect is put
+						// into the "action" tag of a form and the parameters are passed as 
+						// hidden fields				
+						MultivaluedMap<String, String> queryParams = UriComponent.decodeQuery(redirectURI, true);
+						map.put("redirect", redirectURI);
+						map.put("redirectParams", queryParams);
+						//return Response.status(Status.SEE_OTHER).location(redirectURI).build();
+					} catch (URISyntaxException e) {
+						// Wird auch beim Anlegen des Tokens geprüft.
+						throw new InternalErrorException("Die übergebene Redirect-URL " + redirectURITempl.getTemplate() + "ist ungültig!");
+					}
 				}
-				map.put("bestMatch", bestMatch);
+
+				// If Idat are to be redisplayed in the result form...
+				if (Boolean.parseBoolean(Config.instance.getProperty("result.printIdat"))) {
+					//...copy input to JSP 
+					for (String key : form.keySet())
+					{
+						map.put(key, form.getFirst(key));
+					}
+					// and set flag for JSP to display them
+					map.put("printIdat", true);
+				}
+				// FIXME alle IDs übergeben und anzeigen
+				ID retId = ids.toArray(new ID[0])[0];
+				map.put("id", retId.getIdString());
+				map.put("tentative", retId.isTentative());
+
+				if (Config.instance.debugIsOn() && result.getResultType() != MatchResultType.NON_MATCH)
+				{
+					map.put("debug", "on");
+					map.put("weight", Double.toString(result.getBestMatchedWeight()));
+					Map<String, Field<?>> matchedFields = result.getBestMatchedPatient().getFields();
+					Map<String, String> bestMatch= new HashMap<String, String>();
+					for(String fieldName : matchedFields.keySet())
+					{
+						bestMatch.put(fieldName, matchedFields.get(fieldName).toString());
+					}
+					map.put("bestMatch", bestMatch);
+				}
+				return Response.ok(new Viewable("/patientCreated.jsp", map)).build();
 			}
-			return Response.ok(new Viewable("/patientCreated.jsp", map)).build();
+		} catch (WebApplicationException e) {
+			Map <String, Object> map = new HashMap<String, Object>();
+			map.put("message", e.getResponse().getEntity());
+			return Response.status(e.getResponse().getStatus())
+					.entity(new Viewable("/errorPage.jsp", map)).build();
 		}
 	}
 	
@@ -261,72 +275,6 @@ public class PatientsResource {
 		}
 	}
 
-	
-	/**
-	 * Interface for Temp-ID-Resolver
-	 * 
-	 * @param callback
-	 * @param data
-	 * @return
-	 */
-	@Path("/tempid")
-	@GET
-	@Consumes(MediaType.APPLICATION_JSON)
-	@Produces(MediaType.APPLICATION_JSON)
-	public Response resolveTempIds(
-			@QueryParam("callback") String callback,
-			@QueryParam("data") JSONObject data) {
-		if (data.has("subjects")) {
-			JSONObject subjects;
-			JSONObject result = new JSONObject();
-			try {
-				subjects = data.getJSONObject("subjects");
-				Iterator<?> subjectIt = subjects.keys();
-				while (subjectIt.hasNext()) {
-					String subject = subjectIt.next().toString();
-					JSONArray tempIds = subjects.getJSONArray(subject);
-					for (int i = 0; i < tempIds.length(); i++) {
-						String tempId = tempIds.getString(i);
-						String value = resolveTempId(tempId, subject);
-						JSONObject resultSubObject;
-						if (!result.has(subject)) {
-							resultSubObject = new JSONObject();
-							result.putOpt(subject, resultSubObject);
-						} else {
-							resultSubObject = result.getJSONObject(subject);
-						}
-						resultSubObject.put(tempId, value);							
-					}					
-				}
-				return Response.ok().entity(result.toString()).build();
-			} catch (JSONException e) {
-				throw new WebApplicationException(Response.status(Status.BAD_REQUEST).entity(e.getMessage()).build());
-			} catch (NoSuchFieldException e) {
-				throw new WebApplicationException(Response.status(Status.BAD_REQUEST).entity(e.getMessage()).build());
-			}
-		} else
-			return Response.ok().build();
-	}
-	
-	private String resolveTempId(String tempId, String subject) throws NoSuchFieldException {
-		Patient p = getPatientByTempId(tempId);
-		if (!p.getInputFields().containsKey(subject))
-			throw new NoSuchFieldException("No subject " + subject + " for Temp-ID " + tempId);
-		return p.getInputFields().get(subject).getValue().toString();
-	}
-	
-	
-	private Patient getPatientByTempId(String tid) throws UnauthorizedException {
-		Token t = Servers.instance.getTokenByTid(tid);
-		if (t == null || !t.getType().equals("readPatient")) {
-			logger.info("Tried to access GET /patients/tempid/ with invalid token " + t);
-			throw new UnauthorizedException();
-		}
-		// TODO: verallgemeinern für andere IDs
-		String pidString = t.getDataItemString("id");
-		return Persistor.instance.getPatient(IDGeneratorFactory.instance.getFactory("pid").buildId(pidString));		
-	}
-	
 	/**
 	 * Get patient via readPatient token
 	 * @param tid
@@ -396,16 +344,118 @@ public class PatientsResource {
 		
 		return Response.ok().entity(ret).build();
 	}
+
+	@Path("/tokenId/{tokenId}")
+	@PUT
+	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+	public Response editPatientBrowser(@PathParam("tokenId") String tokenId,
+			MultivaluedMap<String, String> form,
+			@Context HttpServletRequest request) {
+
+		try {
+			// Collect fields from input form
+			Map<String, String> newFieldValues = new HashMap<String, String>();
+			for (String fieldName : form.keySet()) {
+				newFieldValues.put(fieldName, form.getFirst(fieldName));
+			}
 	
-	@Path("/tempid/{tid}")
+			EditPatientToken t = this.editPatient(tokenId, newFieldValues, request);
+	
+			if (t.getRedirect() != null) {
+				return Response.status(Status.SEE_OTHER)
+						.header("Location", t.getRedirect().toString())
+						.build();
+			}
+			return Response.ok(new Viewable("/patientEdited.jsp")).build();
+		} catch (WebApplicationException e) {
+			Map <String, Object> map = new HashMap<String, Object>();
+			map.put("message", e.getResponse().getEntity());
+			return Response.status(e.getResponse().getStatus())
+					.entity(new Viewable("/errorPage.jsp", map)).build();
+		}
+	}
+
+	@Path("/tokenId/{tokenId}")
 	@PUT
 	@Consumes(MediaType.APPLICATION_JSON)
-	public void setPatientByTempId(
-			@PathParam("tid") String tid,
-			Patient p){
-		//Hier keine Auth notwendig. Wenn tid existiert, ist der Nutzer dadurch autorisiert.
-		//Charakteristika des Patients in DB mit TempID tid austauschen durch die von p
-		logger.info("Received PUT /patients/tempid/" + tid);
-		throw new NotImplementedException();
+	public Response editPatientJSON(@PathParam("tokenId") String tokenId,
+			String data,
+			@Context HttpServletRequest request) {
+
+		// Collect fields from input form
+		try {
+			JSONObject newFieldValuesJSON = new JSONObject(data);
+			Map<String, String> newFieldValues = new HashMap<String, String>();
+			Iterator<?> i = newFieldValuesJSON.keys();
+			while (i.hasNext()) {
+				String fieldName = i.next().toString();			
+				newFieldValues.put(fieldName, newFieldValuesJSON.get(fieldName).toString());
+			}
+			this.editPatient(tokenId, newFieldValues, request);	
+			return Response.status(Status.NO_CONTENT).build();
+		} catch (JSONException e) {
+			throw new InvalidJSONException(e);
+		}
+	}
+
+	/**
+	 * Handles requests to edit a patient (i.e. change IDAT fields). Methods for
+	 * specific media types should delegate all processing apart from converting
+	 * the input (e.g. form fields) to this function, including error handling
+	 * for invalid tokens etc.
+	 * 
+	 * @param tokenId
+	 *            Id of a valid editPatient token.
+	 * @param newFieldValues
+	 *            Field values to set. Fields that do not appear as map keys are
+	 *            left as they are. In order to delete a field value, provide an
+	 *            empty string.
+	 * @param request
+	 *            The injected HttpServletRequest.
+	 * @return The token that is as authorization the patient. Used for retreiving the redirect URL afterwards.
+	 */
+	private EditPatientToken editPatient(String tokenId, Map<String, String> newFieldValues, HttpServletRequest request) {
+		
+		Token t = Servers.instance.getTokenByTid(tokenId);
+		EditPatientToken tt;
+		if (t == null || !"editPatient".equals(t.getType()) ) {
+				logger.info("Token with id " + tokenId + " " + (t == null ? "is unknown." : ("has wrong type '" + t.getType() + "'")));
+				throw new InvalidTokenException("Please supply a valid 'editPatient' token.");
+		}
+		// synchronize on token 
+		synchronized (t) {
+			/* Get token again and check if it still exist.
+			 * This prevents the following race condition:
+			 *  1. Thread A gets token t and enters synchronized block
+			 *  2. Thread B also gets token t, now waits for A to exit the synchronized block
+			 *  3. Thread A deletes t and exits synchronized block
+			 *  4. Thread B enters synchronized block with invalid token
+			 */
+			tt = (EditPatientToken) Servers.instance.getTokenByTid(tokenId);
+			if(tt == null){
+				String infoLog = "Token with ID " + tokenId + " is invalid. It was invalidated by a concurrent request or the session timed out during this request.";
+				logger.info(infoLog);
+				throw new WebApplicationException(Response
+						.status(Status.UNAUTHORIZED)
+						.entity("Please supply a valid 'editPatient' token.")
+						.build());
+			}
+
+			// Check that the caller is allowed to change the provided fields
+			if (tt.getFields() != null) {
+				for (String fieldName : newFieldValues.keySet()) {
+					if (!tt.getFields().contains(fieldName))
+						throw new InvalidFieldException("No authorization to edit field " + fieldName +
+								" with this token.");
+				}
+			}
+			
+			PatientBackend.instance.editPatient(tt.getPatientId(), newFieldValues);
+		} // end of synchronized block
+		
+		if (!Config.instance.debugIsOn())
+			Servers.instance.deleteToken(t.getId());
+		
+		return tt;
 	}
 }
