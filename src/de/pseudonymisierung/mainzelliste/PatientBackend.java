@@ -1,5 +1,7 @@
 package de.pseudonymisierung.mainzelliste;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -68,6 +70,12 @@ public enum PatientBackend {
 			if (Config.instance.debugIsOn())
 			{
 				Session s = Servers.instance.newSession();
+				try {
+					s.setURI(new URI("debug"));
+				} catch (URISyntaxException e) {
+					throw new Error();
+				}
+
 				t = new AddPatientToken(null, "addPatient");
 				Servers.instance.registerToken(s.getId(), t);
 				tokenId = t.getId();
