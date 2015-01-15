@@ -144,7 +144,8 @@ public enum Validator {
 	}
 	
 	/**
-	 * Validates dates in input form according to format definition in configuration.
+	 * Validates dates in input form according to format definition in
+	 * configuration.
 	 */
 	public void validateDates(MultivaluedMap<String, String> form) {
 		// List to collect all dates in the form
@@ -152,15 +153,22 @@ public enum Validator {
 		for (List<String> thisDateFields : this.dateFields) {
 			StringBuffer dateString = new StringBuffer();
 			for (String fieldName : thisDateFields) {
-				dateString.append(form.getFirst(fieldName));				
+				if (!form.containsKey(fieldName)) {
+					throw new ValidatorException(
+							String.format(
+									"Field %s is missing in date definition. Dates must be entered and updated in complete form.",
+									fieldName));
+				}
+				dateString.append(form.getFirst(fieldName));
 			}
 			dateStrings.add(dateString.toString());
-		}		
+		}
 		checkDates(this.dateFormat, dateStrings);
 	}
 	
 	/**
-	 * Validates dates in input form according to format definition in configuration.
+	 * Validates dates in input form according to format definition in
+	 * configuration.
 	 */
 	public void validateDates(Map<String, String> form) {
 
@@ -169,10 +177,16 @@ public enum Validator {
 		for (List<String> thisDateFields : this.dateFields) {
 			StringBuffer dateString = new StringBuffer();
 			for (String fieldName : thisDateFields) {
-				dateString.append(form.get(fieldName));				
+				if (!form.containsKey(fieldName)) {
+					throw new ValidatorException(
+							String.format(
+									"Field %s is missing in date definition. Dates must be entered and updated in complete form.",
+									fieldName));
+				}
+				dateString.append(form.get(fieldName));
 			}
 			dateStrings.add(dateString.toString());
-		}		
+		}
 		checkDates(this.dateFormat, dateStrings);
 	}
 
