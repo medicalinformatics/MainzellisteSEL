@@ -174,8 +174,9 @@ public enum Servers {
 				return;
 			
 			for(Token t: s.getTokens()){
-				deleteToken(sid, t.getId());
+				tokensByTid.remove(t.getId());
 			}
+			s.deleteAllTokens();
 			sessions.remove(sid);
 		}
 	}

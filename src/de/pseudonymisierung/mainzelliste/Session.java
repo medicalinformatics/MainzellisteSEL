@@ -107,4 +107,13 @@ public class Session extends ConcurrentHashMap<String, String>{
 		}
 		this.refresh();
 	}
+	
+	/**
+	 * Delete all tokens in this session.
+	 */
+	public void deleteAllTokens() {
+		synchronized(tokens){
+			tokens.clear();
+		}
+	}
 }
