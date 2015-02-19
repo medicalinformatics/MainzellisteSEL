@@ -273,13 +273,13 @@ public class Token {
 		}
 
 		// Check fields
-		if (this.getData().containsKey("fields")) {
+		if (this.getData().containsKey("resultFields")) {
 			
 			try {
-				List<?> fields = this.getDataItemList("fields");
+				List<?> fields = this.getDataItemList("resultFields");
 				for (Object thisField : fields) {
 					if (!Config.instance.getFieldKeys().contains(thisField.toString()))
-						throw new InvalidTokenException("Field " + thisField + " provided in field list is unknown!");
+						throw new InvalidTokenException("Field '" + thisField + "' provided in field list is unknown!");
 				}
 			} catch (ClassCastException e) {
 				throw new InvalidTokenException("Illegal format for data item 'fields'! " +
