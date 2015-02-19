@@ -266,3 +266,6 @@ callback.allowedFormat = https://.*
 # A session will be deleted if not accessed for this amount of time, specified in minutes
 # Default value if not specified: 10
 # sessionTimeout = 10
+
+# Contact information to display below user forms (leave empty or commented to deactivate)
+# contact =  
