@@ -279,11 +279,19 @@ public class Patient {
 	/**
 	 * Deserializes fields and input fields from their JSON representation. Automatically
 	 * called by the JPA engine right after loading the object from the database.
+	 * Fields that are missing in the database due to a later change of configuration are
+	 * added with empty values.
 	 */
 	@PostLoad
 	public void postLoad() {
 		this.fields = stringToFields(this.fieldsString);
 		this.inputFields = stringToFields(this.inputFieldsString);
+		for (String thisFieldKey : Config.instance.getFieldKeys()) {
+			if (!this.fields.containsKey(thisFieldKey))
+				this.fields.put(thisFieldKey, Field.build(thisFieldKey, ""));
+			if (!this.inputFields.containsKey(thisFieldKey))
+				this.inputFields.put(thisFieldKey, Field.build(thisFieldKey, ""));
+		}
 	}
 	
 	
