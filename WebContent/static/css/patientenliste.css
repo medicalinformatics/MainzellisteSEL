@@ -70,34 +70,3 @@ input:-moz-placeholder {
 .geburtstag, .geburtsmonat, .geburtsjahr {
 	color: rgb(0,60,118);
 }
-
-table.possible-matches {
-	border:0px none black; 
-	border-collapse: collapse;
-	margin-left:auto;
-	margin-right:auto;
-}
-
-
-td.mark-duplicate-top {
-	border-top: 2px solid #C1002B;
-	border-left: 2px solid #C1002B;
-	border-right: 2px solid #C1002B;
-}
-
-td.mark-duplicate-bottom {
-	border-bottom: 2px solid #C1002B;
-	border-left: 2px solid #C1002B;
-	border-right: 2px solid #C1002B;
-}
-
-td.mark-duplicate {
-	background-color: #C1002B;
-}
-
-td.separator {
-	border: 0px none;
-	text-align: center;
-	padding-top: 2p;
-	padding-bottom: 2p;
-}

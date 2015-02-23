@@ -62,15 +62,6 @@ field.geburtsjahr.type = IntegerField
 field.plz.type = PlainTextField
 field.ort.type = PlainTextField
 
-# Field labels can be defined for display, for example in error messages
-# field.vorname.label = Vorname
-# field.nachname.label = Nachname
-# field.geburtsname.label = Geburtsname
-# field.geburtstag.label = Geburtsdatum (Tag) 
-# field.geburtsmonat.label = Geburtsdatum (Monat)
-# field.geburtsjahr.label = Geburtsdatum (Jahr)
-# field.plz.label = Postleitzahl
-# field.ort.label = Ort
 
 # Server-side validation
 

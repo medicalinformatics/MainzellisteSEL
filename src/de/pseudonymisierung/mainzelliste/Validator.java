@@ -125,19 +125,17 @@ public enum Validator {
 	}
 	
 	public void validateField(String key, String value) {
-		// Format error message with human-readable field label (if such defined)
-		String label = Config.instance.getFieldLabel(key);
-			
+		
 		if (requiredFields.contains(key)) {
 			if (value == null || value.equals("")) {
-				throw new ValidatorException("Field '" + label + "' must not be empty!");
+				throw new ValidatorException("Field " + key + " must not be empty!");
 			}
 		}
 
 		if (formats.containsKey(key)) {
 			String format = formats.get(key);
 			if (value != null && !value.equals("") && !Pattern.matches(format, value)) {
-				throw new ValidatorException("Field " + label + 
+				throw new ValidatorException("Field " + key + 
 						" does not conform to the required format" + format);
 			}
 		}

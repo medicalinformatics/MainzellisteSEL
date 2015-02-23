@@ -187,45 +187,7 @@ public enum Persistor {
 		em.persist(req); //TODO: Fehlerbehandlung, falls PID schon existiert.		
 		em.getTransaction().commit();
 	}
-
-	public List<IDRequest> getIDIdRequests(MatchResultType matchResult, Double minWeight, Double maxWeight, boolean filterTentative) {
-		StringBuffer queryString = new StringBuffer();
-		LinkedList<String> filterClauses = new LinkedList<String>();
-		queryString.append("SELECT req FROM IDRequest req");
-		if (filterTentative)
-			queryString.append(" JOIN req.assignedPatient p");
-		if (matchResult != null)
-			filterClauses.add("req.matchResult.type=:type");
-		if (minWeight != null)
-			filterClauses.add("req.matchResult.bestMatchedWeight >= :minWeight");
-		if (maxWeight != null)
-			filterClauses.add("req.matchResult.bestMatchedWeight <= :maxWeight");
-		if (filterTentative) {
-			filterClauses.add("p.isTentative = TRUE");
-		}
-		
-		if (filterClauses.size() > 0) {
-			queryString.append(" WHERE ");
-			queryString.append(StringUtils.join(filterClauses, " AND "));
-		}
-		queryString.append(" ORDER BY req.matchResult.bestMatchedWeight DESC");		
-		EntityManager em = emf.createEntityManager();
-		TypedQuery<IDRequest> query = em.createQuery(queryString.toString(), IDRequest.class);
-		if (matchResult != null) 
-			query.setParameter("type", matchResult);
-		if (minWeight != null)
-			query.setParameter("minWeight", minWeight);
-		if (maxWeight != null)
-			query.setParameter("maxWeight", maxWeight);
-		return query.getResultList();
-		
-	}
-	/**
-	 * Get all IDRequests that yielded a "possible match".
-	 */
-	public List<IDRequest> getPossibleMatches() {
-		return getIDIdRequests(MatchResultType.POSSIBLE_MATCH, null, null, false);
-	}
+	
 	/**
 	 * Update the persisted properties of an ID generator (e.g. the counter 
 	 * from which PIDs are generated).

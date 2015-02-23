@@ -56,7 +56,6 @@ function fillOriginalId() {
 	<div class="inhalt">
 		<div>&nbsp;</div>
 		<div class="formular">
-<!-- 			<form method="post" id="form_person"> -->
 			<form method="post" id="form_person">
 				<h1>Patienten bearbeiten</h1>
 				<%@ include file="patientFormElements.jsp" %>
