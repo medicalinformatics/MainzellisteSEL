@@ -1,5 +1,6 @@
 <!-- Form elements for patient data, to be included in other pages -->
 
+<%@page import="java.text.DateFormatSymbols"%>
 <%@page import="de.pseudonymisierung.mainzelliste.Config"%>
 <%@page import="java.util.ResourceBundle"%>
 <%@page import="java.util.Calendar"%>
