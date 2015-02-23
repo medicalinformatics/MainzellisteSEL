@@ -1,5 +1,10 @@
+<%@page import="de.pseudonymisierung.mainzelliste.Config"%>
+<%@page import="java.util.ResourceBundle"%>
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
 	pageEncoding="ISO-8859-1"%>
+<%
+	ResourceBundle bundle = Config.instance.getResourceBunde(request);
+%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
@@ -18,11 +23,9 @@
 	<div class="inhalt">
 		<div class="formular">
 			<div>&nbsp;</div>
-			<h1>Bearbeitung abgeschlossen</h1>
-
+			<h1><%=bundle.getString("editCompletedTitle") %></h1>
 			<p align="center">
-				Die Änderungen an den Patientendaten wurden übernommen.
-				Sie können nun zur aufrufenden Webseite zurückkehren.
+				<%=bundle.getString("editCompletedText") %>								
 			</p>
 		</div>
 		<div>&nbsp;</div>
