@@ -113,6 +113,9 @@
                     <exclude>mainzelliste.conf.default</exclude>
                 </excludes>
             </resource>
+            <resource>
+                <directory>${basedir}/resources</directory>
+            </resource>
         </resources>
         <plugins>
             <plugin>

@@ -99,15 +99,23 @@ function fillOriginalId() {
 				</table>
 				</div>
 				<div align="center">
-					<td>&nbsp;</td>
+					&nbsp;
 				</div>
 				<div align="center">
-					<input type="submit" value="Speichern" />
+					<input type="submit" value="Speichern">
 				</div>				
+			</form>
+			<div align="center">
+				&nbsp;
+			</div>
+			<form method="POST" onsubmit="return confirm('Patienten wirklich löschen?');">
+				<div align="center">
+					<input type="submit" value="Löschen" name="delete"/>
+				</div>
 			</form>
 		</div>
 		<div>&nbsp;</div>
 	</div>
-	<%@include file="footer.jsp" %>
+	<jsp:include page="footer.jsp" />
 </body>
 </html>

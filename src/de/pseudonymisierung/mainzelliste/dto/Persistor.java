@@ -188,17 +188,22 @@ public enum Persistor {
 		em.getTransaction().commit();
 	}
 
-	public List<IDRequest> getIDIdRequests(MatchResultType matchResult, Double minWeight, Double maxWeight) {
+	public List<IDRequest> getIDIdRequests(MatchResultType matchResult, Double minWeight, Double maxWeight, boolean filterTentative) {
 		StringBuffer queryString = new StringBuffer();
 		LinkedList<String> filterClauses = new LinkedList<String>();
 		queryString.append("SELECT req FROM IDRequest req");
+		if (filterTentative)
+			queryString.append(" JOIN req.assignedPatient p");
 		if (matchResult != null)
 			filterClauses.add("req.matchResult.type=:type");
 		if (minWeight != null)
 			filterClauses.add("req.matchResult.bestMatchedWeight >= :minWeight");
 		if (maxWeight != null)
 			filterClauses.add("req.matchResult.bestMatchedWeight <= :maxWeight");
-	
+		if (filterTentative) {
+			filterClauses.add("p.isTentative = TRUE");
+		}
+		
 		if (filterClauses.size() > 0) {
 			queryString.append(" WHERE ");
 			queryString.append(StringUtils.join(filterClauses, " AND "));
@@ -219,7 +224,7 @@ public enum Persistor {
 	 * Get all IDRequests that yielded a "possible match".
 	 */
 	public List<IDRequest> getPossibleMatches() {
-		return getIDIdRequests(MatchResultType.POSSIBLE_MATCH, null, null);
+		return getIDIdRequests(MatchResultType.POSSIBLE_MATCH, null, null, false);
 	}
 	/**
 	 * Update the persisted properties of an ID generator (e.g. the counter 
@@ -280,6 +285,16 @@ public enum Persistor {
 		this.em = this.emf.createEntityManager();
 	}
 	
+	public synchronized void deletePatient(ID id) {
+		em.getTransaction().begin();
+		TypedQuery<Patient> q = em.createQuery("SELECT p FROM Patient p JOIN p.ids id WHERE id.idString = :idString AND id.type = :idType", Patient.class);
+		q.setParameter("idString", id.getIdString());
+		q.setParameter("idType", id.getType());
+		Patient p = q.getSingleResult();
+		if (p != null)
+			em.remove(p);
+		em.getTransaction().commit();
+	}
 	
 	/**
 	 * Performs database updates after JPA initialization

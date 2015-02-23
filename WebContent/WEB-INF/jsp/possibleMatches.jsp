@@ -29,8 +29,9 @@
 	} catch (Exception e) {
 		maxWeight = null;	
 	}
+	boolean filterTentative = (request.getParameter("filterTentative") != null);	
 // 	List<IDRequest> possibleMatches = Persistor.instance.getPossibleMatches();
- 	List<IDRequest> possibleMatches = Persistor.instance.getIDIdRequests(showType, minWeight, maxWeight);	
+ 	List<IDRequest> possibleMatches = Persistor.instance.getIDIdRequests(showType, minWeight, maxWeight, filterTentative);	
 	String idType = IDGeneratorFactory.instance.getDefaultIDType();
 	List<String> fieldNames = new LinkedList<String>(
 			Config.instance.getFieldKeys());
@@ -77,6 +78,8 @@ td {
 				<% if (showType==MatchResultType.POSSIBLE_MATCH) {%>checked="checked"<% } %>> Unsichere Matche
 			<input type="radio" name="matchResultType" value="<%=MatchResultType.NON_MATCH %>"
 				<% if (showType==MatchResultType.NON_MATCH) {%>checked="checked"<% } %>> Non-Matche,
+			<input type="checkbox" name="filterTentative" <% if (filterTentative) {%>checked="checked"<% } %>>
+			Nur vorläufige Einträge
 			Matchgewicht von <input type="text" name="minWeight" value="<%=minWeight==null ? "" : minWeight %>"size="4"> bis 
 			<input type="text" name="maxWeight" value="<%=maxWeight==null ? "" : maxWeight %>" size="4">
 			<input type="submit" value="OK">
@@ -166,6 +169,6 @@ td {
 			<div>&nbsp;</div>
 		</div>
 	</div>
-	<%@ include file="footer.jsp"%>
+	<jsp:include page="footer.jsp" />
 </body>
 </html>

@@ -141,6 +141,15 @@ public class HTMLResource {
 			MultivaluedMap<String, String> form,
 			@Context HttpServletRequest req){
 		
+		if (form.containsKey("delete")) {
+			logger.info(String.format("Handling delete operation for patient with id of type %s and value %s.",
+					idType, idString));
+			Persistor.instance.deletePatient(IDGeneratorFactory.instance.buildId(idType, idString));
+			return Response.status(Status.SEE_OTHER)
+					.location(UriBuilder.fromResource(this.getClass()).path("admin/editPatient").build())
+					.build();
+		}
+		
 		logger.info(String.format("Handling edit operation for patient with id of type %s and value %s.",
 					idType, idString));
 		
@@ -221,5 +230,11 @@ public class HTMLResource {
 	@Path("/admin/possibleMatches")
 	public Response getPossibleMatches() {
 		return Response.ok(new Viewable("/possibleMatches.jsp")).build();
+	}
+	
+	@GET
+	@Path("/admin/patientList")
+	public Response getPatientList() {
+		return Response.ok().entity(new Viewable("/patientList.jsp")).build();
 	}
 }

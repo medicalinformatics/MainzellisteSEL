@@ -26,6 +26,7 @@
 package de.pseudonymisierung.mainzelliste;
 
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
@@ -56,8 +57,16 @@ public class Session extends ConcurrentHashMap<String, String>{
 		return lastAccess;
 	}
 
-	public Session(String s) {
+	public Session(String s) {		
 		sessionId = s;
+		try {
+			// Assign provisional URI in case it is not set.  
+			uri = new URI(Initializer.getServletContext().getContextPath() + "/")
+			.resolve("sessions/")
+			.resolve(s);
+		} catch (URISyntaxException e) {
+			throw new Error("Error while creating URI from ServletContext", e);
+		}
 		this.refresh();
 	}
 	

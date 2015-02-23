@@ -34,13 +34,17 @@ import java.io.Reader;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
+import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.prefs.Preferences;
 import java.util.regex.Pattern;
 
 import javax.servlet.ServletContext;
+import javax.servlet.ServletRequest;
+import javax.servlet.http.HttpServletRequest;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -187,6 +191,8 @@ public enum Config {
 		String allowedOriginsString = props.getProperty("servers.allowedOrigins"); 
 		if (allowedOriginsString != null)			
 			allowedOrigins.addAll(Arrays.asList(allowedOriginsString.trim().split(";")));
+		
+		Locale.setDefault(Locale.ENGLISH);
 	}
 	
 	/**
@@ -282,6 +288,12 @@ public enum Config {
 		props.load(reader);
 		configInputStream.close();
 		return props;
+	}
+	
+	public ResourceBundle getResourceBunde(ServletRequest req) {
+		Locale requestLocale = req.getLocale();
+		ResourceBundle bundle = ResourceBundle.getBundle("MessageBundle", requestLocale);
+		return bundle;
 	}
 	
 	Level getLogLevel() {

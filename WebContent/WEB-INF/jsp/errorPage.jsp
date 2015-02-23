@@ -1,5 +1,9 @@
+<%@page import="de.pseudonymisierung.mainzelliste.Config"%>
+<%@page import="java.util.ResourceBundle"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="ISO-8859-1"%>
+    
+<% ResourceBundle bundle = Config.instance.getResourceBunde(request); %>
     
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
@@ -8,7 +12,7 @@
 
 <link rel="stylesheet" type="text/css" href="<%=request.getContextPath() %>/static/css/patientenliste.css">
 
-<title>Fehler</title>
+<title><%=bundle.getString("error") %></title>
 </head>
 
 <!-- JQuery -->
@@ -26,19 +30,19 @@
 		<div class="inhalt">
 			<div>&nbsp;</div>
 			<div class="formular">
-				<h1>Es ist ein Fehler aufgetreten</h1>
-				<h3 class="header_left">Fehlermeldung:</h3>
+				<h1><%=bundle.getString("errorHasOccured") %></h1>
+				<h3 class="header_left"><%=bundle.getString("errorMessage") %>:</h3>
 				<p>
 					${it.message}
 				</p>
 				<p>
-					<input type="button" onclick="history.back()" value="Zurück" />
+					<input type="button" onclick="history.back()" value="<%=bundle.getString("back") %>" />
 				</p>
 				<p>
 				  &nbsp;
 				</p>
 			</div>
 		</div>
-		<%@ include file="footer.jsp" %>
+		<jsp:include page="footer.jsp" />
 	</body>
 </html>

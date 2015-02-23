@@ -1,39 +1,42 @@
 <!-- Form elements for patient data, to be included in other pages -->
 
+					<%@page import="de.pseudonymisierung.mainzelliste.Config"%>
+					<%@page import="java.util.ResourceBundle"%>
 					<%@page import="java.util.Calendar"%>
 					<%@ page import="java.util.Map" %>					
 					<%
 						Map<String, Object> map = (Map<String,Object>)request.getAttribute("it");
+						ResourceBundle bundle = Config.instance.getResourceBunde(request);
 					%>
-					<h3>Stammdaten</h3>
+					<h3><%=bundle.getString("patientData") %></h3>
 					<fieldset class="patienten_daten">
 						<div>&nbsp;</div>
 						<div>&nbsp;</div>
 						<table class="daten_tabelle">
 							<tbody>
 								<tr>
-									<td><label for="vorname">Vorname : </label></td>
+									<td><label for="vorname"><%=bundle.getString("firstName") %>: </label></td>
 									<td><input type="text" id="vorname" name="vorname" size="50" placeholder="Anne-Marie Luise"
 										value="${it.vorname}" <% if (map.containsKey("readonly")) { %> readonly="readonly" <% } %>/>
 										<font color="red">*</font></td>
 								</tr>
 								<tr>
-									<td><label for="nachname">Nachname : </label></td>
+									<td><label for="nachname"><%=bundle.getString("lastName") %> : </label></td>
 									<td><input type="text" id="nachname" name="nachname" size="50" placeholder="Müller-Schulze"
 									value="${it.nachname}" <% if (map.containsKey("readonly")) { %> readonly="readonly" <% } %>/>
 									<font color="red">*</font></td>
 								</tr>
 								<tr>
-									<td><label for="geburtsname">Geburtsname : </label></td>
+									<td><label for="geburtsname"><%=bundle.getString("birthName") %> : </label></td>
 									<td><input type="text" id="geburtsname" name="geburtsname" size="50" 
 									value="${it.geburtsname}" 
-									<% if (map.containsKey("readonly")) { %> readonly="readonly" <% } else { %> placeholder="Schulze" <% } %>/><small> (falls abweichend)</small></td>
+									<% if (map.containsKey("readonly")) { %> readonly="readonly" <% } else { %> placeholder="Schulze" <% } %>/><small> (<%=bundle.getString("ifDifferent") %>)</small></td>
 								</tr>
 								<tr>
 									<td><small>&nbsp;</small></td>
 								</tr>
 								<tr>
-									<td><label for="geburtsdatum">Geburtsdatum :</label></td>
+									<td><label for="geburtsdatum"><%=bundle.getString("dateOfBirth") %> :</label></td>
 									<td class="geburtsdatum" id="geburtsdatum">
 										<div>
 											<% if (map.containsKey("readonly")) {
@@ -129,7 +132,7 @@
 									</td>
 								</tr>
 								<tr>
-									<td rowspan="2"><label for="plz">Wohnort : <br/>(PLZ / Ort) </label></td>
+									<td rowspan="2"><label for="plz"><%=bundle.getString("cityOfResidence") %> : <br/>(<%=bundle.getString("postalCode") %> / <%=bundle.getString("city") %>) </label></td>
 									<td>
 										<input type="text" id="plz" name="plz" size="5" maxlength="5" 
 											value="${it.plz}" <% if (map.containsKey("readonly")) { %> readonly="readonly" <% } else { %>
