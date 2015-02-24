@@ -25,6 +25,9 @@
  */
 package de.pseudonymisierung.mainzelliste.webservice;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -52,6 +55,7 @@ import de.pseudonymisierung.mainzelliste.Config;
 import de.pseudonymisierung.mainzelliste.Field;
 import de.pseudonymisierung.mainzelliste.ID;
 import de.pseudonymisierung.mainzelliste.IDGeneratorFactory;
+import de.pseudonymisierung.mainzelliste.Initializer;
 import de.pseudonymisierung.mainzelliste.Patient;
 import de.pseudonymisierung.mainzelliste.Servers;
 import de.pseudonymisierung.mainzelliste.dto.Persistor;
@@ -236,5 +240,30 @@ public class HTMLResource {
 	@Path("/admin/patientList")
 	public Response getPatientList() {
 		return Response.ok().entity(new Viewable("/patientList.jsp")).build();
+	}
+	
+	/**
+	 * Returns the logo file from the configured path (configuration parameter operator.logo).
+	 * 
+	 * @return A "200 Ok" response containing the file, or an appropriate error code and message on failure.
+	 */
+	@GET
+	@Path("/logo")
+	@Produces("image/*")
+	public Response getLogo() {
+		try {
+			File logoFile = Config.instance.getLogo();
+			String contentType = Initializer.getServletContext().getMimeType(logoFile.getAbsolutePath());
+			if (contentType == null || !contentType.startsWith("image/")) {
+				logger.error("Logo file has incorrect mime type: " + contentType);
+				throw new WebApplicationException(Response.status(Status.INTERNAL_SERVER_ERROR)
+						.entity("The logo file has incorrect mime type. See server log for details.").build());
+			}
+			return Response.ok().type(contentType).entity(new FileInputStream(logoFile)).build();
+		} catch (FileNotFoundException e) {
+			logger.error(e.getMessage(), e);
+			throw new WebApplicationException(Response.status(Status.NOT_FOUND)
+					.entity("Logo file could not be opened. Check server log for more information.").build());
+		}
 	}
 }

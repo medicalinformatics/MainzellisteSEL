@@ -17,9 +17,7 @@
 </head>
 
 <body>
-	<div class="kopfzeile">
-		<div class="logo">&nbsp;</div>
-	</div>
+	<jsp:include page="header.jsp"></jsp:include>
 	<div class="inhalt">
 		<div class="formular">
 			<div>&nbsp;</div>

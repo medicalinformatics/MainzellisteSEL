@@ -18,16 +18,11 @@
 <title><%=bundle.getString("editPatientTitle") %></title>
 </head>
 
-
-
 <body>
-	<div class="kopfzeile">
-		<div class="logo">&nbsp;</div>
-	</div>
+	<jsp:include page="header.jsp"></jsp:include>
 	<div class="inhalt">
 		<div>&nbsp;</div>
 		<div class="formular">
-<!-- 			<form method="post" id="form_person"> -->
 			<form method="post" action="<%=request.getContextPath() %>/patients/tokenId/${it.tokenId}?_method=PUT" id="form_person">
 				<h1><%=bundle.getString("editPatientTitle") %></h1>
 				<jsp:include page="patientFormElements.jsp" />

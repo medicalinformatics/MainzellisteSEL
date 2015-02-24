@@ -27,6 +27,7 @@ package de.pseudonymisierung.mainzelliste;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -44,7 +45,6 @@ import java.util.regex.Pattern;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletRequest;
-import javax.servlet.http.HttpServletRequest;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -73,8 +73,8 @@ public enum Config {
 	/** Default paths from where configuration is read if no path is given in the context descriptor */ 
 	private final String defaultConfigPaths[] = {"/etc/mainzelliste/mainzelliste.conf", "/WEB-INF/classes/mainzelliste.conf"};
 	
-	private final Map<String,Class<? extends Field<?>>> FieldTypes;
 	
+	private final Map<String,Class<? extends Field<?>>> FieldTypes;
 	private Properties props;
 	private RecordTransformer recordTransformer;
 	private Matcher matcher;
@@ -253,6 +253,20 @@ public enum Config {
 	
 	public boolean originAllowed(String origin) {
 		return this.allowedOrigins.contains(origin);
+	}
+	
+	/**
+	 * Get the logo file from the path defined by configuration parameter 'operator.logo'.
+	 * @return The file object. It is checked that the file exists.
+	 * @throws FileNotFoundException if the logo file cannot be found at the specified location.
+	 */
+	public File getLogo() throws FileNotFoundException {
+		String logoFileName = this.getProperty("operator.logo");
+		File logoFile = new File(logoFileName);
+		if (logoFile.exists())
+			return logoFile;
+		else 
+			throw new FileNotFoundException("No logo file found at " + logoFileName);
 	}
 	
 	private Properties readConfigFromFile(String configPath) throws IOException {

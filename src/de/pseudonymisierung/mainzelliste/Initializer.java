@@ -107,7 +107,7 @@ public class Initializer implements ServletContextListener {
 		root.info("#####BEGIN Mainzelliste LOG SESSION");
 	}
 	
-	static ServletContext getServletContext(){
+	public static ServletContext getServletContext(){
 		return context;
 	}
 }

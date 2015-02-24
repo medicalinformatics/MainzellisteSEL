@@ -59,9 +59,7 @@ function fillOriginalId() {
 </script>
 
 <body>
-	<div class="kopfzeile">
-		<div class="logo">&nbsp;</div>
-	</div>
+	<jsp:include page="header.jsp"></jsp:include>
 	<div class="inhalt">
 		<div>&nbsp;</div>
 		<div class="formular">

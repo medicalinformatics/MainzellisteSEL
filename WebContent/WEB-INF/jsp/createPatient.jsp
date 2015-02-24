@@ -16,12 +16,7 @@
 </head>
 
 <body>
-		<div class="kopfzeile">
-			<div class="logo">
-			<img src="<%=request.getContextPath() %>/static/media/JGU_Uni_medizin_Logo_4c_Internet.jpg" align="right"
-				height="80%">
-			</div>
-		</div>
+		<jsp:include page="header.jsp"></jsp:include>
 		<div class="inhalt">
 			<div>&nbsp;</div>
 			<div class="formular">

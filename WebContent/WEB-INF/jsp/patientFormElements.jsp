@@ -20,7 +20,7 @@
 				<td><label for="vorname"><%=bundle.getString("firstName")%>:
 				</label></td>
 				<td><input type="text" id="vorname" name="vorname" size="50"
-					placeholder="Anne-Marie Luise" value="${it.vorname}"
+					placeholder="(z.B. Anne-Marie Luise)" value="${it.vorname}"
 					<% if (map.containsKey("readonly")) { %> readonly="readonly"
 					<% } %> /> <font color="red">*</font></td>
 			</tr>

@@ -9,6 +9,7 @@ WebContent/WEB-INF/jsp/editPatient.jsp -text svneol=unset#text/plain
 WebContent/WEB-INF/jsp/editPatientAdmin.jsp -text svneol=unset#text/plain
 WebContent/WEB-INF/jsp/errorPage.jsp -text svneol=unset#text/plain
 WebContent/WEB-INF/jsp/footer.jsp -text svneol=unset#text/plain
+WebContent/WEB-INF/jsp/header.jsp -text svneol=unset#text/plain
 WebContent/WEB-INF/jsp/patientCreated.jsp -text svneol=unset#text/plain
 WebContent/WEB-INF/jsp/patientEdited.jsp -text svneol=unset#text/plain
 WebContent/WEB-INF/jsp/patientFormElements.jsp -text svneol=unset#text/plain
@@ -16,7 +17,6 @@ WebContent/WEB-INF/jsp/selectPatient.jsp -text svneol=unset#text/plain
 WebContent/WEB-INF/jsp/unsureMatch.jsp -text svneol=unset#text/plain
 WebContent/WEB-INF/web.xml -text
 WebContent/static/css/patientenliste.css -text svneol=unset#text/plain
-WebContent/static/media/JGU_Uni_medizin_Logo_4c_Internet.jpg -text svneol=unset#unset
 config/META-INF/persistence.xml -text svneol=unset#text/plain
 config/log4j.properties -text svneol=unset#text/plain
 config/mainzelliste.conf.default -text
