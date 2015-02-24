@@ -258,5 +258,9 @@ callback.allowedFormat = https://.*
 # Default value if not specified: 10
 # sessionTimeout = 10
 
-# Contact information to display below user forms (leave empty or commented to deactivate)
-# contact =  
+# Operator information of the Mainzelliste operator to display around user forms
+# (defaults to empty/invisible):
+# - Contact: Text to be displayed below all forms
+# - Logo: Path to image to be displayed in the upper right corner
+# operator.contact = 
+# operator.logo = /etc/mainzelliste/logo.png
