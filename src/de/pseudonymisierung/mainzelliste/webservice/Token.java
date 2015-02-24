@@ -326,7 +326,7 @@ public class Token {
 	
 	public JSONObject toJSON(ApiVersion apiVersion) {
 		JSONObject ret = new JSONObject();
-		// uri not known in this context -> assing in SessionsResource
+		// URI not known in this context -> assign in SessionsResource
 		try {
 				if (apiVersion.majorVersion >= 2) {
 				ret.put("id", this.id)
