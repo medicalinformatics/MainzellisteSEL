@@ -2,7 +2,7 @@
 <%@page import="java.util.ResourceBundle"%>
 <% 
 	ResourceBundle bundle = Config.instance.getResourceBunde(request);
-	String operator = Config.instance.getProperty("operator");
+	String operator = Config.instance.getProperty("operator.contact");
 %>
 		<div class="kontakt_daten">
 			<p><% if (operator != null && !operator.equals("")) { %>
