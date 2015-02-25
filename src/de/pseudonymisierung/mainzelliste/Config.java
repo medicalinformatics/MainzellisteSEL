@@ -262,11 +262,13 @@ public enum Config {
 	 */
 	public File getLogo() throws FileNotFoundException {
 		String logoFileName = this.getProperty("operator.logo");
+		if (logoFileName == null || logoFileName.equals(""))
+			throw new FileNotFoundException("No logo file configured.");
 		File logoFile = new File(logoFileName);
 		if (logoFile.exists())
 			return logoFile;
 		else 
-			throw new FileNotFoundException("No logo file found at " + logoFileName);
+			throw new FileNotFoundException("No logo file found at " + logoFileName + ".");
 	}
 	
 	private Properties readConfigFromFile(String configPath) throws IOException {
