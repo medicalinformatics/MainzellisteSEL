@@ -11,6 +11,5 @@
 			</p>
 			<p>
 				<%=bundle.getString("mainzellisteInfo") %>&nbsp;<a href="http://www.mainzelliste.de">http://www.mainzelliste.de</a>.
-<%-- 				<%=bundle.getString("mainzellisteInfos") %> <a href="http://www.mainzelliste.de">www.mainzelliste.de</a> --%>
 			</p>
 		</div>
