@@ -10,6 +10,6 @@
 				<% } %>
 			</p>
 			<p>
-				<%=bundle.getString("mainzellisteInfo") %>&nbsp;<a href="http://www.mainzelliste.de">http://www.mainzelliste.de</a>.
+				<small><%=bundle.getString("mainzellisteInfo") %>&nbsp;<a href="http://www.mainzelliste.de">http://www.mainzelliste.de</a>.</small>
 			</p>
 		</div>
