@@ -52,7 +52,9 @@
 					<p></p>
 
 
-			<jsp:include page="patientFormElements.jsp" />
+			<jsp:include page="patientFormElements.jsp">
+				<jsp:param name="showPlaceholders" value="true"/>
+			</jsp:include>
 			
 			<div align="center">
 				<td>&nbsp;</td>

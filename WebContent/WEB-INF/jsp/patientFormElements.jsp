@@ -1,4 +1,7 @@
-<!-- Form elements for patient data, to be included in other pages -->
+<!-- Form elements for patient data, to be included in other pages 
+	The use of placeholders for input fields can be activated by setting
+	request parameter "showPlaceholders" to "true".
+-->
 
 <%@page import="java.text.DateFormatSymbols"%>
 <%@page import="de.pseudonymisierung.mainzelliste.Config"%>
@@ -9,6 +12,7 @@
 	Map<String, Object> map = (Map<String, Object>) request
 			.getAttribute("it");
 	ResourceBundle bundle = Config.instance.getResourceBunde(request);
+	Boolean showPlaceholders = Boolean.parseBoolean(request.getParameter("showPlaceholders"));	
 %>
 <h3><%=bundle.getString("patientData")%></h3>
 <fieldset class="patienten_daten">
@@ -20,17 +24,19 @@
 				<td><label for="vorname"><%=bundle.getString("firstName")%>:
 				</label></td>
 				<td><input type="text" id="vorname" name="vorname" size="50"
-					placeholder="(z.B. Anne-Marie Luise)" value="${it.vorname}"
-					<% if (map.containsKey("readonly")) { %> readonly="readonly"
-					<% } %> /> <font color="red">*</font></td>
+					value="${it.vorname}" <% if (map.containsKey("readonly")) { %>
+					readonly="readonly" <% } else if (showPlaceholders) { %>
+					placeholder="<%=bundle.getString("placeholderFName") %>" <% } %> />
+					<font color="red">*</font></td>
 			</tr>
 			<tr>
 				<td><label for="nachname"><%=bundle.getString("lastName")%>
 						: </label></td>
 				<td><input type="text" id="nachname" name="nachname" size="50"
-					placeholder="Müller-Schulze" value="${it.nachname}"
-					<% if (map.containsKey("readonly")) { %> readonly="readonly"
-					<% } %> /> <font color="red">*</font></td>
+					value="${it.nachname}" <% if (map.containsKey("readonly")) { %>
+					readonly="readonly" <% } else if (showPlaceholders) { %>
+					placeholder="<%=bundle.getString("placeholderLName") %>" <% } %>/> 
+					<font color="red">*</font></td>
 			</tr>
 			<tr>
 				<td><label for="geburtsname"><%=bundle.getString("birthName")%>
@@ -38,7 +44,9 @@
 				<td><input type="text" id="geburtsname" name="geburtsname"
 					size="50" value="${it.geburtsname}"
 					<% if (map.containsKey("readonly")) { %> readonly="readonly"
-					<% } else { %> placeholder="Schulze" <% } %> /><small> (<%=bundle.getString("ifDifferent")%>)
+					<% } else if (showPlaceholders) { %>
+					placeholder="<%=bundle.getString("placeholderBName") %>" <% } %> />
+					<font color="red">*</font> <small> (<%=bundle.getString("ifDifferent")%>)
 				</small></td>
 			</tr>
 			<tr>
@@ -164,10 +172,10 @@
 				<td><input type="text" id="plz" name="plz" size="5"
 					maxlength="5" value="${it.plz}"
 					<% if (map.containsKey("readonly")) { %> readonly="readonly"
-					<% } else { %> placeholder="55131" <% } %> /> <input type="text"
+					<% } else if (showPlaceholders) { %> placeholder="#####" <% } %> /> <input type="text"
 					id="ort" name="ort" size="40" value="${it.ort}"
 					<% if (map.containsKey("readonly")) { %> readonly="readonly"
-					<% } else {%> placeholder="Mainz" <% } %> /></td>
+					<% } else if (showPlaceholders) {%> placeholder="<%=bundle.getString("placeholderCity") %>" <% } %> /></td>
 			</tr>
 			<tr>
 				<td>&nbsp;</td>
