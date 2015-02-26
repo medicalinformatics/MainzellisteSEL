@@ -72,9 +72,10 @@ public enum Config {
 	
 	/** Default paths from where configuration is read if no path is given in the context descriptor */ 
 	private final String defaultConfigPaths[] = {"/etc/mainzelliste/mainzelliste.conf", "/WEB-INF/classes/mainzelliste.conf"};
-	
-	
+
+
 	private final Map<String,Class<? extends Field<?>>> FieldTypes;
+	
 	private Properties props;
 	private RecordTransformer recordTransformer;
 	private Matcher matcher;
