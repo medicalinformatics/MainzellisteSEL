@@ -49,7 +49,9 @@ import org.apache.log4j.Logger;
  */
 public class CorsResponseFilter implements Filter {
 
+	/** The logging instance. */
 	private Logger logger = Logger.getLogger(this.getClass());
+	
 	/**
 	 * Not used in this implementation.
 	 */
