@@ -82,16 +82,17 @@ public interface IDGenerator<I extends ID> {
 	 * {@link PIDGenerator#verify(String)}
 	 * 
 	 * @param idString
-	 *            The ID which to check.
+	 *            The ID string which to check.
 	 * @return true If id is a correct ID, false otherwise.
 	 */
 	public boolean verify(String idString);
 
 	/**
-	 * Tries to correct the given IDString. This method is only useful if the
+	 * Tries to correct the given ID String. This method is only useful if the
 	 * implementation uses an error-tolerant code which allows corrections of
 	 * errors, for example {@link PIDGenerator#correct(String)}.
 	 * 
+	 * @param idString The ID string which to correct.
 	 * @return Correct IDString or null if impossible to correct.
 	 */
 	public String correct(String idString);

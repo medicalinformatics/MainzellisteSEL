@@ -62,7 +62,7 @@ public enum IDGeneratorFactory {
 	/**
 	 * Initializes the IDGeneratorFactory. Reads the configuration and sets up
 	 * the necessary IDGenerator instances, which are initialized with the
-	 * settings stored in the database (see {@link IDGeneratorMemory})
+	 * settings stored in the database (see {@link IDGeneratorMemory}).
 	 */
 	private IDGeneratorFactory() {
 		HashMap<String, IDGenerator<? extends ID>> temp = new HashMap<String, IDGenerator<? extends ID>>();

@@ -51,7 +51,7 @@ import de.pseudonymisierung.mainzelliste.exceptions.CircularDuplicateRelationExc
 import de.pseudonymisierung.mainzelliste.exceptions.InternalErrorException;
 
 /**
- * A patient entity identified by an ID and described by a number of Fields.
+ * A patient entity identified by at least one ID and described by a number of Fields.
  */
 @XmlRootElement
 @Entity

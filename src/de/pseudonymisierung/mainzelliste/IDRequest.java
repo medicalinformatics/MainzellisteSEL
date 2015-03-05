@@ -48,8 +48,8 @@ import org.codehaus.jackson.annotate.JsonIgnore;
 import de.pseudonymisierung.mainzelliste.matcher.MatchResult;
 
 /**
- * Data structure for an ID request: Input fields, match result, type of
- * requested ID.
+ * Represents a request to add a patient, consisting of information like input
+ * fields, match result, type of requested ID.
  */
 @Entity
 @Table(name = "IDRequest")
@@ -149,8 +149,8 @@ public class IDRequest {
 	/**
 	 * Get the requested IDs, i.e. the IDs of the assigned patient.
 	 * 
-	 * @see IDRequest#getAssignedPatient()
 	 * @return The requested IDs.
+	 * @see IDRequest#getAssignedPatient()
 	 */
 	public Set<ID> getRequestedIds() {
 
@@ -167,6 +167,7 @@ public class IDRequest {
 
 	/**
 	 * Gets the date and time of this request.
+	 * 
 	 * @return The date and time of this request.
 	 */
 	Date getTimestamp() {
