@@ -34,6 +34,7 @@ import javax.ws.rs.core.Response.Status;
  */
 public class BarcodeGenerationException extends WebApplicationException {
 	
+	@SuppressWarnings("javadoc")
 	private static final long serialVersionUID = 6805218977850784188L;
 	
 	/** The default error message. */

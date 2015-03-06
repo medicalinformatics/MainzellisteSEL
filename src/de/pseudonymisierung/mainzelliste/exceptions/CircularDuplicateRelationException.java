@@ -38,6 +38,7 @@ import de.pseudonymisierung.mainzelliste.Patient;
  */
 public class CircularDuplicateRelationException extends WebApplicationException {
 
+	@SuppressWarnings("javadoc")
 	private static final long serialVersionUID = 1554926735681002661L;
 	
 	/** The error message. */

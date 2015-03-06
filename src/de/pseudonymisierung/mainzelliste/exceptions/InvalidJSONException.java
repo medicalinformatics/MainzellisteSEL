@@ -37,6 +37,7 @@ import org.codehaus.jettison.json.JSONException;
  */
 public class InvalidJSONException extends WebApplicationException {
 
+	@SuppressWarnings("javadoc")
 	private static final long serialVersionUID = -4979455015089015791L;
 	
 	/** The default error message. */

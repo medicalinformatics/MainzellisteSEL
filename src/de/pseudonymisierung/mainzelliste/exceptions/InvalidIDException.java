@@ -36,6 +36,7 @@ import javax.ws.rs.core.Response.Status;
  */
 public class InvalidIDException extends WebApplicationException {
 
+	@SuppressWarnings("javadoc")
 	private static final long serialVersionUID = -6674560429536657452L;
 	
 	/** The default error message. */

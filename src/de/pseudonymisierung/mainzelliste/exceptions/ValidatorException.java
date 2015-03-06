@@ -36,6 +36,7 @@ import javax.ws.rs.core.Response.Status;
  */
 public class ValidatorException extends WebApplicationException {
 
+	@SuppressWarnings("javadoc")
 	private static final long serialVersionUID = -2843941728708025618L;
 
 	/**

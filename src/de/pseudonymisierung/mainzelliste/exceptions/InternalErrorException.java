@@ -35,6 +35,7 @@ import javax.ws.rs.core.Response.Status;
  */
 public class InternalErrorException extends WebApplicationException {
 
+	@SuppressWarnings("javadoc")
 	private static final long serialVersionUID = -3828755806557209546L;
 	
 	/** The default error message. */

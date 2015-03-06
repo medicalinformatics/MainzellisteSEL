@@ -34,6 +34,7 @@ import javax.ws.rs.core.Response.Status;
  */
 public class InvalidFieldException extends WebApplicationException {
 	
+	@SuppressWarnings("javadoc")
 	private static final long serialVersionUID = 5981641835447911933L;
 	
 	/** The default error message. */

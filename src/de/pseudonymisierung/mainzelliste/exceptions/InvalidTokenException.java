@@ -9,6 +9,7 @@ import javax.ws.rs.core.Response.Status;
  */
 public class InvalidTokenException extends WebApplicationException {
 
+	@SuppressWarnings("javadoc")
 	private static final long serialVersionUID = -9199090030935788168L;
 	
 	/** The default error message. */

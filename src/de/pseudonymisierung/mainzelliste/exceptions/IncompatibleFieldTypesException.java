@@ -34,6 +34,7 @@ import de.pseudonymisierung.mainzelliste.matcher.FieldTransformer;
  */
 public class IncompatibleFieldTypesException extends Exception {
 
+	@SuppressWarnings("javadoc")
 	private static final long serialVersionUID = -3473667515748310234L;
 
 	/**

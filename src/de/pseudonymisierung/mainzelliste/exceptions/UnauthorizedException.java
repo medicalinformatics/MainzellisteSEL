@@ -36,6 +36,7 @@ import javax.ws.rs.core.Response.Status;
  */
 public class UnauthorizedException extends WebApplicationException {
 
+	@SuppressWarnings("javadoc")
 	private static final long serialVersionUID = -3700072300131484282L;
 	
 	/** Default error message. */
