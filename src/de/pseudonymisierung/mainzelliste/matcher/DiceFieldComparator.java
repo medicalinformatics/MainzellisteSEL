@@ -44,7 +44,8 @@ public class DiceFieldComparator extends FieldComparator<HashedField> {
 	 *            Name of comparison field on the left side.
 	 * @param fieldRight
 	 *            Name of comparison field on the right side.
-	 */	public DiceFieldComparator (String fieldLeft, String fieldRight)
+	 */	
+	public DiceFieldComparator (String fieldLeft, String fieldRight)
 	{
 		super(fieldLeft, fieldRight);
 	}

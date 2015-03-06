@@ -74,7 +74,7 @@ public class ArrayFieldComparator {
 	 * Compares two patient on the configured array of fields.
 	 * @param patientLeft The left hand side patient.
 	 * @param patientRight The right hand side patient.
-	 * @return 
+	 * @return A map with every field combination mapped to the comparison value.
 	 */
 	public Map<StringPair, Object> compare(Patient patientLeft, Patient patientRight) 
 	{
