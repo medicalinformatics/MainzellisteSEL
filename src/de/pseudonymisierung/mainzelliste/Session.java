@@ -41,6 +41,7 @@ import de.pseudonymisierung.mainzelliste.webservice.Token;
  */
 public class Session extends ConcurrentHashMap<String, String>{
 	
+	@SuppressWarnings("javadoc")
 	private static final long serialVersionUID = -5538915343663250244L;
 
 	/** A unique identifier. */

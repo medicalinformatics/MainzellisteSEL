@@ -30,7 +30,10 @@ package de.pseudonymisierung.mainzelliste;
  * of 2D maps as Map<StringPair, ?>.
  */
 public class StringPair { 
+	
+	/** The first string. */
 	private String str1;
+	/** The second string. */
 	private String str2;
 	
 	/**

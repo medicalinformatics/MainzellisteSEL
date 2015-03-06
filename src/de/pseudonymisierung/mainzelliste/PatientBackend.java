@@ -35,29 +35,39 @@ import de.pseudonymisierung.mainzelliste.matcher.MatchResult.MatchResultType;
 import de.pseudonymisierung.mainzelliste.webservice.AddPatientToken;
 import de.pseudonymisierung.mainzelliste.webservice.Token;
 
+/**
+ * Backend methods for handling patients. Implemented as a singleton object,
+ * which can be referenced by PatientBackend.instance.
+ */
 public enum PatientBackend {
+
+	/** The singleton instance. */
 	instance;
-	
+
+	/** The logging instance */
 	private Logger logger = Logger.getLogger(this.getClass());
+
 	/**
-	 * PID request.
-	 * Looks for a patient with the specified data in the database. If a match is found, the 
-	 * ID of the matching patient is returned. If no match or possible match is found, a new
-	 * patient with the specified data is created. If a possible match is found and the form
-	 * has an entry "sureness" whose value can be parsed to true (by Boolean.parseBoolean()),
+	 * PID request. Looks for a patient with the specified data in the database.
+	 * If a match is found, the ID of the matching patient is returned. If no
+	 * match or possible match is found, a new patient with the specified data
+	 * is created. If a possible match is found and the form has an entry
+	 * "sureness" whose value can be parsed to true (by Boolean.parseBoolean()),
 	 * a new patient is created. Otherwise, return null.
+	 * 
 	 * @param tokenId
+	 *            ID of a valid "addPatient" token.
 	 * @param form
-	 * @return A map with the following members:
-	 * 	<ul>
-	 * 		<li> id: The generated id as an object of class ID. Null, if no id was generated due to an unsure match result.
-	 * 		<li> result: Result as an object of class MatchResult. 
-	 * @throws WebApplicationException if called with an invalid token.
+	 *            Input fields from the HTTP request.
+	 * @param apiVersion
+	 *            The API version to use.
+	 * @return A representation of the request and its result as an instance of
+	 *         {@link IDRequest}.
 	 */
 	public IDRequest createNewPatient(
 			String tokenId,
 			MultivaluedMap<String, String> form,
-			ApiVersion apiVersion) throws WebApplicationException {
+			ApiVersion apiVersion) {
 
 		HashMap<String, Object> ret = new HashMap<String, Object>();
 		// create a token if started in debug mode
@@ -96,7 +106,7 @@ public enum PatientBackend {
 		MatchResult match;
 		IDRequest request;
 
-		// synchronize on token 
+		// synchronize on token
 		synchronized (t) {
 			/* Get token again and check if it still exist.
 			 * This prevents the following race condition:
@@ -131,10 +141,10 @@ public enum PatientBackend {
 			for(String s: Config.instance.getFieldKeys()){
 				chars.put(s, Field.build(s, form.getFirst(s)));
 			}
-	
+
 			p.setFields(chars);
 			
-			// Normalisierung, Transformation
+			// Normalization, Transformation
 			Patient pNormalized = Config.instance.getRecordTransformer().transform(p);
 			pNormalized.setInputFields(chars);
 			
@@ -168,7 +178,7 @@ public enum PatientBackend {
 				}
 				Set<ID> newIds = IDGeneratorFactory.instance.generateIds();			
 				pNormalized.setIds(newIds);
-				
+
 				for (String idType : idTypes) {
 					ID thisID = pNormalized.getId(idType);
 					returnIds.add(thisID);				
@@ -189,19 +199,19 @@ public enum PatientBackend {
 				logger.error("Illegal match result: " + match.getResultType());
 				throw new InternalErrorException();
 			}
-			
+
 			logger.info("Weight of best match: " + match.getBestMatchedWeight());
 			
 			request = new IDRequest(p.getFields(), idTypes, match, assignedPatient);
 			
 			ret.put("request", request);
-			
+
 			Persistor.instance.addIdRequest(request);
 			
 			if(t != null && ! Config.instance.debugIsOn())
 				Servers.instance.deleteToken(t.getId());
 		}
-		// Callback aufrufen
+		// Callback request
 		String callback = t.getDataItemString("callback");
 		if (callback != null && callback.length() > 0)
 		{
@@ -209,13 +219,13 @@ public enum PatientBackend {
 				logger.debug("Sending request to callback " + callback);
 
 				JSONObject reqBody = new JSONObject();
-				
+
 				if (apiVersion.majorVersion >= 2) {
 					// Collect ids for Callback object
 					JSONArray idsJson = new JSONArray(); 
 					
 					for (ID thisID : returnIds) {
-						idsJson.put(thisID.toJSON()); 
+						idsJson.put(thisID.toJSON());
 					}
 					
 					reqBody.put("tokenId", t.getId())
@@ -231,7 +241,7 @@ public enum PatientBackend {
 										.build());
 					}					
 					reqBody.put("tokenId", t.getId())
-					.put("id", returnIds.get(0).getIdString());
+						.put("id", returnIds.get(0).getIdString());
 				}
 
 				HttpClient httpClient = new DefaultHttpClient();
@@ -239,7 +249,7 @@ public enum PatientBackend {
 				callbackReq.setHeader("Content-Type", MediaType.APPLICATION_JSON);
 				StringEntity reqEntity = new StringEntity(reqBody.toString());
 				reqEntity.setContentType("application/json");
-				callbackReq.setEntity(reqEntity);				
+				callbackReq.setEntity(reqEntity);
 				HttpResponse response = httpClient.execute(callbackReq);
 				StatusLine sline = response.getStatusLine();
 				// Accept callback if OK, CREATED or ACCEPTED is returned
@@ -247,8 +257,6 @@ public enum PatientBackend {
 					logger.error("Received invalid status form mdat callback: " + response.getStatusLine());
 					throw new InternalErrorException("Request to callback failed!");
 				}
-						
-				// TODO: Server-Antwort auslesen, Fehler abfangen.
 			} catch (Exception e) {
 				logger.error("Request to callback " + callback + "failed: ", e);
 				throw new InternalErrorException("Request to callback failed!");
@@ -256,14 +264,17 @@ public enum PatientBackend {
 		}
 		return request;
 	}
-	
+
 	/**
 	 * Set fields of a patient to new values.
-	 * @param patientId ID of the patient to edit.
-	 * @param newFieldValues Field values to set. Fields that do not appear as map keys are
+	 * 
+	 * @param patientId
+	 *            ID of the patient to edit.
+	 * @param newFieldValues
+	 *            Field values to set. Fields that do not appear as map keys are
 	 *            left as they are. In order to delete a field value, provide an
-	 *            empty string. All values are processed by field transformation as
-	 *            defined in the configuration file.
+	 *            empty string. All values are processed by field transformation
+	 *            as defined in the configuration file.
 	 */
 	public void editPatient(ID patientId, Map<String, String> newFieldValues) {
 		// Check that provided ID is valid
@@ -278,14 +289,14 @@ public enum PatientBackend {
 			logger.info("Request to edit patient with unknown ID " + patientId.toString());
 			throw new InvalidIDException("No patient found with ID " + patientId.toString());
 		}
-		
+
 		// validate input
 		Validator.instance.validateForm(newFieldValues, false);
 		// read input fields from form
 		Patient pInput = new Patient();
 		Map<String, Field<?>> chars = new HashMap<String, Field<?>>();
 
-		for(String fieldName : Config.instance.getFieldKeys()){
+		for (String fieldName : Config.instance.getFieldKeys()) {
 			// If a field is not in the map, keep the old value
 			if (!newFieldValues.containsKey(fieldName))
 				chars.put(fieldName, pToEdit.getInputFields().get(fieldName));
@@ -295,12 +306,12 @@ public enum PatientBackend {
 		}
 
 		pInput.setFields(chars);
-		
+
 		// transform input fields
 		Patient pNormalized = Config.instance.getRecordTransformer().transform(pInput);
 		// set input fields
 		pNormalized.setInputFields(chars);
-		
+
 		// assign changed fields to patient in database, persist
 		pToEdit.setFields(pNormalized.getFields());
 		pToEdit.setInputFields(pNormalized.getInputFields());
