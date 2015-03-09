@@ -40,6 +40,9 @@ import de.pseudonymisierung.mainzelliste.exceptions.InvalidFieldException;
 import de.pseudonymisierung.mainzelliste.exceptions.InvalidIDException;
 import de.pseudonymisierung.mainzelliste.exceptions.InvalidTokenException;
 
+/**
+ * Authorizes to edit a patient's IDAT.
+ */
 public class EditPatientToken extends Token {
 	
 	/**
@@ -59,24 +62,29 @@ public class EditPatientToken extends Token {
 	private URL redirect = null;
 	
 	/**
-	 * Get ID of the patient that can be edited with this token. The patient
-	 * is identified by the ID that was provided on token creation.
+	 * Get ID of the patient that can be edited with this token. The patient is
+	 * identified by the ID that was provided on token creation.
+	 * 
+	 * @return The patient ID.
 	 */
 	public ID getPatientId() {
 		return patientId;
 	}
 
 	/**
-	 * Get the fields that can be changed with this token. If null,
-	 * all fields can be changed.
+	 * Get the fields that can be changed with this token. If null, all fields
+	 * can be changed.
+	 * 
+	 * @return Set of field names.
 	 */
 	public Set<String> getFields() {
 		return fields;
 	}
 	
 	/**
-	 * Return the URL to which the user should be redirected after the
-	 * token has been used.
+	 * Return the URL to which the user should be redirected after the token has
+	 * been used.
+	 * 
 	 * @return The redirect URL or null if none is set.
 	 */
 	public URL getRedirect() {

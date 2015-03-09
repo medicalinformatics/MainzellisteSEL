@@ -37,9 +37,18 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.type.TypeReference;
 import org.codehaus.jettison.json.JSONObject;
 
+/**
+ * Realization of {@link AbstractParam} for getting tokens by their JSON representation.
+ */
 public class TokenParam extends AbstractParam<Token> {
 
-	public TokenParam(String param) throws WebApplicationException {
+	/**
+	 * Create an instance from a JSON string.
+	 * 
+	 * @param param
+	 *            JSON representation of a token.
+	 */
+	public TokenParam(String param) {
 		super(param);
 	}
 

@@ -28,7 +28,6 @@ package de.pseudonymisierung.mainzelliste.webservice;
 import java.net.URI;
 import java.util.Set;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -53,18 +52,30 @@ import de.pseudonymisierung.mainzelliste.Servers;
 import de.pseudonymisierung.mainzelliste.Session;
 
 /**
- * Resource-based access to server-side client sessions.
- * A server-side client session is a set of key-value pairs about a given client session
- * shared between Mainzelliste and an xDAT server. Apart from listing and creating sessions, 
- * knowing the session ID is deemed authentication for session access.
+ * Resource-based access to server-side client sessions. A server-side client
+ * session is a set of key-value pairs about a given client session shared
+ * between Mainzelliste and an xDAT server. Apart from listing and creating
+ * sessions, knowing the session ID is deemed as authentication for session
+ * access.
  */
 @Path("/sessions")
 public class SessionsResource {
+	
+	/** The logging instance. */
 	private Logger logger = Logger.getLogger(this.getClass());
 	
+	/**
+	 * Create a new session.
+	 * 
+	 * @param req
+	 *            The injected HttpServletRequest.
+	 * @return An HTTP response as specified in the API documentation.
+	 * @throws JSONException
+	 *             If a JSON error occurs.
+	 */
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response newSession(@Context HttpServletRequest req) throws ServletException, JSONException{
+	public Response newSession(@Context HttpServletRequest req) throws JSONException{
 		logger.info("Request to create session received by host " + req.getRemoteHost());
 		
 		Servers.instance.checkPermission(req, "createSession");
@@ -90,6 +101,17 @@ public class SessionsResource {
 			.build();
 	}
 
+	/**
+	 * Read a session.
+	 * 
+	 * @param sid
+	 *            Id of the session to read.
+	 * @param req
+	 *            The injected HttpServletRequest.
+	 * @return An HTTP response as specified in the API documentation.
+	 * @throws JSONException
+	 *             If a JSON error occurs.
+	 */
 	@Path("/{session}")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
@@ -114,6 +136,15 @@ public class SessionsResource {
 				.build();
 	}
 	
+	/**
+	 * Delete a session.
+	 * 
+	 * @param sid
+	 *            Id of the session to delete.
+	 * @param req
+	 *            The injected HttpServletRequest.
+	 * @return An HTTP 204 (No Content) response.
+	 */
 	@Path("/{session}")
 	@DELETE
 	public Response deleteSession(
@@ -125,10 +156,19 @@ public class SessionsResource {
 		Servers.instance.deleteSession(sid);
 		logger.info("Deleted session " + sid);
 		return Response
-			.status(Status.OK)
+			.status(Status.NO_CONTENT)
 			.build();
 	}
 	
+	/**
+	 * Get the tokens of a session.
+	 * 
+	 * @param sid
+	 *            The id of the session whose tokens to get.
+	 * @param req
+	 *            The injected HttpServletRequest.
+	 * @return An HTTP response as specified in the API documentation.
+	 */
 	@Path("/{session}/tokens")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
@@ -141,6 +181,21 @@ public class SessionsResource {
 		return Servers.instance.getAllTokens(sid.getValue().getId());
 	}
 	
+	/**
+	 * Create a token.
+	 * 
+	 * @param req
+	 *            The injected HttpServletRequest.
+	 * @param uriInfo
+	 *            Injected information on application and request URI.
+	 * @param sid
+	 *            Id of the session in which to create the token.
+	 * @param tp
+	 *            JSON representation of the token to create.
+	 * @return An HTTP response as specified in the API documentation.
+	 * @throws JSONException
+	 *             If a JSON error occurs.
+	 */
 	@Path("/{session}/tokens")
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
@@ -191,6 +246,19 @@ public class SessionsResource {
 			.build();
 	}
 	
+	/**
+	 * Get a token as JSON.
+	 * 
+	 * @param sid
+	 *            Id of the session the requested token belongs to.
+	 * @param tokenId
+	 *            Id of the token to get.
+	 * @param req
+	 *            The injected HttpServletRequest.
+	 * @param uriInfo
+	 *            Injected information on application and request URI.
+	 * @return An HTTP response as specified in the API documentation.
+	 */
 	@Path("/{session}/tokens/{tokenid}")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
@@ -215,6 +283,15 @@ public class SessionsResource {
 		return t;
 	}
 	
+	/**
+	 * Delete a token.
+	 * 
+	 * @param session
+	 *            Id of the session the token to delete belongs to.
+	 * @param tokenId
+	 *            Id of the token to delete.
+	 * @return An HTTP response as specified in the API documentation.
+	 */
 	@Path("/{session}/tokens/{tokenid}")
 	@DELETE
 	public Response deleteToken(@PathParam("session") SessionIdParam session,

@@ -42,6 +42,10 @@ import org.codehaus.jettison.json.JSONObject;
 
 import com.sun.jersey.spi.resource.Singleton;
 
+/**
+ * Provides conversion of {@link Token} objects for returning them in HTTP
+ * responses.
+ */
 @Provider
 @Singleton
 @Produces(MediaType.APPLICATION_JSON)
