@@ -60,14 +60,24 @@ import de.pseudonymisierung.mainzelliste.Patient;
 import de.pseudonymisierung.mainzelliste.Servers;
 import de.pseudonymisierung.mainzelliste.dto.Persistor;
 
-@Path("/html")
 /**
- * HTML pages (rendered via JSP) to be accessed by a human
+ * HTML pages (rendered via JSP) to be accessed by a human user
  * are served via this resource.
  */
+@Path("/html")
 public class HTMLResource {
+
+	/** The logging instance. */
 	Logger logger = Logger.getLogger(HTMLResource.class);
 	
+	/**
+	 * Get the form for entering a new patient.
+	 * 
+	 * @param tokenId
+	 *            Id of a valid "addPatient" token.
+	 * @return The input form or an error message if the given token is not
+	 *         valid.
+	 */
 	@GET
 	@Path("createPatient")
 	@Produces(MediaType.TEXT_HTML)
@@ -86,6 +96,14 @@ public class HTMLResource {
 				.build());
 	}
 	
+	/**
+	 * Get the form for changing an existing patient's IDAT.
+	 * 
+	 * @param tokenId
+	 *            Id of a valid "editPatient" token.
+	 * @return The edit form or an error message if the given token is not
+	 *         valid.
+	 */
 	@Path("editPatient")
 	@GET
 	@Produces(MediaType.TEXT_HTML)
@@ -100,6 +118,18 @@ public class HTMLResource {
 		return Response.ok(new Viewable("/editPatient.jsp", map)).build();
 	}
 	
+	/**
+	 * Get the administrator form for editing an existing patient's IDAT. The
+	 * arguments can be omitted, in which case an input form is shown where an
+	 * ID of the patient to edit can be input. Authentication is handled by the
+	 * servlet container as defined in web.xml.
+	 * 
+	 * @param idType
+	 *            Type of the ID of the patient to edit.
+	 * @param idString
+	 *            ID string of the patient to edit.
+	 * @return The edit form or a selection form if one of idType and idString is not provided.
+	 */
 	@Path("/admin/editPatient")
 	@GET
 	@Produces(MediaType.TEXT_HTML)
@@ -133,8 +163,21 @@ public class HTMLResource {
 		return Response.ok(new Viewable("/editPatientAdmin.jsp", map)).build();
 	}
 
-	/** Submit form for editing a patient. */
-	// Eigentlich wäre das PUT auf /pid/{pid}, aber PUT aus HTML-Formular geht nicht.
+	/**
+	 * Receives edit operations from the admin form.
+	 * 
+	 * @param idType
+	 *            Type of the ID of the patient to edit.
+	 * @param idString
+	 *            ID string of the patient to edit.
+	 * @param form
+	 *            IDAT as provided by the input form.
+	 * @param req
+	 *            The injected HttpServletRequest.
+	 * @return The edit form for the changed patient or the patient selection
+	 *         form if the patient was deleted via the form.
+	 * 
+	 */
 	@POST
 	@Path("/admin/editPatient")
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
@@ -197,7 +240,6 @@ public class HTMLResource {
 		// assign tentative status
 		pToEdit.setTentative(form.getFirst("tentative") != null);
 		// assign original
-		// TODO: andere IDs, Checkbox dazu
 		String idStringOriginal = form.getFirst("idStringOriginal");
 		String idTypeOriginal = form.getFirst("idTypeOriginal");		
 		if (!StringUtils.isEmpty(idStringOriginal) && ! StringUtils.isEmpty(idTypeOriginal))
@@ -213,8 +255,6 @@ public class HTMLResource {
 		
 		Persistor.instance.updatePatient(pToEdit);
 		
-//		return Response.ok("Patient edited successfully!").build();
-		// TODO: Redirect auf Edit-Formular für diesen Patienten
 		return Response
 				.status(Status.SEE_OTHER)
 				.header("Cache-control", "must-revalidate")
@@ -227,21 +267,6 @@ public class HTMLResource {
 						.build();
 	}
 
-	/**
-	 * Show a list of possible matches.
-	 */
-	@GET
-	@Path("/admin/possibleMatches")
-	public Response getPossibleMatches() {
-		return Response.ok(new Viewable("/possibleMatches.jsp")).build();
-	}
-	
-	@GET
-	@Path("/admin/patientList")
-	public Response getPatientList() {
-		return Response.ok().entity(new Viewable("/patientList.jsp")).build();
-	}
-	
 	/**
 	 * Returns the logo file from the configured path (configuration parameter operator.logo).
 	 * 
