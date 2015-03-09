@@ -83,7 +83,6 @@ src/de/pseudonymisierung/mainzelliste/webservice/AbstractParam.java -text svneol
 src/de/pseudonymisierung/mainzelliste/webservice/AddPatientToken.java -text svneol=unset#text/plain
 src/de/pseudonymisierung/mainzelliste/webservice/EditPatientToken.java -text svneol=unset#text/plain
 src/de/pseudonymisierung/mainzelliste/webservice/FieldKeyParam.java -text svneol=unset#text/plain
-src/de/pseudonymisierung/mainzelliste/webservice/FunctionsResource.java -text svneol=unset#text/plain
 src/de/pseudonymisierung/mainzelliste/webservice/HTMLResource.java -text svneol=unset#text/plain
 src/de/pseudonymisierung/mainzelliste/webservice/PatientsResource.java -text svneol=unset#text/plain
 src/de/pseudonymisierung/mainzelliste/webservice/RootResource.java -text svneol=unset#text/plain
