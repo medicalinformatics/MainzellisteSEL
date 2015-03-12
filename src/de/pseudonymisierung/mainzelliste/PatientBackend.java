@@ -1,5 +1,6 @@
 package de.pseudonymisierung.mainzelliste;
 
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashMap;
@@ -23,6 +24,7 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.log4j.Logger;
 import org.codehaus.jettison.json.JSONArray;
+import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 
 import de.pseudonymisierung.mainzelliste.Servers.ApiVersion;
@@ -257,9 +259,14 @@ public enum PatientBackend {
 					logger.error("Received invalid status form mdat callback: " + response.getStatusLine());
 					throw new InternalErrorException("Request to callback failed!");
 				}
-			} catch (Exception e) {
-				logger.error("Request to callback " + callback + "failed: ", e);
-				throw new InternalErrorException("Request to callback failed!");
+				// TODO: Server-Antwort auslesen
+                
+			} catch (JSONException e) {
+				logger.error("Internal serializitaion error: ", e);
+				throw new InternalErrorException("Internal serializitaion error!");
+			} catch (IOException e) {
+				logger.error("Internal error building the request: ", e);
+				throw new InternalErrorException("Internal error building the request!");
 			}
 		}
 		return request;
