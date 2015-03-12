@@ -9,6 +9,7 @@
 <%@page import="java.util.Calendar"%>
 <%@ page import="java.util.Map"%>
 <%
+	@SuppressWarnings("unchecked")
 	Map<String, Object> map = (Map<String, Object>) request
 			.getAttribute("it");
 	ResourceBundle bundle = Config.instance.getResourceBunde(request);

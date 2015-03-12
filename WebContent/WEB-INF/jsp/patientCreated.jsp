@@ -3,6 +3,7 @@
 	pageEncoding="ISO-8859-1"%>
 <%@ page import="java.util.Map"%>
 <%
+	@SuppressWarnings("unchecked")
 	Map<String, Object> map = (Map<String, Object>) request
 			.getAttribute("it");
 %>
@@ -83,6 +84,7 @@
 			<p>
 			<form action="<%=map.get("redirect")%>" target="_top" method="get">
 				<%  
+				@SuppressWarnings("unchecked")
 				MultivaluedMap<String, String> redirectParams = (MultivaluedMap<String, String>) map.get("redirectParams"); 
 				for (String key : redirectParams.keySet()) {
 					String value = redirectParams.getFirst(key);
@@ -110,6 +112,7 @@
 			<h3>Ähnlichster Eintrag:</h3>
 			<table>
 				<%
+		@SuppressWarnings("unchecked")
 		Map<String, String> fields = (Map<String, String>) map
 					.get("bestMatch");
 			for (String key : fields.keySet()) {
@@ -129,27 +132,6 @@
 			<%
 	}
 %>
-			<%-- 	<% --%>
-			<!-- 		Map<String, Object> map = (Map<String,Object>)request.getAttribute("it"); -->
-			<!-- 		boolean tentative = ((Boolean) map.get("tentative")); -->
-			<!-- 		if (tentative) -->
-			<!-- 		{ -->
-			<!-- 	%> -->
-			<!-- 		<p> -->
-			<!-- 			Zu den eingegebenen Daten wurde ein ähnlicher Patient gefunden, der nicht -->
-			<!-- 			mit hinreichender Sicherheit zugeordnet werden kann. Der angezeigte PID -->
-			<!-- 			ist als vorläufig zu betrachten. Das bedeutet, dass der PID zwar verwendet  -->
-			<!-- 			werden kann, aber zukünftige Abfragen mit den gleichen Daten können einen  -->
-			<!-- 			anderen	PID liefern. -->
-			<!-- 		<p> -->
-			<!-- 		<div> -->
-			<!-- 			<form> -->
-			<!-- 				<input type="button" value="Fenster schließen" onClick="window.close()"> -->
-			<!-- 			</form> -->
-			<!-- 		</div> -->
-			<%-- 	<% --%>
-			<!-- 		} -->
-			<!-- 	%> -->
 			<div>&nbsp;</div>
 		</div>
 	</div>
