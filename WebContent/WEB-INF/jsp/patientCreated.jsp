@@ -1,11 +1,20 @@
+<%@page import="java.text.DateFormatSymbols"%>
+<%@page import="de.pseudonymisierung.mainzelliste.Config"%>
+<%@page import="java.util.ResourceBundle"%>
 <%@page import="javax.ws.rs.core.MultivaluedMap"%>
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
 	pageEncoding="ISO-8859-1"%>
 <%@ page import="java.util.Map"%>
+<%@ page import="java.util.Set"%>
+<%@ page import="de.pseudonymisierung.mainzelliste.ID"%>
 <%
 	@SuppressWarnings("unchecked")
 	Map<String, Object> map = (Map<String, Object>) request
 			.getAttribute("it");
+	Set<ID> ids = (Set<ID>) map.get("ids");
+	ResourceBundle bundle = Config.instance.getResourceBunde(request);
+	DateFormatSymbols dfs = DateFormatSymbols.getInstance(bundle
+			.getLocale());
 %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
@@ -24,43 +33,54 @@
 		<div class="formular">
 			<div>&nbsp;</div>
 			<h1>Ergebnis</h1>
-
-			<p>
-				Ihr angeforderter PID lautet
-				<tt>
-					<big>${it.id}</big>
-				</tt>
-				. Bitte übernehmen Sie ihn in Ihre Unterlagen.
-			</p>
-
+                        <div align="center">
+                            <p>
+								<%=bundle.getString("yourRequestedPIDs") %>
+                            </p>
+							<ul style="display: inline-block; text-align: left;">
+							<% for (ID id : ids) { 
+							if (id != null) {
+							%>
+								<li><tt><big><%=id.getType() %>: <%=id.getIdString() %></big></tt></li>                                  	
+							<% 
+								}
+							}
+							%>
+							</ul>
+                            <p>
+                            	<%=bundle.getString("pleaseCopy") %> 
+                            </p>
+                            <p>
+                            	<%=bundle.getString("idTypeNote") %>
+                            </p>
+                        </div>
+                                        
 			<% if (map.containsKey("printIdat") && (Boolean) map.get("printIdat")) { %>
-			<h3>Eingegebene Daten</h3>
+			<h3><%=bundle.getString("enteredData") %></h3>
 			<p>
 			<table class="daten_tabelle">
 				<tbody>
 					<tr>
-						<td>Vorname :</td>
+						<td><%=bundle.getString("firstName") %>:</td>
 						<td>${it.vorname}</td>
 					</tr>
 					<tr>
-						<td>Nachname :</td>
+						<td><%=bundle.getString("lastName") %> :</td>
 						<td>${it.nachname}</td>
 					</tr>
 					<tr>
-						<td>Geburtsname :</td>
+						<td><%=bundle.getString("birthName") %> :</td>
 						<td>${it.geburtsname}</td>
 					</tr>
 					<tr>
-						<td>Geburtsdatum :</td>
+						<td><%=bundle.getString("dateOfBirth") %> :</td>
 						<td class="geburtsdatum">
 							<div>
 								<%
 										out.print(String.format("%02d",
 												Integer.parseInt(map.get("geburtstag").toString()))
 												+ ". ");
-										String months[] = { "Januar", "Februar", "März", "April", "Mai",
-												"Juni", "Juli", "August", "September", "Oktober",
-												"November", "Dezember" };
+										String months[] = dfs.getMonths();
 										out.print(months[Integer.parseInt(map.get("geburtsmonat")
 												.toString()) - 1] + " ");
 										out.print(String.format("%02d",
@@ -70,7 +90,7 @@
 						</td>
 					</tr>
 					<tr>
-						<td>PLZ / Wohnort :</td>
+						<td><%=bundle.getString("cityOfResidence") %> :</td>
 						<td>${it.plz} ${it.ort}</td>
 					</tr>
 				</tbody>
@@ -109,7 +129,7 @@
 			<%
 	if (map.containsKey("debug")) {
 %>
-			<h3>Ähnlichster Eintrag:</h3>
+			<h3><%=bundle.getString("mostSimilar") %></h3>
 			<table>
 				<%
 		@SuppressWarnings("unchecked")
@@ -125,7 +145,7 @@
 			}
 		%>
 				<tr>
-					<td>Matchgewicht:</td>
+					<td><%=bundle.getString("matchingWeight") %>:</td>
 					<td><%=map.get("weight")%></td>
 				</tr>
 			</table>
