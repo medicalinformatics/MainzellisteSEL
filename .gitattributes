@@ -1,5 +1,4 @@
 * text=auto !eol
-/NEWS -text
 /README -text
 /README.md -text
 WebContent/META-INF/MANIFEST.MF -text svneol=unset#text/plain
