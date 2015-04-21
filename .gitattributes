@@ -19,6 +19,7 @@ WebContent/static/css/patientenliste.css -text svneol=unset#text/plain
 config/META-INF/persistence.xml -text svneol=unset#text/plain
 config/log4j.properties -text svneol=unset#text/plain
 config/mainzelliste.conf.default -text
+config/mainzelliste.conf.test -text
 lib/js/jquery/jquery-1.7.2.js -text svneol=unset#text/plain
 lib/js/validation.js -text svneol=unset#text/plain
 licenses/agpl-3.0.txt -text svneol=unset#text/plain
@@ -90,3 +91,4 @@ src/de/pseudonymisierung/mainzelliste/webservice/SessionsResource.java -text svn
 src/de/pseudonymisierung/mainzelliste/webservice/Token.java -text svneol=unset#text/plain
 src/de/pseudonymisierung/mainzelliste/webservice/TokenMessageBodyWriter.java -text svneol=unset#text/plain
 src/de/pseudonymisierung/mainzelliste/webservice/TokenParam.java -text svneol=unset#text/plain
+test/de/pseudonymisierung/mainzelliste/test/RootTest.java -text svneol=unset#text/plain

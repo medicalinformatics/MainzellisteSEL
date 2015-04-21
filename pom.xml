@@ -103,10 +103,25 @@
         	<artifactId>commons-net</artifactId>
         	<version>${version.commons.net}</version>
         </dependency>
+        <dependency>
+        	<groupId>com.sun.jersey.jersey-test-framework</groupId>
+        	<artifactId>jersey-test-framework-grizzly2</artifactId>
+        	<version>1.17.1</version>
+        	<scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
         <sourceDirectory>${basedir}/src</sourceDirectory>
+        <testSourceDirectory>${basedir}/test</testSourceDirectory>
+        <testResources>
+        	<testResource>
+        	<directory>${basedir}/config</directory>
+        	<includes>
+        	<include>mainzelliste.conf.test</include>
+        	</includes>
+        	</testResource>
+        </testResources>
         <resources>
             <resource>
                 <directory>${basedir}/config</directory>
