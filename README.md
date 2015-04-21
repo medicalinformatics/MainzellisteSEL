@@ -13,6 +13,11 @@ The following article describes the underlying concepts of Mainzelliste and the 
 
 ## Release notes
 
+###1.4.1
+
+Bug fixes:
+- POST /sessions/{sid}/tokens returned invalid token object (reported by Matthias Lemmer).
+
 ### 1.4.0
 
 This release implements API version 2.1, including the new features presented therein. For detailed information, we refer to the comprehensive API document (currently only available in German), which can be downloaded from the [project web site](http://www.mainzelliste.de). All preceding API versions are still supported.
