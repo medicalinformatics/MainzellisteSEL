@@ -17,6 +17,7 @@ The following article describes the underlying concepts of Mainzelliste and the 
 
 Bug fixes:
 - POST /sessions/{sid}/tokens returned invalid token object (reported by Matthias Lemmer).
+- Confirming an unsure case failed due to missing api version in request URL (fixed by Benjamin Gathmann, see pull request #22).
 
 ### 1.4.0
 
