@@ -15,9 +15,19 @@ The following article describes the underlying concepts of Mainzelliste and the 
 
 ###1.4.1
 
-Bug fixes:
-- POST /sessions/{sid}/tokens returned invalid token object (reported by Matthias Lemmer).
+This is a bug fix release and we recommend an upgrade to all users. Upgrading is possible from every earlier release, and there are no steps necessary apart from replacing the binary. 
+
+####Bug fixes:
+
+- When a patient had been edited, the updated data was not considered for record linkage until after restarting the application (reported by Benjamin Gathmann). 
+- POST /sessions/{sid}/tokens returned an invalid token object (reported by Matthias Lemmer).
 - Confirming an unsure case failed due to missing api version in request URL (fixed by Benjamin Gathmann, see pull request #22).
+- Date validation accepted some illegal dates when data was not entered through the select lists in the HTML form (fixed by Benjamin Gathmann, see pull request #24).    
+
+
+####Other changes:
+
+- Removed references to deleted Javascript files (contributed by Benjamin Gathmann, see pull request #20).
 
 ### 1.4.0
 
