@@ -28,6 +28,7 @@ This is a bug fix release and we recommend an upgrade to all users. Upgrading is
 ####Other changes:
 
 - Removed references to deleted Javascript files (contributed by Benjamin Gathmann, see pull request #20).
+- The version number is now read from pom.xml, i.e. this is the only place in the source code where the version number is set.
 
 ### 1.4.0
 
