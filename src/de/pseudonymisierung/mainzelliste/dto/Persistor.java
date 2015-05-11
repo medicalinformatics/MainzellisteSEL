@@ -277,8 +277,10 @@ public enum Persistor {
 	 */
 	public synchronized void updatePatient(Patient p) {
 		em.getTransaction().begin();
-		em.merge(p);
+		Patient edited = em.merge(p);
 		em.getTransaction().commit();
+		// Refreshes cached entity 
+		em.refresh(edited); 
 	}
 	
 	/**
