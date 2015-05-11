@@ -27,6 +27,7 @@ licenses/bsd-serp.txt -text svneol=unset#text/plain
 /pom.xml -text
 resources/MessageBundle_de.properties -text svneol=unset#text/plain
 resources/MessageBundle_en.properties -text svneol=unset#text/plain
+resources/version.properties -text svneol=unset#text/plain
 src/de/pseudonymisierung/mainzelliste/CompoundField.java -text svneol=unset#text/plain
 src/de/pseudonymisierung/mainzelliste/Config.java -text svneol=unset#text/plain
 src/de/pseudonymisierung/mainzelliste/CorsResponseFilter.java -text svneol=unset#text/plain
