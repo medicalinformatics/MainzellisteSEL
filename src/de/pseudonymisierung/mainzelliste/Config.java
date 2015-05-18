@@ -27,6 +27,7 @@ package de.pseudonymisierung.mainzelliste;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -34,13 +35,16 @@ import java.io.Reader;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
+import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.prefs.Preferences;
 import java.util.regex.Pattern;
 
 import javax.servlet.ServletContext;
+import javax.servlet.ServletRequest;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -49,37 +53,48 @@ import de.pseudonymisierung.mainzelliste.exceptions.InternalErrorException;
 import de.pseudonymisierung.mainzelliste.matcher.*;
 
 /**
- * Configuration of the patient list. Implemented as a singleton object, which can be referenced
- * by Config.instance. The configuration is read from the properties file specified as
- * parameter de.pseudonymisierung.mainzelliste.ConfigurationFile in context.xml
- * (see {@link java.util.Properties#load(InputStream) java.util.Properties}).
+ * Configuration of the patient list. Implemented as a singleton object, which
+ * can be referenced by Config.instance. The configuration is read from the
+ * properties file specified as parameter
+ * de.pseudonymisierung.mainzelliste.ConfigurationFile in context.xml (see
+ * {@link java.util.Properties#load(InputStream) java.util.Properties}).
  */
 public enum Config {
+	
+	/** The singleton instance */
 	instance;
 	
-	public enum FieldType {
-		PLAINTEXT,
-		PLAINTEXT_NORMALIZED,
-		HASHED, // Bloomfilter without prior normalization
-		HASHED_NORMALIZED; // Bloomfilter with prior normalization
-	}
-	
-	private final String version = "1.4.0";
+	/** The software version of this instance. */
+	private final String version;
 	
 	/** Default paths from where configuration is read if no path is given in the context descriptor */ 
 	private final String defaultConfigPaths[] = {"/etc/mainzelliste/mainzelliste.conf", "/WEB-INF/classes/mainzelliste.conf"};
-	
+
+	/** The configured fields, keys are field names, values the respective field types. */
 	private final Map<String,Class<? extends Field<?>>> FieldTypes;
-	private final Map<String, String> FieldLabels;
 	
+	/** Properties object that holds the configuration parameters. */
 	private Properties props;
+	
+	/** The record transformer matching the configured field transformations. */ 
 	private RecordTransformer recordTransformer;
+	/** The configured matcher */
 	private Matcher matcher;
 	
+	/** Logging instance */
 	private Logger logger = Logger.getLogger(Config.class);
 	
+	/** Allowed origins for Cross Domain Resource Sharing. */
 	private Set<String> allowedOrigins;
 	
+	/**
+	 * Creates an instance. Invoked on first access to Config.instance. Reads
+	 * the configuration file.
+	 * 
+	 * @throws InternalErrorException
+	 *             If an error occurs during initialization. This signals a
+	 *             fatal error and prevents starting the application.
+	 */
 	@SuppressWarnings("unchecked")
 	Config() throws InternalErrorException {
 		props = new Properties();
@@ -149,7 +164,6 @@ public enum Config {
 		Pattern pattern = Pattern.compile("field\\.(\\w+)\\.type");
 		java.util.regex.Matcher patternMatcher;
 		this.FieldTypes = new HashMap<String, Class<? extends Field<?>>>();
-		this.FieldLabels = new HashMap<String, String>();
 		for (String propKey : props.stringPropertyNames()) {
 			patternMatcher = pattern.matcher(propKey);
 			if (patternMatcher.find())
@@ -170,15 +184,6 @@ public enum Config {
 					logger.fatal("Initialization of field " + fieldName + " failed: ", e);
 					throw new InternalErrorException();
 				}
-				
-				// Initialize field labels (names that are displayed in the form
-				String label = props.getProperty("field." + fieldName + ".label");
-				if (label == null) {
-					// use field name if no label defined
-					FieldLabels.put(fieldName, fieldName);
-				} else {
-					FieldLabels.put(fieldName, label);
-				}
 			}
 		}
 		
@@ -187,6 +192,11 @@ public enum Config {
 		String allowedOriginsString = props.getProperty("servers.allowedOrigins"); 
 		if (allowedOriginsString != null)			
 			allowedOrigins.addAll(Arrays.asList(allowedOriginsString.trim().split(";")));
+		
+		Locale.setDefault(Locale.ENGLISH);
+		
+		// Read version number provided by pom.xml
+		version = readVersion();
 	}
 	
 	/**
@@ -230,41 +240,103 @@ public enum Config {
 		return FieldTypes.keySet();
 	}
 	
-	public Class<? extends Field<?>> getFieldType(String FieldKey){
-		assert FieldTypes.keySet().contains(FieldKey);
-		return FieldTypes.get(FieldKey);
+	/**
+	 * Get the type of the given field.
+	 * @param fieldKey Name of the field as defined in configuration.
+	 * @return The field type as the matching subclass of Field.
+	 */
+	public Class<? extends Field<?>> getFieldType(String fieldKey){
+		assert FieldTypes.keySet().contains(fieldKey);
+		return FieldTypes.get(fieldKey);
 	}
 	
 	/**
 	 * Check whether a field with the given name is configured.
+	 * @param fieldName The field name to check
+	 * @return true if field fieldName is configured.
 	 */
 	public boolean fieldExists(String fieldName) {
 		return this.FieldTypes.containsKey(fieldName);
 	}
-	
-	public String getFieldLabel(String fieldKey) {
-		assert FieldLabels.keySet().contains(fieldKey);
-		return FieldLabels.get(fieldKey);
-	}
-	
+
+	/**
+	 * Get the distribution instance (e.g. the name of the project this instance
+	 * runs for).
+	 * 
+	 * @return The value of configuration parameter "dist".
+	 * */
 	public String getDist() {
 		return getProperty("dist");
 	}
 	
+	/**
+	 * Get the software version of this instance.
+	 * 
+	 * @return The software version of this instance.
+	 * 
+	 */
 	public String getVersion() {
 		return version;
 	}
 	
+	/**
+	 * Checks whether this instance is run in debug mode, i.e. authentication is
+	 * disabled and tokens are not invalidated.
+	 * 
+	 * @return true if debug mode is enabled.
+	 */
 	public boolean debugIsOn()
 	{
 		String debugMode = this.props.getProperty("debug");
 		return (debugMode != null && debugMode.equals("true"));
 	}
 	
+	/**
+	 * Checks whether the given origin is allowed. Used to check the origin in
+	 * Cross Domain Resource Sharing.
+	 * 
+	 * @param origin
+	 *            The origin to check.
+	 * @return true if resource sharing with this origin is allowed.
+	 */
 	public boolean originAllowed(String origin) {
 		return this.allowedOrigins.contains(origin);
 	}
 	
+	/**
+	 * Get the logo file from the path defined by configuration parameter
+	 * 'operator.logo'.
+	 * 
+	 * @return The file object. It is checked that the file exists.
+	 * @throws FileNotFoundException
+	 *             if the logo file cannot be found at the specified location.
+	 */
+	public File getLogo() throws FileNotFoundException {
+		String logoFileName = this.getProperty("operator.logo");
+		if (logoFileName == null || logoFileName.equals(""))
+			throw new FileNotFoundException("No logo file configured.");
+		File logoFile = new File(logoFileName);
+		if (logoFile.exists())
+			return logoFile;
+		else 
+			throw new FileNotFoundException("No logo file found at " + logoFileName + ".");
+	}
+	
+	/**
+	 * Read configuration from the given file. Tries to read the file in the
+	 * following order:
+	 * <ol>
+	 * <li>From inside the application via getResourceAsStream().
+	 * <li>From the file system
+	 * </ol>
+	 * 
+	 * @param configPath
+	 *            Path to configuration file.
+	 * @return The configuration as a Properties object or null if the given
+	 *         file was not found.
+	 * @throws IOException
+	 *             If an I/O error occurs while reading the configuration file.
+	 */
 	private Properties readConfigFromFile(String configPath) throws IOException {
 		ServletContext context = Initializer.getServletContext();
 		// First, try to read from resource (e.g. within the war file)
@@ -284,6 +356,22 @@ public enum Config {
 		return props;
 	}
 	
+	/**
+	 * Get resource bundle matching the locale of the request (based on Accept-Language header).
+	 * If no matching resource bundle is found, English is assumed.
+	 * @param req The servlet request.
+	 * @return The matching resource bundle. 
+	 */
+	public ResourceBundle getResourceBunde(ServletRequest req) {
+		Locale requestLocale = req.getLocale();
+		ResourceBundle bundle = ResourceBundle.getBundle("MessageBundle", requestLocale);
+		return bundle;
+	}
+	
+	/**
+	 * Get configured log level (DEBUG by default).
+	 * @return The log level.
+	 */
 	Level getLogLevel() {
 		String level = this.props.getProperty("log.level");
 		Level ret = Level.DEBUG;
@@ -301,4 +389,26 @@ public enum Config {
 		
 		return ret;
 	}
+	
+	/**
+	 * Read version string from properties file "version.properties",
+	 * which is copied from pom.xml by Maven.
+	 * @return The version string.
+	 */
+	private String readVersion() {
+		try {
+			Properties props = new Properties();
+			InputStream versionInputStream = Initializer.getServletContext().getResourceAsStream("/WEB-INF/classes/version.properties");
+			if (versionInputStream == null) {
+				throw new Error("File version.properties not found!");
+			}
+			props.load(versionInputStream);
+			String version = props.getProperty("version");
+			if (version == null)
+				throw new Error("property 'version' undefined in version.properties");
+			return version;
+		} catch (IOException e) {
+			throw new Error ("I/O error while reading version.properties", e);
+		}
+	}	
 }

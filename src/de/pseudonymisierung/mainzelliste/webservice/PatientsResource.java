@@ -82,8 +82,20 @@ import de.pseudonymisierung.mainzelliste.matcher.MatchResult.MatchResultType;
 @Path("/patients")
 public class PatientsResource {
 	
+	/** The logging instance. */
 	private Logger logger = Logger.getLogger(PatientsResource.class);
 	
+	/**
+	 * Get a list of patients.
+	 * 
+	 * @param req
+	 *            The injected HttpServletRequest.
+	 * @param tokenId
+	 *            Id of a valid "readPatients" token.
+	 * @return A JSON result as specified in the API documentation.
+	 * @throws UnauthorizedException
+	 *             If no token is provided.
+	 */
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getAllPatients(@Context HttpServletRequest req,
@@ -97,20 +109,30 @@ public class PatientsResource {
 		if (tokenId != null)
 			return this.getPatientsToken(tokenId);
 		
-		/* 
-		 * Unrestricted access for user role 'admin' via tomcat-users.xml. 
-		 */
-		if (!req.isUserInRole("admin"))
+		else
 			throw new UnauthorizedException();
-		return Response.ok().entity(Persistor.instance.getAllIds()).build();
 	}
 	
 
+	/**
+	 * Create a new patient. Interface for web browser.
+	 * 
+	 * @param tokenId
+	 *            Id of a valid "addPatient" token.
+	 * @param mainzellisteApiVersion
+	 *            The API version used to make the request.
+	 * @param form
+	 *            Input as provided by the HTML form.
+	 * @param request
+	 *            The injected HttpServletRequest.
+	 * @return An HTTP response as specified in the API documentation.
+	 */
 	@POST
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 	@Produces({MediaType.TEXT_HTML, MediaType.WILDCARD})
 	public Response newPatientBrowser(
 			@QueryParam("tokenId") String tokenId,
+			@QueryParam("mainzellisteApiVersion") String mainzellisteApiVersion,
 			MultivaluedMap<String, String> form,
 			@Context HttpServletRequest request){
 		try {
@@ -127,6 +149,7 @@ public class PatientsResource {
 				}
 				map.put("readonly", "true");
 				map.put("tokenId", tokenId);
+				map.put("mainzellisteApiVersion", mainzellisteApiVersion);
 				return Response.status(Status.CONFLICT)
 						.entity(new Viewable("/unsureMatch.jsp", map)).build();
 			} else {
@@ -173,10 +196,17 @@ public class PatientsResource {
 					// and set flag for JSP to display them
 					map.put("printIdat", true);
 				}
-				// FIXME alle IDs übergeben und anzeigen
-				ID retId = ids.toArray(new ID[0])[0];
-				map.put("id", retId.getIdString());
-				map.put("tentative", retId.isTentative());
+
+				map.put("ids", ids);
+                
+                map.put("tentative", false);
+                // Only put true in map if one or more PID are tentative
+                for (ID id : ids) {
+                    if (id != null && id.isTentative()) {
+                        map.put("tentative", true);
+                        break;
+                    }
+                }
 
 				if (Config.instance.debugIsOn() && result.getResultType() != MatchResultType.NON_MATCH)
 				{
@@ -199,7 +229,22 @@ public class PatientsResource {
 					.entity(new Viewable("/errorPage.jsp", map)).build();
 		}
 	}
-	
+
+	/**
+	 * Create a new patient. Interface for software applications.
+	 * 
+	 * @param tokenId
+	 *            Id of a valid "addPatient" token.
+	 * @param request
+	 *            The injected HttpServletRequest.
+	 * @param context
+	 *            Injected information of application and request URI.
+	 * @param form
+	 *            Input as provided by the HTTP request.
+	 * @return An HTTP response as specified in the API documentation.
+	 * @throws JSONException
+	 *             If a JSON error occurs.
+	 */
 	@POST
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 	@Produces(MediaType.APPLICATION_JSON)
@@ -276,9 +321,11 @@ public class PatientsResource {
 	}
 
 	/**
-	 * Get patient via readPatient token
+	 * Get patients via "readPatient" token.
+	 * 
 	 * @param tid
-	 * @return
+	 *            Id of a valid "readPatient" token.
+	 * @return A JSON result as specified in the API documentation.
 	 */
 	@Path("/tokenId/{tid}")
 	@GET
@@ -345,6 +392,18 @@ public class PatientsResource {
 		return Response.ok().entity(ret).build();
 	}
 
+	/**
+	 * Edit a patient. Interface for web browsers. The patient to edit is
+	 * determined from the given "editPatient" token.
+	 * 
+	 * @param tokenId
+	 *            A valid "editPatient" token.
+	 * @param form
+	 *            Input as provided by the HTML form.
+	 * @param request
+	 *            The injected HttpServletRequest.
+	 * @return An HTTP response as specified in the API documentation.
+	 */
 	@Path("/tokenId/{tokenId}")
 	@PUT
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
@@ -375,6 +434,19 @@ public class PatientsResource {
 		}
 	}
 
+	/**
+	 * Edit a patient. Interface for software applications. The patient to edit
+	 * is determined from the given "editPatient" token.
+	 * 
+	 * @param tokenId
+	 *            A valid "editPatient" token.
+	 * @param data
+	 *            Input data as JSON object, keys are field names and values the
+	 *            respective field values.
+	 * @param request
+	 *            The injected HttpServletRequest.
+	 * @return An HTTP response as specified in the API documentation.
+	 */
 	@Path("/tokenId/{tokenId}")
 	@PUT
 	@Consumes(MediaType.APPLICATION_JSON)

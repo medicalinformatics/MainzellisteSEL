@@ -1,9 +1,14 @@
-<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
-	pageEncoding="ISO-8859-1"%>
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<%@page import="de.pseudonymisierung.mainzelliste.Config"%>
+<%@page import="java.util.ResourceBundle"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+	pageEncoding="UTF-8"%>
+<%
+	ResourceBundle bundle = Config.instance.getResourceBunde(request);
+%>
+<!DOCTYPE html>
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
 <link rel="stylesheet" type="text/css"
 	href="<%=request.getContextPath()%>/static/css/patientenliste.css">
@@ -12,21 +17,15 @@
 </head>
 
 <body>
-	<div class="kopfzeile">
-		<div class="logo">&nbsp;</div>
-	</div>
+	<jsp:include page="header.jsp"></jsp:include>
 	<div class="inhalt">
 		<div class="formular">
-			<div>&nbsp;</div>
-			<h1>Bearbeitung abgeschlossen</h1>
-
-			<p align="center">
-				Die Änderungen an den Patientendaten wurden übernommen.
-				Sie können nun zur aufrufenden Webseite zurückkehren.
+			<h1><%=bundle.getString("editCompletedTitle") %></h1>
+			<p style="text-align: center;">
+				<%=bundle.getString("editCompletedText") %>								
 			</p>
 		</div>
-		<div>&nbsp;</div>
 	</div>
-	<%@ include file="footer.jsp"%>
+	<jsp:include page="footer.jsp" />
 </body>
 </html>

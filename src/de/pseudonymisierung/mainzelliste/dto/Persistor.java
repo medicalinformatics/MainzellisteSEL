@@ -42,7 +42,6 @@ import javax.persistence.NoResultException;
 import javax.persistence.Persistence;
 import javax.persistence.TypedQuery;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 
@@ -52,21 +51,25 @@ import de.pseudonymisierung.mainzelliste.IDGeneratorMemory;
 import de.pseudonymisierung.mainzelliste.IDRequest;
 import de.pseudonymisierung.mainzelliste.Patient;
 import de.pseudonymisierung.mainzelliste.exceptions.InternalErrorException;
-import de.pseudonymisierung.mainzelliste.matcher.MatchResult.MatchResultType;
 
 /**
- * Handles reading and writing from and to the database.
+ * Handles reading and writing from and to the database. Implemented as a
+ * singleton object, which can be referenced by Persistor.instance.
  */
 public enum Persistor {
+	
+	/** The singleton instance. */
 	instance;
 	
-
+	/** Factory for EntityManager. */
 	private EntityManagerFactory emf;
-	
+	/** EntityManager. Instance that stays open (for cases where entities cannot be detached). */
 	private EntityManager em;
 	
+	/** The logging instance. */
 	private Logger logger = Logger.getLogger(this.getClass());
 	
+	/** Creates the singleton instance with the configured database connection. */
 	private Persistor() {
 		
 		this.initPropertiesTable();
@@ -100,7 +103,13 @@ public enum Persistor {
 	}
 	
 	/**
-	 * Get a patient by id.
+	 * Get a patient by one of its IDs.
+	 * 
+	 * @param pid
+	 *            An identifier of the patient to get.
+	 * @return The patient with the given ID or null if no patient with the
+	 *         given ID exists.
+	 * 
 	 */
 	public Patient getPatient(ID pid){
 		EntityManager em = emf.createEntityManager();
@@ -109,12 +118,15 @@ public enum Persistor {
 		q.setParameter("idType", pid.getType());
 		List<Patient> result = q.getResultList();
 		if (result.size() > 1) {
+			em.close();
 			logger.fatal("Found more than one patient with ID: " + pid.toString());
 			throw new InternalErrorException("Found more than one patient with ID: " + pid.toString());
 		} 
 		
-		if (result.size() == 0)
+		if (result.size() == 0) {
+			em.close();
 			return null;
+		}
 
 		Patient p = result.get(0);
 		// Fetch lazy loaded IDs
@@ -126,8 +138,9 @@ public enum Persistor {
 	}
 	
 	/**
-	 * Returns all patients currently persisted in the patient list. This is not a copy!
-	 * Caller MUST NOT perform write operations on the return value or its linked objects.
+	 * Returns all patients currently persisted in the patient list. This is not
+	 * a copy! Caller MUST NOT perform write operations on the return value or
+	 * its linked objects.
 	 * 
 	 * @return All persisted patients.
 	 */
@@ -139,9 +152,14 @@ public enum Persistor {
 	}
 
 	/**
-	 * Check whether a patient with a given ID exists.
+	 * Check whether a patient with the given ID exists.
+	 * 
 	 * @param idType
+	 *            The ID type.
 	 * @param idString
+	 *            The ID string.
+	 * @return The patient with the given ID or null if no patient with the
+	 *         given ID exists.
 	 */
 	public boolean patientExists(String idType, String idString) {
 		EntityManager em = emf.createEntityManager();
@@ -156,8 +174,11 @@ public enum Persistor {
 	}
 	
 	/**
-	 * Check whether a patient with a given ID exists.
+	 * Check whether a patient with the given ID exists.
+	 * 
 	 * @param id
+	 *            The ID to check.
+	 * @return true if a patient with the given ID exists.
 	 */
 	public boolean patientExists(ID id) {
 		return this.patientExists(id.getType(), id.getIdString());
@@ -165,6 +186,7 @@ public enum Persistor {
 
 	/**
 	 * Returns a detached list of the IDs of all patients.
+	 * 
 	 * @return A list where every item represents the IDs of one patient.
 	 */
 	public synchronized List<Set<ID>> getAllIds() {
@@ -181,49 +203,22 @@ public enum Persistor {
 	/**
 	 * Add an ID request to the database. In cases where a new ID is created, a
 	 * new Patient object is persisted.
+	 * 
+	 * @param req
+	 *            The ID request to persist.
 	 */
 	public synchronized void addIdRequest(IDRequest req) {
 		em.getTransaction().begin();
 		em.persist(req); //TODO: Fehlerbehandlung, falls PID schon existiert.		
 		em.getTransaction().commit();
 	}
-
-	public List<IDRequest> getIDIdRequests(MatchResultType matchResult, Double minWeight, Double maxWeight) {
-		StringBuffer queryString = new StringBuffer();
-		LinkedList<String> filterClauses = new LinkedList<String>();
-		queryString.append("SELECT req FROM IDRequest req");
-		if (matchResult != null)
-			filterClauses.add("req.matchResult.type=:type");
-		if (minWeight != null)
-			filterClauses.add("req.matchResult.bestMatchedWeight >= :minWeight");
-		if (maxWeight != null)
-			filterClauses.add("req.matchResult.bestMatchedWeight <= :maxWeight");
 	
-		if (filterClauses.size() > 0) {
-			queryString.append(" WHERE ");
-			queryString.append(StringUtils.join(filterClauses, " AND "));
-		}
-		queryString.append(" ORDER BY req.matchResult.bestMatchedWeight DESC");		
-		EntityManager em = emf.createEntityManager();
-		TypedQuery<IDRequest> query = em.createQuery(queryString.toString(), IDRequest.class);
-		if (matchResult != null) 
-			query.setParameter("type", matchResult);
-		if (minWeight != null)
-			query.setParameter("minWeight", minWeight);
-		if (maxWeight != null)
-			query.setParameter("maxWeight", maxWeight);
-		return query.getResultList();
-		
-	}
 	/**
-	 * Get all IDRequests that yielded a "possible match".
-	 */
-	public List<IDRequest> getPossibleMatches() {
-		return getIDIdRequests(MatchResultType.POSSIBLE_MATCH, null, null);
-	}
-	/**
-	 * Update the persisted properties of an ID generator (e.g. the counter 
-	 * from which PIDs are generated).
+	 * Update the persisted properties of an ID generator (e.g. the counter from
+	 * which PIDs are generated).
+	 * 
+	 * @param mem
+	 *            The properties to persist.
 	 */
 	public synchronized void updateIDGeneratorMemory(IDGeneratorMemory mem) {
 		EntityManager em = emf.createEntityManager();
@@ -234,7 +229,13 @@ public enum Persistor {
 	}
 	
 	/**
-	 * Mark the patient with ID idOfDuplicate as a duplicate of idOfOriginal.
+	 * Mark a patient as duplicate of another.
+	 * 
+	 * @param idOfDuplicate
+	 *            ID of the patient to be marked as duplicate.
+	 * @param idOfOriginal
+	 *            ID of the patient of which the other one is a duplicate.
+	 *            
 	 * @see de.pseudonymisierung.mainzelliste.Patient#isDuplicate()
 	 * @see de.pseudonymisierung.mainzelliste.Patient#getOriginal()
 	 * @see de.pseudonymisierung.mainzelliste.Patient#setOriginal(Patient)
@@ -248,7 +249,11 @@ public enum Persistor {
 	
 	/**
 	 * Load the persisted properties for an ID generator.
-	 * @param idString Identifier of the ID generator.
+	 * 
+	 * @param idType
+	 *            Identifier of the ID generator.
+	 * @return The persisted properties or null if no properties have been
+	 *         persisted for the given ID generator.
 	 */
 	public IDGeneratorMemory getIDGeneratorMemory(String idType) {
 		EntityManager em = emf.createEntityManager();
@@ -259,30 +264,44 @@ public enum Persistor {
 			em.close();
 			return result;
 		} catch (NoResultException e) { // No result -> No IDGeneratorMemory object persisted yet.
+			em.close();
 			return null;
 		}
 	}
 	
 	/**
 	 * Persist changes made to a patient.
+	 * 
+	 * @param p
+	 *            The patient to persist.
 	 */
 	public synchronized void updatePatient(Patient p) {
-		EntityManager em = emf.createEntityManager();
 		em.getTransaction().begin();
-		em.merge(p);
+		Patient edited = em.merge(p);
 		em.getTransaction().commit();
-		em.close();
-		/* 
-		 * Recreate open EntityManager so that getPatients() re-reads from 
-		 * the database instead of returning objects from the cache 
-		 */
-		this.em.close();
-		this.em = this.emf.createEntityManager();
+		// Refreshes cached entity 
+		em.refresh(edited); 
 	}
 	
+	/**
+	 * Remove a patient from the database.
+	 * 
+	 * @param id An ID of the patient to persist.
+	 */
+	public synchronized void deletePatient(ID id) {
+		em.getTransaction().begin();
+		TypedQuery<Patient> q = em.createQuery("SELECT p FROM Patient p JOIN p.ids id WHERE id.idString = :idString AND id.type = :idType", Patient.class);
+		q.setParameter("idString", id.getIdString());
+		q.setParameter("idType", id.getType());
+		Patient p = q.getSingleResult();
+		if (p != null)
+			em.remove(p);
+		em.getTransaction().commit();
+	}
 	
 	/**
-	 * Performs database updates after JPA initialization
+	 * Performs database updates after JPA initialization.
+	 * @param fromVersion The version from which to update.
 	 */
 	private void updateDatabaseSchemaJPA(String fromVersion)
 	{
@@ -335,6 +354,7 @@ public enum Persistor {
 		em.getTransaction().begin();
 		this.setSchemaVersion(Config.instance.getVersion(), em);
 		em.getTransaction().commit();
+		em.close();
 	}
 	
 	/**
@@ -346,6 +366,8 @@ public enum Persistor {
 	 * (e.g. if the Object-DB mapping would be broken without the update).
 	 * 
 	 * Run initPropertiesTable() first to ensure that version information exists.
+	 * 
+	 * @return The persisted release version.
 	 */
 	private String getSchemaVersion() {
 		Connection conn;
@@ -373,11 +395,15 @@ public enum Persistor {
 	}
 	
 	/**
-	 * Update version information in the database. Should be run in one transaction 
-	 * on the provided EntityManager together with the changes made for this version
-	 * so that no inconsistencies arise if any of the update statements fail.
-	 * @param toVersion The version string to set.
-	 * @param em A valid EntityManager object.
+	 * Update version information in the database. Should be run in one
+	 * transaction on the provided EntityManager together with the changes made
+	 * for this version so that no inconsistencies arise if any of the update
+	 * statements fail.
+	 * 
+	 * @param toVersion
+	 *            The version string to set.
+	 * @param em
+	 *            A valid EntityManager object.
 	 */
 	private void setSchemaVersion(String toVersion, EntityManager em) {
 		em.createNativeQuery("UPDATE mainzelliste_properties SET value='" + toVersion + 
@@ -385,9 +411,9 @@ public enum Persistor {
 	}
 	
 	/**
-	 * Create mainzelliste_properties if not exists. Check if JPA schema
-	 * was initialized. If no, set version to current, otherwise, it is assumed
-	 * that the database schema was created by version 1.0 (where the properties
+	 * Create mainzelliste_properties if not exists. Check if JPA schema was
+	 * initialized. If no, set version to current, otherwise, it is assumed that
+	 * the database schema was created by version 1.0 (where the properties
 	 * table did not exist) and this version is set.
 	 * 
 	 * Must be called before JPA initialization, i.e. before an EntityManager is
@@ -415,15 +441,19 @@ public enum Persistor {
 			
 			// Check if there is a properties table 
 			metaData = conn.getMetaData();
+			// "value" is a reserved word so it must be quoted in SQL queries
+			String identifierQuote = metaData.getIdentifierQuoteString();
+			String valueQuoted = identifierQuote + "value" + identifierQuote;
+			logger.debug("Quoted: " + valueQuoted);
 			rs = metaData.getTables(null, null, "mainzelliste_properties", null);
 			// Assume version 1.0 if none is provided
 			if (!rs.next()) {
 				// Create table				
 				conn.createStatement().execute("CREATE TABLE mainzelliste_properties" +
-						"(property varchar(256), value varchar(256))");
+						"(property varchar(256), " + valueQuoted +" varchar(256))");
 			} 
-			rs = conn.createStatement().executeQuery("SELECT value FROM mainzelliste_properties " +
-					"WHERE property='version'");
+			rs = conn.createStatement().executeQuery("SELECT " + valueQuoted + 
+					" FROM mainzelliste_properties WHERE property='version'");
 			if (!rs.next()) {
 				// Properties table exists, but no version information
 				String setVersion = firstRun ? Config.instance.getVersion() : "1.0";

@@ -62,15 +62,6 @@ field.geburtsjahr.type = IntegerField
 field.plz.type = PlainTextField
 field.ort.type = PlainTextField
 
-# Field labels can be defined for display, for example in error messages
-# field.vorname.label = Vorname
-# field.nachname.label = Nachname
-# field.geburtsname.label = Geburtsname
-# field.geburtstag.label = Geburtsdatum (Tag) 
-# field.geburtsmonat.label = Geburtsdatum (Monat)
-# field.geburtsjahr.label = Geburtsdatum (Jahr)
-# field.plz.label = Postleitzahl
-# field.ort.label = Ort
 
 # Server-side validation
 
@@ -246,6 +237,7 @@ result.printIdat = true
 servers.0.apiKey = 
 servers.0.permissions = createSession;showSessionIds;deleteAllPatients;createToken;tt_addPatient;tt_readPatients;tt_editPatient
 
+
 # Accepted origin addresses (IPv4 and/or IPv6) or address ranges in CIDR notation (IPv4 only)
  
 # Allow only requests from localhost (e.g. for developing)
@@ -265,3 +257,10 @@ callback.allowedFormat = https://.*
 # A session will be deleted if not accessed for this amount of time, specified in minutes
 # Default value if not specified: 10
 # sessionTimeout = 10
+
+# Operator information of the Mainzelliste operator to display around user forms
+# (defaults to empty/invisible):
+# - Contact: Text to be displayed below all forms
+# - Logo: Path to image to be displayed in the upper right corner
+# operator.contact = 
+# operator.logo = /etc/mainzelliste/logo.png

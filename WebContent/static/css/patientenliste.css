@@ -16,6 +16,11 @@ h1, h3 {
 h1 {
 	padding-bottom: 0.5em;
 }
+
+p.buttons {
+	text-align: center;
+}
+
 .header_left {
 	text-align: left; 
 	text-indent: 1em;
@@ -24,18 +29,13 @@ h1 {
 	color: rgb(0,60,118);
 }
 
-/* funktioniert nur in Mozilla*/
-input:-moz-placeholder {
-	color: rgba(0,60,118,0.50);
-	font-style: italic;
-}
 .kopfzeile {
+	min-height: 3em;
  	max-width: 70em;  
 	margin: auto; 
 	padding-top: 2em;
 }
 .logo {
-/* 	background: url('../media/JGU_Uni_medizin_Logo_4c_Internet.jpg') no-repeat scroll right top transparent;  */
 	height: 6em; 
  	max-width: 70em; 
 	margin: auto;
@@ -43,6 +43,7 @@ input:-moz-placeholder {
 .inhalt {
  	max-width: 70em;  
 	margin: auto; 
+	padding: 1em;
 	background-color: rgb(229,235,241);
 }
 .patienten_daten {
@@ -71,33 +72,10 @@ input:-moz-placeholder {
 	color: rgb(0,60,118);
 }
 
-table.possible-matches {
-	border:0px none black; 
-	border-collapse: collapse;
-	margin-left:auto;
-	margin-right:auto;
+.mandatory {
+	color: red;
 }
 
-
-td.mark-duplicate-top {
-	border-top: 2px solid #C1002B;
-	border-left: 2px solid #C1002B;
-	border-right: 2px solid #C1002B;
-}
-
-td.mark-duplicate-bottom {
-	border-bottom: 2px solid #C1002B;
-	border-left: 2px solid #C1002B;
-	border-right: 2px solid #C1002B;
-}
-
-td.mark-duplicate {
-	background-color: #C1002B;
-}
-
-td.separator {
-	border: 0px none;
-	text-align: center;
-	padding-top: 2p;
-	padding-bottom: 2p;
+.id {
+	font-family:'Lucida Console', monospace;
 }

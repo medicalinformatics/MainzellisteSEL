@@ -36,16 +36,34 @@ import org.codehaus.jettison.json.JSONException;
  * 
  */
 public class InvalidJSONException extends WebApplicationException {
+
+	@SuppressWarnings("javadoc")
+	private static final long serialVersionUID = -4979455015089015791L;
+	
+	/** The default error message. */
 	private static String defaultMessage = "A JSON error occured.";
 	
+	/** Create an instance with the default error message. */
 	public InvalidJSONException() {
 		this(defaultMessage);
 	}
 	
+	/**
+	 * Create an instance with the given exception as cause.
+	 * 
+	 * @param e
+	 *            The JSONException that is the cause of this exception.
+	 * */
 	public InvalidJSONException(JSONException e) {
 		this(defaultMessage + " " + e.getMessage());
 	}
 	
+	/**
+	 * Create an instance with the given error message.
+	 * 
+	 * @param message
+	 *            The error message.
+	 */
 	public InvalidJSONException(String message) {
         super(Response.status(Status.BAD_REQUEST).entity(message).build());
 	}

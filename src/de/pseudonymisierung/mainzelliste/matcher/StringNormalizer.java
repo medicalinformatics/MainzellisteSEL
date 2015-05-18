@@ -43,9 +43,7 @@ import de.pseudonymisierung.mainzelliste.PlainTextField;
  */
 public class StringNormalizer extends FieldTransformer<PlainTextField, PlainTextField> {
 
-	/** Delimiters to remove from start and end.
-	 * 
-	 */
+	/** Delimiters to remove from start and end. */
 	private static char delimiterChars[] = {' ', '.', ':', ',', ';', '-', '\''};
 
 	/** Characters which to replace (umlauts) 
@@ -65,6 +63,9 @@ public class StringNormalizer extends FieldTransformer<PlainTextField, PlainText
 	private Map<Character, String> umlautReplacementMap;
 
 
+	/**
+	 * Create an instance.
+	 */
 	public StringNormalizer()
 	{
 		int i;
@@ -89,7 +90,6 @@ public class StringNormalizer extends FieldTransformer<PlainTextField, PlainText
 	 *  <li> conversion of Umlauts.
 	 * 	<li> conversion to upper case,
 	 * <ul>
-	 * @param input
 	 */
 	@Override
 	public PlainTextField transform(PlainTextField input)
