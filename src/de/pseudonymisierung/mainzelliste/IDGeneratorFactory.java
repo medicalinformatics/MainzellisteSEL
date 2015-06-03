@@ -121,7 +121,6 @@ public enum IDGeneratorFactory {
 				throw new Error(e);
 			}
 		}
-		Logger logger = Logger.getLogger(IDGeneratorFactory.class);
 		generators = Collections.unmodifiableMap(temp);
 
 		logger.info("ID generators have initialized successfully.");
@@ -173,6 +172,26 @@ public enum IDGeneratorFactory {
 		return this.idTypes[0];
 	}
 
+	public ID idFromJSON(JSONObject json) throws JSONException, InvalidIDException {
+		if (!json.has("idType") && json.has("idString"))
+			throw new JSONException("Illegal format for ID. Need at least members 'idType' and 'idString'");
+		
+		IDGenerator<?> generator = IDGeneratorFactory.instance.getFactory(json.getString("idType"));
+		if (generator == null) {
+			String message = String.format("No ID generator %s found!", json.getString("idType")); 
+			logger.error(message);
+			throw new InvalidIDException();
+		}
+		ID id = generator.buildId(json.getString("idString"));
+		
+		if (json.has("tentative"))
+			id.setTentative(json.getBoolean("tentative"));
+		else
+			id.setTentative(false);
+		
+		return id;
+	}
+	
 	/**
 	 * Build an ID with the given ID string and type.
 	 * 

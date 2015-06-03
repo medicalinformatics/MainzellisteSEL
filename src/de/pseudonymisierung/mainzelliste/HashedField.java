@@ -98,6 +98,13 @@ public class HashedField extends Field<BitSet>{
 	}
 	
 	/**
+	 * Create an empty instance.
+	 */
+	public HashedField() {
+		this.value = "";
+	}
+
+	/**
 	 * Create an instance from a BitSet.
 	 * @param b A BitSet.
 	 */
