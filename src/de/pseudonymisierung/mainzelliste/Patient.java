@@ -358,8 +358,8 @@ public class Patient {
 	 *            A map with field names as keys and corresponding Field objects
 	 *            as values. The map is copied by reference.
 	 */
-	public void setFields(Map<String, Field<?>> Fields) {
-		this.fields = Fields;
+	public void setFields(Map<String, Field<?>> fields) {
+		this.fields = fields;
 		this.fieldsString = fieldsToString(this.fields);
 	}
 
