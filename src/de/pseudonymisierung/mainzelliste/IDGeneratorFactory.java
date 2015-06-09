@@ -118,7 +118,7 @@ public enum IDGeneratorFactory {
 				logger.fatal("Unknown ID generator " + thisIdGenerator + " for id type " + thisIdType);
 				throw new Error(e);
 			} catch (Exception e) {
-				logger.fatal("Could not initialize ID generator " + thisIdType + " for id type " + thisIdType, e);
+				logger.fatal("Could not initialize ID generator " + thisIdGenerator + " for id type " + thisIdType, e);
 				throw new Error(e);
 			}
 		}
