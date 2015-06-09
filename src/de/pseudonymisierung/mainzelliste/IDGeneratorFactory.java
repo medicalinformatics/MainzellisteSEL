@@ -115,11 +115,10 @@ public enum IDGeneratorFactory {
 				thisGenerator.init(mem, thisIdType, thisIdProps);
 				temp.put(thisIdType, thisGenerator);
 			} catch (ClassNotFoundException e) {
-				logger.fatal("Unknown ID generator: " + thisIdType);
+				logger.fatal("Unknown ID generator " + thisIdGenerator + " for id type " + thisIdType);
 				throw new Error(e);
 			} catch (Exception e) {
-				logger.fatal("Could not initialize ID generator " + thisIdType,
-						e);
+				logger.fatal("Could not initialize ID generator " + thisIdType + " for id type " + thisIdType, e);
 				throw new Error(e);
 			}
 		}
