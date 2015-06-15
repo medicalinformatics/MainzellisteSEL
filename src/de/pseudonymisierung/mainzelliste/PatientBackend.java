@@ -50,6 +50,11 @@ public enum PatientBackend {
 	private Logger logger = Logger.getLogger(this.getClass());
 
 	/**
+	 * Session to be used when in debug mode.
+	 */
+	private Session debugSession = null;
+
+	/**
 	 * PID request. Looks for a patient with the specified data in the database.
 	 * If a match is found, the ID of the matching patient is returned. If no
 	 * match or possible match is found, a new patient with the specified data
@@ -81,7 +86,7 @@ public enum PatientBackend {
 			// If no token found and debug mode is on, create token, otherwise fail
 			if (Config.instance.debugIsOn())
 			{
-				Session s = Servers.instance.newSession();
+				Session s = getDebugSession();
 				try {
 					s.setURI(new URI("debug"));
 				} catch (URISyntaxException e) {
@@ -327,4 +332,15 @@ public enum PatientBackend {
 		Persistor.instance.updatePatient(pToEdit);
 	}
 
+	/**
+	 * Get a session for use in debug mode.
+	 * @return The debug session.
+	 */
+	private Session getDebugSession() {
+		if (debugSession == null
+				|| Servers.instance.getSession(debugSession.getId()) == null) {
+			debugSession = Servers.instance.newSession();
+		}
+		return debugSession;
+	}
 }
