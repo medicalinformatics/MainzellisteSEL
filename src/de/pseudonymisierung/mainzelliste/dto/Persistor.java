@@ -51,6 +51,7 @@ import de.pseudonymisierung.mainzelliste.IDGeneratorMemory;
 import de.pseudonymisierung.mainzelliste.IDRequest;
 import de.pseudonymisierung.mainzelliste.Patient;
 import de.pseudonymisierung.mainzelliste.exceptions.InternalErrorException;
+import de.pseudonymisierung.mainzelliste.matcher.MatchResult.MatchResultType;
 
 /**
  * Handles reading and writing from and to the database. Implemented as a
@@ -305,6 +306,58 @@ public enum Persistor {
 	}
 
 	/**
+	 * Get patient with duplicates. Returns a list of the patient with the given ID and all patients that are marked as
+	 * duplicates of the given patient or of which the given patient is a duplicate. This includes transitive relations
+	 * (duplicate of duplicate).
+	 * 
+	 * @param id
+	 *            An ID of the patient to get.
+	 * @return A list containing the requested patient and its duplicates, null if no such patient exists.
+	 */
+	public synchronized List<Patient> getPatientWithDuplicates(ID id) {
+		Patient p = getAttachedPatient(id);
+		if (p == null)
+			return null;
+		Patient root = p.getOriginal();
+		LinkedList<Patient> allInstances = new LinkedList<Patient>();
+		LinkedList<Patient> queue = new LinkedList<Patient>();
+		queue.add(root);
+		TypedQuery<Patient> duplicateQuery = em.createQuery("SELECT p FROM Patient p JOIN p.original o WHERE o=:original", Patient.class);
+		while (!queue.isEmpty()) {
+			Patient thisPatient = queue.remove();
+			allInstances.add(thisPatient);
+			duplicateQuery.setParameter("original", thisPatient);
+			queue.addAll(duplicateQuery.getResultList());
+		}
+		
+		return allInstances;
+	}
+	
+	/**
+	 * Get possible duplicates of a patient. 
+	 * @param id ID of the patient for which to find possible duplicates.
+	 * @return The list of possible duplicates.
+	 */
+	public List<Patient> getPossibleDuplicates(ID id) {
+		Patient p = getAttachedPatient(id);
+		if (p == null)
+			return new LinkedList<Patient>();
+		TypedQuery<Patient> q = em.createQuery("SELECT pa FROM IDRequest r JOIN r.assignedPatient pa JOIN r.matchResult m JOIN m.bestMatchedPatient pb "
+				+ "WHERE m.type=:matchResultType AND pa.isTentative=true AND pb=:thisPatient", Patient.class);
+		q.setParameter("matchResultType", MatchResultType.POSSIBLE_MATCH);
+		q.setParameter("thisPatient", p);
+		LinkedList<Patient> result = new LinkedList<Patient>(q.getResultList());
+		if (p.isTentative()) {
+			q = em.createQuery("SELECT pb FROM IDRequest r JOIN r.assignedPatient pa JOIN r.matchResult m JOIN m.bestMatchedPatient pb "
+					+ "WHERE m.type=:matchResultType AND pa.isTentative=true AND pa=:thisPatient", Patient.class);
+			q.setParameter("matchResultType", MatchResultType.POSSIBLE_MATCH);
+			q.setParameter("thisPatient", p);
+			result.addAll(q.getResultList());
+		}
+		return result;
+	}
+	
+	/**
 	 * Performs database updates after JPA initialization.
 	 * @param fromVersion The version from which to update.
 	 */
@@ -360,6 +413,31 @@ public enum Persistor {
 		this.setSchemaVersion(Config.instance.getVersion(), em);
 		em.getTransaction().commit();
 		em.close();
+	}
+	
+	/**
+	 * Get patient, attached to this.em.
+	 * 
+	 * @param id ID of the patient to get.
+	 */
+	private synchronized Patient getAttachedPatient(ID id) {
+		TypedQuery<Patient> q = em.createQuery("SELECT p FROM Patient p JOIN p.ids id WHERE id.idString = :idString AND id.type = :idType", Patient.class);
+		q.setParameter("idString", id.getIdString());
+		q.setParameter("idType", id.getType());
+		List<Patient> result = q.getResultList();
+		if (result.size() > 1) {
+			em.close();
+			logger.fatal("Found more than one patient with ID: " + id.toString());
+			throw new InternalErrorException("Found more than one patient with ID: " + id.toString());
+		} 
+		
+		if (result.size() == 0) {
+			em.close();
+			return null;
+		}
+
+		Patient p = result.get(0);
+		return p;
 	}
 
 	/**
