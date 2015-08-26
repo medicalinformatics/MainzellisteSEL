@@ -422,8 +422,8 @@ public enum Persistor {
 	private void initPropertiesTable() {
 		Connection conn;
 		Properties connectionProps = new Properties();
-		connectionProps.put("user",  Config.instance.getProperty("db.username"));
-		connectionProps.put("password",  Config.instance.getProperty("db.password"));
+		if (Config.instance.getProperty("db.username") != null) connectionProps.put("user",  Config.instance.getProperty("db.username"));
+		if (Config.instance.getProperty("db.password") != null) connectionProps.put("password",  Config.instance.getProperty("db.password"));
 		String url = Config.instance.getProperty("db.url");
 		try {
 			Class.forName(Config.instance.getProperty("db.driver"));
