@@ -20,14 +20,13 @@ config/META-INF/persistence.xml -text svneol=unset#text/plain
 config/log4j.properties -text svneol=unset#text/plain
 config/mainzelliste.conf.default -text
 config/mainzelliste.conf.test -text
-lib/js/jquery/jquery-1.7.2.js -text svneol=unset#text/plain
-lib/js/validation.js -text svneol=unset#text/plain
 licenses/agpl-3.0.txt -text svneol=unset#text/plain
 licenses/apache-2.0.txt -text svneol=unset#text/plain
 licenses/bsd-serp.txt -text svneol=unset#text/plain
 /pom.xml -text
 resources/MessageBundle_de.properties -text svneol=unset#text/plain
 resources/MessageBundle_en.properties -text svneol=unset#text/plain
+resources/version.properties -text svneol=unset#text/plain
 src/de/pseudonymisierung/mainzelliste/CompoundField.java -text svneol=unset#text/plain
 src/de/pseudonymisierung/mainzelliste/Config.java -text svneol=unset#text/plain
 src/de/pseudonymisierung/mainzelliste/CorsResponseFilter.java -text svneol=unset#text/plain
