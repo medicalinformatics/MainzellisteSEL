@@ -1,5 +1,13 @@
 package de.pseudonymisierung.mainzelliste.test;
 
+import javax.persistence.Temporal;
+import javax.ws.rs.core.Response;
+
+import org.junit.Test;
+
+import static org.junit.Assert.*;
+
+import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.test.framework.JerseyTest;
 import com.sun.jersey.test.framework.WebAppDescriptor;
@@ -16,9 +24,10 @@ public class RootTest extends JerseyTest{
 		.build());
 	}
 	
+	@Test
 	public void testRootResource() {
 		WebResource webResource = resource();
-		String responseMsg = webResource.path("/").get(String.class);
-		System.out.println(responseMsg);
+		ClientResponse response = webResource.path("/").get(ClientResponse.class);
+		assertEquals("Wrong status code", 200, response.getStatus());
 	}
 }
