@@ -248,7 +248,7 @@ callback.allowedFormat = http[s]?://.*
 # Session timeout
 # A session will be deleted if not accessed for this amount of time, specified in minutes
 # Default value if not specified: 10
-sessionTimeout = 30
+sessionTimeout = 1
 
 # Contact information
 # Contact information for users, which will be displayed in the footer of HTML forms.
