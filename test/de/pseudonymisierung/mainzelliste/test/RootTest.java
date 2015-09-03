@@ -11,7 +11,7 @@ import com.sun.jersey.test.framework.JerseyTest;
 public class RootTest extends JerseyTest{
 
 	public RootTest() {
-		super(TestUtilities.getAppDescriptor());
+		super(TestUtilities.setUpTest());
 	}
 	
 	@Test

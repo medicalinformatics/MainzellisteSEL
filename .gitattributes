@@ -90,6 +90,9 @@ src/de/pseudonymisierung/mainzelliste/webservice/SessionsResource.java -text svn
 src/de/pseudonymisierung/mainzelliste/webservice/Token.java -text svneol=unset#text/plain
 src/de/pseudonymisierung/mainzelliste/webservice/TokenMessageBodyWriter.java -text svneol=unset#text/plain
 src/de/pseudonymisierung/mainzelliste/webservice/TokenParam.java -text svneol=unset#text/plain
+test/de/pseudonymisierung/mainzelliste/test/AddPatientTest.java -text
+test/de/pseudonymisierung/mainzelliste/test/EditPatientTest.java -text
+test/de/pseudonymisierung/mainzelliste/test/ReadPatientTest.java -text
 test/de/pseudonymisierung/mainzelliste/test/RootTest.java -text svneol=unset#text/plain
-test/de/pseudonymisierung/mainzelliste/test/SessionsTest.java -text svneol=unset#text/plain
+test/de/pseudonymisierung/mainzelliste/test/SessionsTests.java -text svneol=unset#text/plain
 test/de/pseudonymisierung/mainzelliste/test/TestUtilities.java -text
