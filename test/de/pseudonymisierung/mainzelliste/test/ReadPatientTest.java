@@ -8,6 +8,7 @@ import org.junit.Test;
 
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
+import com.sun.jersey.api.representation.Form;
 import com.sun.jersey.test.framework.JerseyTest;
 
 public class ReadPatientTest extends JerseyTest {
@@ -27,7 +28,7 @@ public class ReadPatientTest extends JerseyTest {
 		// Generate tokenData
 		JSONArray resultFields = TestUtilities.buildJSONArray("vorname");
 		JSONArray resultIds = TestUtilities.buildJSONArray("pid");
-		JSONObject searchId = TestUtilities.buildJSONObject("idType", "intid", "idString", "1");
+		JSONObject searchId = TestUtilities.buildJSONObject("idType", "psn", "idString", "1");
 		JSONObject tokenData = TestUtilities.createTokenDataReadPatient(resultFields, resultIds, searchId);
 		
 		// TODO: Anlegen mit falscher IP-Adresse → Erwarte 401 Unauthorized
@@ -49,11 +50,11 @@ public class ReadPatientTest extends JerseyTest {
 		
 		// TODO: Anlegen mit falschem Format → Erwarte 400 Bad Request
 		
-		// TODO: User mit inId 1 in der datenbank anlegen 
+		// TODO: User mit psn 1 in der datenbank anlegen 
 		// Create Token for readPatient
 		response = TestUtilities.getBuilderTokenPost(resource, tokenRequestPath, TestUtilities.getApikey())
 				.post(ClientResponse.class, tokenData);
-		assertEquals("Creating token not return 201 status.", 201, response.getStatus());
+		assertEquals("Creating token not return 201 status. Message from server: " + response.getEntity(String.class), 201, response.getStatus());
 		// TODO: Rückgabe des Tokens Testen
 		
 		// Create Token with an unknown idType
@@ -75,7 +76,7 @@ public class ReadPatientTest extends JerseyTest {
 		assertEquals("Creating token with unknown resultField not return 400 status.", 400, response.getStatus());
 
 		// Create Token with not existing id/pseudonym
-		tokenData = TestUtilities.createTokenDataReadPatient(resultFields, resultIds, TestUtilities.buildJSONObject("idType", "intid", "idString", "-1"));
+		tokenData = TestUtilities.createTokenDataReadPatient(resultFields, resultIds, TestUtilities.buildJSONObject("idType", "psn", "idString", "-1"));
 		response = TestUtilities.getBuilderTokenPost(resource, tokenRequestPath, TestUtilities.getApikey())
 				.post(ClientResponse.class, tokenData);
 		assertEquals("Creating token with unknown id/pseudonym not return 401 status.", 401, response.getStatus());
@@ -83,7 +84,22 @@ public class ReadPatientTest extends JerseyTest {
 	
 	@Test
 	public void testReadPatient() {
-//		ClientConfig clientConfig = new DefaultClientConfig();
+		String sessionId = TestUtilities.createSession(resource);
+		String tokenPath = "sessions/" + sessionId + "/tokens";
+		
+		String patientsPath = "patients";
+
+		// Call without token
+		response = TestUtilities.getBuilderPatient(resource.path(patientsPath), null, null)
+				.get(ClientResponse.class);
+		assertEquals("Read patients without token did not return 401 status. Message from server: " + response.getEntity(String.class), 401, response.getStatus());
+
+		// Call with invalid (non-existing) token
+		response = TestUtilities.getBuilderPatient(resource.path(patientsPath), "invalidToken", null)
+				.get(ClientResponse.class);
+		assertEquals("Read patients with non-existing token did not return 401 status. Message from server: " + response.getEntity(String.class), 401, response.getStatus());
+		
+		//		ClientConfig clientConfig = new DefaultClientConfig();
 //		clientConfig.getFeatures().put(JSONConfiguration.FEATURE_POJO_MAPPING,
 //				Boolean.TRUE);
 //		Client client = Client.create(clientConfig);
@@ -93,8 +109,8 @@ public class ReadPatientTest extends JerseyTest {
 //		Map<String, Object> tokenData = new HashMap<String, Object>();
 //		JSONArray idTypes = new JSONArray();
 //		idTypes.put("pid");
-//		idTypes.put("intid");
-//		// tokenData.put("idtypes", Arrays.asList("pid", "intid"));
+//		idTypes.put("psn");
+//		// tokenData.put("idtypes", Arrays.asList("pid", "psn"));
 //		tokenData.put("idtypes", idTypes);
 //		try {
 //			Token t = rSession.getToken("addPatient", tokenData);
