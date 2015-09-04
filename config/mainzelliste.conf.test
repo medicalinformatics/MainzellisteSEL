@@ -15,7 +15,7 @@
 # ("Konfigurationshandbuch").
 
 # debug mode: If set to true, token handling is disabled (i.e. no tokens are necessary).
-debug = true
+debug = false
 
 # Name of this mainzelliste distribution instance.
 dist = Mainzelliste
