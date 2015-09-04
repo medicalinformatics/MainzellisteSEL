@@ -93,12 +93,12 @@ public enum PatientBackend {
 				tokenId = t.getId();
 			} else {
 				logger.error("No token with id " + tokenId + " found");
-				throw new InvalidTokenException("Please supply a valid 'addPatient' token.");
+				throw new InvalidTokenException("Please supply a valid 'addPatient' token.", Status.UNAUTHORIZED);
 			}
 		} else { // correct token type?
 			if (!(tt instanceof AddPatientToken)) {
 				logger.error("Token " + tt.getId() + " is not of type 'addPatient' but '" + tt.getType() + "'");
-				throw new InvalidTokenException("Please supply a valid 'addPatient' token.");
+				throw new InvalidTokenException("Please supply a valid 'addPatient' token.", Status.UNAUTHORIZED);
 			} else {
 				t = (AddPatientToken) tt;
 			}
