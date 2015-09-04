@@ -88,16 +88,21 @@ public class AddPatientTest extends JerseyTest {
 		String sessionId = TestUtilities.createSession(resource);
 		String tokenPath = "sessions/" + sessionId + "/tokens";
 		
-		String patientsPath = "patients";
+		String patientsPath = "patients/";
 		
 		// Generate Formula Data
 		Form formData = TestUtilities.createForm("Peter", "Bauer", "Hans", "01", "01", "2000", "Mainz", "55120");
 		
 		// Call without token
-		response = TestUtilities.getBuilderPatient(resource.path(patientsPath), null, TestUtilities.getApikey())
+		response = TestUtilities.getBuilderPatient(resource.path(patientsPath), null, null)
 				.post(ClientResponse.class, formData);
 		assertEquals("Add Patient without token did not return 401 status. Message from server: " + response.getEntity(String.class), 401, response.getStatus());
-		
+
+		// Call with invalid (non-existing) token
+		response = TestUtilities.getBuilderPatient(resource.path(patientsPath), "invalid", null)
+				.post(ClientResponse.class, formData);
+		assertEquals("Add Patient with non-existing token did not return 401 status. Message from server: " + response.getEntity(String.class), 401, response.getStatus());
+
 		// TODO: ungültiges Token 401 (erneut verwenden)
 		// TODO: falsches Token 401 (von readPatien z.B.)
 
