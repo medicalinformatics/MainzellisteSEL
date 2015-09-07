@@ -8,7 +8,6 @@ import org.junit.Test;
 
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
-import com.sun.jersey.api.representation.Form;
 import com.sun.jersey.test.framework.JerseyTest;
 
 public class ReadPatientTest extends JerseyTest {
@@ -31,6 +30,9 @@ public class ReadPatientTest extends JerseyTest {
 		JSONObject searchId = TestUtilities.buildJSONObject("idType", "psn", "idString", "1");
 		JSONObject tokenData = TestUtilities.createTokenDataReadPatient(resultFields, resultIds, searchId);
 		
+		// Add Dummy Patient for Testing
+		TestUtilities.addDummyPatient(resource);
+		
 		// TODO: Anlegen mit falscher IP-Adresse → Erwarte 401 Unauthorized
 		
 		// Call without mainzellisteApiKey
@@ -48,15 +50,6 @@ public class ReadPatientTest extends JerseyTest {
 				.post(ClientResponse.class, tokenData);
 		assertEquals("Creating token with non existing session did not return 404 status.", 404, response.getStatus());
 		
-		// TODO: Anlegen mit falschem Format → Erwarte 400 Bad Request
-		
-		// TODO: User mit psn 1 in der datenbank anlegen 
-		// Create Token for readPatient
-		response = TestUtilities.getBuilderTokenPost(resource, tokenRequestPath, TestUtilities.getApikey())
-				.post(ClientResponse.class, tokenData);
-		assertEquals("Creating token not return 201 status. Message from server: " + response.getEntity(String.class), 201, response.getStatus());
-		// TODO: Rückgabe des Tokens Testen
-		
 		// Create Token with an unknown idType
 		tokenData = TestUtilities.createTokenDataReadPatient(resultFields, resultIds, TestUtilities.buildJSONObject("idType", "unknownid", "idString", "1"));
 		response = TestUtilities.getBuilderTokenPost(resource, tokenRequestPath, TestUtilities.getApikey())
@@ -64,28 +57,53 @@ public class ReadPatientTest extends JerseyTest {
 		assertEquals("Creating token with unknown idType not return 400 status.", 400, response.getStatus());
 		
 		// Create Token with an unknown resultField
-		tokenData = TestUtilities.createTokenDataReadPatient(TestUtilities.buildJSONArray("unbekannt"), resultIds, searchId);
+		tokenData = TestUtilities.createTokenDataReadPatient(TestUtilities.buildJSONArray("unknownresultfield"), resultIds, searchId);
 		response = TestUtilities.getBuilderTokenPost(resource, tokenRequestPath, TestUtilities.getApikey())
 				.post(ClientResponse.class, tokenData);
 		assertEquals("Creating token with unknown resultField not return 400 status.", 400, response.getStatus());
 
 		// Create Token with an unknown resultId
-		tokenData = TestUtilities.createTokenDataReadPatient(resultFields, TestUtilities.buildJSONArray("unknownresultid"), searchId);
-		response = TestUtilities.getBuilderTokenPost(resource, tokenRequestPath, TestUtilities.getApikey())
-				.post(ClientResponse.class, tokenData);
-		assertEquals("Creating token with unknown resultField not return 400 status.", 400, response.getStatus());
+//		tokenData = TestUtilities.createTokenDataReadPatient(resultFields, TestUtilities.buildJSONArray("unknownresultid"), searchId);
+//		response = TestUtilities.getBuilderTokenPost(resource, tokenRequestPath, TestUtilities.getApikey())
+//				.post(ClientResponse.class, tokenData);
+//		assertEquals("Creating token with unknown resultId not return 400 status.", 400, response.getStatus());
 
 		// Create Token with not existing id/pseudonym
 		tokenData = TestUtilities.createTokenDataReadPatient(resultFields, resultIds, TestUtilities.buildJSONObject("idType", "psn", "idString", "-1"));
 		response = TestUtilities.getBuilderTokenPost(resource, tokenRequestPath, TestUtilities.getApikey())
 				.post(ClientResponse.class, tokenData);
-		assertEquals("Creating token with unknown id/pseudonym not return 401 status.", 401, response.getStatus());
+		assertEquals("Creating token with unknown id/pseudonym not return 400 status.", 400, response.getStatus());
+		
+		// Create Token for readPatient
+		tokenData = TestUtilities.createTokenDataReadPatient(resultFields, resultIds, searchId);
+		response = TestUtilities.getBuilderTokenPost(resource, tokenRequestPath, TestUtilities.getApikey())
+				.post(ClientResponse.class, tokenData);
+		JSONObject jsonObject = response.getEntity(JSONObject.class);
+		assertEquals("Creating token not return 201 status. Message from server: " + jsonObject, 201, response.getStatus());
+		
+		// Extract tokenId
+		String tokenId = TestUtilities.getTokenIdOfJSON(jsonObject);
+		
+		// Get Request to prove the tokenId for availability
+		response = TestUtilities.getBuilderTokenPost(resource, tokenRequestPath + "/" + tokenId, TestUtilities.getApikey())
+				.get(ClientResponse.class);
+		assertEquals("Get Token did not return 200 status. Message from server: " + response.getEntity(String.class), 200, response.getStatus());
+		
+		// Delete Token
+		response = TestUtilities.getBuilderTokenPost(resource, tokenRequestPath + "/" + tokenId, TestUtilities.getApikey())
+				.delete(ClientResponse.class);
+		assertEquals("Delete Token did not return 204 status.", 204, response.getStatus());
+		
+		// Prove if the token is deleted
+		response = TestUtilities.getBuilderTokenPost(resource, tokenRequestPath + "/" + tokenId, TestUtilities.getApikey())
+				.get(ClientResponse.class);
+		assertEquals("Get Token did not return 404 status. Message from server: " + response.getEntity(String.class), 404, response.getStatus());
 	}
 	
 	@Test
 	public void testReadPatient() {
-		String sessionId = TestUtilities.createSession(resource);
-		String tokenPath = "sessions/" + sessionId + "/tokens";
+//		String sessionId = TestUtilities.createSession(resource);
+//		String tokenPath = "sessions/" + sessionId + "/tokens";
 		
 		String patientsPath = "patients";
 

@@ -93,28 +93,31 @@ public class TestUtilities {
 	// --- CREATE METHODS ---
 	
 	// - Create TokenId Methods -
+	// If a JSONObject parsing error occurs the reason could be that the ID Type is unknown!
 	public static String createTokenIdAddPatient(WebResource resource, String tokenRequestPath, String... idTypes) {
-		JSONObject tokenData = createTokenDataAddPatient(buildJSONArray("intid"), null, null, null);
-		ClientResponse response = getBuilderTokenPost(resource, tokenRequestPath, apiKey)
-				.post(ClientResponse.class, tokenData);
-		
-		return getTokenIdOfJSON(response.getEntity(JSONObject.class));
+		JSONObject tokenData = createTokenDataAddPatient(buildJSONArray(idTypes), null, null, null);
+		return createTokenId(resource, tokenRequestPath, tokenData);
 	}
 
 	public static String createTokenIdReadPatient(WebResource resource, String tokenRequestPath, JSONArray resultFields, JSONArray resultIds, JSONObject... searchIds) {
 		JSONObject tokenData = createTokenDataReadPatient(resultFields, resultIds, searchIds);
-		ClientResponse response = getBuilderTokenPost(resource, tokenRequestPath, apiKey)
-				.post(ClientResponse.class, tokenData);
-		
-		return getTokenIdOfJSON(response.getEntity(JSONObject.class));
+		return createTokenId(resource, tokenRequestPath, tokenData);
 	}
 
 	public static String createTokenIdEditPatient(WebResource resource, String tokenRequestPath, JSONObject patientId) {
 		JSONObject tokenData = createTokenDataEditPatient(patientId);
-		ClientResponse response = TestUtilities.getBuilderTokenPost(resource, tokenRequestPath, apiKey)
+		return createTokenId(resource, tokenRequestPath, tokenData);
+	}
+	
+	private static String createTokenId(WebResource resource, String tokenRequestPath, JSONObject tokenData) {
+		ClientResponse response = getBuilderTokenPost(resource, tokenRequestPath, apiKey)
 				.post(ClientResponse.class, tokenData);
 		
-		return TestUtilities.getTokenIdOfJSON(response.getEntity(JSONObject.class));
+		if (response.getStatus() == 201) {		
+			return getTokenIdOfJSON(response.getEntity(JSONObject.class));
+		} else {
+			throw new NullPointerException();
+		}
 	}
 	
 	// - Create TokenData Methods -
@@ -243,6 +246,11 @@ public class TestUtilities {
 		return form;
 	}
 	
+	/**
+	 * Create a session and return its Id.
+	 * @param resource
+	 * @return sessionId
+	 */
 	public static String createSession(WebResource resource) {
 		ClientResponse response = getBuilderSession(resource.path(sessionPath), apiKey).post(ClientResponse.class);
 		
@@ -260,6 +268,30 @@ public class TestUtilities {
 		}
 	}
 	
+	
+	// --- DATABASE METHODS ---
+	
+	/**
+	 * Add a dummy Patient to the database.
+	 * @param resource
+	 * @return is true if the dummy Patient could be added.
+	 */
+	public static void addDummyPatient(WebResource resource) {
+		String sessionId = createSession(resource);
+		String tokenRequestPath = "sessions/" + sessionId + "/tokens";
+		String tokenId = createTokenIdAddPatient(resource, tokenRequestPath, "psn");
+		
+		Form formData = TestUtilities.createForm("DummyFirstName", "DummyLastName", "DummySecondName", "01", "01", "2000", "Mainz", "55120");
+		ClientResponse response = TestUtilities.getBuilderPatient(resource.path("patients/"), tokenId, TestUtilities.getApikey())
+				.post(ClientResponse.class, formData);
+		
+		if (response.getStatus() == 201) {
+			System.out.println("Add Dummy Patient to Database");
+			return;
+		}
+		
+		System.err.println("Could not add Dummy Patient to Database");
+	}
 	
 	// --- JSON METHODS ---
 	
@@ -298,7 +330,7 @@ public class TestUtilities {
 			}
 			return jsonObject;
 		} else {
-			return new JSONObject();
+			return null;
 		}
 	}	
 	

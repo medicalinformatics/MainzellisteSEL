@@ -27,10 +27,12 @@ public class EditPatientTest extends JerseyTest {
 		// Generate tokenData
 		JSONObject patientId = TestUtilities.buildJSONObject("idType", "psn", "idString", "1");
 		JSONObject tokenData = TestUtilities.createTokenDataEditPatient(patientId);
+
+		// Add Dummy Patient for Testing
+		TestUtilities.addDummyPatient(resource);
 		
 		// TODO: Anlegen mit falscher IP-Adresse → Erwarte 401 Unauthorized
 
-		// TODO: In Datenbank ein Patienten mit psn 1 erstellen
 		// Call without mainzellisteApiKey
 		response = TestUtilities.getBuilderTokenPost(resource, tokenRequestPath, null)
 				.post(ClientResponse.class, tokenData);
@@ -46,26 +48,42 @@ public class EditPatientTest extends JerseyTest {
 				.post(ClientResponse.class, tokenData);
 		assertEquals("Creating token with non existing session did not return 404 status.", 404, response.getStatus());
 		
-		// TODO: Anlegen mit falschem Format → Erwarte 400 Bad Request
-		
-		// TODO: User mit inId 1 in der datenbank anlegen
-		// Create Token for editPatient
-		response = TestUtilities.getBuilderTokenPost(resource, tokenRequestPath, TestUtilities.getApikey())
-				.post(ClientResponse.class, tokenData);
-		assertEquals("Creating token not return 201 status.", 201, response.getStatus());
-		// TODO: Rückgabe des Tokens Testen
-		
 		// Create Token with not existing id/pseudonym
 		tokenData = TestUtilities.createTokenDataEditPatient(TestUtilities.buildJSONObject("idType", "psn", "idString", "-1"));
 		response = TestUtilities.getBuilderTokenPost(resource, tokenRequestPath, TestUtilities.getApikey())
 				.post(ClientResponse.class, tokenData);
 		assertEquals("Creating token with unknown id/pseudonym not return 400 status.", 400, response.getStatus());
+		
+		// Create Token for editPatient
+		tokenData = TestUtilities.createTokenDataEditPatient(patientId);
+		response = TestUtilities.getBuilderTokenPost(resource, tokenRequestPath, TestUtilities.getApikey())
+				.post(ClientResponse.class, tokenData);
+		JSONObject jsonObject = response.getEntity(JSONObject.class);
+		assertEquals("Creating token not return 201 status.", 201, response.getStatus());
+		
+		// Extract tokenId
+		String tokenId = TestUtilities.getTokenIdOfJSON(jsonObject);
+		
+		// Get Request to prove the tokenId for availability
+		response = TestUtilities.getBuilderTokenPost(resource, tokenRequestPath + "/" + tokenId, TestUtilities.getApikey())
+				.get(ClientResponse.class);
+		assertEquals("Get Token did not return 200 status. Message from server: " + response.getEntity(String.class), 200, response.getStatus());
+		
+		// Delete Token
+		response = TestUtilities.getBuilderTokenPost(resource, tokenRequestPath + "/" + tokenId, TestUtilities.getApikey())
+				.delete(ClientResponse.class);
+		assertEquals("Delete Token did not return 204 status.", 204, response.getStatus());
+		
+		// Prove if the token is deleted
+		response = TestUtilities.getBuilderTokenPost(resource, tokenRequestPath + "/" + tokenId, TestUtilities.getApikey())
+				.get(ClientResponse.class);
+		assertEquals("Get Token did not return 404 status. Message from server: " + response.getEntity(String.class), 404, response.getStatus());
 	}
 	
 	@Test
 	public void testEditPatient() {
-		String sessionId = TestUtilities.createSession(resource);
-		String tokenPath = "sessions/" + sessionId + "/tokens";
+//		String sessionId = TestUtilities.createSession(resource);
+//		String tokenPath = "sessions/" + sessionId + "/tokens";
 		
 		String patientsPath = "patients";
 		
@@ -78,7 +96,7 @@ public class EditPatientTest extends JerseyTest {
 		assertEquals("Edit patient without token did not return 404 status. Message from server: " + response.getEntity(String.class), 404, response.getStatus());
 
 		// Call with invalid (non-existing) token
-		response = TestUtilities.getBuilderPatient(resource.path(patientsPath).path("tokenId/invalidToken"), null, TestUtilities.getApikey())
+		response = TestUtilities.getBuilderPatient(resource.path(patientsPath).path("tokenId/invalid"), null, TestUtilities.getApikey())
 				.put(ClientResponse.class, formData);
 		assertEquals("Edit patient with non-existing token did not return 401 status. Message from server: " + response.getEntity(String.class), 401, response.getStatus());
 	}
