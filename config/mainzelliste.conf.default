@@ -249,6 +249,9 @@ servers.0.permissions = createSession;showSessionIds;deleteAllPatients;createTok
 # Allow combination of both
 # servers.0.allowedRemoteAdresses = 127.0.0.1;0:0:0:0:0:0:0:1;192.168.56.0/24
 
+# Allowed origins for cross origin resource sharing (CORS), multiple values separated by ";"
+
+servers.allowedOrigins = https://mdat-server.example.org 
 
 # Allowed Format of callback
 callback.allowedFormat = https://.*
