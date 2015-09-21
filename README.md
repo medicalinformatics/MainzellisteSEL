@@ -13,6 +13,21 @@ The following article describes the underlying concepts of Mainzelliste and the 
 
 ## Release notes
 
+###1.5.0
+
+####New features:
+
+- The language of user forms can be set by providing the language code as URL parameter `language` (currently `de` and `en` are supported).
+- Date validation rejects dates in the future.
+
+####Bug fixes:
+
+- The host name provided by the `Origin` header was checked against the configured hosts even if it was the same host under which the Mainzelliste instance was running on, i.e. treating a same-origin request like a cross-origin request (reported by Benjamin Gathmann). 
+- When creating an `addPatient` token, ID types were not checked when using data item `idTypes` (API version 2.x syntax) with declared API version missing or < 2.0.
+
+####Other changes:
+
+- Changed data type annotation for Patient#fieldsString and Patient#inputFieldsString to @Lob for portable mapping of unbounded character strings to appropriate database types.
 ###1.4.2
 
 Fixes an encoding error in German language properties file. This version can be skipped by users who do not use the HTML interface or use their own JSP files.
