@@ -163,7 +163,7 @@ public class AddPatientTest extends JerseyTest {
 		response = TestUtilities.getBuilderPatient(resource.path(patientsPath), tokenId, TestUtilities.getApikey())
 				.post(ClientResponse.class, formData);
 		assertEquals("Add Patient with birth date in the future did not return 400 status. Message from server: " + response.getEntity(String.class), 400, response.getStatus());
-		
+
 		// TODO: Feld leer 201
 		formData = TestUtilities.createForm("Peter", "Bauer", "Hans", "01", "01", "2000", "Mainz", "");
 		response = TestUtilities.getBuilderPatient(resource.path(patientsPath), tokenId, TestUtilities.getApikey())
@@ -171,12 +171,11 @@ public class AddPatientTest extends JerseyTest {
 		assertEquals("Adding Patient without a not required field(plz) did not return 201 status. Message from server: " + response.getEntity(String.class), 201, response.getStatus());
 
 		// TODO: prüfen ob sureness by default false ist
-		// TODO: Token muss nochmal angefordert werden
-		formData = TestUtilities.createForm("Peter", "BRauer", "Hans", "01", "01", "2000", "Mainz", null);
+		tokenId = TestUtilities.createTokenIdAddPatient(resource, tokenPath, "psn");		
+		formData = TestUtilities.createForm("Peter", "Brauer", "Hanz", "01", "01", "2000", "Mainz", "");
 		response = TestUtilities.getBuilderPatient(resource.path(patientsPath), tokenId, TestUtilities.getApikey())
 				.post(ClientResponse.class, formData);
 		assertEquals("Adding Patient with a little change did not return 409 status. Message from server: " + response.getEntity(String.class), 409, response.getStatus());
-
 		
 		// TODO: Felder durch Token vordefinieren 201
 		// TODO: bei 400 und 409 token wiederverwenden da noch gültig
