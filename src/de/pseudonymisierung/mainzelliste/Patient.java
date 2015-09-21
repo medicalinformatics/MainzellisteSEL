@@ -37,11 +37,13 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Lob;
 import javax.persistence.OneToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.PostLoad;
 import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlRootElement;
+
 import org.apache.log4j.Logger;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jettison.json.JSONException;
@@ -141,7 +143,7 @@ public class Patient {
 	 * 
 	 * @see #fields
 	 */
-	@Column(columnDefinition = "text", length = -1)
+	@Lob
 	@JsonIgnore
 	private String fieldsString;
 
@@ -168,7 +170,7 @@ public class Patient {
 	 * 
 	 * @see #inputFields
 	 */
-	@Column(length = 4096)
+	@Lob
 	@JsonIgnore
 	private String inputFieldsString;
 
