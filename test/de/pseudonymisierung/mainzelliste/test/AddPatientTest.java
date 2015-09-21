@@ -134,7 +134,7 @@ public class AddPatientTest extends JerseyTest {
 		// Add Patient without a field with a loop one by one
 		String[] keyArray = {"vorname", "nachname", "geburtsname", "geburtstag", "geburtsmonat", "geburtsjahr", "ort", "plz"};
 		for (int i = 0; i < keyArray.length; i++) {
-			String[] valueArray = {"Peter", "Bauer", "Hans", "1", "1", "2000", "Mainz", "55120"};
+			String[] valueArray = {"Peter", "Bauer", "Hans", "01", "01", "2000", "Mainz", "55120"};
 			valueArray[i] = null;
 			formData = TestUtilities.createForm(valueArray[0], valueArray[1], valueArray[2], valueArray[3], valueArray[4], valueArray[5], valueArray[6], valueArray[7]);
 			response = TestUtilities.getBuilderPatient(resource.path(patientsPath), tokenId, TestUtilities.getApikey())
@@ -159,19 +159,20 @@ public class AddPatientTest extends JerseyTest {
 		assertEquals("Add Patient with wrong birth date did not return 400 status. Message from server: " + response.getEntity(String.class), 400, response.getStatus());
 		
 		// Add Patient with birth date in the future
-		formData = TestUtilities.createForm("Peter", "Bauer", "Hans", "1", "1", "2050", "Mainz", "55120");
+		formData = TestUtilities.createForm("Peter", "Bauer", "Hans", "01", "01", "2050", "Mainz", "55120");
 		response = TestUtilities.getBuilderPatient(resource.path(patientsPath), tokenId, TestUtilities.getApikey())
 				.post(ClientResponse.class, formData);
 		assertEquals("Add Patient with birth date in the future did not return 400 status. Message from server: " + response.getEntity(String.class), 400, response.getStatus());
 		
 		// TODO: Feld leer 201
-		formData = TestUtilities.createForm("Peter", "Bauer", "Hans", "1", "1", "2000", "Mainz", null);
+		formData = TestUtilities.createForm("Peter", "Bauer", "Hans", "01", "01", "2000", "Mainz", "");
 		response = TestUtilities.getBuilderPatient(resource.path(patientsPath), tokenId, TestUtilities.getApikey())
 				.post(ClientResponse.class, formData);
 		assertEquals("Adding Patient without a not required field(plz) did not return 201 status. Message from server: " + response.getEntity(String.class), 201, response.getStatus());
 
 		// TODO: prüfen ob sureness by default false ist
-		formData = TestUtilities.createForm("Peter", "BRauer", "Hans", "1", "1", "2000", "Mainz", null);
+		// TODO: Token muss nochmal angefordert werden
+		formData = TestUtilities.createForm("Peter", "BRauer", "Hans", "01", "01", "2000", "Mainz", null);
 		response = TestUtilities.getBuilderPatient(resource.path(patientsPath), tokenId, TestUtilities.getApikey())
 				.post(ClientResponse.class, formData);
 		assertEquals("Adding Patient with a little change did not return 409 status. Message from server: " + response.getEntity(String.class), 409, response.getStatus());
