@@ -24,6 +24,7 @@ The following article describes the underlying concepts of Mainzelliste and the 
 
 - The host name provided by the `Origin` header was checked against the configured hosts even if it was the same host under which the Mainzelliste instance was running on, i.e. treating a same-origin request like a cross-origin request (reported by Benjamin Gathmann). 
 - When creating an `addPatient` token, ID types were not checked when using data item `idTypes` (API version 2.x syntax) with declared API version missing or < 2.0.
+- Requests with an invalid token (i.e. not existing or wrong type) lead to status code 400 (Bad Request) instead of 401 (Unauthorized). 
 
 ####Other changes:
 
