@@ -45,6 +45,7 @@ import java.util.regex.Pattern;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletRequest;
+import javax.servlet.http.HttpServletRequest;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -362,8 +363,13 @@ public enum Config {
 	 * @param req The servlet request.
 	 * @return The matching resource bundle. 
 	 */
-	public ResourceBundle getResourceBunde(ServletRequest req) {
-		Locale requestLocale = req.getLocale();
+	public ResourceBundle getResourceBundle(HttpServletRequest req) {
+		Locale requestLocale; 
+		String languageParam = req.getParameter("language");
+		if (languageParam != null)
+			requestLocale = new Locale(languageParam);
+		else
+			requestLocale = req.getLocale();
 		ResourceBundle bundle = ResourceBundle.getBundle("MessageBundle", requestLocale);
 		return bundle;
 	}
