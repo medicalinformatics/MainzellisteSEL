@@ -39,6 +39,10 @@ public class TestUtilities {
 		return getBuilder(resource, tokenId, null, MediaType.APPLICATION_JSON, MediaType.APPLICATION_FORM_URLENCODED, apiKey);
 	}
 	
+	public static Builder getBuilderPatient(WebResource resource, String tokenId, String apiKey, String mediaType) {
+		return getBuilder(resource, tokenId, null, MediaType.APPLICATION_JSON, mediaType, apiKey);
+	}
+
 	public static Builder getBuilderSession(WebResource resource, String apiKey) {
 		return getBuilder(resource, null, null, MediaType.APPLICATION_JSON, null, apiKey);
 	}
@@ -116,7 +120,7 @@ public class TestUtilities {
 		if (response.getStatus() == 201) {		
 			return getTokenIdOfJSON(response.getEntity(JSONObject.class));
 		} else {
-			throw new NullPointerException();
+			throw new Error("Error while creating token. Server message: " + response.getEntity(String.class));
 		}
 	}
 	
@@ -246,6 +250,49 @@ public class TestUtilities {
 		return form;
 	}
 	
+	public static JSONObject createFormJson(String vorname, String nachname,	String geburtsname, String geburtstag, String geburtsmonat, String geburtsjahr, String ort, String plz) {
+		JSONObject form = new JSONObject();
+		
+		try {
+			if (vorname != null) {
+				form.put("vorname", vorname);
+			}
+			
+			if (nachname != null) {
+				form.put("nachname", nachname);
+			}
+	
+			if (geburtsname != null) {
+				form.put("geburtsname", geburtsname);
+			}
+			
+			if (geburtstag != null) {
+				form.put("geburtstag", geburtstag);
+			}
+			
+			if (geburtsmonat != null) {
+				form.put("geburtsmonat", geburtsmonat);
+			}
+					
+			if (geburtsjahr != null) {
+				form.put("geburtsjahr", geburtsjahr);
+			}
+	
+			if (ort != null) {
+				form.put("ort", ort);
+			}
+			
+			if (plz != null) {
+				form.put("plz", plz);
+			}
+		} catch (JSONException e) {
+			throw new Error("JSON error", e);
+		}
+		
+		return form;
+
+	}
+
 	/**
 	 * Create a session and return its Id.
 	 * @param resource
@@ -330,7 +377,7 @@ public class TestUtilities {
 			}
 			return jsonObject;
 		} else {
-			return null;
+			return new JSONObject();
 		}
 	}	
 	

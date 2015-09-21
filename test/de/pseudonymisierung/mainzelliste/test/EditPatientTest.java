@@ -2,6 +2,8 @@ package de.pseudonymisierung.mainzelliste.test;
 
 import static org.junit.Assert.*;
 
+import javax.ws.rs.core.MediaType;
+
 import org.codehaus.jettison.json.JSONObject;
 import org.junit.Test;
 
@@ -23,6 +25,7 @@ public class EditPatientTest extends JerseyTest {
 	public void testEditPatientToken() {
 		String sessionId = TestUtilities.createSession(resource);
 		String tokenRequestPath = "sessions/" + sessionId + "/tokens";
+		String patientsPath = "patients/";
 
 		// Generate tokenData
 		JSONObject patientId = TestUtilities.buildJSONObject("idType", "psn", "idString", "1");
@@ -82,8 +85,8 @@ public class EditPatientTest extends JerseyTest {
 	
 	@Test
 	public void testEditPatient() {
-//		String sessionId = TestUtilities.createSession(resource);
-//		String tokenPath = "sessions/" + sessionId + "/tokens";
+		String sessionId = TestUtilities.createSession(resource);
+		String tokenPath = "sessions/" + sessionId + "/tokens";
 		
 		String patientsPath = "patients";
 		
@@ -96,7 +99,7 @@ public class EditPatientTest extends JerseyTest {
 		assertEquals("Edit patient without token did not return 404 status. Message from server: " + response.getEntity(String.class), 404, response.getStatus());
 
 		// Call with invalid (non-existing) token
-		response = TestUtilities.getBuilderPatient(resource.path(patientsPath).path("tokenId/invalid"), null, TestUtilities.getApikey())
+		response = TestUtilities.getBuilderPatient(resource.path(patientsPath).path("tokenId/invalidToken"), null, null, MediaType.APPLICATION_JSON)
 				.put(ClientResponse.class, formData);
 		assertEquals("Edit patient with non-existing token did not return 401 status. Message from server: " + response.getEntity(String.class), 401, response.getStatus());
 	}
