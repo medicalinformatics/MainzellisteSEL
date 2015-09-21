@@ -91,10 +91,11 @@ public class EditPatientTest extends JerseyTest {
 		String patientsPath = "patients";
 		
 		// Generate Formula Data
-		Form formData = TestUtilities.createForm("Peter", "Baier", "Hans", "01", "01", "2000", "Mainz", "55120");
+		//Form formData = TestUtilities.createForm("Peter", "Baier", "Hans", "01", "01", "2000", "Mainz", "55120");
+		JSONObject formData = TestUtilities.createFormJson("Peter", "Baier", "Hans", "01", "01", "2000", "Mainz", "55120");
 		
 		// Call without token -> yields 404 Not Found as tokenId is part of the path (/patients/tokenId/{tokenId})
-		response = TestUtilities.getBuilderPatient(resource.path(patientsPath).path("tokenId/"), null, null)
+		response = TestUtilities.getBuilderPatient(resource.path(patientsPath).path("tokenId/"), null, null, MediaType.APPLICATION_JSON)
 				.put(ClientResponse.class, formData);
 		assertEquals("Edit patient without token did not return 404 status. Message from server: " + response.getEntity(String.class), 404, response.getStatus());
 
