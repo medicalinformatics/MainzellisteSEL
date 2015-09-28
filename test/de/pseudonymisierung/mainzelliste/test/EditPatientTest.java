@@ -21,11 +21,13 @@ public class EditPatientTest extends JerseyTest {
 		super(TestUtilities.setUpTest());
 	}
 	
+	/**
+	 * Test functionality of the edit patient token
+	 */
 	@Test
 	public void testEditPatientToken() {
 		String sessionId = TestUtilities.createSession(resource);
 		String tokenRequestPath = "sessions/" + sessionId + "/tokens";
-		String patientsPath = "patients/";
 
 		// Generate tokenData
 		JSONObject patientId = TestUtilities.buildJSONObject("idType", "psn", "idString", "1");
@@ -83,25 +85,74 @@ public class EditPatientTest extends JerseyTest {
 		assertEquals("Get Token did not return 404 status. Message from server: " + response.getEntity(String.class), 404, response.getStatus());
 	}
 	
+	/**
+	 * Test functionality of the edit patient
+	 */
 	@Test
 	public void testEditPatient() {
 		String sessionId = TestUtilities.createSession(resource);
 		String tokenPath = "sessions/" + sessionId + "/tokens";
 		
-		String patientsPath = "patients";
+		String patientsPath = "patients/";
+		
+		// Add Dummy Patient for Testing
+		JSONObject patienId = TestUtilities.addPatient(resource, "Edit", "Patient", "Schmitd", "15", "05", "2001", "Frankfurt", "60311");
 		
 		// Generate Formula Data
-		//Form formData = TestUtilities.createForm("Peter", "Baier", "Hans", "01", "01", "2000", "Mainz", "55120");
-		JSONObject formData = TestUtilities.createFormJson("Peter", "Baier", "Hans", "01", "01", "2000", "Mainz", "55120");
+		Form formData = TestUtilities.createForm("Peter", "Baier", "Hans", "01", "01", "2000", "Mainz", "55120");
 		
-		// Call without token -> yields 404 Not Found as tokenId is part of the path (/patients/tokenId/{tokenId})
-		response = TestUtilities.getBuilderPatient(resource.path(patientsPath).path("tokenId/"), null, null, MediaType.APPLICATION_JSON)
+		// Call without token
+		response = TestUtilities.getBuilderPatient(resource.path(patientsPath), null, null, MediaType.APPLICATION_JSON)
 				.put(ClientResponse.class, formData);
-		assertEquals("Edit patient without token did not return 404 status. Message from server: " + response.getEntity(String.class), 404, response.getStatus());
+		assertEquals("Edit patient without token did not return 401 status. Message from server: " + response.getEntity(String.class), 401, response.getStatus());
 
 		// Call with invalid (non-existing) token
-		response = TestUtilities.getBuilderPatient(resource.path(patientsPath).path("tokenId/invalidToken"), null, null, MediaType.APPLICATION_JSON)
+		response = TestUtilities.getBuilderPatient(resource.path(patientsPath), "invalidToken", null, MediaType.APPLICATION_JSON)
 				.put(ClientResponse.class, formData);
 		assertEquals("Edit patient with non-existing token did not return 401 status. Message from server: " + response.getEntity(String.class), 401, response.getStatus());
+		
+		// Call with addToken not editToken 
+		String tokenId = TestUtilities.createTokenIdAddPatient(resource, tokenPath, "psn");
+		response = TestUtilities.getBuilderPatient(resource.path(patientsPath), tokenId, null, MediaType.APPLICATION_JSON)
+				.put(ClientResponse.class, formData);
+		assertEquals("Edit Patient with wrong token did not return 401 status. Message from server: " + response.getEntity(String.class), 401, response.getStatus());
+
+		
+		// TODO BELOW		
+		
+		tokenId = TestUtilities.createTokenIdEditPatient(resource, tokenPath, patienId);
+		
+		// Edit Patient without a required field with a loop one by one
+		for (int i = 0; i < 5; i++) {
+			String[] valueArray = {"Peter", "Bauer", "01", "01", "2000"};
+			valueArray[i] = "";
+			formData = TestUtilities.createForm(valueArray[0], valueArray[1], null, valueArray[2], valueArray[3], valueArray[4], null, null);
+			response = TestUtilities.getBuilderPatient(resource.path(patientsPath), tokenId, TestUtilities.getApikey(), MediaType.APPLICATION_JSON)
+					.put(ClientResponse.class, formData);
+			assertEquals("Edit Patient without required field did not return 400 status. Message from server: " + response.getEntity(String.class), 400, response.getStatus());
+		}
+		
+		// Edit Patient with wrong birth date
+		formData = TestUtilities.createForm(null, null, null, "29", "02", null, null, null);
+		response = TestUtilities.getBuilderPatient(resource.path(patientsPath), tokenId, TestUtilities.getApikey(), MediaType.APPLICATION_JSON)
+				.put(ClientResponse.class, formData);
+		assertEquals("Edit Patient with wrong birth date did not return 400 status. Message from server: " + response.getEntity(String.class), 400, response.getStatus());
+		
+		// Edit Patient with birth date in the future
+		formData = TestUtilities.createForm(null, null, null, null, null, "2050", null, null);
+		response = TestUtilities.getBuilderPatient(resource.path(patientsPath), tokenId, TestUtilities.getApikey(), MediaType.APPLICATION_JSON)
+				.put(ClientResponse.class, formData);
+		assertEquals("Edit Patient with birth date in the future did not return 400 status. Message from server: " + response.getEntity(String.class), 400, response.getStatus());
+
+		// Edit Patient with a empty field one by one
+		for (int i = 0; i < 3; i++) {
+			tokenId = TestUtilities.createTokenIdEditPatient(resource, tokenPath, patienId);
+			String[] valueArray = {"Jon", "Carlos", "Hans", "01", "01", "2000", "Mainz", "55120"};
+			valueArray[i] = "";
+			formData = TestUtilities.createForm(valueArray[0], valueArray[1], valueArray[2], valueArray[3], valueArray[4], valueArray[5], valueArray[6], valueArray[7]);
+			response = TestUtilities.getBuilderPatient(resource.path(patientsPath), tokenId, TestUtilities.getApikey(), MediaType.APPLICATION_JSON)
+					.put(ClientResponse.class, formData);
+			assertEquals("Edit Patient with empty field did not return 201 status. Message from server: " + response.getEntity(String.class), 201, response.getStatus());
+		}
 	}
 }

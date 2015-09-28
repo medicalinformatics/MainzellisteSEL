@@ -103,7 +103,7 @@ public class TestUtilities {
 		return createTokenId(resource, tokenRequestPath, tokenData);
 	}
 
-	public static String createTokenIdReadPatient(WebResource resource, String tokenRequestPath, JSONArray resultFields, JSONArray resultIds, JSONObject... searchIds) {
+	public static String createTokenIdReadPatient(WebResource resource, String tokenRequestPath, JSONArray resultFields, JSONArray resultIds, JSONObject searchIds) {
 		JSONObject tokenData = createTokenDataReadPatient(resultFields, resultIds, searchIds);
 		return createTokenId(resource, tokenRequestPath, tokenData);
 	}
@@ -117,10 +117,10 @@ public class TestUtilities {
 		ClientResponse response = getBuilderTokenPost(resource, tokenRequestPath, apiKey)
 				.post(ClientResponse.class, tokenData);
 		
-		if (response.getStatus() == 201) {		
+		if (response.getStatus() == 201) {
 			return getTokenIdOfJSON(response.getEntity(JSONObject.class));
 		} else {
-			throw new Error("Error while creating token. Server message: " + response.getEntity(String.class));
+			throw new Error("Error while creating token.");
 		}
 	}
 	
@@ -250,49 +250,6 @@ public class TestUtilities {
 		return form;
 	}
 	
-	public static JSONObject createFormJson(String vorname, String nachname,	String geburtsname, String geburtstag, String geburtsmonat, String geburtsjahr, String ort, String plz) {
-		JSONObject form = new JSONObject();
-		
-		try {
-			if (vorname != null) {
-				form.put("vorname", vorname);
-			}
-			
-			if (nachname != null) {
-				form.put("nachname", nachname);
-			}
-	
-			if (geburtsname != null) {
-				form.put("geburtsname", geburtsname);
-			}
-			
-			if (geburtstag != null) {
-				form.put("geburtstag", geburtstag);
-			}
-			
-			if (geburtsmonat != null) {
-				form.put("geburtsmonat", geburtsmonat);
-			}
-					
-			if (geburtsjahr != null) {
-				form.put("geburtsjahr", geburtsjahr);
-			}
-	
-			if (ort != null) {
-				form.put("ort", ort);
-			}
-			
-			if (plz != null) {
-				form.put("plz", plz);
-			}
-		} catch (JSONException e) {
-			throw new Error("JSON error", e);
-		}
-		
-		return form;
-
-	}
-
 	/**
 	 * Create a session and return its Id.
 	 * @param resource
@@ -323,21 +280,42 @@ public class TestUtilities {
 	 * @param resource
 	 * @return is true if the dummy Patient could be added.
 	 */
-	public static void addDummyPatient(WebResource resource) {
+	public static JSONObject addPatient(WebResource resource, String firstName, String lastName, String birthname, String birthDay, String birthmothe, String birthyear, String city, String plz) {
 		String sessionId = createSession(resource);
 		String tokenRequestPath = "sessions/" + sessionId + "/tokens";
 		String tokenId = createTokenIdAddPatient(resource, tokenRequestPath, "psn");
 		
-		Form formData = TestUtilities.createForm("DummyFirstName", "DummyLastName", "DummySecondName", "01", "01", "2000", "Mainz", "55120");
+		Form formData = TestUtilities.createForm(firstName, lastName, birthname, birthDay, birthmothe, birthyear, city, plz);
 		ClientResponse response = TestUtilities.getBuilderPatient(resource.path("patients/"), tokenId, TestUtilities.getApikey())
 				.post(ClientResponse.class, formData);
 		
-		if (response.getStatus() == 201) {
+		int status = response.getStatus();
+		if (status == 201) {
 			System.out.println("Add Dummy Patient to Database");
-			return;
+			try {
+				return response.getEntity(JSONArray.class).getJSONObject(0);
+			} catch (Exception e) {
+				throw new Error("Error while creating new Patient.");
+			} 
 		}
 		
 		System.err.println("Could not add Dummy Patient to Database");
+		throw new Error("Error while creating new Patient. (" + status + ")");
+	}
+	
+	public static void addDummyPatient(WebResource resource) {
+		addPatient(resource, "DummyFirstName", "DummyLastName", "DummySecondName", "01", "01", "2000", "Mainz", "55120");
+	}
+	
+	public static int deletePatient(WebResource resource, JSONObject patientId) {
+		String sessionId = createSession(resource);
+		String tokenRequestPath = "sessions/" + sessionId + "/tokens";
+		String tokenId = createTokenIdEditPatient(resource, tokenRequestPath, patientId);
+		
+		ClientResponse response = TestUtilities.getBuilderPatient(resource.path("patients/"), tokenId, TestUtilities.getApikey(), MediaType.APPLICATION_JSON)
+				.put(Builder.class).delete(ClientResponse.class);
+		
+		return response.getStatus();
 	}
 	
 	// --- JSON METHODS ---
@@ -355,11 +333,20 @@ public class TestUtilities {
 		return createUri(getStringOfJSON(jsonObject, sessionUriKey));
 	}
 	
-	private static String getStringOfJSON(JSONObject jsonObject, String key) {
+	public static String getStringOfJSON(JSONObject jsonObject, String key) {
 		try {
 			return jsonObject.getString(key);
 		} catch (JSONException e) {
-			fail("'"+ key + "' does not exist");
+			fail("'"+ key + "' does not exist in JSONObject: " + jsonObject);
+			return null;
+		}
+	}
+	
+	public static String getStringOfJSON(JSONArray jsonArray, String key) {
+		try {	
+			return getStringOfJSON(jsonArray.getJSONObject(0).getJSONObject("fields"), key);
+		} catch (JSONException e) {
+			fail("'"+ jsonArray + "' has no JSONObject");
 			return null;
 		}
 	}

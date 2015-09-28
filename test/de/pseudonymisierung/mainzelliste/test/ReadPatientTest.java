@@ -19,6 +19,9 @@ public class ReadPatientTest extends JerseyTest {
 		super(TestUtilities.setUpTest());
 	}
 	
+	/**
+	 * Test functionality of the read patient token
+	 */
 	@Test
 	public void testReadPatientToken() {
 		String sessionId = TestUtilities.createSession(resource);
@@ -63,10 +66,10 @@ public class ReadPatientTest extends JerseyTest {
 		assertEquals("Creating token with unknown resultField not return 400 status.", 400, response.getStatus());
 
 		// Create Token with an unknown resultId
-//		tokenData = TestUtilities.createTokenDataReadPatient(resultFields, TestUtilities.buildJSONArray("unknownresultid"), searchId);
-//		response = TestUtilities.getBuilderTokenPost(resource, tokenRequestPath, TestUtilities.getApikey())
-//				.post(ClientResponse.class, tokenData);
-//		assertEquals("Creating token with unknown resultId not return 400 status.", 400, response.getStatus());
+		tokenData = TestUtilities.createTokenDataReadPatient(resultFields, TestUtilities.buildJSONArray("unknownresultid"), searchId);
+		response = TestUtilities.getBuilderTokenPost(resource, tokenRequestPath, TestUtilities.getApikey())
+				.post(ClientResponse.class, tokenData);
+		assertEquals("Creating token with unknown resultId not return 400 status.", 400, response.getStatus());
 
 		// Create Token with not existing id/pseudonym
 		tokenData = TestUtilities.createTokenDataReadPatient(resultFields, resultIds, TestUtilities.buildJSONObject("idType", "psn", "idString", "-1"));
@@ -78,11 +81,10 @@ public class ReadPatientTest extends JerseyTest {
 		tokenData = TestUtilities.createTokenDataReadPatient(resultFields, resultIds, searchId);
 		response = TestUtilities.getBuilderTokenPost(resource, tokenRequestPath, TestUtilities.getApikey())
 				.post(ClientResponse.class, tokenData);
-		JSONObject jsonObject = response.getEntity(JSONObject.class);
-		assertEquals("Creating token not return 201 status. Message from server: " + jsonObject, 201, response.getStatus());
+		assertEquals("Creating token not return 201 status.", 201, response.getStatus());
 		
 		// Extract tokenId
-		String tokenId = TestUtilities.getTokenIdOfJSON(jsonObject);
+		String tokenId = TestUtilities.getTokenIdOfJSON(response.getEntity(JSONObject.class));
 		
 		// Get Request to prove the tokenId for availability
 		response = TestUtilities.getBuilderTokenPost(resource, tokenRequestPath + "/" + tokenId, TestUtilities.getApikey())
@@ -100,12 +102,21 @@ public class ReadPatientTest extends JerseyTest {
 		assertEquals("Get Token did not return 404 status. Message from server: " + response.getEntity(String.class), 404, response.getStatus());
 	}
 	
+	/**
+	 * Test functionality of the read patient
+	 */
 	@Test
 	public void testReadPatient() {
-//		String sessionId = TestUtilities.createSession(resource);
-//		String tokenPath = "sessions/" + sessionId + "/tokens";
+		String sessionId = TestUtilities.createSession(resource);
+		String tokenPath = "sessions/" + sessionId + "/tokens";
+
+		String[] keyArray = {"vorname", "nachname", "geburtsname", "geburtstag", "geburtsmonat", "geburtsjahr", "ort", "plz"};
+		String[] valueArray = {"Peter", "Bauer", "Hans", "01", "01", "2000", "Mainz", "55120"};
 		
-		String patientsPath = "patients";
+		// Add Dummy Patient for Testing
+		JSONObject dummyPatientId = TestUtilities.addPatient(resource, valueArray[0], valueArray[1], valueArray[2], valueArray[3], valueArray[4], valueArray[5], valueArray[6], valueArray[7]);
+		
+		String patientsPath = "patients/";
 
 		// Call without token
 		response = TestUtilities.getBuilderPatient(resource.path(patientsPath), null, null)
@@ -117,161 +128,28 @@ public class ReadPatientTest extends JerseyTest {
 				.get(ClientResponse.class);
 		assertEquals("Read patients with non-existing token did not return 401 status. Message from server: " + response.getEntity(String.class), 401, response.getStatus());
 		
-		//		ClientConfig clientConfig = new DefaultClientConfig();
-//		clientConfig.getFeatures().put(JSONConfiguration.FEATURE_POJO_MAPPING,
-//				Boolean.TRUE);
-//		Client client = Client.create(clientConfig);
-//
-//		WebResource resource = client
-//				.resource("http://localhost:8080/mainzelliste");
-//		Map<String, Object> tokenData = new HashMap<String, Object>();
-//		JSONArray idTypes = new JSONArray();
-//		idTypes.put("pid");
-//		idTypes.put("psn");
-//		// tokenData.put("idtypes", Arrays.asList("pid", "psn"));
-//		tokenData.put("idtypes", idTypes);
-//		try {
-//			Token t = rSession.getToken("addPatient", tokenData);
-//
-//			String result = resource.path("/patients")
-//					.queryParam("tokenId", t.getId())
-//					.type(MediaType.APPLICATION_FORM_URLENCODED)
-//					.accept(MediaType.APPLICATION_JSON)
-//					.post(String.class, testPatientFields);
-//
-//			// System.out.println(result);
-//
-//			Map<String, String> createdIDs = new HashMap<String, String>();
-//
-//			JSONArray resultArray = new JSONArray(result);
-//			for (int i = 0; i < resultArray.length(); i++) {
-//				JSONObject thisId = resultArray.getJSONObject(i);
-//				createdIDs.put(thisId.getString("idType"),
-//						thisId.getString("idString"));
-//			}
-//
-//			// Teste einzelne ID-Typen, suche nach pid
-//			for (String searchIdType : createdIDs.keySet()) {
-//				for (String thisIdType : createdIDs.keySet()) {
-//					tokenData = new HashMap<String, Object>();
-//					tokenData.put(
-//							"searchIds",
-//							new JSONArray().put(new JSONObject().put("idType",
-//									searchIdType).put("idString",
-//									createdIDs.get(searchIdType))));
-//					tokenData.put("resultIds", new JSONArray().put(thisIdType));
-//
-//					t = rSession.getToken("readPatients", tokenData);
-//
-//					// List resultList = resource.path("patients")
-//					// .queryParam("tokenId", t.getId())
-//					// .type(MediaType.APPLICATION_JSON)
-//					// .accept(MediaType.APPLICATION_JSON)
-//					// .get(List.class);
-//
-//					List resultList = resource
-//							.path("patients/tokenId/" + t.getId())
-//							.type(MediaType.APPLICATION_JSON)
-//							.accept(MediaType.APPLICATION_JSON).get(List.class);
-//
-//					// Es sollte genau ein Patient geliefert werden
-//					assertEquals(1, resultList.size());
-//
-//					// Format des Patientenobjekts pr�fen
-//					Map<String, ?> thisPatient = (Map<String, ?>) resultList
-//							.get(0);
-//					assertTrue(thisPatient.containsKey("ids"));
-//					// Hier noch keine Felder angefordert
-//					assertFalse(thisPatient.containsKey("fields"));
-//
-//					// Pr�fe IDs
-//					List<Map<String, String>> ids = (List<Map<String, String>>) thisPatient
-//							.get("ids");
-//					for (Map<String, String> thisId : ids) {
-//						assertEquals("Received an ID that was not requested.",
-//								thisIdType, thisId.get("idType"));
-//						assertEquals("Reveived different ID than on creation.",
-//								createdIDs.get(thisId.get("idType")),
-//								thisId.get("idString"));
-//					}
-//				}
-//
-//				// Hole alle IDs
-//				tokenData = new HashMap<String, Object>();
-//				tokenData.put(
-//						"searchIds",
-//						new JSONArray().put(new JSONObject().put("idType",
-//								searchIdType).put("idString",
-//								createdIDs.get(searchIdType))));
-//				tokenData.put("resultIds", new JSONArray(createdIDs.keySet()));
-//
-//				t = rSession.getToken("readPatients", tokenData);
-//
-////				List resultList = resource
-////						.path("patients/tokenId/" + t.getId())
-////						.type(MediaType.APPLICATION_JSON)
-////						.accept(MediaType.APPLICATION_JSON).get(List.class);
-//
-//				List resultList = resource
-//						.path("patients/")
-//						.queryParam("tokenId", t.getId())
-//						.type(MediaType.APPLICATION_JSON)
-//						.accept(MediaType.APPLICATION_JSON)
-//						.get(List.class);
-//
-//				// Store expected ID types, remove received types, at the end
-//				// set should be empty
-//				Set<String> expectedIds = new HashSet<String>(
-//						createdIDs.keySet());
-//				Map<String, ?> thisPatient = (Map<String, ?>) resultList.get(0);
-//				List<Map<String, String>> ids = (List<Map<String, String>>) thisPatient
-//						.get("ids");
-//				for (Map<String, String> thisId : ids) {
-//					assertTrue("Received ID type that was not requested.",
-//							expectedIds.contains(thisId.get("idType")));
-//					expectedIds.remove(thisId.get("idType"));
-//				}
-//				assertEquals("Did not receive all requested IDs", 0,
-//						expectedIds.size());
-//
-//				// Check fields
-//				// Perform some iterations with different selections of fields
-//				// increase proportion from 0 to all fields
-//				int nIterations = 20;
-//				for (int i = 0; i < nIterations; i++) {
-//					Set<String> selectedFields = new HashSet<String>();
-//					for (String thisField : testPatientFields.keySet()) {
-//						// select a field with probability 0.5
-//						if (Math.random() >= (double) i / (nIterations - 1))
-//							selectedFields.add(thisField);
-//					}
-//					tokenData = new HashMap<String, Object>();
-//					tokenData.put(
-//							"searchIds",
-//							new JSONArray().put(new JSONObject().put("idType",
-//									searchIdType).put("idString",
-//									createdIDs.get(searchIdType))));
-//					tokenData.put("fields", new JSONArray(selectedFields));
-//					t = rSession.getToken("readPatients", tokenData);
-//
-//					resultList = resource.path("patients/tokenId/" + t.getId())
-//							.type(MediaType.APPLICATION_JSON)
-//							.accept(MediaType.APPLICATION_JSON).get(List.class);
-//					thisPatient = (Map<String, ?>) resultList.get(0);
-//					Map<String, String> fields = (Map<String, String>) thisPatient
-//							.get("fields");
-//					assertEquals("Received different fields than expected", selectedFields, fields.keySet());
-//					
-//					for (String thisField : selectedFields) {
-//						assertEquals("Received field " + thisField + " differed from original input",
-//								testPatientFields.getFirst(thisField), fields.get(thisField));
-//					}
-//				}
-//			}
-//
-//		} catch (Exception e) {
-//			fail("Exception thrown in test:" + e.getMessage());
-//			e.printStackTrace();
-//		}
+		// Call with addToken not readToken 
+		String tokenId = TestUtilities.createTokenIdAddPatient(resource, tokenPath, "psn");
+		response = TestUtilities.getBuilderPatient(resource.path(patientsPath), tokenId, null)
+				.get(ClientResponse.class);
+		assertEquals("Read Patient with wrong token did not return 401 status. Message from server: " + response.getEntity(String.class), 401, response.getStatus());
+
+		// Generate tokenId for dummy Patient
+		JSONArray resultFields = TestUtilities.buildJSONArray(keyArray);
+		JSONArray resultIds = TestUtilities.buildJSONArray("psn");
+		String dummyPatientTokenId = TestUtilities.createTokenIdReadPatient(resource, tokenPath, resultFields, resultIds, dummyPatientId);
+		
+		// Read Patient n times and check if output is correct
+		for (int i = 0; i < 20; i++) {
+			response = TestUtilities.getBuilderPatient(resource.path(patientsPath), dummyPatientTokenId, TestUtilities.getApikey())
+					.get(ClientResponse.class);
+			assertEquals("Read Patient for the '" + i + "' time did not return 200 status. Message from server: " + response, 200, response.getStatus());
+			
+			JSONArray fields = response.getEntity(JSONArray.class);
+			
+			for (int j = 0; j < valueArray.length; j++) {
+				assertEquals("Field '" + keyArray[j] + "' of Patient is not the same as it was given.", valueArray[j], TestUtilities.getStringOfJSON(fields, keyArray[j]));
+			}
+		}
 	}
 }

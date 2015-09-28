@@ -57,7 +57,7 @@ public class SessionsTests extends JerseyTest{
 		response = TestUtilities.getBuilderSession(resource.uri(sessionUri), TestUtilities.getApikey()).get(ClientResponse.class);
 		assertEquals("Reading deleted session did not return 404 status.", 404, response.getStatus());
 		
-		// Deleting a non-existent session TODO: Schauen ob delete auch ohne apiKey geht (ob session reicht)
+		// Deleting a non-existent session
 		response = TestUtilities.getBuilderDelete(resource.uri(sessionUri)).delete(ClientResponse.class);
 		assertEquals("Deleting non-existent session did not return 204 status.", 204, response.getStatus());
 		
@@ -65,7 +65,7 @@ public class SessionsTests extends JerseyTest{
 		entity = TestUtilities.getBuilderSession(resource, TestUtilities.getApikey()).post(JSONObject.class);
 		
 		sessionUri = TestUtilities.getSessionUriOfJSON(entity);
-		
+		// TODO: Uncomment
 //		TestUtilities.sleep(120000);
 		
 		// Read after waiting
