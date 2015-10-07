@@ -47,6 +47,11 @@ public class UnauthorizedException extends WebApplicationException {
 		super(Response.status(Status.UNAUTHORIZED).entity(message).build());
 	}
 	
+	/** Create an instance with the given error message. */
+	public UnauthorizedException(String message) {
+		super(Response.status(Status.UNAUTHORIZED).entity(message).build());
+	}
+	
 	@Override
 	public String getMessage() {
 		return message;

@@ -69,7 +69,6 @@ import de.pseudonymisierung.mainzelliste.PatientBackend;
 import de.pseudonymisierung.mainzelliste.Servers;
 import de.pseudonymisierung.mainzelliste.dto.Persistor;
 import de.pseudonymisierung.mainzelliste.exceptions.InternalErrorException;
-import de.pseudonymisierung.mainzelliste.exceptions.InvalidFieldException;
 import de.pseudonymisierung.mainzelliste.exceptions.InvalidJSONException;
 import de.pseudonymisierung.mainzelliste.exceptions.InvalidTokenException;
 import de.pseudonymisierung.mainzelliste.exceptions.UnauthorizedException;
@@ -517,7 +516,7 @@ public class PatientsResource {
 			if (tt.getFields() != null) {
 				for (String fieldName : newFieldValues.keySet()) {
 					if (!tt.getFields().contains(fieldName))
-						throw new InvalidFieldException("No authorization to edit field " + fieldName +
+						throw new UnauthorizedException("No authorization to edit field " + fieldName +
 								" with this token.");
 				}
 			}
