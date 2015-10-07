@@ -35,6 +35,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
+import javax.ws.rs.core.Response.Status;
+
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jettison.json.JSONObject;
 
@@ -124,7 +126,7 @@ public class Token {
 	public void checkTokenType(String expected) {
 		if (expected == null || !expected.equals(this.getType()))
 			throw new InvalidTokenException("Invalid token type: Expected: "
-					+ expected + ", actual: " + this.getType());
+					+ expected + ", actual: " + this.getType(), Status.UNAUTHORIZED);
 	}
 
 	/**
@@ -407,13 +409,20 @@ public class Token {
 		}
 
 		// Check fields
-		if (this.getData().containsKey("resultFields")) {
+		checkField("resultFields", Config.instance.getFieldKeys());
+		checkField("resultIds", Arrays.asList(IDGeneratorFactory.instance.getIDTypes()));
+	}
+	
+	/**
+	 *	Check if field is known 
+	 */
+	private void checkField(String fieldKey, Collection<String> fieldList) {
+		if (this.getData().containsKey(fieldKey)) {
 
 			try {
-				List<?> fields = this.getDataItemList("resultFields");
+				List<?> fields = this.getDataItemList(fieldKey);
 				for (Object thisField : fields) {
-					if (!Config.instance.getFieldKeys().contains(
-							thisField.toString()))
+					if (!fieldList.contains(thisField.toString()))
 						throw new InvalidTokenException("Field '" + thisField
 								+ "' provided in field list is unknown!");
 				}
