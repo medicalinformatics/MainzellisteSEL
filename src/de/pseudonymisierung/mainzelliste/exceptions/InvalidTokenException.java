@@ -31,6 +31,8 @@ public class InvalidTokenException extends WebApplicationException {
 	 * 
 	 * @param message
 	 *            The error message.
+	 * @param statusCode
+	 *            The HTTP status code to return.
 	 */
 	public InvalidTokenException(String message, Status statusCode) {
 		super(Response.status(statusCode).entity(message).build());
