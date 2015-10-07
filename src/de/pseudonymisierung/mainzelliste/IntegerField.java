@@ -80,4 +80,9 @@ public class IntegerField extends Field<Integer> {
 	public IntegerField clone() {
 		return new IntegerField(this.value);
 	}
+	
+	@Override
+	public String toString() {
+		return String.format("%02d", value);
+	}
 }
