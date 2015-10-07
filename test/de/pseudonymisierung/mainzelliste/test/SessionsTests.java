@@ -50,7 +50,7 @@ public class SessionsTests extends JerseyTest{
 		checkSessionValid(entity, sessionId, "Read session: ");
 
 		// Delete session
-		response = TestUtilities.getBuilderDelete(resource.uri(sessionUri)).delete(ClientResponse.class);
+		response = resource.uri(sessionUri).delete(ClientResponse.class);
 		assertEquals("Deleting session did not return 204 status.", 204, response.getStatus());
 		
 		// Try to access deleted session
@@ -58,7 +58,7 @@ public class SessionsTests extends JerseyTest{
 		assertEquals("Reading deleted session did not return 404 status.", 404, response.getStatus());
 		
 		// Deleting a non-existent session
-		response = TestUtilities.getBuilderDelete(resource.uri(sessionUri)).delete(ClientResponse.class);
+		response = resource.uri(sessionUri).delete(ClientResponse.class);
 		assertEquals("Deleting non-existent session did not return 204 status.", 204, response.getStatus());
 		
 		// Check session timeout

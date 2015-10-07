@@ -23,47 +23,99 @@ import de.pseudonymisierung.mainzelliste.Initializer;
 
 public class TestUtilities {
 	
-	// Visible outside
+	// --- Visible outside ---
 	private static final String apiKey = "mdat1234";
 	private static final String sessionPath = "/sessions";
+	private static final String[] patientKeys = {"vorname", "nachname",	"geburtsname", "geburtstag", "geburtsmonat", "geburtsjahr", "ort", "plz"};
 	
-	// Invisible outside
+	// --- Invisible outside ---
 	private static final String apiVersion = "2.0";
+	private static final JSONArray resultIds = buildJSONArray("psn");
+	private static final String tokenPath = "sessions/%s/tokens";
+	private static final String patientsPath = "patients/";
+	// Setup Paths
+	private static final String packagePath = "de.pseudonymisierung.mainzelliste.webservice";
+	private static final String configPackagePath = "de.pseudonymisierung.mainzelliste.ConfigurationFile";
+	private static final String configFile = "/mainzelliste.conf.test";
+	// Keys of JSON
 	private static final String sessionUriKey = "uri";
 	private static final String sessionIdKey = "sessionId";
 	private static final String tokenIdKey = "id";
 	
 	
-	// --- BUILDER METHODS --- 
+	// --- BUILDER METHODS ---
+	
+	/**
+	 * Create an Web resource Builder for Patient interaction
+	 * @param resource Web resource whose URI refers to the base URI the Web application is deployed at
+	 * @param tokenId One time authorization for Requests
+	 * @param apiKey Authorize access on the mainzellist API 
+	 * @return WebResource Builder 
+	 */
 	public static Builder getBuilderPatient(WebResource resource, String tokenId, String apiKey) {
-		return getBuilder(resource, tokenId, null, MediaType.APPLICATION_JSON, MediaType.APPLICATION_FORM_URLENCODED, apiKey);
+		return getBuilder(resource.path(patientsPath), tokenId, null, MediaType.APPLICATION_JSON, MediaType.APPLICATION_FORM_URLENCODED, apiKey);
 	}
 	
-	public static Builder getBuilderPatient(WebResource resource, String tokenId, String apiKey, String mediaType) {
-		return getBuilder(resource, tokenId, null, MediaType.APPLICATION_JSON, mediaType, apiKey);
+	/**
+	 * Create an Web resource Builder for Patient Edit interaction (<b>Is temporally needed because editing 
+	 * an Patient could not be done with MediaType.APPLICATION_FORM_URLENCODED</b>)
+	 * @param resource Web resource whose URI refers to the base URI the Web application is deployed at
+	 * @param tokenId One time authorization for Requests
+	 * @param apiKey Authorize access on the mainzellist API 
+	 * @return WebResource Builder 
+	 */
+	public static Builder getBuilderPatientEdit(WebResource resource, String tokenId, String apiKey) {
+		WebResource editPatientResource = resource.path(patientsPath).path("tokenId");
+		
+		if (tokenId != null) {
+			editPatientResource = editPatientResource.path(tokenId);
+		}
+		
+		return getBuilder(editPatientResource, null, null, MediaType.APPLICATION_JSON, MediaType.APPLICATION_JSON, apiKey);
 	}
 
+	/**
+	 * Create Web resource Builder for Session interaction
+	 * @param resource Web resource whose URI refers to the base URI the Web application is deployed at
+	 * @param apiKey Authorize access on the mainzellist API
+	 * @return WebResource Builder
+	 */
 	public static Builder getBuilderSession(WebResource resource, String apiKey) {
 		return getBuilder(resource, null, null, MediaType.APPLICATION_JSON, null, apiKey);
 	}
 	
-	public static Builder getBuilderTokenPost(WebResource resource, String path, String apiKey) {
-		return getBuilder(resource, null, path, MediaType.APPLICATION_JSON, MediaType.APPLICATION_JSON, apiKey);
+	/**
+	 * Create Web resource Builder for creating a Token 
+	 * @param resource Web resource whose URI refers to the base URI the Web application is deployed at
+	 * @param sessionId Should look like this sessions/{sessionId}/tokens
+	 * @param apiKey Authorize access on the mainzellist API
+	 * @return WebResource Builder
+	 */
+	public static Builder getBuilderCreateToken(WebResource resource, String sessionId, String apiKey) {
+		return getBuilder(resource, null, sessionId, MediaType.APPLICATION_JSON, MediaType.APPLICATION_JSON, apiKey);
+	}
+
+	/**
+	 * Create Web resource Builder to view or delete a Token 
+	 * @param resource Web resource whose URI refers to the base URI the Web application is deployed at
+	 * @param sessionId Should look like this sessions/{sessionId}/tokens
+	 * @param apiKey Authorize access on the mainzellist API
+	 * @return WebResource Builder
+	 */
+	public static Builder getBuilderModifyToken(WebResource resource, String sessionId, String tokenId, String apiKey) {
+		if (tokenId != null) {
+			resource = resource.path(String.format(tokenPath, sessionId) + "/" + tokenId);
+			sessionId = null;
+		}
+		
+		return getBuilder(resource, null, sessionId, MediaType.APPLICATION_JSON, MediaType.APPLICATION_JSON, apiKey);
 	}
 	
-	public static Builder getBuilderTokenGet(WebResource resource, String path, String apiKey) {
-		return getBuilder(resource, null, path, MediaType.APPLICATION_JSON, null, apiKey);
-	}
-	
-	public static Builder getBuilderDelete(WebResource resource) {
-		return getBuilder(resource, null, null, null, null, null);
-	}
-	
-	private static Builder getBuilder(WebResource resource, String tokenId, String path, String acceptType, String contentType, String apiKey) {
+	private static Builder getBuilder(WebResource resource, String tokenId, String sessionId, String acceptType, String contentType, String apiKey) {
 		if (resource != null) {
 
-			if (path != null) {
-				resource = resource.path(path);
+			if (sessionId != null) {
+				resource = resource.path(String.format(tokenPath, sessionId));
 			}
 			
 			if (tokenId != null) {
@@ -98,23 +150,55 @@ public class TestUtilities {
 	
 	// - Create TokenId Methods -
 	// If a JSONObject parsing error occurs the reason could be that the ID Type is unknown!
-	public static String createTokenIdAddPatient(WebResource resource, String tokenRequestPath, String... idTypes) {
+	
+	/**
+	 * Create a tokenId to add a patient
+	 * @param resource Web resource whose URI refers to the base URI the Web application is deployed at
+	 * @param sessionId Id of the current session
+	 * @param idTypes Pseudonym types, which should be created and returned
+	 * @return TokenId
+	 */
+	public static String createTokenIdAddPatient(WebResource resource, String sessionId, String... idTypes) {
 		JSONObject tokenData = createTokenDataAddPatient(buildJSONArray(idTypes), null, null, null);
-		return createTokenId(resource, tokenRequestPath, tokenData);
+		return createTokenId(resource, sessionId, tokenData);
 	}
 
-	public static String createTokenIdReadPatient(WebResource resource, String tokenRequestPath, JSONArray resultFields, JSONArray resultIds, JSONObject searchIds) {
+	/**
+	 * Create a tokenId to read a patient
+	 * @param resource Web resource whose URI refers to the base URI the Web application is deployed at
+	 * @param sessionId Id of the current session
+	 * @param resultFields TODO
+	 * @param resultIds TODO
+	 * @param searchIds TODO
+	 * @return TokenId
+	 */
+	public static String createTokenIdReadPatient(WebResource resource, String sessionId, JSONArray resultFields, JSONArray resultIds, JSONObject searchIds) {
 		JSONObject tokenData = createTokenDataReadPatient(resultFields, resultIds, searchIds);
-		return createTokenId(resource, tokenRequestPath, tokenData);
-	}
-
-	public static String createTokenIdEditPatient(WebResource resource, String tokenRequestPath, JSONObject patientId) {
-		JSONObject tokenData = createTokenDataEditPatient(patientId);
-		return createTokenId(resource, tokenRequestPath, tokenData);
+		return createTokenId(resource, sessionId, tokenData);
 	}
 	
-	private static String createTokenId(WebResource resource, String tokenRequestPath, JSONObject tokenData) {
-		ClientResponse response = getBuilderTokenPost(resource, tokenRequestPath, apiKey)
+	/**
+	 * Create a tokenId to edit a patient
+	 * @param resource Web resource whose URI refers to the base URI the Web application is deployed at
+	 * @param sessionId Id of the current session
+	 * @param patientId TODO
+	 * @param fields TODO
+	 * @return TokenId
+	 */
+	public static String createTokenIdEditPatient(WebResource resource, String sessionId, JSONObject patientId, JSONArray fields) {
+		JSONObject tokenData = createTokenDataEditPatient(patientId, fields);
+		return createTokenId(resource, sessionId, tokenData);
+	}
+	
+	/**
+	 * Create a tokenId specified in the tokenData
+	 * @param resource Web resource whose URI refers to the base URI the Web application is deployed at
+	 * @param sessionId Id of the current session
+	 * @param tokenData TODO
+	 * @return TokenId
+	 */
+	public static String createTokenId(WebResource resource, String sessionId, JSONObject tokenData) {
+		ClientResponse response = getBuilderCreateToken(resource, sessionId, apiKey)
 				.post(ClientResponse.class, tokenData);
 		
 		if (response.getStatus() == 201) {
@@ -125,6 +209,15 @@ public class TestUtilities {
 	}
 	
 	// - Create TokenData Methods -
+	
+	/**
+	 * Create a json object with data to create a patient
+	 * @param idtypes TODO
+	 * @param fields TODO
+	 * @param callback TODO
+	 * @param redirect TODO
+	 * @return TokenData which is needed to create a patient
+	 */
 	public static JSONObject createTokenDataAddPatient(JSONArray idtypes, JSONObject fields, String callback, String redirect) {
 		JSONObject tokenData = new JSONObject();
 		
@@ -159,6 +252,13 @@ public class TestUtilities {
 		return tokenData;
 	}
 	
+	/**
+	 * Create a json object with data to view a patient
+	 * @param resultFields TODO
+	 * @param resultIds TODO
+	 * @param searchIds TODO
+	 * @return TokenData which is needed to view a patient
+	 */
 	public static JSONObject createTokenDataReadPatient(JSONArray resultFields, JSONArray resultIds, JSONObject... searchIds) {
 		JSONObject tokenData = new JSONObject();
 		
@@ -189,7 +289,13 @@ public class TestUtilities {
 		return tokenData;
 	}
 	
-	public static JSONObject createTokenDataEditPatient(JSONObject patientId) {
+	/**
+	 * Create a json object with data to edit a patient
+	 * @param patientId TODO
+	 * @param fields TODO
+	 * @return TokenData which is needed to edit a patient
+	 */
+	public static JSONObject createTokenDataEditPatient(JSONObject patientId, JSONArray fields) {
 		JSONObject tokenData = new JSONObject();
 		
 		try {
@@ -202,6 +308,10 @@ public class TestUtilities {
 				data.put("patientId", patientId);
 			}
 			
+			if (fields != null) {
+				data.put("fields", fields);
+			}
+			
 			tokenData.put("data", data);
 			
 		} catch (JSONException e) {
@@ -212,6 +322,20 @@ public class TestUtilities {
 	}
 
 	// - Create PatientData Methods -
+	
+	/**
+	 * Create a formula with the given parameters and returns it.
+	 * Null parameters will be ignored.
+	 * @param vorname first name
+	 * @param nachname last name
+	 * @param geburtsname birth name
+	 * @param geburtstag birth day in this format 01
+	 * @param geburtsmonat birth month in this format 01
+	 * @param geburtsjahr birth year in this format 2015
+	 * @param ort place
+	 * @param plz postal code
+	 * @return Formula with the given parameters
+	 */
 	public static Form createForm(String vorname, String nachname,	String geburtsname, String geburtstag, String geburtsmonat, String geburtsjahr, String ort, String plz) {
 		Form form = new Form();
 				
@@ -251,9 +375,64 @@ public class TestUtilities {
 	}
 	
 	/**
+	 * Create a json formula with the given parameters and returns it.
+	 * Null parameters will be ignored.
+	 * @param vorname first name
+	 * @param nachname last name
+	 * @param geburtsname birth name
+	 * @param geburtstag birth day in this format 01
+	 * @param geburtsmonat birth month in this format 01
+	 * @param geburtsjahr birth year in this format 2015
+	 * @param ort place
+	 * @param plz postal code
+	 * @return Json formula with the given parameters
+	 */
+	public static JSONObject createJSONForm(String vorname, String nachname, String geburtsname, String geburtstag, String geburtsmonat, String geburtsjahr, String ort, String plz) {
+		JSONObject jsonForm = new JSONObject();
+		try {
+			if (vorname != null) {
+				jsonForm.put("vorname", vorname);
+			}
+			
+			if (nachname != null) {
+				jsonForm.put("nachname", nachname);
+			}
+
+			if (geburtsname != null) {
+				jsonForm.put("geburtsname", geburtsname);
+			}
+			
+			if (geburtstag != null) {
+				jsonForm.put("geburtstag", geburtstag);
+			}
+			
+			if (geburtsmonat != null) {
+				jsonForm.put("geburtsmonat", geburtsmonat);
+			}
+					
+			if (geburtsjahr != null) {
+				jsonForm.put("geburtsjahr", geburtsjahr);
+			}
+
+			if (ort != null) {
+				jsonForm.put("ort", ort);
+			}
+			
+			if (plz != null) {
+				jsonForm.put("plz", plz);
+			}
+			
+		} catch (JSONException e) {
+			throw new Error("Error while creating JsonForm!");
+		}
+		
+		return jsonForm;
+	}
+	
+	/**
 	 * Create a session and return its Id.
-	 * @param resource
-	 * @return sessionId
+	 * @param resource Web resource whose URI refers to the base URI the Web application is deployed at
+	 * @return sessionId Id of the current session
 	 */
 	public static String createSession(WebResource resource) {
 		ClientResponse response = getBuilderSession(resource.path(sessionPath), apiKey).post(ClientResponse.class);
@@ -261,6 +440,15 @@ public class TestUtilities {
 		JSONObject entity = response.getEntity(JSONObject.class);
 		
 		return getSessionIdOfJSON(entity);
+	}
+	
+	/**
+	 * Create a session and path it to the web resource as an tokenPath.
+	 * @param resource Web resource whose URI refers to the base URI the Web application is deployed at
+	 * @return webResource TODO
+	 */
+	public static WebResource createTokenPath(WebResource resource) {
+		return resource.path(String.format(tokenPath, createSession(resource)));
 	}
 	
 	private static URI createUri(String uri) {
@@ -277,16 +465,14 @@ public class TestUtilities {
 	
 	/**
 	 * Add a dummy Patient to the database.
-	 * @param resource
+	 * @param resource Web resource whose URI refers to the base URI the Web application is deployed at
 	 * @return is true if the dummy Patient could be added.
 	 */
 	public static JSONObject addPatient(WebResource resource, String firstName, String lastName, String birthname, String birthDay, String birthmothe, String birthyear, String city, String plz) {
-		String sessionId = createSession(resource);
-		String tokenRequestPath = "sessions/" + sessionId + "/tokens";
-		String tokenId = createTokenIdAddPatient(resource, tokenRequestPath, "psn");
+		String tokenId = createTokenIdAddPatient(resource, createSession(resource), "psn");
 		
 		Form formData = TestUtilities.createForm(firstName, lastName, birthname, birthDay, birthmothe, birthyear, city, plz);
-		ClientResponse response = TestUtilities.getBuilderPatient(resource.path("patients/"), tokenId, TestUtilities.getApikey())
+		ClientResponse response = TestUtilities.getBuilderPatient(resource, tokenId, TestUtilities.getApikey())
 				.post(ClientResponse.class, formData);
 		
 		int status = response.getStatus();
@@ -295,6 +481,7 @@ public class TestUtilities {
 			try {
 				return response.getEntity(JSONArray.class).getJSONObject(0);
 			} catch (Exception e) {
+				System.out.println("Error while creating new Patient.");
 				throw new Error("Error while creating new Patient.");
 			} 
 		}
@@ -307,12 +494,28 @@ public class TestUtilities {
 		addPatient(resource, "DummyFirstName", "DummyLastName", "DummySecondName", "01", "01", "2000", "Mainz", "55120");
 	}
 	
-	public static int deletePatient(WebResource resource, JSONObject patientId) {
-		String sessionId = createSession(resource);
-		String tokenRequestPath = "sessions/" + sessionId + "/tokens";
-		String tokenId = createTokenIdEditPatient(resource, tokenRequestPath, patientId);
+	/**
+	 * Make an request and returns the given patient.
+	 * @param resource Web resource whose URI refers to the base URI the Web application is deployed at
+	 * @param patientId to search for
+	 * @return patient as Array (fields, ids)
+	 */
+	public static JSONArray readPatient (WebResource resource, JSONObject patientId) {
+		String tokenId = createTokenIdReadPatient(resource, createSession(resource), buildJSONArray(patientKeys), resultIds, patientId);
+		ClientResponse response = TestUtilities.getBuilderPatient(resource, tokenId, TestUtilities.getApikey())
+				.get(ClientResponse.class);
 		
-		ClientResponse response = TestUtilities.getBuilderPatient(resource.path("patients/"), tokenId, TestUtilities.getApikey(), MediaType.APPLICATION_JSON)
+		if (response.getStatus() == 200) {
+			return response.getEntity(JSONArray.class);
+		}
+		
+		throw new Error("Error while searching for Patient " + patientId);
+	}
+	
+	public static int deletePatient(WebResource resource, JSONObject patientId) {
+		String tokenId = createTokenIdEditPatient(resource, createSession(resource), patientId, null);
+		
+		ClientResponse response = TestUtilities.getBuilderPatientEdit(resource, tokenId, TestUtilities.getApikey())
 				.put(Builder.class).delete(ClientResponse.class);
 		
 		return response.getStatus();
@@ -387,8 +590,8 @@ public class TestUtilities {
 	}
 	
 	public static AppDescriptor setUpTest() {
-		return new WebAppDescriptor.Builder("de.pseudonymisierung.mainzelliste.webservice")
-				.contextParam("de.pseudonymisierung.mainzelliste.ConfigurationFile", "/mainzelliste.conf.test")
+		return new WebAppDescriptor.Builder(packagePath)
+				.contextParam(configPackagePath, configFile)
 				.contextPath("/mainzelliste")
 				.contextListenerClass(Initializer.class)		
 				.build();
@@ -399,9 +602,9 @@ public class TestUtilities {
 	public static String getApikey() {
 		return apiKey;
 	}
-
-	public static String getApiversion() {
-		return apiVersion;
+	
+	public static String[] getPatientKeys() {
+		return patientKeys;
 	}
 
 	public static String getSessionpath() {
