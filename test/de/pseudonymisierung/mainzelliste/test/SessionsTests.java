@@ -20,20 +20,20 @@ public class SessionsTests extends JerseyTest{
 	
 	@Test
 	public void testSessionsResource() {
-		WebResource resource = resource().path(TestUtilities.getSessionpath());
+		WebResource resource = resource();
 		ClientResponse response;
 		JSONObject entity;
 		
 		// Call without mainzellisteApiKey
-		response = TestUtilities.getBuilderSession(resource, null).post(ClientResponse.class);
+		response = TestUtilities.getBuilderSession(resource, null, null).post(ClientResponse.class);
 		assertEquals("Creating session without mainzellisteApiKey did not return 401 status.", 401, response.getStatus());
 
 		// Call with wrong mainzellisteApiKey
-		response = TestUtilities.getBuilderSession(resource, "wrongKey").post(ClientResponse.class);
+		response = TestUtilities.getBuilderSession(resource, null, "wrongKey").post(ClientResponse.class);
 		assertEquals("Creating session with wrong mainzellisteApiKey did not return 401 status.", 401, response.getStatus());
 
 		// Create session
-		response = TestUtilities.getBuilderSession(resource, TestUtilities.getApikey()).post(ClientResponse.class);
+		response = TestUtilities.getBuilderSession(resource, null, TestUtilities.getApikey()).post(ClientResponse.class);
 		assertEquals("Creating session did not return 201 status.", 201, response.getStatus());
 		
 		entity = response.getEntity(JSONObject.class);
@@ -43,7 +43,7 @@ public class SessionsTests extends JerseyTest{
 		URI sessionUri = TestUtilities.getSessionUriOfJSON(entity);
 		
 		// Read session
-		response = TestUtilities.getBuilderSession(resource.uri(sessionUri), TestUtilities.getApikey()).get(ClientResponse.class);		
+		response = TestUtilities.getBuilderSession(resource, sessionUri, TestUtilities.getApikey()).get(ClientResponse.class);		
 		assertEquals("Reading session did not return 200 status.", 200, response.getStatus());
 		
 		entity = response.getEntity(JSONObject.class);
@@ -54,7 +54,7 @@ public class SessionsTests extends JerseyTest{
 		assertEquals("Deleting session did not return 204 status.", 204, response.getStatus());
 		
 		// Try to access deleted session
-		response = TestUtilities.getBuilderSession(resource.uri(sessionUri), TestUtilities.getApikey()).get(ClientResponse.class);
+		response = TestUtilities.getBuilderSession(resource, sessionUri, TestUtilities.getApikey()).get(ClientResponse.class);
 		assertEquals("Reading deleted session did not return 404 status.", 404, response.getStatus());
 		
 		// Deleting a non-existent session
@@ -62,14 +62,14 @@ public class SessionsTests extends JerseyTest{
 		assertEquals("Deleting non-existent session did not return 204 status.", 204, response.getStatus());
 		
 		// Check session timeout
-		entity = TestUtilities.getBuilderSession(resource, TestUtilities.getApikey()).post(JSONObject.class);
+		entity = TestUtilities.getBuilderSession(resource, null, TestUtilities.getApikey()).post(JSONObject.class);
 		
 		sessionUri = TestUtilities.getSessionUriOfJSON(entity);
 		// TODO: Uncomment
 //		TestUtilities.sleep(120000);
 		
 		// Read after waiting
-		response = TestUtilities.getBuilderSession(resource.uri(sessionUri), TestUtilities.getApikey()).get(ClientResponse.class);
+		response = TestUtilities.getBuilderSession(resource, sessionUri, TestUtilities.getApikey()).get(ClientResponse.class);
 		assertEquals("Read after timed-out session did not return 404 status.", 404, response.getStatus());
 	}
 

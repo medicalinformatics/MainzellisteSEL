@@ -30,9 +30,6 @@ public class EditPatientTest extends JerseyTest {
 		JSONObject patientId = TestUtilities.buildJSONObject("idType", "psn", "idString", "1");
 		JSONObject tokenData = TestUtilities.createTokenDataEditPatient(patientId, null);
 
-		// Add Dummy Patient for Testing
-		TestUtilities.addDummyPatient(resource);
-		
 		// TODO: Anlegen mit falscher IP-Adresse → Erwarte 401 Unauthorized
 
 		// Call without mainzellisteApiKey
@@ -84,6 +81,7 @@ public class EditPatientTest extends JerseyTest {
 	
 	/**
 	 * Test functionality of the edit patient
+	 * @throws Exception to avoid errors
 	 */
 	@Test
 	public void testEditPatient() throws Exception {
@@ -101,7 +99,7 @@ public class EditPatientTest extends JerseyTest {
 		// Call without token
 		response = TestUtilities.getBuilderPatientEdit(resource, null, null)
 				.put(ClientResponse.class, formData);
-//		assertEquals("Edit patient without token did not return 405 status. Message from server: " + response, 405, response.getStatus());
+		assertEquals("Edit patient without token did not return 405 status. Message from server: " + response, 405, response.getStatus());
 
 		// Call with invalid (non-existing) token
 		response = TestUtilities.getBuilderPatientEdit(resource, "invalidToken", null)

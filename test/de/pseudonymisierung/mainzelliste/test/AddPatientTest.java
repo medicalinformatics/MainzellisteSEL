@@ -38,7 +38,7 @@ public class AddPatientTest extends JerseyTest {
 	 * Test functionality of the add patient token
 	 */
 	@Test
-	public void testAddPatientToken() throws Exception {
+	public void testAddPatientToken() {
 		String sessionId = TestUtilities.createSession(resource);
 		
 		// Generate tokenData
@@ -104,6 +104,7 @@ public class AddPatientTest extends JerseyTest {
 	
 	/**
 	 * Test functionality of the add patient 
+	 * @throws Exception result in test failure
 	 */
 	@Test
 	public void testAddPatient() throws Exception {
@@ -196,6 +197,7 @@ public class AddPatientTest extends JerseyTest {
 		assertEquals("Adding Patient with a little change did not return 409 status. Message from server: " + response.getEntity(String.class), 409, response.getStatus());
 		
 		// Add Patient with callback
+		formData = TestUtilities.createForm("AddPatientVornameCallback", "AddPatientNachnameCallback", "Callback", "01", "01", "2000", "Mainz", "55120");
 		ClientConfig clientConfig = new DefaultClientConfig();
 		clientConfig.getFeatures().put(JSONConfiguration.FEATURE_POJO_MAPPING, Boolean.TRUE);
 		
@@ -243,7 +245,7 @@ public class AddPatientTest extends JerseyTest {
 			tokenId = TestUtilities.createTokenIdAddPatient(resource, sessionId, "psn");
 			String[] valueArray = {"Hans", "Mainz", "55120"};
 			valueArray[i] = "";
-			formData = TestUtilities.createForm("AddPatientVorname", "AddPatientNachname", valueArray[0], "01", "01", "2000", valueArray[1], valueArray[2]);
+			formData = TestUtilities.createForm("AddPatientVorname" + (char)(65+i), "AddPatientNachname" + (char)(65+i), valueArray[0], "01", "01", "2000", valueArray[1], valueArray[2]);
 			response = TestUtilities.getBuilderPatient(resource, tokenId, TestUtilities.getApikey())
 					.post(ClientResponse.class, formData);
 			assertEquals("Add Patient with empty field did not return 201 status. Message from server: " + response.getEntity(String.class), 201, response.getStatus());

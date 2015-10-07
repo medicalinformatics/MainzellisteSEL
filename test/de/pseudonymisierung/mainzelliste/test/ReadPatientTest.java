@@ -32,9 +32,6 @@ public class ReadPatientTest extends JerseyTest {
 		JSONObject searchId = TestUtilities.buildJSONObject("idType", "psn", "idString", "1");
 		JSONObject tokenData = TestUtilities.createTokenDataReadPatient(resultFields, resultIds, searchId);
 		
-		// Add Dummy Patient for Testing
-		TestUtilities.addDummyPatient(resource);
-		
 		// TODO: Anlegen mit falscher IP-Adresse → Erwarte 401 Unauthorized
 		
 		// Call without mainzellisteApiKey
