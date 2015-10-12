@@ -24,6 +24,10 @@ public class ReadPatientTest extends JerseyTest {
 	 */
 	@Test
 	public void testReadPatientToken() {
+		
+		// Add dummy patient so there exists a patient regardless if it has been already created by another test class
+		TestUtilities.addDummyPatient(resource);
+
 		String sessionId = TestUtilities.createSession(resource);
 		
 		// Generate tokenData
@@ -106,7 +110,7 @@ public class ReadPatientTest extends JerseyTest {
 		String sessionId = TestUtilities.createSession(resource);
 
 		String[] keyArray = {"vorname", "nachname", "geburtsname", "geburtstag", "geburtsmonat", "geburtsjahr", "ort", "plz"};
-		String[] valueArray = {"ReadPatientVorname", "ReadPatientNachname", "Hans", "01", "10", "2000", "Mainz", "55120"};
+		String[] valueArray = {"ReadPatientVorname", "ReadPatientNachname", "Hans", "15", "12", "1960", "Wiesbaden", "65197"};
 		
 		// Add Dummy Patient for Testing
 		JSONObject dummyPatientId = TestUtilities.addPatient(resource, valueArray[0], valueArray[1], valueArray[2], valueArray[3], valueArray[4], valueArray[5], valueArray[6], valueArray[7]);
