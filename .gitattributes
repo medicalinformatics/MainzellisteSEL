@@ -80,6 +80,7 @@ src/de/pseudonymisierung/mainzelliste/matcher/StringTrimmer.java -text
 src/de/pseudonymisierung/mainzelliste/matcher/ThreadedEpilinkMatcher.java -text svneol=unset#text/plain
 src/de/pseudonymisierung/mainzelliste/webservice/AbstractParam.java -text svneol=unset#text/plain
 src/de/pseudonymisierung/mainzelliste/webservice/AddPatientToken.java -text svneol=unset#text/plain
+src/de/pseudonymisierung/mainzelliste/webservice/ConfigResource.java -text svneol=unset#text/plain
 src/de/pseudonymisierung/mainzelliste/webservice/EditPatientToken.java -text svneol=unset#text/plain
 src/de/pseudonymisierung/mainzelliste/webservice/FieldKeyParam.java -text svneol=unset#text/plain
 src/de/pseudonymisierung/mainzelliste/webservice/HTMLResource.java -text svneol=unset#text/plain
