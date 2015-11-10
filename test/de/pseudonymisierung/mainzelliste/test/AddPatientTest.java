@@ -17,6 +17,8 @@ import com.sun.jersey.api.representation.Form;
 import com.sun.jersey.test.framework.JerseyTest;
 import com.sun.net.httpserver.HttpExchange;
 
+import de.pseudonymisierung.mainzelliste.Config;
+
 @SuppressWarnings("restriction")
 public class AddPatientTest extends JerseyTest {
 	private WebResource resource;
@@ -213,7 +215,9 @@ public class AddPatientTest extends JerseyTest {
 		receiver.stop();
 		
 		HttpExchange callback = receiver.getReceivedRequest();
+		assertEquals("Wrong user agent in Mainzelliste request.", "Mainzelliste/" + Config.instance.getVersion(), callback.getRequestHeaders().getFirst("User-Agent"));
 		assertEquals("Wrong HTTP method in callback.", "POST", callback.getRequestMethod());
+		
 
 		JSONObject callbackObject = new JSONObject(receiver.getReceivedEntity());
 		assertTrue("No Token-ID in callback", callbackObject.has("tokenId"));

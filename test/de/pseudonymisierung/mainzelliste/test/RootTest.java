@@ -8,6 +8,8 @@ import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.test.framework.JerseyTest;
 
+import de.pseudonymisierung.mainzelliste.Config;
+
 public class RootTest extends JerseyTest{
 
 	public RootTest() {
@@ -20,5 +22,6 @@ public class RootTest extends JerseyTest{
 		
 		ClientResponse response = webResource.path("/").get(ClientResponse.class);
 		assertEquals("Wrong status code", 200, response.getStatus());
+		assertEquals("Wrong Server header.", "Mainzelliste/" + Config.instance.getVersion(), response.getHeaders().getFirst("Server"));
 	}
 }
