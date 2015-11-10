@@ -18,6 +18,7 @@ Java developers should have a look at [Mainzelliste.Client](https://bitbucket.or
 
 ####New features:
 
+- A new field transformation, StringTrimmer, can be used to delete leading and trailing whitespace from a PlainTextField.
 - The language of user forms can be set by providing the language code as URL parameter `language` (currently `de` and `en` are supported).
 - Date validation rejects dates in the future.
 - Application name and version are provided as HTTP header Server (in responses) or User-Agent (in callback requests) in the format "Mainzelliste/x.y.z".
