@@ -254,6 +254,7 @@ public enum PatientBackend {
 				HttpClient httpClient = new DefaultHttpClient();
 				HttpPost callbackReq = new HttpPost(callback);
 				callbackReq.setHeader("Content-Type", MediaType.APPLICATION_JSON);
+				callbackReq.setHeader("User-Agent", Config.instance.getUserAgentString());
 				StringEntity reqEntity = new StringEntity(reqBody.toString());
 				reqEntity.setContentType("application/json");
 				callbackReq.setEntity(reqEntity);

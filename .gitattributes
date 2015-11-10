@@ -86,6 +86,7 @@ src/de/pseudonymisierung/mainzelliste/webservice/FieldKeyParam.java -text svneol
 src/de/pseudonymisierung/mainzelliste/webservice/HTMLResource.java -text svneol=unset#text/plain
 src/de/pseudonymisierung/mainzelliste/webservice/PatientsResource.java -text svneol=unset#text/plain
 src/de/pseudonymisierung/mainzelliste/webservice/RootResource.java -text svneol=unset#text/plain
+src/de/pseudonymisierung/mainzelliste/webservice/ServerInfoFilter.java -text svneol=unset#text/plain
 src/de/pseudonymisierung/mainzelliste/webservice/SessionIdParam.java -text svneol=unset#text/plain
 src/de/pseudonymisierung/mainzelliste/webservice/SessionsResource.java -text svneol=unset#text/plain
 src/de/pseudonymisierung/mainzelliste/webservice/Token.java -text svneol=unset#text/plain
