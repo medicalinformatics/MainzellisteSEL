@@ -10,8 +10,28 @@ The following article describes the underlying concepts of Mainzelliste and the 
 
 > Lablans M, Borg A, Ückert F. A RESTful interface to pseudonymization services in modern web applications. BMC Medical Informatics and Decision Making 2015, 15:2. <http://www.biomedcentral.com/1472-6947/15/2>.
 
+Java developers should have a look at [Mainzelliste.Client](https://bitbucket.org/medinfo_mainz/mainzelliste.client), a library that handles the HTTP calls necessary for using Mainzelliste in a client application.   
 
 ## Release notes
+
+###1.5.0
+
+####New features:
+
+- The language of user forms can be set by providing the language code as URL parameter `language` (currently `de` and `en` are supported).
+- Date validation rejects dates in the future.
+- Application name and version are provided as HTTP header Server (in responses) or User-Agent (in callback requests) in the format "Mainzelliste/x.y.z".
+
+####Bug fixes:
+
+- The host name provided by the `Origin` header was checked against the configured hosts even if it was the same host under which the Mainzelliste instance was running on, i.e. treating a same-origin request like a cross-origin request (reported by Benjamin Gathmann). 
+- When creating an `addPatient` token, ID types were not checked when using data item `idTypes` (API version 2.x syntax) with declared API version missing or < 2.0.
+- Requests with an invalid token (i.e. not existing or wrong type) lead to status code 400 (Bad Request) instead of 401 (Unauthorized). 
+
+####Other changes:
+
+- Changed data type annotation for Patient#fieldsString and Patient#inputFieldsString to @Lob for portable mapping of unbounded character strings to appropriate database types.
+- Internal improvements in class Persistor.
 
 ###1.4.2
 

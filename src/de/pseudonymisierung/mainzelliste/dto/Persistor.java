@@ -459,6 +459,12 @@ public enum Persistor {
 		}			
 	}
 	
+	/**
+	 * Get JDBC connection to database. Fails with an Error if the driver class cannot be found or an error occurs while
+	 * connecting.
+	 * 
+	 * @return The JDBC connection.
+	 */
 	private Connection getJdbcConnection() {
 		Properties connectionProps = new Properties();
 		if (Config.instance.getProperty("db.username") != null) connectionProps.put("user",  Config.instance.getProperty("db.username"));
@@ -476,8 +482,15 @@ public enum Persistor {
 		}
 	}
 	
+	/**
+	 * Quote an identifier (e.g. table name) for use in an SQL query. Selects the appropriate quotation character.
+	 * 
+	 * @param identifier
+	 *            The identifier to quote.
+	 * @return The quoted identifier.
+	 */
 	private String quoteIdentifier(String identifier) {
-		// Retreive from database only once to reduce connections
+		// Retrieve from database only once to reduce connections
 		if (identifierQuoteString == null) {
 			try {
 				Connection conn = getJdbcConnection();

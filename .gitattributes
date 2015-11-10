@@ -77,14 +77,17 @@ src/de/pseudonymisierung/mainzelliste/matcher/MatchResult.java -text svneol=unse
 src/de/pseudonymisierung/mainzelliste/matcher/Matcher.java -text
 src/de/pseudonymisierung/mainzelliste/matcher/NGramComparator.java -text svneol=unset#text/plain
 src/de/pseudonymisierung/mainzelliste/matcher/StringNormalizer.java -text svneol=unset#text/plain
+src/de/pseudonymisierung/mainzelliste/matcher/StringTrimmer.java -text
 src/de/pseudonymisierung/mainzelliste/matcher/ThreadedEpilinkMatcher.java -text svneol=unset#text/plain
 src/de/pseudonymisierung/mainzelliste/webservice/AbstractParam.java -text svneol=unset#text/plain
 src/de/pseudonymisierung/mainzelliste/webservice/AddPatientToken.java -text svneol=unset#text/plain
+src/de/pseudonymisierung/mainzelliste/webservice/ConfigResource.java -text svneol=unset#text/plain
 src/de/pseudonymisierung/mainzelliste/webservice/EditPatientToken.java -text svneol=unset#text/plain
 src/de/pseudonymisierung/mainzelliste/webservice/FieldKeyParam.java -text svneol=unset#text/plain
 src/de/pseudonymisierung/mainzelliste/webservice/HTMLResource.java -text svneol=unset#text/plain
 src/de/pseudonymisierung/mainzelliste/webservice/PatientsResource.java -text svneol=unset#text/plain
 src/de/pseudonymisierung/mainzelliste/webservice/RootResource.java -text svneol=unset#text/plain
+src/de/pseudonymisierung/mainzelliste/webservice/ServerInfoFilter.java -text svneol=unset#text/plain
 src/de/pseudonymisierung/mainzelliste/webservice/SessionIdParam.java -text svneol=unset#text/plain
 src/de/pseudonymisierung/mainzelliste/webservice/SessionsResource.java -text svneol=unset#text/plain
 src/de/pseudonymisierung/mainzelliste/webservice/Token.java -text svneol=unset#text/plain
