@@ -20,6 +20,7 @@ Java developers should have a look at [Mainzelliste.Client](https://bitbucket.or
 
 - The language of user forms can be set by providing the language code as URL parameter `language` (currently `de` and `en` are supported).
 - Date validation rejects dates in the future.
+- Application name and version are provided as HTTP header Server (in responses) or User-Agent (in callback requests) in the format "Mainzelliste/x.y.z".
 
 ####Bug fixes:
 
@@ -30,6 +31,8 @@ Java developers should have a look at [Mainzelliste.Client](https://bitbucket.or
 ####Other changes:
 
 - Changed data type annotation for Patient#fieldsString and Patient#inputFieldsString to @Lob for portable mapping of unbounded character strings to appropriate database types.
+- Internal improvements in class Persistor.
+
 ###1.4.2
 
 Fixes an encoding error in German language properties file. This version can be skipped by users who do not use the HTML interface or use their own JSP files.
