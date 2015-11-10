@@ -237,7 +237,7 @@ result.printIdat = false
 
 # A passphrase used for authentication
 servers.0.apiKey = mdat1234
-servers.0.permissions = createSession;showSessionIds;deletePatient;createToken;tt_addPatient;tt_readPatients;tt_editPatient
+servers.0.permissions = createSession;showSessionIds;deletePatient;createToken;readConfiguration;tt_addPatient;tt_readPatients;tt_editPatient
 
 # Accepted origin addresses
 servers.0.allowedRemoteAdresses = 127.0.0.0/14;0:0:0:0:0:0:0:1;192.168.56.100;172.30.26.0/16
