@@ -13,6 +13,12 @@ The following article describes the underlying concepts of Mainzelliste and the 
 
 ## Release notes
 
+###1.4.3
+
+Fixes a typo in the matching configuration proposed in the configuration template (`mainzelliste.conf.default`). In existing configuration files based on the template, the value for `matcher.epilink.geburtsmonat.frequency` should be changed from `0.833` to `0.0833`. This change has to be made manually because the actually used configuration file resides outside of the distributed package. 
+
+Also, the proposed weight threshold for matches (`matcher.epilink.threshold_match`) has been raised from `0.9` to `0.95` in order to prevent that a definitive match occurs when two records with otherwise equal fields differ in one component (day, month, year) of the date of birth. We also recommend to adopt that change in existing configurations.   
+
 ###1.4.2
 
 Fixes an encoding error in German language properties file. This version can be skipped by users who do not use the HTML interface or use their own JSP files.
