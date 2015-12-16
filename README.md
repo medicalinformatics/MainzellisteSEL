@@ -16,22 +16,26 @@ Java developers should have a look at [Mainzelliste.Client](https://bitbucket.or
 
 ###1.5.0
 
+This release introduces a couple of new features and bug fixes, which do not change the public API (current version: 2.1). We recommend an upgrade to all users, which is possible from any earlier release without any steps necessary other than replacing the binary. The update is fully backwards compatible to all Mainzelliste versions down to 1.0, except for use cases with the requirement that future dates can be entered (these are now rejected by date validation). 
+
 ####New features:
 
-- A new field transformation, StringTrimmer, can be used to delete leading and trailing whitespace from a PlainTextField.
+- A new field transformation, `StringTrimmer`, can be used to delete leading and trailing whitespace from a `PlainTextField`.
 - The language of user forms can be set by providing the language code as URL parameter `language` (currently `de` and `en` are supported).
 - Date validation rejects dates in the future.
-- Application name and version are provided as HTTP header Server (in responses) or User-Agent (in callback requests) in the format "Mainzelliste/x.y.z".
+- Application name and version are provided in responses and callback requests as HTTP header `Server` and `User-Agent`, respectively, in the format `Mainzelliste/x.y.z`.
+- The implementation of the callback request ensures the use of state-of-the-art transport layer security (TLS) (contributed by Matthias Lemmer, see pull request #26).
+- When configuration parameter `callback.allowSelfsigned` is set to `true`, self-signed certificates on the target host are accepted when making callback requests (contributed by Matthias Lemmer, see pull request #26).  
 
 ####Bug fixes:
 
-- The host name provided by the `Origin` header was checked against the configured hosts even if it was the same host under which the Mainzelliste instance was running on, i.e. treating a same-origin request like a cross-origin request (reported by Benjamin Gathmann). 
-- Requests with an invalid token (i.e. not existing or wrong type) lead to status code 400 (Bad Request) instead of 401 (Unauthorized). 
+- The host name provided by the `Origin` header was checked against the configured list of hosts (configuration parameter `servers.allowedOrigins`) even if equal to the host of the Mainzelliste instance itself, i.e. treating a same-origin request like a cross-origin request (reported by Benjamin Gathmann). 
+- Requests with an invalid token (i.e. non-existent or of wrong type) lead to status code 400 (Bad Request) instead of 401 (Unauthorized). 
 
 ####Other changes:
 
-- Changed data type annotation for Patient#fieldsString and Patient#inputFieldsString to @Lob for portable mapping of unbounded character strings to appropriate database types.
-- Internal improvements in class Persistor.
+- Changed data type annotation for `Patient#fieldsString` and `Patient#inputFieldsString` to `@Lob` for portable mapping of unbounded character strings to appropriate database types.
+- Internal improvements in class `Persistor`.
 
 ###1.4.3
 
