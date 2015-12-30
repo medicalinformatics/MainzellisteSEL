@@ -31,7 +31,7 @@
 	<jsp:include page="header.jsp"></jsp:include>
 	<div class="inhalt">
 		<div class="formular">
-			<h1>Ergebnis</h1>
+			<h1><%=bundle.getString("result") %></h1>
                         <div style="text-align: center;">
                             <p>
 								<%=bundle.getString("yourRequestedPIDs") %>
