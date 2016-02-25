@@ -10,7 +10,7 @@
 <%
 	@SuppressWarnings("unchecked")
 	Map<String, Object> map = (Map<String, Object>) request
-	.getAttribute("it");
+			.getAttribute("it");
 	ResourceBundle bundle = Config.instance.getResourceBundle(request);
 	Boolean showPlaceholders = Boolean.parseBoolean(request.getParameter("showPlaceholders"));
 %>

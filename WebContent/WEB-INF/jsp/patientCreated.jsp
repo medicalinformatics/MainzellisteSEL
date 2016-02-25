@@ -10,11 +10,11 @@
 <%
 	@SuppressWarnings("unchecked")
 	Map<String, Object> map = (Map<String, Object>) request
-	.getAttribute("it");
+			.getAttribute("it");
 	Set<ID> ids = (Set<ID>) map.get("ids");
 	ResourceBundle bundle = Config.instance.getResourceBundle(request);
 	DateFormatSymbols dfs = DateFormatSymbols.getInstance(bundle
-	.getLocale());
+			.getLocale());
 %>
 <!DOCTYPE html>
 <html>
