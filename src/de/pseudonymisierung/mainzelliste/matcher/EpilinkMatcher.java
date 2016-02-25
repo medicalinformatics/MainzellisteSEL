@@ -67,6 +67,7 @@ import de.pseudonymisierung.mainzelliste.matcher.MatchResult.MatchResultType;
  */
 public class EpilinkMatcher implements Matcher {
 
+	private Logger logger = Logger.getLogger(EpilinkMatcher.class);
 	/** Minimum weight for definitive matches. */
 	private double thresholdMatch;
 	

@@ -375,6 +375,17 @@ public enum Config {
 	}
 	
 	/**
+	 * Returns application name and version for use in HTTP headers Server and
+	 * User-Agent. Format: "Mainzelliste/x.y.z", with the version as returned by
+	 * {@link #getVersion()}.
+	 * 
+	 * @return The version string.
+	 */
+	public String getUserAgentString() {
+		return "Mainzelliste/" + getVersion();
+	}
+	
+	/**
 	 * Get configured log level (DEBUG by default).
 	 * @return The log level.
 	 */

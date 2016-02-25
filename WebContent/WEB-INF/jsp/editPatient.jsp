@@ -7,7 +7,7 @@
 	// pass "language" parameter from URL if given (included in form URL below)
 	String languageInUrl ="";
 	if (request.getParameter("language") != null)
-		languageInUrl = "&language=" + request.getParameter("language");
+		languageInUrl = "&amp;language=" + request.getParameter("language");
 %>
 <!DOCTYPE html>
 <html>
