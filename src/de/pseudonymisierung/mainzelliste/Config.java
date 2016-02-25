@@ -197,8 +197,6 @@ public enum Config {
 		if (allowedOriginsString != null)			
 			allowedOrigins.addAll(Arrays.asList(allowedOriginsString.trim().split(";")));
 		
-		Locale.setDefault(Locale.ENGLISH);
-		
 		// Read version number provided by pom.xml
 		version = readVersion();
 	}
@@ -387,7 +385,7 @@ public enum Config {
 		}
 
 		// Finally, add English as fallback
-		preferredLocales.add(Locale.getDefault());
+		preferredLocales.add(Locale.ENGLISH);
 
 		// Instantiate control object for searching resources without using default locale,
 		// as default locale is searched for explicitly.
