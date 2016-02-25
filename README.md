@@ -37,6 +37,20 @@ The Mainzelliste API has been implemented in the following software products:
 
 ## Release notes
 
+###1.4.3
+
+This is a backward compatible maintenance release and we recommend an upgrade to all users. Also, we strongly recommend to incorporate the changes in the configuration template into actual configuration files (see comments below).
+
+####Changes in matching configuration:
+- Fixes a typo in the proposed matching configuration. In existing configuration files based on the template (`mainzelliste.conf.default`), the value for `matcher.epilink.geburtsmonat.frequency` should be changed from `0.833` to `0.0833`. This change has to be made manually because the actually used configuration file resides outside of the distributed package. The location of the configuration file is defined in the context descriptor by parameter `de.pseudonymisierung.mainzelliste.ConfigurationFile` (see installation manual for details). 
+- Also, the proposed weight threshold for matches (`matcher.epilink.threshold_match`) has been raised from `0.9` to `0.95`. We also recommend to adopt this change in existing configuration files.
+
+These changes prevent that a definitive match occurs for two records that differ in one component (day, month, year) of the date of birth, all other fields being equal (reported by Matthias Lemmer).    
+
+####Bug fixes:
+- When creating an `addPatient` token, ID types were not checked when using data item `idTypes` (API version 2.x syntax) with declared API version missing or < 2.0.
+- The configuration parameter for cross origin resource sharing and its explanation were missing in the configuration template.
+
 ###1.4.2
 
 Fixes an encoding error in German language properties file. This version can be skipped by users who do not use the HTML interface or use their own JSP files.
@@ -82,7 +96,6 @@ As this release contains various bug fixes, we recommend an upgrade to all users
 - In addition to specific IP addresses, IPv4 address ranges can be included in the list of addresses from which another server can get access (see configuration parameter `servers.{n}.allowedRemoteAdresses`)
 - For all successful requests to add a patient (POST /patients), the timestamp is logged in the database (for future use cases).
 - When making requests via the HTML interface, error messages are formatted as web pages.
-tact` and `operator.logo`).
 - The result page that is shown after a patient has been added now lists all requested pseudonyms according to parameter `idTypes` in the token (contributed by Matthias Lemmer).
 
 #### Bug fixes:
