@@ -77,6 +77,7 @@ src/de/pseudonymisierung/mainzelliste/matcher/MatchResult.java -text svneol=unse
 src/de/pseudonymisierung/mainzelliste/matcher/Matcher.java -text
 src/de/pseudonymisierung/mainzelliste/matcher/NGramComparator.java -text svneol=unset#text/plain
 src/de/pseudonymisierung/mainzelliste/matcher/StringNormalizer.java -text svneol=unset#text/plain
+src/de/pseudonymisierung/mainzelliste/matcher/StringTrimmer.java -text svneol=unset#text/plain
 src/de/pseudonymisierung/mainzelliste/matcher/ThreadedEpilinkMatcher.java -text svneol=unset#text/plain
 src/de/pseudonymisierung/mainzelliste/webservice/AbstractParam.java -text svneol=unset#text/plain
 src/de/pseudonymisierung/mainzelliste/webservice/AddPatientToken.java -text svneol=unset#text/plain
