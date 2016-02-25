@@ -33,10 +33,13 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.Arrays;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.Locale;
 import java.util.Map;
+import java.util.MissingResourceException;
 import java.util.Properties;
 import java.util.ResourceBundle;
 import java.util.Set;
@@ -364,14 +367,44 @@ public enum Config {
 	 * @return The matching resource bundle. 
 	 */
 	public ResourceBundle getResourceBundle(HttpServletRequest req) {
-		Locale requestLocale; 
+
+		// Base name of resource bundle files
+		String baseName = "MessageBundle";
+
+		// Build a list of preferred locales
+		LinkedList<Locale> preferredLocales = new LinkedList<Locale>();
+		// First preference: URL parameter "language", if set.
 		String languageParam = req.getParameter("language");
-		if (languageParam != null)
-			requestLocale = new Locale(languageParam);
-		else
-			requestLocale = req.getLocale();
-		ResourceBundle bundle = ResourceBundle.getBundle("MessageBundle", requestLocale);
-		return bundle;
+		if (languageParam != null) {
+			Locale urlLocale = new Locale(languageParam);
+			preferredLocales.add(urlLocale);
+		}
+
+		// Next, add all preferred locales from the request (header "Language").
+		Enumeration<Locale> requestLocales = req.getLocales();
+		while (requestLocales.hasMoreElements()) {
+			preferredLocales.add(requestLocales.nextElement());
+		}
+
+		// Finally, add English as fallback
+		preferredLocales.add(Locale.getDefault());
+
+		// Instantiate control object for searching resources without using default locale,
+		// as default locale is searched for explicitly.
+		ResourceBundle.Control noFallback = ResourceBundle.Control.getNoFallbackControl(ResourceBundle.Control.FORMAT_DEFAULT);
+
+		// Iterate over list of locales and return the first matching resource bundle
+		for (Locale thisLocale : preferredLocales) {
+			  // Try to get ResourceBundle for current locale
+			   try {
+				   return ResourceBundle.getBundle("MessageBundle", thisLocale, noFallback);
+			   } catch (MissingResourceException e) {
+				   // Silently try next preferred locale
+			   }
+		}
+
+		// If this line is reached, no resource bundle (including system default) could be found, which is an error
+		throw new Error ("Could not find resource bundle with base name '" + baseName + "' for any of the locales: " + preferredLocales);
 	}
 	
 	/**
