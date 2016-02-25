@@ -363,7 +363,7 @@ public enum Config {
 	 * @param req The servlet request.
 	 * @return The matching resource bundle. 
 	 */
-	public ResourceBundle getResourceBunde(HttpServletRequest req) {
+	public ResourceBundle getResourceBundle(HttpServletRequest req) {
 		Locale requestLocale; 
 		String languageParam = req.getParameter("language");
 		if (languageParam != null)

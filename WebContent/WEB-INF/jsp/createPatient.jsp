@@ -3,7 +3,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%
-	ResourceBundle bundle = Config.instance.getResourceBunde(request);
+	ResourceBundle bundle = Config.instance.getResourceBundle(request);
 	// pass "language" parameter from URL if given (included in form URL below)
 	String languageInUrl ="";
 	if (request.getParameter("language") != null)
