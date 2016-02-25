@@ -359,13 +359,29 @@ public enum Config {
 	}
 	
 	/**
-	 * Get resource bundle matching the locale of the request (based on Accept-Language header).
-	 * If no matching resource bundle is found, English is assumed.
-	 * @param req The servlet request.
-	 * @return The matching resource bundle. 
+	 * Get resource bundle for the best matching locale of the request. The best
+	 * matching locale is determined by iterating through the following list of
+	 * language codes and choosing the first for which a resource bundle file is
+	 * found:
+	 * <ol>
+	 * <li>If present, value of the URL parameter 'language'.
+	 * <li>Any language codes provided in HTTP header "Accept-Language" in the
+	 * given order.
+	 * <li>"en" as fallback (i.e. English is the default language).
+	 * </ol>
+	 * 
+	 * @param req
+	 *            The servlet request.
+	 * @return The matching resource bundle.
 	 */
 	public ResourceBundle getResourceBundle(HttpServletRequest req) {
 
+		// Look if there is a cached ResourceBundle instance for this request
+		final String storedResourceBundleKey = this.getClass().getName() + ".selectedResourceBundle";
+		Object storedResourceBundle = req.getAttribute(storedResourceBundleKey);
+		if (storedResourceBundle != null && storedResourceBundle instanceof ResourceBundle)
+				return (ResourceBundle) storedResourceBundle;
+		
 		// Base name of resource bundle files
 		String baseName = "MessageBundle";
 
@@ -395,7 +411,10 @@ public enum Config {
 		for (Locale thisLocale : preferredLocales) {
 			  // Try to get ResourceBundle for current locale
 			   try {
-				   return ResourceBundle.getBundle("MessageBundle", thisLocale, noFallback);
+				   ResourceBundle selectedResourceBundle = ResourceBundle.getBundle("MessageBundle", thisLocale, noFallback);
+				   // Cache ResourceBundle object for further calls to this method within the same HTTP request
+				   req.setAttribute(storedResourceBundleKey, selectedResourceBundle);
+				   return selectedResourceBundle;
 			   } catch (MissingResourceException e) {
 				   // Silently try next preferred locale
 			   }
