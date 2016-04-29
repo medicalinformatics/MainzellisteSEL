@@ -20,7 +20,7 @@ Mainzelliste is used in various medical joint research projects, including:
 - European chILD-EU register ([Ethics/Data Safety](http://www.klinikum.uni-muenchen.de/Child-EU/en/register/ethics_data_safety/index.html))
 - [German Cancer Consortium](https://ccp-it.dktk.dkfz.de/)
 - Cluster for Individualized Immune Intervention (Ci3) ([Meeting abstract on IT concept](http://www.egms.de/static/de/meetings/gmds2014/14gmds106.shtml))
-- Studies conducted by the [LASER group](http://www.la-ser.com/).
+- Studies conducted by the [LASER group](http://www.la-ser.com/)
 
 Another important use case is pseudonymization in central biobanks, for example:
 
