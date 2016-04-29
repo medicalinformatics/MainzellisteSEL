@@ -18,8 +18,7 @@ Mainzelliste is used in various medical joint research projects, including:
 
 - German Mukoviszidose Register ([Data protection concept](http://muko.info/fileadmin/redaktion/datei_gruppen/muko_institut/2015_06_24_Datenschutzkonzept_Mukoviszidose-Register_2.0.pdf))
 - European chILD-EU register ([Ethics/Data Safety](http://www.klinikum.uni-muenchen.de/Child-EU/en/register/ethics_data_safety/index.html))
-- German Cancer Consortium (DKTK) ([Data protection concept](http://www.unimedizin-mainz.de/typo3temp/secure_downloads/19402/0/3826542f323206d948a330d5705d0463564669b1/Datenschutzkonzept_CCP-IT__10.10.2014.pdf))
-- German National Cohort ([Data protection concept](http://nationale-kohorte.de/wp-content/uploads/2015/07/Treuhandstellenkonzept.pdf))
+- [German Cancer Consortium](https://ccp-it.dktk.dkfz.de/)
 - Cluster for Individualized Immune Intervention (Ci3) ([Meeting abstract on IT concept](http://www.egms.de/static/de/meetings/gmds2014/14gmds106.shtml))
 - Studies conducted by the [LASER group](http://www.la-ser.com/).
 
@@ -28,7 +27,7 @@ Another important use case is pseudonymization in central biobanks, for example:
 - [Comprehensive Biomaterial Bank Marburg](http://www.cbbmr.de/informationen-allgemein/allgemeines.html)
 - [Hannover Unified Biobank](http://www.pg-ss.imi.uni-erlangen.de/SiteCollectionDocuments/Hannover_HUB_IT_Kersting.pdf)
 
-The Mainzelliste API has been implemented in the following software products:
+The Mainzelliste API has been implemented in the following projects and software products:
 
 - [OSSE – Open Source Registry System for Rare Diseases in the EU](http://osse-register.de)
 - [OpenClinica](https://openclinica.com/) (see [presentation on integrating Mainzelliste and other software](https://community.openclinica.com/sites/fileuploads/akaza/cms-community/Tomas%20Skripcak%20-%20Lessons%20learned.pdf))
@@ -37,6 +36,9 @@ The Mainzelliste API has been implemented in the following software products:
 - [MOSAIC](https://mosaic-greifswald.de/) (Mainzelliste interface used by "Trusted-Third-Party-Dispatcher", see [Bialke et al. A workflow-driven approach to integrate generic software modules in a Trusted Third Party. Journal of Translational Medicine 2015, 13:176](http://www.translational-medicine.com/content/13/1/176)
 - [Electronic data capture system by Fraunhofer FOKUS](https://cdn3.scrivito.com/fokus/57a537e2ec27cb7b/0a3a0655dcc079f58890e39dbdca4781/E-HEALTH_Standards_PB_03-2015_v03.pdf)
 - [Centraxx](http://www.kairos.de/centraxx/)
+- German National Cohort (uses a subset of the API) ([Data protection concept](http://nationale-kohorte.de/wp-content/uploads/2015/07/Treuhandstellenkonzept.pdf))
+
+We have compiled this list from the results of public search engines. If you use the Mainzelliste or its API, we would be glad to include your project in this list. Please don't hestitate to [contact us](mailto:info@mainzelliste.de).
 
 ## Release notes
 
