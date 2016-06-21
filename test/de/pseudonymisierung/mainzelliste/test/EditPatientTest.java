@@ -231,7 +231,6 @@ public class EditPatientTest extends JerseyTest {
      *
      * Test for issue PROB-278.
      *
-     * @throws JSONException
      */
     @Test
     public void testSetFieldToNull() throws JSONException {
@@ -254,14 +253,14 @@ public class EditPatientTest extends JerseyTest {
         response = TestUtilities.getBuilderPatientEdit(resource, tokenId, TestUtilities.getApikey())
                 .put(ClientResponse.class, formData);
 
-        // Verify that field 'ort' is null in the database
+        // Verify that null is translated to an empty string internally
         Patient patientToRead = Persistor.instance.getPatient(IDGeneratorFactory.instance.idFromJSON(dummyPatientId));
-        assertNull("Field set to null in edit request is not null in patient object",
+        assertEquals("Field set to null in edit request is not empty string in patient object", "",
                 patientToRead.getFields().get(keyToSetToNull).getValue());
 
-        // Read field 'ort' and verify it is null
+        // Verify that null is translated to an empty string in REST response
         JSONArray readPatientData = TestUtilities.readPatient(resource, dummyPatientId);
         Object fieldToCheck = readPatientData.getJSONObject(0).getJSONObject("fields").get(keyToSetToNull);
-        assertNull("Field set to null in edit request is not null when being read", fieldToCheck);
+        assertEquals("Field set to null in edit request is not emtpy string in REST response", "", fieldToCheck);
     }
 }
