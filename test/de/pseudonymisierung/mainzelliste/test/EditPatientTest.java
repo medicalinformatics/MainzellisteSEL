@@ -3,12 +3,17 @@ package de.pseudonymisierung.mainzelliste.test;
 import static org.junit.Assert.*;
 
 import org.codehaus.jettison.json.JSONArray;
+import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 import org.junit.Test;
 
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.test.framework.JerseyTest;
+
+import de.pseudonymisierung.mainzelliste.IDGeneratorFactory;
+import de.pseudonymisierung.mainzelliste.Patient;
+import de.pseudonymisierung.mainzelliste.dto.Persistor;
 
 public class EditPatientTest extends JerseyTest {
 
@@ -220,4 +225,43 @@ public class EditPatientTest extends JerseyTest {
 		editPatient = TestUtilities.readPatient(resource, patienId);
 		assertEquals("Edited Patient field '" + patientKeys[7] + "' is not as edited.", patientValues[7], TestUtilities.getStringOfJSON(editPatient, patientKeys[7]));
 	}
+
+    /**
+     * Test if fields set to null are represented correctly.
+     *
+     * Test for issue PROB-278.
+     *
+     * @throws JSONException
+     */
+    @Test
+    public void testSetFieldToNull() throws JSONException {
+        String sessionId = TestUtilities.createSession(resource);
+
+        String[] keyArray = { "vorname", "nachname", "geburtsname", "geburtstag", "geburtsmonat", "geburtsjahr", "ort",
+                "plz" };
+        String[] valueArray = { "ReadPatientVorname", "ReadPatientNachname", "Hans", "15", "12", "1960", "Wiesbaden",
+                "65197" };
+
+        // Add Dummy Patient for Testing
+        JSONObject dummyPatientId = TestUtilities.addPatient(resource, valueArray[0], valueArray[1], valueArray[2],
+                valueArray[3], valueArray[4], valueArray[5], valueArray[6], valueArray[7]);
+
+        // Set 'ort' to null
+        String keyToSetToNull = keyArray[6];
+        JSONObject formData = new JSONObject();
+        formData.put(keyToSetToNull, JSONObject.NULL);
+        String tokenId = TestUtilities.createTokenIdEditPatient(resource, sessionId, dummyPatientId, null);
+        response = TestUtilities.getBuilderPatientEdit(resource, tokenId, TestUtilities.getApikey())
+                .put(ClientResponse.class, formData);
+
+        // Verify that field 'ort' is null in the database
+        Patient patientToRead = Persistor.instance.getPatient(IDGeneratorFactory.instance.idFromJSON(dummyPatientId));
+        assertNull("Field set to null in edit request is not null in patient object",
+                patientToRead.getFields().get(keyToSetToNull).getValue());
+
+        // Read field 'ort' and verify it is null
+        JSONArray readPatientData = TestUtilities.readPatient(resource, dummyPatientId);
+        Object fieldToCheck = readPatientData.getJSONObject(0).getJSONObject("fields").get(keyToSetToNull);
+        assertNull("Field set to null in edit request is not null when being read", fieldToCheck);
+    }
 }
