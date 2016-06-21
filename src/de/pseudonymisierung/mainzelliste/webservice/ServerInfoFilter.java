@@ -38,9 +38,9 @@ import javax.servlet.http.HttpServletResponse;
 import de.pseudonymisierung.mainzelliste.Config;
 
 /**
- * Adds header "Server" with application information.
- * 
- * The provided string is of the format "Mainzelliste/x.y.z".
+ * Adds header "Server" with application information to HTTP responses.
+ * The provided string is of the format "Mainzelliste/x.y.z". Activated by 
+ * filter definition "Mainzelliste - ServerInfoFilter" in web.xml.
  */
 public class ServerInfoFilter implements Filter {
 

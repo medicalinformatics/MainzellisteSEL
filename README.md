@@ -16,22 +16,41 @@ Java developers should have a look at [Mainzelliste.Client](https://bitbucket.or
 
 ###1.5.0
 
+This release introduces a couple of new features and bug fixes, the addition of language selection via URL parameter being the only (backward compatible) change to the public API (now version 2.2). We recommend an upgrade to all users, which is possible from any earlier release without any steps necessary other than replacing the binary. The update is fully backwards compatible to all Mainzelliste versions down to 1.0, except for use cases with the requirement that future dates can be entered (these are now rejected by date validation).
+
 ####New features:
 
-- The language of user forms can be set by providing the language code as URL parameter `language` (currently `de` and `en` are supported).
+- A new field transformation, `StringTrimmer`, can be used to delete leading and trailing whitespace from a `PlainTextField`.
+- The language of user forms can be set by providing the language code as URL parameter `language` (currently `de` and `en` are supported). If provided, this parameter overrides the choice of preferred languages in the `Accept-Language` header.
 - Date validation rejects dates in the future.
-- Application name and version are provided as HTTP header Server (in responses) or User-Agent (in callback requests) in the format "Mainzelliste/x.y.z".
+- Application name and version are provided in responses and callback requests as HTTP header `Server` and `User-Agent`, respectively, in the format `Mainzelliste/x.y.z`.
+- The implementation of the callback request ensures the use of state-of-the-art transport layer security (TLS) (contributed by Matthias Lemmer, see pull request #26).
+- When configuration parameter `callback.allowSelfsigned` is set to `true`, self-signed certificates on the target host are accepted when making callback requests (contributed by Matthias Lemmer, see pull request #26).  
 
 ####Bug fixes:
 
-- The host name provided by the `Origin` header was checked against the configured hosts even if it was the same host under which the Mainzelliste instance was running on, i.e. treating a same-origin request like a cross-origin request (reported by Benjamin Gathmann). 
-- When creating an `addPatient` token, ID types were not checked when using data item `idTypes` (API version 2.x syntax) with declared API version missing or < 2.0.
-- Requests with an invalid token (i.e. not existing or wrong type) lead to status code 400 (Bad Request) instead of 401 (Unauthorized). 
+- The host name provided by the `Origin` header was checked against the configured list of hosts (configuration parameter `servers.allowedOrigins`) even if equal to the host of the Mainzelliste instance itself, i.e. treating a same-origin request like a cross-origin request (reported by Benjamin Gathmann). 
+- Requests with an invalid token (i.e. non-existent or of wrong type) lead to status code 400 (Bad Request), now 401 (Unauthorized) is returned.
+- Fixed internationalization of title in result page shown after a patient has been created (patientCreated.jsp). 
 
 ####Other changes:
 
-- Changed data type annotation for Patient#fieldsString and Patient#inputFieldsString to @Lob for portable mapping of unbounded character strings to appropriate database types.
-- Internal improvements in class Persistor.
+- Changed data type annotation for `Patient#fieldsString` and `Patient#inputFieldsString` to `@Lob` for portable mapping of unbounded character strings to appropriate database types.
+- Internal improvements in class `Persistor`.
+
+###1.4.3
+
+This is a backward compatible maintenance release and we recommend an upgrade to all users. Also, we strongly recommend to incorporate the changes in the configuration template into actual configuration files (see comments below).
+
+####Changes in matching configuration:
+- Fixes a typo in the proposed matching configuration. In existing configuration files based on the template (`mainzelliste.conf.default`), the value for `matcher.epilink.geburtsmonat.frequency` should be changed from `0.833` to `0.0833`. This change has to be made manually because the actually used configuration file resides outside of the distributed package. The location of the configuration file is defined in the context descriptor by parameter `de.pseudonymisierung.mainzelliste.ConfigurationFile` (see installation manual for details). 
+- Also, the proposed weight threshold for matches (`matcher.epilink.threshold_match`) has been raised from `0.9` to `0.95`. We also recommend to adopt this change in existing configuration files.
+
+These changes prevent that a definitive match occurs for two records that differ in one component (day, month, year) of the date of birth, all other fields being equal (reported by Matthias Lemmer).    
+
+####Bug fixes:
+- When creating an `addPatient` token, ID types were not checked when using data item `idTypes` (API version 2.x syntax) with declared API version missing or < 2.0.
+- The configuration parameter for cross origin resource sharing and its explanation were missing in the configuration template.
 
 ###1.4.2
 
@@ -78,7 +97,6 @@ As this release contains various bug fixes, we recommend an upgrade to all users
 - In addition to specific IP addresses, IPv4 address ranges can be included in the list of addresses from which another server can get access (see configuration parameter `servers.{n}.allowedRemoteAdresses`)
 - For all successful requests to add a patient (POST /patients), the timestamp is logged in the database (for future use cases).
 - When making requests via the HTML interface, error messages are formatted as web pages.
-tact` and `operator.logo`).
 - The result page that is shown after a patient has been added now lists all requested pseudonyms according to parameter `idTypes` in the token (contributed by Matthias Lemmer).
 
 #### Bug fixes:
