@@ -238,7 +238,7 @@ public class EditPatientTest extends JerseyTest {
 
         String[] keyArray = { "vorname", "nachname", "geburtsname", "geburtstag", "geburtsmonat", "geburtsjahr", "ort",
                 "plz" };
-        String[] valueArray = { "ReadPatientVorname", "ReadPatientNachname", "Hans", "15", "12", "1960", "Wiesbaden",
+        String[] valueArray = { "EditPatientVorname", "EditPatientNachname", "Wolfgang", "11", "11", "1977", "Wiesbaden",
                 "65197" };
 
         // Add Dummy Patient for Testing
