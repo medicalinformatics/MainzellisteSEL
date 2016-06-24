@@ -63,7 +63,7 @@ field.geburtsname.type = PlainTextField
 field.geburtstag.type = IntegerField 
 field.geburtsmonat.type = IntegerField
 field.geburtsjahr.type = IntegerField
-field.plz.type = PlainTextField
+field.plz.type = IntegerField
 field.ort.type = PlainTextField
 
 fields.order = vorname, nachname, geburtsname, geburtstag, geburtsmonat, geburtsjahr, plz, ort

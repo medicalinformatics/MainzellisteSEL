@@ -185,13 +185,19 @@ public class AddPatientTest extends JerseyTest {
 				.post(ClientResponse.class, formData);
 		assertEquals("Add Patient with birth date in the future did not return 400 status. Message from server: " + response.getEntity(String.class), 400, response.getStatus());
 
-		// Add Patient with a empty Field
+		// Add Patient with an empty IntegerField
 		formData = TestUtilities.createForm("AddPatientVorname", "AddPatientNachname", "Hans", "01", "01", "2000", "Mainz", "");
 		response = TestUtilities.getBuilderPatient(resource, tokenId, TestUtilities.getApikey())
 				.post(ClientResponse.class, formData);
 		assertEquals("Adding Patient without a not required field(plz) did not return 201 status. Message from server: " + response.getEntity(String.class), 201, response.getStatus());
 
-		// Add Patient with an unsafe match
+        // Add Patient with an empty PlainTextField
+        formData = TestUtilities.createForm("AddPatientVorname", "AddPatientNachname", "Hans", "01", "01", "2000", "Mainz", "");
+        response = TestUtilities.getBuilderPatient(resource, tokenId, TestUtilities.getApikey())
+                .post(ClientResponse.class, formData);
+        assertEquals("Adding Patient without a not required field(plz) did not return 201 status. Message from server: " + response.getEntity(String.class), 201, response.getStatus());
+
+        // Add Patient with an unsafe match
 		tokenId = TestUtilities.createTokenIdAddPatient(resource, sessionId, "psn");		
 		Form formDataConflict = TestUtilities.createForm("AddPatientVorname", "AddPatientNachname", "Hanz", "01", "01", "2000", "Mainz", "");
 		response = TestUtilities.getBuilderPatient(resource, tokenId, TestUtilities.getApikey())
