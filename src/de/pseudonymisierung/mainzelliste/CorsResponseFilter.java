@@ -49,39 +49,39 @@ import org.apache.log4j.Logger;
  */
 public class CorsResponseFilter implements Filter {
 
-    /** The logging instance. */
-    private Logger logger = Logger.getLogger(this.getClass());
+	/** The logging instance. */
+	private Logger logger = Logger.getLogger(this.getClass());
 
-    /**
-     * Not used in this implementation.
-     */
-    @Override
-    public void init(FilterConfig arg0) throws ServletException {}
+	/**
+	 * Not used in this implementation.
+	 */
+	@Override
+	public void init(FilterConfig arg0) throws ServletException {}
 
-    /**
-     * Not used in this implementation.
-     */
-    @Override
-    public void destroy() {}
+	/**
+	 * Not used in this implementation.
+	 */
+	@Override
+	public void destroy() {}
 
-    @Override
-    public void doFilter(ServletRequest request, ServletResponse response,
-            FilterChain chain) throws IOException, ServletException {
-        if (request instanceof HttpServletRequest && response instanceof HttpServletResponse) {
-            HttpServletRequest httpRequest = (HttpServletRequest) request;
-            HttpServletResponse httpResponse = (HttpServletResponse) response;
+	@Override
+	public void doFilter(ServletRequest request, ServletResponse response,
+			FilterChain chain) throws IOException, ServletException {
+		if (request instanceof HttpServletRequest && response instanceof HttpServletResponse) {
+			HttpServletRequest httpRequest = (HttpServletRequest) request;
+			HttpServletResponse httpResponse = (HttpServletResponse) response;
 
-            String origin = httpRequest.getHeader("Origin");
-            String thisHostAndScheme = httpRequest.getScheme() + "://" + httpRequest.getHeader("Host");
-            if (origin != null) {
-                if (origin.equals(thisHostAndScheme) || Config.instance.originAllowed(origin)) {
-                    logger.debug("Allowing cross domain request from origin " + origin);
-                    httpResponse.addHeader("Access-Control-Allow-Origin", origin);
-                } else {
-                    logger.info("Rejecting cross domain request from origin " + origin);
-                }
-            }
-        }
-        chain.doFilter(request, response);
-    }
+			String origin = httpRequest.getHeader("Origin");
+			String thisHostAndScheme = httpRequest.getScheme() + "://" + httpRequest.getHeader("Host");
+			if (origin != null) {
+				if (origin.equals(thisHostAndScheme) || Config.instance.originAllowed(origin)) {
+					logger.debug("Allowing cross domain request from origin " + origin);
+					httpResponse.addHeader("Access-Control-Allow-Origin", origin);
+				} else {
+					logger.info("Rejecting cross domain request from origin " + origin);
+				}
+			}
+		}
+		chain.doFilter(request, response);
+	}
 }

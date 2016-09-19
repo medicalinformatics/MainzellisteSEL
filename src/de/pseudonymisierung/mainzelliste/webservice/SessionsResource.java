@@ -61,249 +61,249 @@ import de.pseudonymisierung.mainzelliste.Session;
 @Path("/sessions")
 public class SessionsResource {
 
-    /** The logging instance. */
-    private Logger logger = Logger.getLogger(this.getClass());
+	/** The logging instance. */
+	private Logger logger = Logger.getLogger(this.getClass());
 
-    /**
-     * Create a new session.
-     *
-     * @param req
-     *            The injected HttpServletRequest.
-     * @return An HTTP response as specified in the API documentation.
-     * @throws JSONException
-     *             If a JSON error occurs.
-     */
-    @POST
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response newSession(@Context HttpServletRequest req) throws JSONException{
-        logger.info("Request to create session received by host " + req.getRemoteHost());
+	/**
+	 * Create a new session.
+	 *
+	 * @param req
+	 *            The injected HttpServletRequest.
+	 * @return An HTTP response as specified in the API documentation.
+	 * @throws JSONException
+	 *             If a JSON error occurs.
+	 */
+	@POST
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response newSession(@Context HttpServletRequest req) throws JSONException{
+		logger.info("Request to create session received by host " + req.getRemoteHost());
 
-        Servers.instance.checkPermission(req, "createSession");
+		Servers.instance.checkPermission(req, "createSession");
 
-        Session s = Servers.instance.newSession();
-        String sid = s.getId();
-        URI newUri = UriBuilder
-                .fromUri(req.getRequestURL().toString())
-                .path("{sid}/")
-                .build(sid);
-        s.setURI(newUri);
+		Session s = Servers.instance.newSession();
+		String sid = s.getId();
+		URI newUri = UriBuilder
+				.fromUri(req.getRequestURL().toString())
+				.path("{sid}/")
+				.build(sid);
+		s.setURI(newUri);
 
-        logger.info("Created session " + sid);
+		logger.info("Created session " + sid);
 
-        JSONObject ret = new JSONObject()
-                .put("sessionId", sid)
-                .put("uri", newUri);
+		JSONObject ret = new JSONObject()
+				.put("sessionId", sid)
+				.put("uri", newUri);
 
-        return Response
-            .status(Status.CREATED)
-            .entity(ret)
-            .location(newUri)
-            .build();
-    }
+		return Response
+			.status(Status.CREATED)
+			.entity(ret)
+			.location(newUri)
+			.build();
+	}
 
-    /**
-     * Read a session.
-     *
-     * @param sid
-     *            Id of the session to read.
-     * @param req
-     *            The injected HttpServletRequest.
-     * @return An HTTP response as specified in the API documentation.
-     * @throws JSONException
-     *             If a JSON error occurs.
-     */
-    @Path("/{session}")
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response readSession (
-             @PathParam("session") String sid,
-             @Context HttpServletRequest req) throws JSONException {
-        logger.info(String.format("Request to read session %s received by host %s", sid, req.getRemoteHost()));
-        // No authorization except for knowing the session id
-        Session s = Servers.instance.getSession(sid);
-        if (s == null) {
-            return Response.status(
-                    Status.NOT_FOUND)
-                    .entity(String.format("No session with id %s", sid))
-                    .build();
-        }
-        JSONObject ret = new JSONObject()
-            .put("sessionId", sid)
-            .put("uri", s.getURI());
+	/**
+	 * Read a session.
+	 *
+	 * @param sid
+	 *            Id of the session to read.
+	 * @param req
+	 *            The injected HttpServletRequest.
+	 * @return An HTTP response as specified in the API documentation.
+	 * @throws JSONException
+	 *             If a JSON error occurs.
+	 */
+	@Path("/{session}")
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response readSession (
+			 @PathParam("session") String sid,
+			 @Context HttpServletRequest req) throws JSONException {
+		logger.info(String.format("Request to read session %s received by host %s", sid, req.getRemoteHost()));
+		// No authorization except for knowing the session id
+		Session s = Servers.instance.getSession(sid);
+		if (s == null) {
+			return Response.status(
+					Status.NOT_FOUND)
+					.entity(String.format("No session with id %s", sid))
+					.build();
+		}
+		JSONObject ret = new JSONObject()
+			.put("sessionId", sid)
+			.put("uri", s.getURI());
 
-        return Response.status(Status.OK)
-                .entity(ret)
-                .build();
-    }
+		return Response.status(Status.OK)
+				.entity(ret)
+				.build();
+	}
 
-    /**
-     * Delete a session.
-     *
-     * @param sid
-     *            Id of the session to delete.
-     * @param req
-     *            The injected HttpServletRequest.
-     * @return An HTTP 204 (No Content) response.
-     */
-    @Path("/{session}")
-    @DELETE
-    public Response deleteSession(
-            @PathParam("session") String sid,
-            @Context HttpServletRequest req){
-        // No authentication other than knowing the session id.
-        logger.info("Received request to delete session " + sid + " from host " +
-                req.getRemoteHost());
-        Servers.instance.deleteSession(sid);
-        logger.info("Deleted session " + sid);
-        return Response
-            .status(Status.NO_CONTENT)
-            .build();
-    }
+	/**
+	 * Delete a session.
+	 *
+	 * @param sid
+	 *            Id of the session to delete.
+	 * @param req
+	 *            The injected HttpServletRequest.
+	 * @return An HTTP 204 (No Content) response.
+	 */
+	@Path("/{session}")
+	@DELETE
+	public Response deleteSession(
+			@PathParam("session") String sid,
+			@Context HttpServletRequest req){
+		// No authentication other than knowing the session id.
+		logger.info("Received request to delete session " + sid + " from host " +
+				req.getRemoteHost());
+		Servers.instance.deleteSession(sid);
+		logger.info("Deleted session " + sid);
+		return Response
+			.status(Status.NO_CONTENT)
+			.build();
+	}
 
-    /**
-     * Get the tokens of a session.
-     *
-     * @param sid
-     *            The id of the session whose tokens to get.
-     * @param req
-     *            The injected HttpServletRequest.
-     * @return An HTTP response as specified in the API documentation.
-     */
-    @Path("/{session}/tokens")
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    public Set<Token> getTokens(
-            @PathParam("session") SessionIdParam sid,
-            @Context HttpServletRequest req){
-        logger.info("Received request to list tokens for session " + sid + " from host " +
-            req.getRemoteHost());
-        // No authorization except for knowing the session id
-        return Servers.instance.getAllTokens(sid.getValue().getId());
-    }
+	/**
+	 * Get the tokens of a session.
+	 *
+	 * @param sid
+	 *            The id of the session whose tokens to get.
+	 * @param req
+	 *            The injected HttpServletRequest.
+	 * @return An HTTP response as specified in the API documentation.
+	 */
+	@Path("/{session}/tokens")
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	public Set<Token> getTokens(
+			@PathParam("session") SessionIdParam sid,
+			@Context HttpServletRequest req){
+		logger.info("Received request to list tokens for session " + sid + " from host " +
+			req.getRemoteHost());
+		// No authorization except for knowing the session id
+		return Servers.instance.getAllTokens(sid.getValue().getId());
+	}
 
-    /**
-     * Create a token.
-     *
-     * @param req
-     *            The injected HttpServletRequest.
-     * @param uriInfo
-     *            Injected information on application and request URI.
-     * @param sid
-     *            Id of the session in which to create the token.
-     * @param tp
-     *            JSON representation of the token to create.
-     * @return An HTTP response as specified in the API documentation.
-     * @throws JSONException
-     *             If a JSON error occurs.
-     */
-    @Path("/{session}/tokens")
-    @POST
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response newToken(
-            @Context HttpServletRequest req,
-            @Context UriInfo uriInfo,
-            @PathParam("session") SessionIdParam sid,
-            String tp) throws JSONException {
+	/**
+	 * Create a token.
+	 *
+	 * @param req
+	 *            The injected HttpServletRequest.
+	 * @param uriInfo
+	 *            Injected information on application and request URI.
+	 * @param sid
+	 *            Id of the session in which to create the token.
+	 * @param tp
+	 *            JSON representation of the token to create.
+	 * @return An HTTP response as specified in the API documentation.
+	 * @throws JSONException
+	 *             If a JSON error occurs.
+	 */
+	@Path("/{session}/tokens")
+	@POST
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response newToken(
+			@Context HttpServletRequest req,
+			@Context UriInfo uriInfo,
+			@PathParam("session") SessionIdParam sid,
+			String tp) throws JSONException {
 
-        Session s = sid.getValue();
+		Session s = sid.getValue();
 
-        logger.info("Received request to create token for session " + s.getId() + " by host " +
-                req.getRemoteHost());
-        logger.debug("Received data: " + tp);
+		logger.info("Received request to create token for session " + s.getId() + " by host " +
+				req.getRemoteHost());
+		logger.debug("Received data: " + tp);
 
-        Token t = new TokenParam(tp).getValue();
+		Token t = new TokenParam(tp).getValue();
 
-        if(t.getType() == null) {
-            throw new WebApplicationException(Response
-                    .status(Status.BAD_REQUEST)
-                    .entity("Token type must not be empty.")
-                    .build());
-        } else {
-            Servers.instance.checkPermission(req, "createToken");
-            Servers.instance.checkPermission(req, "tt_" + t.getType());
-        }
+		if(t.getType() == null) {
+			throw new WebApplicationException(Response
+					.status(Status.BAD_REQUEST)
+					.entity("Token type must not be empty.")
+					.build());
+		} else {
+			Servers.instance.checkPermission(req, "createToken");
+			Servers.instance.checkPermission(req, "tt_" + t.getType());
+		}
 
-        // Check validity of token (i.e. data items have correct format etc.)
-        t.checkValidity(Servers.instance.getRequestApiVersion(req));
+		// Check validity of token (i.e. data items have correct format etc.)
+		t.checkValidity(Servers.instance.getRequestApiVersion(req));
 
-        //Token erstellen, speichern und URL zurückgeben
-          Servers.instance.registerToken(s.getId(), t);
+		//Token erstellen, speichern und URL zurückgeben
+		  Servers.instance.registerToken(s.getId(), t);
 
-        URI newUri = UriBuilder
-                .fromUri(req.getRequestURL().toString())
-                .path("/{tid}")
-                .build(t.getId());
+		URI newUri = UriBuilder
+				.fromUri(req.getRequestURL().toString())
+				.path("/{tid}")
+				.build(t.getId());
 
-        logger.info("Created token of type " + t.getType() + " with id " + t.getId() +
-                " in session " + s.getId());
-        logger.debug("Returned data for token " + t.getId() + ": "
-                + t.toJSON(Servers.instance.getRequestApiVersion(req)));
+		logger.info("Created token of type " + t.getType() + " with id " + t.getId() +
+				" in session " + s.getId());
+		logger.debug("Returned data for token " + t.getId() + ": "
+				+ t.toJSON(Servers.instance.getRequestApiVersion(req)));
 
-        return Response
-            .status(Status.CREATED)
-            .location(newUri)
-            .entity(t.toJSON(Servers.instance.getRequestApiVersion(req)))
-            .build();
-    }
+		return Response
+			.status(Status.CREATED)
+			.location(newUri)
+			.entity(t.toJSON(Servers.instance.getRequestApiVersion(req)))
+			.build();
+	}
 
-    /**
-     * Get a token as JSON.
-     *
-     * @param sid
-     *            Id of the session the requested token belongs to.
-     * @param tokenId
-     *            Id of the token to get.
-     * @param req
-     *            The injected HttpServletRequest.
-     * @param uriInfo
-     *            Injected information on application and request URI.
-     * @return An HTTP response as specified in the API documentation.
-     */
-    @Path("/{session}/tokens/{tokenid}")
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    public JSONObject getSingleToken(
-            @PathParam("session") SessionIdParam sid,
-            @PathParam("tokenid") String tokenId,
-            @Context HttpServletRequest req,
-            @Context UriInfo uriInfo){
+	/**
+	 * Get a token as JSON.
+	 *
+	 * @param sid
+	 *            Id of the session the requested token belongs to.
+	 * @param tokenId
+	 *            Id of the token to get.
+	 * @param req
+	 *            The injected HttpServletRequest.
+	 * @param uriInfo
+	 *            Injected information on application and request URI.
+	 * @return An HTTP response as specified in the API documentation.
+	 */
+	@Path("/{session}/tokens/{tokenid}")
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	public JSONObject getSingleToken(
+			@PathParam("session") SessionIdParam sid,
+			@PathParam("tokenid") String tokenId,
+			@Context HttpServletRequest req,
+			@Context UriInfo uriInfo){
 
-        logger.info("Received request to get token " + tokenId + " in session " + sid +
-                " by host " + req.getRemoteHost());
+		logger.info("Received request to get token " + tokenId + " in session " + sid +
+				" by host " + req.getRemoteHost());
 
-        Session s = sid.getValue();
-        Token t = Servers.instance.getTokenByTid(tokenId);
+		Session s = sid.getValue();
+		Token t = Servers.instance.getTokenByTid(tokenId);
 
-        // Check that token exists and belongs to specified session
-        if (t == null || !s.getTokens().contains(t))
-            throw new WebApplicationException(Response
-                    .status(Status.NOT_FOUND)
-                    .entity("No token with id " + tokenId + " in session " + sid + ".")
-                    .build());
-        return t.toJSON(Servers.instance.getRequestApiVersion(req));
-    }
+		// Check that token exists and belongs to specified session
+		if (t == null || !s.getTokens().contains(t))
+			throw new WebApplicationException(Response
+					.status(Status.NOT_FOUND)
+					.entity("No token with id " + tokenId + " in session " + sid + ".")
+					.build());
+		return t.toJSON(Servers.instance.getRequestApiVersion(req));
+	}
 
-    /**
-     * Delete a token.
-     *
-     * @param session
-     *            Id of the session the token to delete belongs to.
-     * @param tokenId
-     *            Id of the token to delete.
-     * @return An HTTP response as specified in the API documentation.
-     */
-    @Path("/{session}/tokens/{tokenid}")
-    @DELETE
-    public Response deleteToken(@PathParam("session") SessionIdParam session,
-            @PathParam("tokenid") String tokenId) {
-        /*
-         * Knowing the session and the token id authorizes to delete a token.
-         * Check that session exists in order to prevent requests by users who
-         * only know the token id.
-         */
-        session.getValue(); // returns 404 if session does not exist
-        Servers.instance.deleteToken(tokenId);
-        return Response.status(Status.NO_CONTENT).build();
-    }
+	/**
+	 * Delete a token.
+	 *
+	 * @param session
+	 *            Id of the session the token to delete belongs to.
+	 * @param tokenId
+	 *            Id of the token to delete.
+	 * @return An HTTP response as specified in the API documentation.
+	 */
+	@Path("/{session}/tokens/{tokenid}")
+	@DELETE
+	public Response deleteToken(@PathParam("session") SessionIdParam session,
+			@PathParam("tokenid") String tokenId) {
+		/*
+		 * Knowing the session and the token id authorizes to delete a token.
+		 * Check that session exists in order to prevent requests by users who
+		 * only know the token id.
+		 */
+		session.getValue(); // returns 404 if session does not exist
+		Servers.instance.deleteToken(tokenId);
+		return Response.status(Status.NO_CONTENT).build();
+	}
 }

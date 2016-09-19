@@ -35,37 +35,37 @@ import de.pseudonymisierung.mainzelliste.HashedField;
  */
 public class DiceFieldComparator extends FieldComparator<HashedField> {
 
-    /**
-     * Instantiate comparison between two specified fields. The field
-     * definitions correspond to indices in the Fields map of the persons
-     * (objects of class Patient) which are compared.
-     *
-     * @param fieldLeft
-     *            Name of comparison field on the left side.
-     * @param fieldRight
-     *            Name of comparison field on the right side.
-     */
-    public DiceFieldComparator (String fieldLeft, String fieldRight)
-    {
-        super(fieldLeft, fieldRight);
-    }
+	/**
+	 * Instantiate comparison between two specified fields. The field
+	 * definitions correspond to indices in the Fields map of the persons
+	 * (objects of class Patient) which are compared.
+	 *
+	 * @param fieldLeft
+	 *            Name of comparison field on the left side.
+	 * @param fieldRight
+	 *            Name of comparison field on the right side.
+	 */
+	public DiceFieldComparator (String fieldLeft, String fieldRight)
+	{
+		super(fieldLeft, fieldRight);
+	}
 
-    @Override
-    public double compareBackend(HashedField fieldLeft, HashedField fieldRight)
-    {
+	@Override
+	public double compareBackend(HashedField fieldLeft, HashedField fieldRight)
+	{
 
-        assert (fieldLeft instanceof HashedField);
-        assert (fieldRight instanceof HashedField);
+		assert (fieldLeft instanceof HashedField);
+		assert (fieldRight instanceof HashedField);
 
-        HashedField hLeft = fieldLeft;
-        HashedField hRight = fieldRight;
-        BitSet bLeft = hLeft.getValue();
-        BitSet bRight = hRight.getValue();
+		HashedField hLeft = fieldLeft;
+		HashedField hRight = fieldRight;
+		BitSet bLeft = hLeft.getValue();
+		BitSet bRight = hRight.getValue();
 
-        int nLeft = bLeft.cardinality();
-        int nRight = bRight.cardinality();
-        bLeft.and(bRight);
-        return (2.0 * bLeft.cardinality() / (nLeft + nRight));
-    }
+		int nLeft = bLeft.cardinality();
+		int nRight = bRight.cardinality();
+		bLeft.and(bRight);
+		return (2.0 * bLeft.cardinality() / (nLeft + nRight));
+	}
 }
 

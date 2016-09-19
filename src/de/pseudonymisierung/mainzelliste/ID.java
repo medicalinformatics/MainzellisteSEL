@@ -59,153 +59,153 @@ import de.pseudonymisierung.mainzelliste.exceptions.InvalidIDException;
 @Table(name="ID", uniqueConstraints=@UniqueConstraint(columnNames={"idString","type"}))
 public abstract class ID {
 
-    /** Database id. */
-    @Id
-    @GeneratedValue
-    @JsonIgnore
-    protected int idJpaId;
+	/** Database id. */
+	@Id
+	@GeneratedValue
+	@JsonIgnore
+	protected int idJpaId;
 
-    /** The ID string. */
-    @Basic
-    @Index(name="i_id_idstring")
-    protected String idString;
+	/** The ID string. */
+	@Basic
+	@Index(name="i_id_idstring")
+	protected String idString;
 
-    /** The type (a.k.a. domain) of the ID. */
-    @Basic
-    protected String type;
+	/** The type (a.k.a. domain) of the ID. */
+	@Basic
+	protected String type;
 
-    /**
-     * Whether this ID is tentative, i.e. the patient to which it is assigned
-     * might be a duplicate.
-     */
-    @Basic
-    protected boolean tentative;
+	/**
+	 * Whether this ID is tentative, i.e. the patient to which it is assigned
+	 * might be a duplicate.
+	 */
+	@Basic
+	protected boolean tentative;
 
-    /**
-     * Check whether this ID is tentative, i.e. the patient to which it is
-     * assigned might be a duplicate.
-     *
-     * @return true if this ID is tentative.
-     */
-    public boolean isTentative() {
-        return tentative;
-    }
+	/**
+	 * Check whether this ID is tentative, i.e. the patient to which it is
+	 * assigned might be a duplicate.
+	 *
+	 * @return true if this ID is tentative.
+	 */
+	public boolean isTentative() {
+		return tentative;
+	}
 
-    /**
-     * Set the tentative status of this ID.
-     *
-     * @see #isTentative()
-     * @param tentative
-     *            Whether this ID should be considered tentative (true) or not
-     *            (false).
-     */
-    public void setTentative(boolean tentative) {
-        this.tentative = tentative;
-    }
+	/**
+	 * Set the tentative status of this ID.
+	 *
+	 * @see #isTentative()
+	 * @param tentative
+	 *            Whether this ID should be considered tentative (true) or not
+	 *            (false).
+	 */
+	public void setTentative(boolean tentative) {
+		this.tentative = tentative;
+	}
 
-    /**
-     * Creates an ID with a given ID string and type.
-     *
-     * @param idString
-     *            String containing a valid ID.
-     * @param type
-     *            Type as according to configuration.
-     * @throws InvalidIDException
-     *             If the given id type is not known or the given ID string is
-     *             invalid and could not be corrected.
-     */
-    public ID(String idString, String type) throws InvalidIDException {
-        setType(type);
-        setTentative(false);
-        IDGenerator<?> generator = getFactory();
-        if (generator == null)
-            throw new InvalidIDException("ID type " + type + " is unknown.");
-        if (!generator.verify(idString)){
-            throw new InvalidIDException("ID " + idString + " is invalid for type " + type + ".");
-        }
-        setIdString(idString);
-    }
+	/**
+	 * Creates an ID with a given ID string and type.
+	 *
+	 * @param idString
+	 *            String containing a valid ID.
+	 * @param type
+	 *            Type as according to configuration.
+	 * @throws InvalidIDException
+	 *             If the given id type is not known or the given ID string is
+	 *             invalid and could not be corrected.
+	 */
+	public ID(String idString, String type) throws InvalidIDException {
+		setType(type);
+		setTentative(false);
+		IDGenerator<?> generator = getFactory();
+		if (generator == null)
+			throw new InvalidIDException("ID type " + type + " is unknown.");
+		if (!generator.verify(idString)){
+			throw new InvalidIDException("ID " + idString + " is invalid for type " + type + ".");
+		}
+		setIdString(idString);
+	}
 
-    /**
-     * Gets the ID string.
-     *
-     * @return The ID string.
-     */
-    public abstract String getIdString();
+	/**
+	 * Gets the ID string.
+	 *
+	 * @return The ID string.
+	 */
+	public abstract String getIdString();
 
-    /**
-     * Sets the ID string to the given value.
-     *
-     * @param id
-     *            A String valid as ID string for this ID type.
-     * @throws InvalidIDException
-     *             If id is not valid as an ID string for this ID type.
-     * */
-    protected abstract void setIdString(String id) throws InvalidIDException;
+	/**
+	 * Sets the ID string to the given value.
+	 *
+	 * @param id
+	 *            A String valid as ID string for this ID type.
+	 * @throws InvalidIDException
+	 *             If id is not valid as an ID string for this ID type.
+	 * */
+	protected abstract void setIdString(String id) throws InvalidIDException;
 
-    /**
-     * Gets the ID type.
-     * @return The ID type.
-     */
-    public String getType(){
-        return type;
-    }
+	/**
+	 * Gets the ID type.
+	 * @return The ID type.
+	 */
+	public String getType(){
+		return type;
+	}
 
-    /**
-     * Sets the ID type.
-     * @param type The new ID type.
-     */
-    protected void setType(String type){
-        this.type = type;
-    }
+	/**
+	 * Sets the ID type.
+	 * @param type The new ID type.
+	 */
+	protected void setType(String type){
+		this.type = type;
+	}
 
-    /**
-     * Returns a generator that can be used to create IDs of the same type as
-     * this ID.
-     *
-     * @return The ID generator or null if none exists for the type of this ID.
-     */
-    @JsonIgnore
-    @Transient
-    public IDGenerator<? extends ID> getFactory(){
-        return IDGeneratorFactory.instance.getFactory(getType());
-    }
+	/**
+	 * Returns a generator that can be used to create IDs of the same type as
+	 * this ID.
+	 *
+	 * @return The ID generator or null if none exists for the type of this ID.
+	 */
+	@JsonIgnore
+	@Transient
+	public IDGenerator<? extends ID> getFactory(){
+		return IDGeneratorFactory.instance.getFactory(getType());
+	}
 
-    /**
-     * Returns a string representation of this ID, mainly for display in log files etc.
-     * @return A string of the format "{idType}={idString}".
-     */
-    @Override
-    public String toString() {
-        return String.format("%s=%s", getType(), getIdString());
-    }
+	/**
+	 * Returns a string representation of this ID, mainly for display in log files etc.
+	 * @return A string of the format "{idType}={idString}".
+	 */
+	@Override
+	public String toString() {
+		return String.format("%s=%s", getType(), getIdString());
+	}
 
-    /**
-     * The hash code of an ID is computed as hash code of its String representation as returned by
-     * {@link ID#toString()}.
-     * @return The hash code of this ID.
-     */
-    @Override
-    public int hashCode() {
-        return toString().hashCode();
-    }
+	/**
+	 * The hash code of an ID is computed as hash code of its String representation as returned by
+	 * {@link ID#toString()}.
+	 * @return The hash code of this ID.
+	 */
+	@Override
+	public int hashCode() {
+		return toString().hashCode();
+	}
 
-    /**
-     * Returns a JSON representation of this object.
-     *
-     * @return A JSON object with fields "idString", "idType" (both String) and "tentative" (Boolean).
-     */
-    public JSONObject toJSON() {
-        try {
-            JSONObject ret = new JSONObject();
-            ret.put("idType", this.type);
-            ret.put("idString", this.idString);
-            ret.put("tentative", this.tentative);
+	/**
+	 * Returns a JSON representation of this object.
+	 *
+	 * @return A JSON object with fields "idString", "idType" (both String) and "tentative" (Boolean).
+	 */
+	public JSONObject toJSON() {
+		try {
+			JSONObject ret = new JSONObject();
+			ret.put("idType", this.type);
+			ret.put("idString", this.idString);
+			ret.put("tentative", this.tentative);
 
-            return ret;
-        } catch (JSONException e) {
-            // If an exception occurs here, it indicates a bug
-            throw new Error(e);
-        }
-    }
+			return ret;
+		} catch (JSONException e) {
+			// If an exception occurs here, it indicates a bug
+			throw new Error(e);
+		}
+	}
 }

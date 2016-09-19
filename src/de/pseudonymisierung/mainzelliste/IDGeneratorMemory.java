@@ -45,58 +45,58 @@ import de.pseudonymisierung.mainzelliste.dto.Persistor;
 @Entity
 public class IDGeneratorMemory {
 
-    /** Database id */
-    @Id
-    @GeneratedValue
-    protected int fieldJpaId;
+	/** Database id */
+	@Id
+	@GeneratedValue
+	protected int fieldJpaId;
 
-    /** The persisted properties. */
-    @ElementCollection(targetClass = String.class, fetch = FetchType.EAGER)
-    @MapKeyClass(String.class)
-    protected Map<String, String> mem = new HashMap<String, String>();
+	/** The persisted properties. */
+	@ElementCollection(targetClass = String.class, fetch = FetchType.EAGER)
+	@MapKeyClass(String.class)
+	protected Map<String, String> mem = new HashMap<String, String>();
 
-    /** The id type for which this instance holds information. */
-    protected String idType;
+	/** The id type for which this instance holds information. */
+	protected String idType;
 
-    /**
-     * Create an instance for the given ID type.
-     *
-     * @param idType
-     *            The ID type.
-     */
-    public IDGeneratorMemory(String idType) {
-        this.idType = idType;
-    }
+	/**
+	 * Create an instance for the given ID type.
+	 *
+	 * @param idType
+	 *            The ID type.
+	 */
+	public IDGeneratorMemory(String idType) {
+		this.idType = idType;
+	}
 
-    /**
-     * Set a property.
-     *
-     * @param key
-     *            The property key.
-     * @param value
-     *            The property value.
-     */
-    public synchronized void set(String key, String value) {
-        mem.put(key, value);
-    }
+	/**
+	 * Set a property.
+	 *
+	 * @param key
+	 *            The property key.
+	 * @param value
+	 *            The property value.
+	 */
+	public synchronized void set(String key, String value) {
+		mem.put(key, value);
+	}
 
-    /**
-     * Get a property.
-     *
-     * @param key
-     *            The property key.
-     * @return The property value.
-     */
-    public synchronized String get(String key) {
-        return mem.get(key);
-    }
+	/**
+	 * Get a property.
+	 *
+	 * @param key
+	 *            The property key.
+	 * @return The property value.
+	 */
+	public synchronized String get(String key) {
+		return mem.get(key);
+	}
 
-    /**
-     * Save properties to database.
-     *
-     * @see Persistor#updateIDGeneratorMemory(IDGeneratorMemory)
-     */
-    public synchronized void commit() {
-        Persistor.instance.updateIDGeneratorMemory(this);
-    }
+	/**
+	 * Save properties to database.
+	 *
+	 * @see Persistor#updateIDGeneratorMemory(IDGeneratorMemory)
+	 */
+	public synchronized void commit() {
+		Persistor.instance.updateIDGeneratorMemory(this);
+	}
 }

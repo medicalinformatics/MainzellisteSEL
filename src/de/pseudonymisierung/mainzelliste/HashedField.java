@@ -45,106 +45,106 @@ import de.pseudonymisierung.mainzelliste.matcher.DiceFieldComparator;
 @Entity
 public class HashedField extends Field<BitSet>{
 
-    /**	The value is encoded as a String to allow storage in a database. */
-    @Column(length = BloomFilterTransformer.hashLength)
-    protected String value;
+	/**	The value is encoded as a String to allow storage in a database. */
+	@Column(length = BloomFilterTransformer.hashLength)
+	protected String value;
 
-    /**
-     * Conversion of the String representation of a bit string to a BitSet.
-     *
-     * @param b
-     *            String of the format [01]*
-     * @return A BitSet with all bit i set for which b[i].equals("1").
-     */
-    private static BitSet String2BitSet(String b)
-    {
-        if (b == null)
-            return null;
-        BitSet bs = new BitSet(b.length());
-        for (int i = 0; i < b.length(); i++)
-        {
-            switch (b.charAt(i))
-            {
-            case '1' :
-                bs.set(i);
-            case '0' :
-                break;
-            default : // illegal value
-                return null;
-            }
-        }
-        return bs;
-    }
+	/**
+	 * Conversion of the String representation of a bit string to a BitSet.
+	 *
+	 * @param b
+	 *            String of the format [01]*
+	 * @return A BitSet with all bit i set for which b[i].equals("1").
+	 */
+	private static BitSet String2BitSet(String b)
+	{
+		if (b == null)
+			return null;
+		BitSet bs = new BitSet(b.length());
+		for (int i = 0; i < b.length(); i++)
+		{
+			switch (b.charAt(i))
+			{
+			case '1' :
+				bs.set(i);
+			case '0' :
+				break;
+			default : // illegal value
+				return null;
+			}
+		}
+		return bs;
+	}
 
-    /**
-     * Conversion of a BitSet to a String representation.
-     *
-     * @param hash
-     *            A BitSet
-     * @return A String of length hash.size() where the i-th position is set to
-     *         "1" if the i-th bit of hash is set and "0" otherwise.
-     */
-    private static String BitSet2String(BitSet hash)
-    {
-        StringBuffer result = new StringBuffer(hash.size());
-        for (int i = 0; i < hash.length(); i++)
-        {
-            if (hash.get(i))
-                result.append("1");
-            else
-                result.append("0");
-        }
-        return result.toString();
-    }
+	/**
+	 * Conversion of a BitSet to a String representation.
+	 *
+	 * @param hash
+	 *            A BitSet
+	 * @return A String of length hash.size() where the i-th position is set to
+	 *         "1" if the i-th bit of hash is set and "0" otherwise.
+	 */
+	private static String BitSet2String(BitSet hash)
+	{
+		StringBuffer result = new StringBuffer(hash.size());
+		for (int i = 0; i < hash.length(); i++)
+		{
+			if (hash.get(i))
+				result.append("1");
+			else
+				result.append("0");
+		}
+		return result.toString();
+	}
 
-    /**
-     * Create an empty instance.
-     */
-    public HashedField() {
-        this.value = "";
-    }
+	/**
+	 * Create an empty instance.
+	 */
+	public HashedField() {
+		this.value = "";
+	}
 
-    /**
-     * Create an instance from a BitSet.
-     * @param b A BitSet.
-     */
-    public HashedField(BitSet b) {
-        this.value = BitSet2String(b);
-    }
+	/**
+	 * Create an instance from a BitSet.
+	 * @param b A BitSet.
+	 */
+	public HashedField(BitSet b) {
+		this.value = BitSet2String(b);
+	}
 
-    /** Create an instance from a String representation of a bit string.
-     *
-     * @param b A String of the format [01]*.
-     */
-    public HashedField(String b)
-    {
-        this.value = b;
-    }
+	/** Create an instance from a String representation of a bit string.
+	 *
+	 * @param b A String of the format [01]*.
+	 */
+	public HashedField(String b)
+	{
+		this.value = b;
+	}
 
-    @Override
-    public BitSet getValue() {
-        return String2BitSet(this.value);
-    }
+	@Override
+	public BitSet getValue() {
+		return String2BitSet(this.value);
+	}
 
-    @Override
-    public String getValueJSON() {
-        return this.value;
-    }
+	@Override
+	public String getValueJSON() {
+		return this.value;
+	}
 
-    @Override
-    public void setValue(BitSet hash) {
-        this.value = BitSet2String(hash);
-    }
+	@Override
+	public void setValue(BitSet hash) {
+		this.value = BitSet2String(hash);
+	}
 
-    @Override
-    public void setValue(String s) {
-        this.value = s;
-    }
+	@Override
+	public void setValue(String s) {
+		this.value = s;
+	}
 
-    @Override
-    public HashedField clone()
-    {
-        HashedField result = new HashedField(new String(this.value));
-        return result;
-    }
+	@Override
+	public HashedField clone()
+	{
+		HashedField result = new HashedField(new String(this.value));
+		return result;
+	}
 }

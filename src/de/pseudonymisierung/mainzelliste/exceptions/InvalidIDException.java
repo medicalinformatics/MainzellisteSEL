@@ -36,29 +36,29 @@ import javax.ws.rs.core.Response.Status;
  */
 public class InvalidIDException extends WebApplicationException {
 
-    @SuppressWarnings("javadoc")
-    private static final long serialVersionUID = -6674560429536657452L;
+	@SuppressWarnings("javadoc")
+	private static final long serialVersionUID = -6674560429536657452L;
 
-    /** The default error message. */
-    private static String defaultMessage = "Invalid ID.";
+	/** The default error message. */
+	private static String defaultMessage = "Invalid ID.";
 
-    /** Create an instance with the default error message. */
-    public InvalidIDException() {
-        this(defaultMessage);
-    }
+	/** Create an instance with the default error message. */
+	public InvalidIDException() {
+		this(defaultMessage);
+	}
 
-    /**
-     * Create an instance with the given error message.
-     *
-     * @param message
-     *            The error message.
-     */
-    public InvalidIDException(String message) {
-        super(Response.status(Status.BAD_REQUEST).entity(message).build());
-    }
+	/**
+	 * Create an instance with the given error message.
+	 *
+	 * @param message
+	 *            The error message.
+	 */
+	public InvalidIDException(String message) {
+		super(Response.status(Status.BAD_REQUEST).entity(message).build());
+	}
 
-    @Override
-    public String getMessage() {
-        return defaultMessage;
-    }
+	@Override
+	public String getMessage() {
+		return defaultMessage;
+	}
 }

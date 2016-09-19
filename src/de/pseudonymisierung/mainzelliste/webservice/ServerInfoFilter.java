@@ -44,28 +44,28 @@ import de.pseudonymisierung.mainzelliste.Config;
  */
 public class ServerInfoFilter implements Filter {
 
-    /**
-     * Not used in this implementation.
-     */
-    @Override
-    public void init(FilterConfig arg0) throws ServletException {
-    }
+	/**
+	 * Not used in this implementation.
+	 */
+	@Override
+	public void init(FilterConfig arg0) throws ServletException {
+	}
 
-    /**
-     * Not used in this implementation.
-     */
-    @Override
-    public void destroy() {
-    }
+	/**
+	 * Not used in this implementation.
+	 */
+	@Override
+	public void destroy() {
+	}
 
-    @Override
-    public void doFilter(ServletRequest request, ServletResponse response,
-            FilterChain chain) throws IOException, ServletException {
-        if (response instanceof HttpServletResponse) {
-            HttpServletResponse httpResponse = (HttpServletResponse) response;
-            httpResponse.addHeader("Server",
-                    Config.instance.getUserAgentString());
-        }
-        chain.doFilter(request, response);
-    }
+	@Override
+	public void doFilter(ServletRequest request, ServletResponse response,
+			FilterChain chain) throws IOException, ServletException {
+		if (response instanceof HttpServletResponse) {
+			HttpServletResponse httpResponse = (HttpServletResponse) response;
+			httpResponse.addHeader("Server",
+					Config.instance.getUserAgentString());
+		}
+		chain.doFilter(request, response);
+	}
 }

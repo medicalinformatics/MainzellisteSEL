@@ -36,16 +36,16 @@ import javax.ws.rs.core.Response.Status;
  */
 public class ValidatorException extends WebApplicationException {
 
-    @SuppressWarnings("javadoc")
-    private static final long serialVersionUID = -2843941728708025618L;
+	@SuppressWarnings("javadoc")
+	private static final long serialVersionUID = -2843941728708025618L;
 
-    /**
-     * Create an instance with the given error message.
-     *
-     * @param message
-     *            The error message.
-     */
-    public ValidatorException(String message) {
-        super(Response.status(Status.BAD_REQUEST).entity(message).build());
-    }
+	/**
+	 * Create an instance with the given error message.
+	 *
+	 * @param message
+	 *            The error message.
+	 */
+	public ValidatorException(String message) {
+		super(Response.status(Status.BAD_REQUEST).entity(message).build());
+	}
 }

@@ -43,44 +43,44 @@ import de.pseudonymisierung.mainzelliste.Config;
 @Path("/")
 public class RootResource {
 
-    /**
-     * Generate status information.
-     * @return A map with status information on distribution and software version.
-     */
-    private Map<String,String> genMap(){
-        Map<String,String> out = new HashMap<String, String>();
-        out.put("distname", Config.instance.getDist());
-        out.put("version", Config.instance.getVersion());
-        return out;
-    }
+	/**
+	 * Generate status information.
+	 * @return A map with status information on distribution and software version.
+	 */
+	private Map<String,String> genMap(){
+		Map<String,String> out = new HashMap<String, String>();
+		out.put("distname", Config.instance.getDist());
+		out.put("version", Config.instance.getVersion());
+		return out;
+	}
 
-    /**
-     * Output status information as JSON.
-     *
-     * @return A JSON object with the following members:
-     *         <ul>
-     *         <li>distname: Distribution name according to configuration
-     *         parameter "dist".</li>
-     *         <li>version: Software version of this Mainzelliste instance.</li>
-     *         </ul>
-     *
-     */
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    public JSONObject helloJSON(){
-        return new JSONObject(genMap());
-    }
+	/**
+	 * Output status information as JSON.
+	 *
+	 * @return A JSON object with the following members:
+	 *         <ul>
+	 *         <li>distname: Distribution name according to configuration
+	 *         parameter "dist".</li>
+	 *         <li>version: Software version of this Mainzelliste instance.</li>
+	 *         </ul>
+	 *
+	 */
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	public JSONObject helloJSON(){
+		return new JSONObject(genMap());
+	}
 
-    /**
-     * Output status information as text.
-     *
-     * @return A status message containing the distribution name and software
-     *         version of this Mainzelliste instance.
-     */
-    @GET
-    @Produces({MediaType.TEXT_HTML, MediaType.TEXT_PLAIN})
-    public String helloHTML(){
-        Map<String, String> out = genMap();
-        return String.format("This is Mainzelliste running version %s for %s.", out.get("version"), out.get("distname"));
-    }
+	/**
+	 * Output status information as text.
+	 *
+	 * @return A status message containing the distribution name and software
+	 *         version of this Mainzelliste instance.
+	 */
+	@GET
+	@Produces({MediaType.TEXT_HTML, MediaType.TEXT_PLAIN})
+	public String helloHTML(){
+		Map<String, String> out = genMap();
+		return String.format("This is Mainzelliste running version %s for %s.", out.get("version"), out.get("distname"));
+	}
 }

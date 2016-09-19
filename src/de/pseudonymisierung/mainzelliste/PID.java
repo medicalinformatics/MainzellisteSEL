@@ -37,39 +37,39 @@ import de.pseudonymisierung.mainzelliste.exceptions.InvalidIDException;
 @Entity
 public class PID extends ID {
 
-    /**
-     * Create an instance with the given ID string and type.
-     *
-     * @param PIDString
-     *            A valid PID string.
-     * @param type
-     *            ID type as set in the configuration.
-     * @throws InvalidIDException
-     *             If PIDString is not a valid PID or the given type is unknown.
-     */
-    public PID(String PIDString, String type) throws InvalidIDException {
-        super(PIDString, type);
-    }
+	/**
+	 * Create an instance with the given ID string and type.
+	 *
+	 * @param PIDString
+	 *            A valid PID string.
+	 * @param type
+	 *            ID type as set in the configuration.
+	 * @throws InvalidIDException
+	 *             If PIDString is not a valid PID or the given type is unknown.
+	 */
+	public PID(String PIDString, String type) throws InvalidIDException {
+		super(PIDString, type);
+	}
 
-    @Override
-    public boolean equals(Object arg0) {
-        if(!(arg0 instanceof PID))
-            return false;
+	@Override
+	public boolean equals(Object arg0) {
+		if(!(arg0 instanceof PID))
+			return false;
 
-        PID other = (PID)arg0;
-        return other.idString.equals(idString);
-    }
+		PID other = (PID)arg0;
+		return other.idString.equals(idString);
+	}
 
-    @Override
-    public String getIdString() {
-        return idString;
-    }
+	@Override
+	public String getIdString() {
+		return idString;
+	}
 
-    @Override
-    protected void setIdString(String id) throws InvalidIDException {
-        if(!getFactory().verify(id))
-            throw new InvalidIDException();
+	@Override
+	protected void setIdString(String id) throws InvalidIDException {
+		if(!getFactory().verify(id))
+			throw new InvalidIDException();
 
-        idString = id;
-    }
+		idString = id;
+	}
 }

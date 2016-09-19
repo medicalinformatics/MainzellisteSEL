@@ -36,25 +36,25 @@ import de.pseudonymisierung.mainzelliste.Config;
  */
 public class FieldKeyParam extends AbstractParam<String> {
 
-    /**
-     * Create an instance from the given field name.
-     *
-     * @param s
-     *            Name of a valid (i.e. configured) field.
-     */
-    public FieldKeyParam(String s) {
-        super(s);
-    }
+	/**
+	 * Create an instance from the given field name.
+	 *
+	 * @param s
+	 *            Name of a valid (i.e. configured) field.
+	 */
+	public FieldKeyParam(String s) {
+		super(s);
+	}
 
-    @Override
-    protected String parse(String s) throws WebApplicationException {
-        if(!Config.instance.getFieldKeys().contains(s)){
-            throw new WebApplicationException(Response
-                .status(Status.BAD_REQUEST)
-                .entity("There is no Field key called " + s + ".")
-                .build()
-            );
-        }
-        return s;
-    }
+	@Override
+	protected String parse(String s) throws WebApplicationException {
+		if(!Config.instance.getFieldKeys().contains(s)){
+			throw new WebApplicationException(Response
+				.status(Status.BAD_REQUEST)
+				.entity("There is no Field key called " + s + ".")
+				.build()
+			);
+		}
+		return s;
+	}
 }

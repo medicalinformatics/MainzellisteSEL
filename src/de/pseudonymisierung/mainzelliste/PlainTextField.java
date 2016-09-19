@@ -33,47 +33,47 @@ import javax.persistence.Entity;
 @Entity
 public class PlainTextField extends Field<String> {
 
-    /** The field value. */
-    private String value;
+	/** The field value. */
+	private String value;
 
-    /**
-     * Create an instance with the given value, which is copied by reference.
-     *
-     * @param value
-     *            The value to set.
-     */
-    public PlainTextField(String value) {
-        super(value);
-    }
+	/**
+	 * Create an instance with the given value, which is copied by reference.
+	 *
+	 * @param value
+	 *            The value to set.
+	 */
+	public PlainTextField(String value) {
+		super(value);
+	}
 
-    @Override
-    public String getValue() {
-        return this.value;
-    }
+	@Override
+	public String getValue() {
+		return this.value;
+	}
 
-    @Override
-    public String getValueJSON() {
-        return this.value;
-    }
+	@Override
+	public String getValueJSON() {
+		return this.value;
+	}
 
-    /**
-     * Sets the value by reference.
-     */
-    @Override
-    public void setValue(String value) {
-        this.value = value;
-    }
+	/**
+	 * Sets the value by reference.
+	 */
+	@Override
+	public void setValue(String value) {
+		this.value = value;
+	}
 
-    /**
-     * @return true if the value of this instance is null or an empty string.
-     */
-    @Override
-    public boolean isEmpty() {
-        return (this.value == null || this.value.length() == 0);
-    }
+	/**
+	 * @return true if the value of this instance is null or an empty string.
+	 */
+	@Override
+	public boolean isEmpty() {
+		return (this.value == null || this.value.length() == 0);
+	}
 
-    @Override
-    public PlainTextField clone() {
-        return new PlainTextField(new String(this.value));
-    }
+	@Override
+	public PlainTextField clone() {
+		return new PlainTextField(new String(this.value));
+	}
 }

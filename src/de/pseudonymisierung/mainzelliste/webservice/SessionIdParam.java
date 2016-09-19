@@ -37,26 +37,26 @@ import de.pseudonymisierung.mainzelliste.Session;
  */
 public class SessionIdParam extends AbstractParam<Session> {
 
-    /**
-     * Create an instance with the given session id.
-     *
-     * @param s
-     *            Id of a valid session.
-     */
-    public SessionIdParam(String s) {
-        super(s);
-    }
+	/**
+	 * Create an instance with the given session id.
+	 *
+	 * @param s
+	 *            Id of a valid session.
+	 */
+	public SessionIdParam(String s) {
+		super(s);
+	}
 
-    @Override
-    protected Session parse(String sid) throws Throwable {
-        Session s = Servers.instance.getSession(sid);
-        if(s == null) {
-            throw new WebApplicationException(Response
-                .status(Status.NOT_FOUND)
-                .entity("Session-ID " + sid + " unknown.")
-                .build()
-            );
-        }
-        return s;
-    }
+	@Override
+	protected Session parse(String sid) throws Throwable {
+		Session s = Servers.instance.getSession(sid);
+		if(s == null) {
+			throw new WebApplicationException(Response
+				.status(Status.NOT_FOUND)
+				.entity("Session-ID " + sid + " unknown.")
+				.build()
+			);
+		}
+		return s;
+	}
 }

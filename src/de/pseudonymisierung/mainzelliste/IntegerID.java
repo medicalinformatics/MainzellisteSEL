@@ -35,28 +35,28 @@ import de.pseudonymisierung.mainzelliste.exceptions.InvalidIDException;
 @Entity
 public class IntegerID extends ID {
 
-    /**
-     * Creates an instance with the given ID string and type.
-     * @param idString ID string. Must be parseable to an integer.
-     * @param type The ID type.
-     * @throws InvalidIDException If the ID type is unknown or idString cannot be parsed to an integer.
-     */
-    public IntegerID(String idString, String type) throws InvalidIDException {
-        super(idString, type);
-    }
+	/**
+	 * Creates an instance with the given ID string and type.
+	 * @param idString ID string. Must be parseable to an integer.
+	 * @param type The ID type.
+	 * @throws InvalidIDException If the ID type is unknown or idString cannot be parsed to an integer.
+	 */
+	public IntegerID(String idString, String type) throws InvalidIDException {
+		super(idString, type);
+	}
 
-    @Override
-    public String getIdString() {
-        return idString;
-    }
+	@Override
+	public String getIdString() {
+		return idString;
+	}
 
-    @Override
-    protected void setIdString(String id) throws InvalidIDException {
-        try {
-            Integer.parseInt(id);
-        } catch (NumberFormatException e) {
-            throw new InvalidIDException();
-        }
-        this.idString = id;
-    }
+	@Override
+	protected void setIdString(String id) throws InvalidIDException {
+		try {
+			Integer.parseInt(id);
+		} catch (NumberFormatException e) {
+			throw new InvalidIDException();
+		}
+		this.idString = id;
+	}
 }

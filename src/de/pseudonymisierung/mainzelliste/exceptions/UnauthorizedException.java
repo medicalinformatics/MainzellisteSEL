@@ -36,19 +36,19 @@ import javax.ws.rs.core.Response.Status;
  */
 public class UnauthorizedException extends WebApplicationException {
 
-    @SuppressWarnings("javadoc")
-    private static final long serialVersionUID = -3700072300131484282L;
+	@SuppressWarnings("javadoc")
+	private static final long serialVersionUID = -3700072300131484282L;
 
-    /** Default error message. */
-    private static String message = "Unauthorized to access resource.";
+	/** Default error message. */
+	private static String message = "Unauthorized to access resource.";
 
-    /** Create an instance with the default error message. */
-    public UnauthorizedException() {
-        super(Response.status(Status.UNAUTHORIZED).entity(message).build());
-    }
+	/** Create an instance with the default error message. */
+	public UnauthorizedException() {
+		super(Response.status(Status.UNAUTHORIZED).entity(message).build());
+	}
 
-    @Override
-    public String getMessage() {
-        return message;
-    }
+	@Override
+	public String getMessage() {
+		return message;
+	}
 }

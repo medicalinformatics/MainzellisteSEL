@@ -37,60 +37,60 @@ import java.util.Properties;
  */
 public class SimpleIDGenerator implements IDGenerator<IntegerID> {
 
-    /** Internal counter. Incremented on every ID creation. */
-    int counter;
-    /** The state information of this generator. */
-    IDGeneratorMemory mem;
-    /** The ID type this generator instance creates. */
-    String idType;
+	/** Internal counter. Incremented on every ID creation. */
+	int counter;
+	/** The state information of this generator. */
+	IDGeneratorMemory mem;
+	/** The ID type this generator instance creates. */
+	String idType;
 
-    @Override
-    public void init(IDGeneratorMemory mem, String idType, Properties props) {
-        this.mem = mem;
+	@Override
+	public void init(IDGeneratorMemory mem, String idType, Properties props) {
+		this.mem = mem;
 
-        String memCounter = mem.get("counter");
-        if(memCounter == null) memCounter = "0";
-        this.counter = Integer.parseInt(memCounter);
+		String memCounter = mem.get("counter");
+		if(memCounter == null) memCounter = "0";
+		this.counter = Integer.parseInt(memCounter);
 
-        this.idType = idType;
-    }
+		this.idType = idType;
+	}
 
-    @Override
-    public synchronized IntegerID getNext() {
-        IntegerID newID = new IntegerID(Integer.toString(this.counter + 1), idType);
-        this.counter++;
-        this.mem.set("counter", Integer.toString(this.counter));
-        this.mem.commit();
-        return newID;
-    }
+	@Override
+	public synchronized IntegerID getNext() {
+		IntegerID newID = new IntegerID(Integer.toString(this.counter + 1), idType);
+		this.counter++;
+		this.mem.set("counter", Integer.toString(this.counter));
+		this.mem.commit();
+		return newID;
+	}
 
-    @Override
-    public IntegerID buildId(String id) {
-        return new IntegerID(id, this.idType);
-    }
+	@Override
+	public IntegerID buildId(String id) {
+		return new IntegerID(id, this.idType);
+	}
 
-    @Override
-    public boolean verify(String id) {
-        try {
-            Integer.parseInt(id);
-        } catch (NumberFormatException e) {
-            return false;
-        }
-        return true;
-    }
+	@Override
+	public boolean verify(String id) {
+		try {
+			Integer.parseInt(id);
+		} catch (NumberFormatException e) {
+			return false;
+		}
+		return true;
+	}
 
-    @Override
-    public String correct(String PIDString) {
-        try {
-            Integer.parseInt(PIDString);
-        } catch (NumberFormatException e) {
-            return null;
-        }
-        return PIDString;
-    }
+	@Override
+	public String correct(String PIDString) {
+		try {
+			Integer.parseInt(PIDString);
+		} catch (NumberFormatException e) {
+			return null;
+		}
+		return PIDString;
+	}
 
-    @Override
-    public String getIdType() {
-        return idType;
-    }
+	@Override
+	public String getIdType() {
+		return idType;
+	}
 }

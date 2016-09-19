@@ -36,36 +36,36 @@ import de.pseudonymisierung.mainzelliste.PlainTextField;
  */
 public class FirstNameDecomposer extends FieldTransformer<PlainTextField, CompoundField<PlainTextField>> {
 
-    /** Delimiters to recognize when decomposing Names as regular expression. */
-    private String delimiters = "[ \\.:,;\\-']+";
+	/** Delimiters to recognize when decomposing Names as regular expression. */
+	private String delimiters = "[ \\.:,;\\-']+";
 
-    /** The number of components to split into. */
-    private int nComponents = 3;
+	/** The number of components to split into. */
+	private int nComponents = 3;
 
-    @Override
-    public CompoundField<PlainTextField> transform(PlainTextField input)
-    {
-        CompoundField<PlainTextField> output = new CompoundField<PlainTextField>(nComponents);
-        String substrings[] = input.getValue().split(delimiters, nComponents);
-        int i;
-        for (i = 0; i < substrings.length; i++)
-            output.setValueAt(i, new PlainTextField(substrings[i]));
-        // fill remaining fields with empty Strings
-        for (;i < nComponents; i++)
-            output.setValueAt(i, new PlainTextField(""));
-        return output;
-    }
+	@Override
+	public CompoundField<PlainTextField> transform(PlainTextField input)
+	{
+		CompoundField<PlainTextField> output = new CompoundField<PlainTextField>(nComponents);
+		String substrings[] = input.getValue().split(delimiters, nComponents);
+		int i;
+		for (i = 0; i < substrings.length; i++)
+			output.setValueAt(i, new PlainTextField(substrings[i]));
+		// fill remaining fields with empty Strings
+		for (;i < nComponents; i++)
+			output.setValueAt(i, new PlainTextField(""));
+		return output;
+	}
 
-    @Override
-    public Class<PlainTextField> getInputClass()
-    {
-        return PlainTextField.class;
-    }
+	@Override
+	public Class<PlainTextField> getInputClass()
+	{
+		return PlainTextField.class;
+	}
 
-    @SuppressWarnings("unchecked")
-    @Override
-    public Class<CompoundField<PlainTextField>> getOutputClass()
-    {
-        return (Class<CompoundField<PlainTextField>>) new CompoundField<PlainTextField>(3).getClass();
-    }
+	@SuppressWarnings("unchecked")
+	@Override
+	public Class<CompoundField<PlainTextField>> getOutputClass()
+	{
+		return (Class<CompoundField<PlainTextField>>) new CompoundField<PlainTextField>(3).getClass();
+	}
 }

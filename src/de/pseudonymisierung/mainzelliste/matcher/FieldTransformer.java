@@ -43,49 +43,49 @@ import de.pseudonymisierung.mainzelliste.Field;
  */
 public abstract class FieldTransformer<IN extends Field<?>, OUT extends Field<?>>{
 
-    /**
-     * Transform a field.
-     * @param input The input field.
-     * @return The transformed field.
-     */
-    public abstract OUT transform(IN input);
+	/**
+	 * Transform a field.
+	 * @param input The input field.
+	 * @return The transformed field.
+	 */
+	public abstract OUT transform(IN input);
 
-    /**
-     * Return the class suitable for input fields. Implementations should return
-     * the a class object corresponding to type parameter IN. This method is
-     * needed to check at runtime if a specific FieldTransformer object is
-     * compatible to a specific Field object (type parameters cannot be queried
-     * at runtime).
-     *
-     * @return Class object corresponding to type parameter IN.
-     */
-    public abstract Class<IN> getInputClass();
+	/**
+	 * Return the class suitable for input fields. Implementations should return
+	 * the a class object corresponding to type parameter IN. This method is
+	 * needed to check at runtime if a specific FieldTransformer object is
+	 * compatible to a specific Field object (type parameters cannot be queried
+	 * at runtime).
+	 *
+	 * @return Class object corresponding to type parameter IN.
+	 */
+	public abstract Class<IN> getInputClass();
 
-    /**
-     * Return the class of output fields. See {@link #getInputClass()} for
-     * details.
-     *
-     * @return Class object corresponding to type parameter OUT.
-     */
-    public abstract Class<OUT> getOutputClass();
+	/**
+	 * Return the class of output fields. See {@link #getInputClass()} for
+	 * details.
+	 *
+	 * @return Class object corresponding to type parameter OUT.
+	 */
+	public abstract Class<OUT> getOutputClass();
 
-    /**
-     * Default handling of compound fields: Element-wise transformation of the
-     * components.
-     *
-     * @param input
-     *            A CompoundField.
-     * @return A CompoundField where component i is the result of
-     *         this.transform(input.getValueAt(i)).
-     */
-    public CompoundField<OUT> transform(CompoundField<IN> input)
-    {
-        Vector<OUT> outFields = new Vector<OUT>(input.getSize());
-        for (IN thisField : input.getValue())
-        {
-            outFields.add(this.transform(thisField));
-        }
-        CompoundField<OUT> result = new CompoundField<OUT>(outFields);
-        return result;
-    }
+	/**
+	 * Default handling of compound fields: Element-wise transformation of the
+	 * components.
+	 *
+	 * @param input
+	 *            A CompoundField.
+	 * @return A CompoundField where component i is the result of
+	 *         this.transform(input.getValueAt(i)).
+	 */
+	public CompoundField<OUT> transform(CompoundField<IN> input)
+	{
+		Vector<OUT> outFields = new Vector<OUT>(input.getSize());
+		for (IN thisField : input.getValue())
+		{
+			outFields.add(this.transform(thisField));
+		}
+		CompoundField<OUT> result = new CompoundField<OUT>(outFields);
+		return result;
+	}
 }

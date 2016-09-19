@@ -41,142 +41,142 @@ import de.pseudonymisierung.mainzelliste.webservice.Token;
  */
 public class Session extends ConcurrentHashMap<String, String>{
 
-    @SuppressWarnings("javadoc")
-    private static final long serialVersionUID = -5538915343663250244L;
+	@SuppressWarnings("javadoc")
+	private static final long serialVersionUID = -5538915343663250244L;
 
-    /** A unique identifier. */
-    private String sessionId;
-    /** URI of the session. */
-    private URI uri;
-    /** The set of tokens belonging to this Session. */
-    private Set<Token> tokens = new HashSet<Token>();
+	/** A unique identifier. */
+	private String sessionId;
+	/** URI of the session. */
+	private URI uri;
+	/** The set of tokens belonging to this Session. */
+	private Set<Token> tokens = new HashSet<Token>();
 
-    /**
-     * The time of the last access to this Session. Updateable via
-     * refresh();
-     */
-    private Date lastAccess;
+	/**
+	 * The time of the last access to this Session. Updateable via
+	 * refresh();
+	 */
+	private Date lastAccess;
 
-    /**
-     * Get the time of the last access to this session.
-     *
-     * @return Time of last access.
-     */
-    public Date getLastAccess() {
-        return lastAccess;
-    }
+	/**
+	 * Get the time of the last access to this session.
+	 *
+	 * @return Time of last access.
+	 */
+	public Date getLastAccess() {
+		return lastAccess;
+	}
 
-    /**
-     * Create an instance with the given id. The created session will not be
-     * registered, i.e. reachable by the REST interface. Use
-     * {@link Servers#newSession()} for this purpose.
-     *
-     * @param id
-     *            The session id.
-     */
-    public Session(String id) {
-        sessionId = id;
-        try {
-            // Assign provisional URI in case it is not set.
-            uri = new URI(Initializer.getServletContext().getContextPath() + "/")
-            .resolve("sessions/")
-            .resolve(id);
-        } catch (URISyntaxException e) {
-            throw new Error("Error while creating URI from ServletContext", e);
-        }
-        this.refresh();
-    }
+	/**
+	 * Create an instance with the given id. The created session will not be
+	 * registered, i.e. reachable by the REST interface. Use
+	 * {@link Servers#newSession()} for this purpose.
+	 *
+	 * @param id
+	 *            The session id.
+	 */
+	public Session(String id) {
+		sessionId = id;
+		try {
+			// Assign provisional URI in case it is not set.
+			uri = new URI(Initializer.getServletContext().getContextPath() + "/")
+			.resolve("sessions/")
+			.resolve(id);
+		} catch (URISyntaxException e) {
+			throw new Error("Error while creating URI from ServletContext", e);
+		}
+		this.refresh();
+	}
 
-    /**
-     * Set the timestamp of last access to the current time. Called on every
-     * access to the session via the REST interface.
-     */
-    public void refresh() {
-        lastAccess = Calendar.getInstance().getTime();
-    }
+	/**
+	 * Set the timestamp of last access to the current time. Called on every
+	 * access to the session via the REST interface.
+	 */
+	public void refresh() {
+		lastAccess = Calendar.getInstance().getTime();
+	}
 
-    /**
-     * Get the unique id of this session.
-     *
-     * @return The session id.
-     */
-    public String getId(){
-        return sessionId;
-    }
+	/**
+	 * Get the unique id of this session.
+	 *
+	 * @return The session id.
+	 */
+	public String getId(){
+		return sessionId;
+	}
 
-    /**
-     * Set the URI of this session.
-     *
-     * @param uri
-     *            The URI to set.
-     */
-    public void setURI(URI uri) {
-        this.uri = uri;
-    }
+	/**
+	 * Set the URI of this session.
+	 *
+	 * @param uri
+	 *            The URI to set.
+	 */
+	public void setURI(URI uri) {
+		this.uri = uri;
+	}
 
-    /**
-     * Get the URI of this session.
-     *
-     * @return The session URI.
-     */
-    public URI getURI() {
-        return uri;
-    }
+	/**
+	 * Get the URI of this session.
+	 *
+	 * @return The session URI.
+	 */
+	public URI getURI() {
+		return uri;
+	}
 
-    /**
-     * Delete this session and unregister all of its tokens.
-     */
-    void destroy(){
-        Servers.instance.deleteSession(getId());
-    }
+	/**
+	 * Delete this session and unregister all of its tokens.
+	 */
+	void destroy(){
+		Servers.instance.deleteSession(getId());
+	}
 
-    /**
-     * Get all tokens belonging to this session.
-     *
-     * @return The tokens as an unmodifiable set.
-     */
-    public Set<Token> getTokens() {
-        synchronized(tokens){
-            this.refresh();
-            return Collections.unmodifiableSet(tokens);
-        }
-    }
+	/**
+	 * Get all tokens belonging to this session.
+	 *
+	 * @return The tokens as an unmodifiable set.
+	 */
+	public Set<Token> getTokens() {
+		synchronized(tokens){
+			this.refresh();
+			return Collections.unmodifiableSet(tokens);
+		}
+	}
 
-    /**
-     * Add a token to this session.
-     *
-     * @param t
-     *            The token to add.
-     */
-    public void addToken(Token t){
-        synchronized(tokens){
-            tokens.add(t);
-        }
-        this.refresh();
-    }
+	/**
+	 * Add a token to this session.
+	 *
+	 * @param t
+	 *            The token to add.
+	 */
+	public void addToken(Token t){
+		synchronized(tokens){
+			tokens.add(t);
+		}
+		this.refresh();
+	}
 
-    /**
-     * Delete a token from this session. This will not unregister the token from
-     * the server, use {@link Servers#deleteToken(String)} for this purpose.
-     *
-     * @param t
-     *            The token to remove.
-     */
-    public void deleteToken(Token t) {
-        synchronized(tokens){
-            tokens.remove(t);
-        }
-        this.refresh();
-    }
+	/**
+	 * Delete a token from this session. This will not unregister the token from
+	 * the server, use {@link Servers#deleteToken(String)} for this purpose.
+	 *
+	 * @param t
+	 *            The token to remove.
+	 */
+	public void deleteToken(Token t) {
+		synchronized(tokens){
+			tokens.remove(t);
+		}
+		this.refresh();
+	}
 
-    /**
-     * Remove all tokens in this session. Called by
-     * {@link Servers#deleteSession(String)}. This will not unregister the
-     * tokens from the server.
-     */
-    public void deleteAllTokens() {
-        synchronized(tokens){
-            tokens.clear();
-        }
-    }
+	/**
+	 * Remove all tokens in this session. Called by
+	 * {@link Servers#deleteSession(String)}. This will not unregister the
+	 * tokens from the server.
+	 */
+	public void deleteAllTokens() {
+		synchronized(tokens){
+			tokens.clear();
+		}
+	}
 }

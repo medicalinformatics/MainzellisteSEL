@@ -67,232 +67,232 @@ import de.pseudonymisierung.mainzelliste.dto.Persistor;
 @Path("/html")
 public class HTMLResource {
 
-    /** The logging instance. */
-    Logger logger = Logger.getLogger(HTMLResource.class);
+	/** The logging instance. */
+	Logger logger = Logger.getLogger(HTMLResource.class);
 
-    /**
-     * Get the form for entering a new patient.
-     *
-     * @param tokenId
-     *            Id of a valid "addPatient" token.
-     * @param request
-     *            The injected HttpServletRequest.
-     * @return The input form or an error message if the given token is not valid.
-     */
-    @GET
-    @Path("createPatient")
-    @Produces(MediaType.TEXT_HTML)
-    public Response createPatientForm(
-            @QueryParam("tokenId") String tokenId,
-            @Context HttpServletRequest request) {
-        String mainzellisteApiVersion = Servers.instance.getRequestApiVersion(request).toString();
-        Token t = Servers.instance.getTokenByTid(tokenId);
-        if (Config.instance.debugIsOn() ||
-                (t != null && t.getType().equals("addPatient")))
-        {
-            HashMap<String, Object> map = new HashMap<String, Object>();
-            map.put("tokenId", tokenId);
-            map.put("mainzellisteApiVersion", mainzellisteApiVersion);
-            return Response.ok(new Viewable("/createPatient.jsp", map)).build();
-        } else throw new WebApplicationException(Response
-                .status(Status.UNAUTHORIZED)
-                .entity("Please supply a valid token id as URL parameter 'tokenId'.")
-                .build());
-    }
+	/**
+	 * Get the form for entering a new patient.
+	 *
+	 * @param tokenId
+	 *            Id of a valid "addPatient" token.
+	 * @param request
+	 *            The injected HttpServletRequest.
+	 * @return The input form or an error message if the given token is not valid.
+	 */
+	@GET
+	@Path("createPatient")
+	@Produces(MediaType.TEXT_HTML)
+	public Response createPatientForm(
+			@QueryParam("tokenId") String tokenId,
+			@Context HttpServletRequest request) {
+		String mainzellisteApiVersion = Servers.instance.getRequestApiVersion(request).toString();
+		Token t = Servers.instance.getTokenByTid(tokenId);
+		if (Config.instance.debugIsOn() ||
+				(t != null && t.getType().equals("addPatient")))
+		{
+			HashMap<String, Object> map = new HashMap<String, Object>();
+			map.put("tokenId", tokenId);
+			map.put("mainzellisteApiVersion", mainzellisteApiVersion);
+			return Response.ok(new Viewable("/createPatient.jsp", map)).build();
+		} else throw new WebApplicationException(Response
+				.status(Status.UNAUTHORIZED)
+				.entity("Please supply a valid token id as URL parameter 'tokenId'.")
+				.build());
+	}
 
-    /**
-     * Get the form for changing an existing patient's IDAT.
-     *
-     * @param tokenId
-     *            Id of a valid "editPatient" token.
-     * @return The edit form or an error message if the given token is not
-     *         valid.
-     */
-    @Path("editPatient")
-    @GET
-    @Produces(MediaType.TEXT_HTML)
-    public Response editPatient(@QueryParam("tokenId") String tokenId) {
-        Servers.instance.checkToken(tokenId, "editPatient");
-        EditPatientToken t = (EditPatientToken) Servers.instance.getTokenByTid(tokenId);
-        Patient p = Persistor.instance.getPatient(t.getPatientId());
-        Map <String, Object> map = new HashMap<String, Object>();
-        map.put("tokenId", tokenId);
-        map.putAll(p.getInputFields());
+	/**
+	 * Get the form for changing an existing patient's IDAT.
+	 *
+	 * @param tokenId
+	 *            Id of a valid "editPatient" token.
+	 * @return The edit form or an error message if the given token is not
+	 *         valid.
+	 */
+	@Path("editPatient")
+	@GET
+	@Produces(MediaType.TEXT_HTML)
+	public Response editPatient(@QueryParam("tokenId") String tokenId) {
+		Servers.instance.checkToken(tokenId, "editPatient");
+		EditPatientToken t = (EditPatientToken) Servers.instance.getTokenByTid(tokenId);
+		Patient p = Persistor.instance.getPatient(t.getPatientId());
+		Map <String, Object> map = new HashMap<String, Object>();
+		map.put("tokenId", tokenId);
+		map.putAll(p.getInputFields());
 
-        return Response.ok(new Viewable("/editPatient.jsp", map)).build();
-    }
+		return Response.ok(new Viewable("/editPatient.jsp", map)).build();
+	}
 
-    /**
-     * Get the administrator form for editing an existing patient's IDAT. The
-     * arguments can be omitted, in which case an input form is shown where an
-     * ID of the patient to edit can be input. Authentication is handled by the
-     * servlet container as defined in web.xml.
-     *
-     * @param idType
-     *            Type of the ID of the patient to edit.
-     * @param idString
-     *            ID string of the patient to edit.
-     * @return The edit form or a selection form if one of idType and idString is not provided.
-     */
-    @Path("/admin/editPatient")
-    @GET
-    @Produces(MediaType.TEXT_HTML)
-    public Response editPatientAdmin(
-            @QueryParam("idType") String idType,
-            @QueryParam("idString") String idString
-            ) {
-        // Authentication by Tomcat
+	/**
+	 * Get the administrator form for editing an existing patient's IDAT. The
+	 * arguments can be omitted, in which case an input form is shown where an
+	 * ID of the patient to edit can be input. Authentication is handled by the
+	 * servlet container as defined in web.xml.
+	 *
+	 * @param idType
+	 *            Type of the ID of the patient to edit.
+	 * @param idString
+	 *            ID string of the patient to edit.
+	 * @return The edit form or a selection form if one of idType and idString is not provided.
+	 */
+	@Path("/admin/editPatient")
+	@GET
+	@Produces(MediaType.TEXT_HTML)
+	public Response editPatientAdmin(
+			@QueryParam("idType") String idType,
+			@QueryParam("idString") String idString
+			) {
+		// Authentication by Tomcat
 
-        if (StringUtils.isEmpty(idType) || StringUtils.isEmpty(idString))
-            return Response.ok(new Viewable("/selectPatient.jsp")).build();
+		if (StringUtils.isEmpty(idType) || StringUtils.isEmpty(idString))
+			return Response.ok(new Viewable("/selectPatient.jsp")).build();
 
-        ID patId = IDGeneratorFactory.instance.buildId(idType, idString);
-        Patient p = Persistor.instance.getPatient(patId);
+		ID patId = IDGeneratorFactory.instance.buildId(idType, idString);
+		Patient p = Persistor.instance.getPatient(patId);
 
-        if (p == null)
-            throw new WebApplicationException(Response
-                    .status(Status.NOT_FOUND)
-                    .entity(String.format("No patient found with ID of type %s and value %s!",
-                            idType, idString))
-                    .build());
+		if (p == null)
+			throw new WebApplicationException(Response
+					.status(Status.NOT_FOUND)
+					.entity(String.format("No patient found with ID of type %s and value %s!",
+							idType, idString))
+					.build());
 
-        Map <String, Object> map = new HashMap<String, Object>();
-        map.putAll(p.getInputFields());
-        map.put("id", patId.getIdString());
-        map.put("tokenId", "abc");
-        map.put("tentative", p.getId("pid").isTentative());
-        if (p.getOriginal() != p)
-            map.put("original", p.getOriginal());
+		Map <String, Object> map = new HashMap<String, Object>();
+		map.putAll(p.getInputFields());
+		map.put("id", patId.getIdString());
+		map.put("tokenId", "abc");
+		map.put("tentative", p.getId("pid").isTentative());
+		if (p.getOriginal() != p)
+			map.put("original", p.getOriginal());
 
-        return Response.ok(new Viewable("/editPatientAdmin.jsp", map)).build();
-    }
+		return Response.ok(new Viewable("/editPatientAdmin.jsp", map)).build();
+	}
 
-    /**
-     * Receives edit operations from the admin form.
-     *
-     * @param idType
-     *            Type of the ID of the patient to edit.
-     * @param idString
-     *            ID string of the patient to edit.
-     * @param form
-     *            IDAT as provided by the input form.
-     * @param req
-     *            The injected HttpServletRequest.
-     * @return The edit form for the changed patient or the patient selection
-     *         form if the patient was deleted via the form.
-     *
-     */
-    @POST
-    @Path("/admin/editPatient")
-    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    @Produces(MediaType.TEXT_HTML)
-    public Response editPatient(
-            @QueryParam("idType") String idType,
-            @QueryParam("idString") String idString,
-            MultivaluedMap<String, String> form,
-            @Context HttpServletRequest req){
+	/**
+	 * Receives edit operations from the admin form.
+	 *
+	 * @param idType
+	 *            Type of the ID of the patient to edit.
+	 * @param idString
+	 *            ID string of the patient to edit.
+	 * @param form
+	 *            IDAT as provided by the input form.
+	 * @param req
+	 *            The injected HttpServletRequest.
+	 * @return The edit form for the changed patient or the patient selection
+	 *         form if the patient was deleted via the form.
+	 *
+	 */
+	@POST
+	@Path("/admin/editPatient")
+	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+	@Produces(MediaType.TEXT_HTML)
+	public Response editPatient(
+			@QueryParam("idType") String idType,
+			@QueryParam("idString") String idString,
+			MultivaluedMap<String, String> form,
+			@Context HttpServletRequest req){
 
-        if (form.containsKey("delete")) {
-            logger.info(String.format("Handling delete operation for patient with id of type %s and value %s.",
-                    idType, idString));
-            Persistor.instance.deletePatient(IDGeneratorFactory.instance.buildId(idType, idString));
-            return Response.status(Status.SEE_OTHER)
-                    .location(UriBuilder.fromResource(this.getClass()).path("admin/editPatient").build())
-                    .build();
-        }
+		if (form.containsKey("delete")) {
+			logger.info(String.format("Handling delete operation for patient with id of type %s and value %s.",
+					idType, idString));
+			Persistor.instance.deletePatient(IDGeneratorFactory.instance.buildId(idType, idString));
+			return Response.status(Status.SEE_OTHER)
+					.location(UriBuilder.fromResource(this.getClass()).path("admin/editPatient").build())
+					.build();
+		}
 
-        logger.info(String.format("Handling edit operation for patient with id of type %s and value %s.",
-                    idType, idString));
+		logger.info(String.format("Handling edit operation for patient with id of type %s and value %s.",
+					idType, idString));
 
-        ID idPatToEdit = IDGeneratorFactory.instance.buildId(idType, idString);
-        Patient pToEdit = Persistor.instance.getPatient(idPatToEdit);
-        if (pToEdit == null)
-        {
-            logger.info(String.format("Request to edit patient with unknown ID of type %s and value %s.",
-                    idType, idString));
-            throw new WebApplicationException(Response
-                    .status(Status.NOT_FOUND)
-                    .entity(String.format("No patient found with ID of type %s and value %s!",
-                            idType, idString))
-                    .build());
-        }
+		ID idPatToEdit = IDGeneratorFactory.instance.buildId(idType, idString);
+		Patient pToEdit = Persistor.instance.getPatient(idPatToEdit);
+		if (pToEdit == null)
+		{
+			logger.info(String.format("Request to edit patient with unknown ID of type %s and value %s.",
+					idType, idString));
+			throw new WebApplicationException(Response
+					.status(Status.NOT_FOUND)
+					.entity(String.format("No patient found with ID of type %s and value %s!",
+							idType, idString))
+					.build());
+		}
 
-        // read input fields from form
-        Patient pInput = new Patient();
-        Map<String, Field<?>> chars = new HashMap<String, Field<?>>();
+		// read input fields from form
+		Patient pInput = new Patient();
+		Map<String, Field<?>> chars = new HashMap<String, Field<?>>();
 
-        for(String fieldName : Config.instance.getFieldKeys()){
-            // If a field is not in the map, keep the old value
-            if (!form.containsKey(fieldName))
-                chars.put(fieldName, pToEdit.getInputFields().get(fieldName));
-            else {
-                chars.put(fieldName, Field.build(fieldName, form.getFirst(fieldName)));
-            }
-        }
+		for(String fieldName : Config.instance.getFieldKeys()){
+			// If a field is not in the map, keep the old value
+			if (!form.containsKey(fieldName))
+				chars.put(fieldName, pToEdit.getInputFields().get(fieldName));
+			else {
+				chars.put(fieldName, Field.build(fieldName, form.getFirst(fieldName)));
+			}
+		}
 
-        pInput.setFields(chars);
+		pInput.setFields(chars);
 
-        // transform input fields
-        Patient pNormalized = Config.instance.getRecordTransformer().transform(pInput);
-        // set input fields
-        pNormalized.setInputFields(chars);
+		// transform input fields
+		Patient pNormalized = Config.instance.getRecordTransformer().transform(pInput);
+		// set input fields
+		pNormalized.setInputFields(chars);
 
-        // assign changed fields to patient in database, persist
-        pToEdit.setFields(pNormalized.getFields());
-        pToEdit.setInputFields(pNormalized.getInputFields());
+		// assign changed fields to patient in database, persist
+		pToEdit.setFields(pNormalized.getFields());
+		pToEdit.setInputFields(pNormalized.getInputFields());
 
-        // assign tentative status
-        pToEdit.setTentative(form.getFirst("tentative") != null);
-        // assign original
-        String idStringOriginal = form.getFirst("idStringOriginal");
-        String idTypeOriginal = form.getFirst("idTypeOriginal");
-        if (!StringUtils.isEmpty(idStringOriginal) && ! StringUtils.isEmpty(idTypeOriginal))
-        {
-            ID originalId = IDGeneratorFactory.instance.buildId(idTypeOriginal, idStringOriginal);
-            Patient pOriginal = Persistor.instance.getPatient(originalId);
-            pToEdit.setOriginal(pOriginal);
-        } else
-        {
-            pToEdit.setOriginal(pToEdit);
-        }
+		// assign tentative status
+		pToEdit.setTentative(form.getFirst("tentative") != null);
+		// assign original
+		String idStringOriginal = form.getFirst("idStringOriginal");
+		String idTypeOriginal = form.getFirst("idTypeOriginal");
+		if (!StringUtils.isEmpty(idStringOriginal) && ! StringUtils.isEmpty(idTypeOriginal))
+		{
+			ID originalId = IDGeneratorFactory.instance.buildId(idTypeOriginal, idStringOriginal);
+			Patient pOriginal = Persistor.instance.getPatient(originalId);
+			pToEdit.setOriginal(pOriginal);
+		} else
+		{
+			pToEdit.setOriginal(pToEdit);
+		}
 
 
-        Persistor.instance.updatePatient(pToEdit);
+		Persistor.instance.updatePatient(pToEdit);
 
-        return Response
-                .status(Status.SEE_OTHER)
-                .header("Cache-control", "must-revalidate")
-                .location(UriBuilder
-                        .fromUri(req.getRequestURL().toString())
-                        .path("")
-                        .queryParam("idType", idType)
-                        .queryParam("idString", idString)
-                        .build())
-                        .build();
-    }
+		return Response
+				.status(Status.SEE_OTHER)
+				.header("Cache-control", "must-revalidate")
+				.location(UriBuilder
+						.fromUri(req.getRequestURL().toString())
+						.path("")
+						.queryParam("idType", idType)
+						.queryParam("idString", idString)
+						.build())
+						.build();
+	}
 
-    /**
-     * Returns the logo file from the configured path (configuration parameter operator.logo).
-     *
-     * @return A "200 Ok" response containing the file, or an appropriate error code and message on failure.
-     */
-    @GET
-    @Path("/logo")
-    @Produces("image/*")
-    public Response getLogo() {
-        try {
-            File logoFile = Config.instance.getLogo();
-            String contentType = Initializer.getServletContext().getMimeType(logoFile.getAbsolutePath());
-            if (contentType == null || !contentType.startsWith("image/")) {
-                logger.error("Logo file has incorrect mime type: " + contentType);
-                throw new WebApplicationException(Response.status(Status.INTERNAL_SERVER_ERROR)
-                        .entity("The logo file has incorrect mime type. See server log for details.").build());
-            }
-            return Response.ok().type(contentType).entity(new FileInputStream(logoFile)).build();
-        } catch (FileNotFoundException e) {
-            logger.error(e.getMessage(), e);
-            throw new WebApplicationException(Response.status(Status.NOT_FOUND)
-                    .entity("Logo file could not be opened. Check server log for more information.").build());
-        }
-    }
+	/**
+	 * Returns the logo file from the configured path (configuration parameter operator.logo).
+	 *
+	 * @return A "200 Ok" response containing the file, or an appropriate error code and message on failure.
+	 */
+	@GET
+	@Path("/logo")
+	@Produces("image/*")
+	public Response getLogo() {
+		try {
+			File logoFile = Config.instance.getLogo();
+			String contentType = Initializer.getServletContext().getMimeType(logoFile.getAbsolutePath());
+			if (contentType == null || !contentType.startsWith("image/")) {
+				logger.error("Logo file has incorrect mime type: " + contentType);
+				throw new WebApplicationException(Response.status(Status.INTERNAL_SERVER_ERROR)
+						.entity("The logo file has incorrect mime type. See server log for details.").build());
+			}
+			return Response.ok().type(contentType).entity(new FileInputStream(logoFile)).build();
+		} catch (FileNotFoundException e) {
+			logger.error(e.getMessage(), e);
+			throw new WebApplicationException(Response.status(Status.NOT_FOUND)
+					.entity("Logo file could not be opened. Check server log for more information.").build());
+		}
+	}
 }

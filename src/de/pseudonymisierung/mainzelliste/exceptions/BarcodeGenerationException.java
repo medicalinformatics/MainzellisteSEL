@@ -34,16 +34,16 @@ import javax.ws.rs.core.Response.Status;
  */
 public class BarcodeGenerationException extends WebApplicationException {
 
-    @SuppressWarnings("javadoc")
-    private static final long serialVersionUID = 6805218977850784188L;
+	@SuppressWarnings("javadoc")
+	private static final long serialVersionUID = 6805218977850784188L;
 
-    /** The default error message. */
-    final static String message = "An internal error occured generating your barcode.";
+	/** The default error message. */
+	final static String message = "An internal error occured generating your barcode.";
 
-    /**
-     * Create an instance.
-     */
-    public BarcodeGenerationException() {
-        super(Response.status(Status.INTERNAL_SERVER_ERROR).entity(message).build());
-    }
+	/**
+	 * Create an instance.
+	 */
+	public BarcodeGenerationException() {
+		super(Response.status(Status.INTERNAL_SERVER_ERROR).entity(message).build());
+	}
 }

@@ -46,101 +46,101 @@ import de.pseudonymisierung.mainzelliste.PlainTextField;
  */
 public class BloomFilterTransformer extends FieldTransformer<PlainTextField, HashedField> {
 
-    /** Bit length of the bloom filter. */
-    public final static int hashLength = 500;
-    /** Length of n-grams by which input fields are encoded. */
-    private int nGramLength = 2;
-    /** Number of hash functions. See cited article for details. */
-    private int nHashFunctions = 15;
+	/** Bit length of the bloom filter. */
+	public final static int hashLength = 500;
+	/** Length of n-grams by which input fields are encoded. */
+	private int nGramLength = 2;
+	/** Number of hash functions. See cited article for details. */
+	private int nHashFunctions = 15;
 
-    /**
-     * Split the input string into n-grams of length nGramLength. The string is
-     * padded with nGramLength-1 spaces (trailing and leading).
-     *
-     * For example, the input string "Java" yields the output n-grams " J",
-     * "Ja", "av", "va", "a ".
-     *
-     * @param input String to split into n-grams.
-     * @return The set of n-grams.
-     */
-    private Collection<String> getNGrams(String input){
-        // initialize Buffer to hold input and padding
-        // (nGramLength - 1 spaces on each side)
-        StringBuffer buffer = new StringBuffer(input.length() + 2 * (nGramLength - 1));
-        // Add leading padding
-        for (int i = 0; i < nGramLength - 1; i++)
-            buffer.append(" ");
-        // add input string
-        buffer.append(input);
-        // add leading padding
-        for (int i = 0; i < nGramLength - 1; i++)
-            buffer.append(" ");
+	/**
+	 * Split the input string into n-grams of length nGramLength. The string is
+	 * padded with nGramLength-1 spaces (trailing and leading).
+	 *
+	 * For example, the input string "Java" yields the output n-grams " J",
+	 * "Ja", "av", "va", "a ".
+	 *
+	 * @param input String to split into n-grams.
+	 * @return The set of n-grams.
+	 */
+	private Collection<String> getNGrams(String input){
+		// initialize Buffer to hold input and padding
+		// (nGramLength - 1 spaces on each side)
+		StringBuffer buffer = new StringBuffer(input.length() + 2 * (nGramLength - 1));
+		// Add leading padding
+		for (int i = 0; i < nGramLength - 1; i++)
+			buffer.append(" ");
+		// add input string
+		buffer.append(input);
+		// add leading padding
+		for (int i = 0; i < nGramLength - 1; i++)
+			buffer.append(" ");
 
-        Vector<String> output = new Vector<String>(buffer.length() - nGramLength + 1);
-        for (int i = 0; i <= buffer.length() - nGramLength; i++)
-        {
-            output.addElement(buffer.substring(i, i + nGramLength));
-        }
-        return output;
-    }
+		Vector<String> output = new Vector<String>(buffer.length() - nGramLength + 1);
+		for (int i = 0; i <= buffer.length() - nGramLength; i++)
+		{
+			output.addElement(buffer.substring(i, i + nGramLength));
+		}
+		return output;
+	}
 
-    /**
-     * Backend method for computing hash functions. See cited article for details.
-     * @param input The string to hash.
-     * @param index Index of the hash function.
-     * @return The bit in the bloom filter that is set by applying the hash function.
-     */
-    private int hash(String input, int index)
-    {
-        int hash1 = 0;
-        int hash2 = 0;
+	/**
+	 * Backend method for computing hash functions. See cited article for details.
+	 * @param input The string to hash.
+	 * @param index Index of the hash function.
+	 * @return The bit in the bloom filter that is set by applying the hash function.
+	 */
+	private int hash(String input, int index)
+	{
+		int hash1 = 0;
+		int hash2 = 0;
 
-        byte inputBytes[] = input.getBytes();
-        byte md5[] = DigestUtils.md5(inputBytes);
-        byte sha[] = DigestUtils.sha1(inputBytes);
+		byte inputBytes[] = input.getBytes();
+		byte md5[] = DigestUtils.md5(inputBytes);
+		byte sha[] = DigestUtils.sha1(inputBytes);
 
-        // calculate significant Bytes of Hash
-        int nSignBytes = (int) Math.ceil(Math.log(hashLength) / Math.log(256));
+		// calculate significant Bytes of Hash
+		int nSignBytes = (int) Math.ceil(Math.log(hashLength) / Math.log(256));
 
-        // calculate combined Hash
-        for (int byteInd = 0; byteInd < nSignBytes; byteInd++)
-        {
-            // byte is signed (-128 - 127), add 128 to get an unsigned value
-            hash1 += Math.pow(256, byteInd) * (md5[md5.length - 1 - byteInd] + 128);
-            hash2 += Math.pow(256, byteInd) * (sha[sha.length - 1 - byteInd] + 128);
-        }
+		// calculate combined Hash
+		for (int byteInd = 0; byteInd < nSignBytes; byteInd++)
+		{
+			// byte is signed (-128 - 127), add 128 to get an unsigned value
+			hash1 += Math.pow(256, byteInd) * (md5[md5.length - 1 - byteInd] + 128);
+			hash2 += Math.pow(256, byteInd) * (sha[sha.length - 1 - byteInd] + 128);
+		}
 
-        return (hash1 + index * hash2) % hashLength;
-    }
+		return (hash1 + index * hash2) % hashLength;
+	}
 
 
-    @Override
-    public HashedField transform(PlainTextField input)
-    {
-        BitSet bitSet = new BitSet(hashLength);
-        Collection<String> nGrams = getNGrams(input.getValue());
-        for (String nGram : nGrams)
-        {
-            for (int i = 0; i < nHashFunctions; i++)
-            {
-                int hashRet = hash(nGram, i);
-                bitSet.set(hashRet);
-            }
-        }
+	@Override
+	public HashedField transform(PlainTextField input)
+	{
+		BitSet bitSet = new BitSet(hashLength);
+		Collection<String> nGrams = getNGrams(input.getValue());
+		for (String nGram : nGrams)
+		{
+			for (int i = 0; i < nHashFunctions; i++)
+			{
+				int hashRet = hash(nGram, i);
+				bitSet.set(hashRet);
+			}
+		}
 
-        HashedField output = new HashedField(bitSet);
-        return output;
-    }
+		HashedField output = new HashedField(bitSet);
+		return output;
+	}
 
-    @Override
-    public Class<PlainTextField> getInputClass()
-    {
-        return PlainTextField.class;
-    }
+	@Override
+	public Class<PlainTextField> getInputClass()
+	{
+		return PlainTextField.class;
+	}
 
-    @Override
-    public Class<HashedField> getOutputClass()
-    {
-        return HashedField.class;
-    }
+	@Override
+	public Class<HashedField> getOutputClass()
+	{
+		return HashedField.class;
+	}
 }

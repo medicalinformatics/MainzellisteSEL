@@ -40,40 +40,40 @@ import de.pseudonymisierung.mainzelliste.Patient;
  */
 public class BinaryFieldComparator extends FieldComparator<Field<?>> {
 
-    /**
-     * Instantiate comparison between two specified fields. The field
-     * definitions correspond to indices in the Fields map of the persons
-     * (objects of class Patient) which are compared.
-     *
-     * @param fieldLeft
-     *            Name of comparison field on the left side.
-     * @param fieldRight
-     *            Name of comparison field on the right side.
-     */
-    public BinaryFieldComparator (String fieldLeft, String fieldRight)
-    {
-        super(fieldLeft, fieldRight);
-    }
+	/**
+	 * Instantiate comparison between two specified fields. The field
+	 * definitions correspond to indices in the Fields map of the persons
+	 * (objects of class Patient) which are compared.
+	 *
+	 * @param fieldLeft
+	 *            Name of comparison field on the left side.
+	 * @param fieldRight
+	 *            Name of comparison field on the right side.
+	 */
+	public BinaryFieldComparator (String fieldLeft, String fieldRight)
+	{
+		super(fieldLeft, fieldRight);
+	}
 
-    @Override
-    public double compare(Patient patientLeft, Patient patientRight) {
-        // TODO: Fall, dass geforderte Charakteristiken nicht vorhanden sind
-        Map<String, Field<?>> cLeft = patientLeft.getFields();
-        Map<String, Field<?>> cRight = patientRight.getFields();
-        return compare(cLeft.get(this.fieldLeft), cRight.get(this.fieldRight));
-    }
+	@Override
+	public double compare(Patient patientLeft, Patient patientRight) {
+		// TODO: Fall, dass geforderte Charakteristiken nicht vorhanden sind
+		Map<String, Field<?>> cLeft = patientLeft.getFields();
+		Map<String, Field<?>> cRight = patientRight.getFields();
+		return compare(cLeft.get(this.fieldLeft), cRight.get(this.fieldRight));
+	}
 
-    /**
-     * @return 1.0 if fieldLeft is not null and fieldLeft.equals(fieldRight), 0
-     *         otherwise.
-     */
-    @Override
-    public double compareBackend(Field<?> fieldLeft, Field<?> fieldRight)
-    {
-        if (fieldLeft != null && fieldLeft.equals(fieldRight))
-            return 1.0;
-        else
-            return 0.0;
+	/**
+	 * @return 1.0 if fieldLeft is not null and fieldLeft.equals(fieldRight), 0
+	 *         otherwise.
+	 */
+	@Override
+	public double compareBackend(Field<?> fieldLeft, Field<?> fieldRight)
+	{
+		if (fieldLeft != null && fieldLeft.equals(fieldRight))
+			return 1.0;
+		else
+			return 0.0;
 
-    }
+	}
 }

@@ -42,55 +42,55 @@ import org.codehaus.jettison.json.JSONObject;
  */
 public class TokenParam extends AbstractParam<Token> {
 
-    /**
-     * Create an instance from a JSON string.
-     *
-     * @param param
-     *            JSON representation of a token.
-     */
-    public TokenParam(String param) {
-        super(param);
-    }
+	/**
+	 * Create an instance from a JSON string.
+	 *
+	 * @param param
+	 *            JSON representation of a token.
+	 */
+	public TokenParam(String param) {
+		super(param);
+	}
 
-    @Override
-    protected Token parse(String param) throws WebApplicationException {
+	@Override
+	protected Token parse(String param) throws WebApplicationException {
 
-        try {
-            JSONObject jsob = new JSONObject(param);
-            String tokenType = jsob.optString("type");
-            Token t;
-            if (tokenType.equals("addPatient"))
-                t = new AddPatientToken();
-            else if (tokenType.equals("editPatient"))
-                t = new EditPatientToken();
-            else
-                t = new Token();
-            if(!("".equals(jsob.optString("id"))))
-                t.setId(jsob.getString("id"));
-            t.setType(jsob.getString("type"));
-            HashMap<String, Object> data = new ObjectMapper().readValue (jsob.getString("data"), new TypeReference<HashMap<String, Object>>() {});
+		try {
+			JSONObject jsob = new JSONObject(param);
+			String tokenType = jsob.optString("type");
+			Token t;
+			if (tokenType.equals("addPatient"))
+				t = new AddPatientToken();
+			else if (tokenType.equals("editPatient"))
+				t = new EditPatientToken();
+			else
+				t = new Token();
+			if(!("".equals(jsob.optString("id"))))
+				t.setId(jsob.getString("id"));
+			t.setType(jsob.getString("type"));
+			HashMap<String, Object> data = new ObjectMapper().readValue (jsob.getString("data"), new TypeReference<HashMap<String, Object>>() {});
 
-            // compatibility fix: "idtypes" -> "idTypes"
-            HashMap<String, Object> changedItems = new HashMap<String, Object>();
-            for (Iterator<Entry<String, Object>> itDataItem = data.entrySet().iterator(); itDataItem.hasNext();) {
-                Entry<String, Object> dataEntry = itDataItem.next();
-                if (dataEntry.getKey().toLowerCase().equals("idtypes")) {
-                    itDataItem.remove();
-                    changedItems.put("idTypes", dataEntry.getValue());
-                }
-            }
-            data.putAll(changedItems);
-            t.setData(data);
+			// compatibility fix: "idtypes" -> "idTypes"
+			HashMap<String, Object> changedItems = new HashMap<String, Object>();
+			for (Iterator<Entry<String, Object>> itDataItem = data.entrySet().iterator(); itDataItem.hasNext();) {
+				Entry<String, Object> dataEntry = itDataItem.next();
+				if (dataEntry.getKey().toLowerCase().equals("idtypes")) {
+					itDataItem.remove();
+					changedItems.put("idTypes", dataEntry.getValue());
+				}
+			}
+			data.putAll(changedItems);
+			t.setData(data);
 
-            return t;
-        } catch (WebApplicationException e) {
-            throw (e);
-        } catch (Exception e) {
-            throw new WebApplicationException(Response
-                    .status(Status.BAD_REQUEST)
-                    .entity("Invalid input: " + e.getMessage())
-                    .build()
-                );
-        }
-    }
+			return t;
+		} catch (WebApplicationException e) {
+			throw (e);
+		} catch (Exception e) {
+			throw new WebApplicationException(Response
+					.status(Status.BAD_REQUEST)
+					.entity("Invalid input: " + e.getMessage())
+					.build()
+				);
+		}
+	}
 }

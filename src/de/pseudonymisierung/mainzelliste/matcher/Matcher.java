@@ -35,24 +35,24 @@ import de.pseudonymisierung.mainzelliste.Patient;
  */
 public interface Matcher {
 
-    /**
-     * Initialize with configuration properties.
-     *
-     * @param props
-     *            Properties as read from the configuration file.
-     */
-    public void initialize(Properties props);
+	/**
+	 * Initialize with configuration properties.
+	 *
+	 * @param props
+	 *            Properties as read from the configuration file.
+	 */
+	public void initialize(Properties props);
 
-    /**
-     * Compare a patient to a list of existing patiens.
-     *
-     * @param a
-     *            The patient too look up.
-     * @param patientList
-     *            The list or patients to match against.
-     * @return The match result.
-     *
-     * @see MatchResult
-     */
-    public MatchResult match(Patient a, Iterable<Patient> patientList);
+	/**
+	 * Compare a patient to a list of existing patiens.
+	 *
+	 * @param a
+	 *            The patient too look up.
+	 * @param patientList
+	 *            The list or patients to match against.
+	 * @return The match result.
+	 *
+	 * @see MatchResult
+	 */
+	public MatchResult match(Patient a, Iterable<Patient> patientList);
 }

@@ -44,53 +44,53 @@ import de.pseudonymisierung.mainzelliste.StringPair;
  */
 public class ArrayFieldComparator {
 
-    /** The names of fields to compare in the first patient's data */
-    private String fieldListLeft[];
-    /** The names of fields to compare in the second patient's data */
-    private String fieldListRight[];
-    /** The FieldComparator used to compare the subfields. */
-    private FieldComparator<?> comparator;
+	/** The names of fields to compare in the first patient's data */
+	private String fieldListLeft[];
+	/** The names of fields to compare in the second patient's data */
+	private String fieldListRight[];
+	/** The FieldComparator used to compare the subfields. */
+	private FieldComparator<?> comparator;
 
-    /**
-     * Instantiates an ArrayFieldComparator.
-     *
-     * @param fieldListLeft
-     *            The names of fields to compare in the first patient's data.
-     * @param fieldListRight
-     *            The names of fields to compare in the second patient's data.
-     * @param comparator
-     *            The comparator to use to compare individual subfields.
-     */
-    public ArrayFieldComparator(String fieldListLeft[], String fieldListRight[],
-            FieldComparator<?> comparator)
-    {
-        super();
-        this.fieldListLeft = fieldListLeft;
-        this.fieldListRight = fieldListRight;
-        this.comparator = comparator;
-    }
+	/**
+	 * Instantiates an ArrayFieldComparator.
+	 *
+	 * @param fieldListLeft
+	 *            The names of fields to compare in the first patient's data.
+	 * @param fieldListRight
+	 *            The names of fields to compare in the second patient's data.
+	 * @param comparator
+	 *            The comparator to use to compare individual subfields.
+	 */
+	public ArrayFieldComparator(String fieldListLeft[], String fieldListRight[],
+			FieldComparator<?> comparator)
+	{
+		super();
+		this.fieldListLeft = fieldListLeft;
+		this.fieldListRight = fieldListRight;
+		this.comparator = comparator;
+	}
 
-    /**
-     * Compares two patient on the configured array of fields.
-     * @param patientLeft The left hand side patient.
-     * @param patientRight The right hand side patient.
-     * @return A map with every field combination mapped to the comparison value.
-     */
-    public Map<StringPair, Object> compare(Patient patientLeft, Patient patientRight)
-    {
-        Hashtable<StringPair, Object> result = new Hashtable<StringPair, Object>();
-        for (String fieldLeft : fieldListLeft)
-        {
-            comparator.setFieldLeft(fieldLeft);
-            for (String fieldRight : fieldListRight)
-            {
-                comparator.setFieldRight(fieldRight);
-                Object value = comparator.compare(patientLeft, patientRight);
-                result.put(new StringPair(fieldLeft, fieldRight), value);
-            }
-        }
+	/**
+	 * Compares two patient on the configured array of fields.
+	 * @param patientLeft The left hand side patient.
+	 * @param patientRight The right hand side patient.
+	 * @return A map with every field combination mapped to the comparison value.
+	 */
+	public Map<StringPair, Object> compare(Patient patientLeft, Patient patientRight)
+	{
+		Hashtable<StringPair, Object> result = new Hashtable<StringPair, Object>();
+		for (String fieldLeft : fieldListLeft)
+		{
+			comparator.setFieldLeft(fieldLeft);
+			for (String fieldRight : fieldListRight)
+			{
+				comparator.setFieldRight(fieldRight);
+				Object value = comparator.compare(patientLeft, patientRight);
+				result.put(new StringPair(fieldLeft, fieldRight), value);
+			}
+		}
 
-        return result;
-    }
+		return result;
+	}
 
 }

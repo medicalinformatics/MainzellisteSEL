@@ -45,20 +45,20 @@ import de.pseudonymisierung.mainzelliste.Servers;
 @Path("/configuration")
 public class ConfigResource {
 
-    /**
-     * Get field keys as an array of strings.
-     *
-     * @param request
-     *            The injected HttpSerlvetRequest
-     *
-     * @return Field keys as an array of strings.
-     */
-    @Path("/fieldKeys")
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response getFieldKeys(@Context HttpServletRequest request) {
-        Servers.instance.checkPermission(request, "readConfiguration");
-        JSONArray ret = new JSONArray(Config.instance.getFieldKeys());
-        return Response.ok(ret).build();
-    }
+	/**
+	 * Get field keys as an array of strings.
+	 *
+	 * @param request
+	 *            The injected HttpSerlvetRequest
+	 *
+	 * @return Field keys as an array of strings.
+	 */
+	@Path("/fieldKeys")
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response getFieldKeys(@Context HttpServletRequest request) {
+		Servers.instance.checkPermission(request, "readConfiguration");
+		JSONArray ret = new JSONArray(Config.instance.getFieldKeys());
+		return Response.ok(ret).build();
+	}
 }

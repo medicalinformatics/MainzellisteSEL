@@ -34,29 +34,29 @@ import javax.ws.rs.core.Response.Status;
  */
 public class InvalidFieldException extends WebApplicationException {
 
-    @SuppressWarnings("javadoc")
-    private static final long serialVersionUID = 5981641835447911933L;
+	@SuppressWarnings("javadoc")
+	private static final long serialVersionUID = 5981641835447911933L;
 
-    /** The default error message. */
-    private static String defaultMessage = "Invalid Field.";
+	/** The default error message. */
+	private static String defaultMessage = "Invalid Field.";
 
-    /** Create an instance with the default error message. */
-    public InvalidFieldException() {
-        this(defaultMessage);
-    }
+	/** Create an instance with the default error message. */
+	public InvalidFieldException() {
+		this(defaultMessage);
+	}
 
-    /**
-     * Create an instance with the given error message.
-     *
-     * @param message
-     *            The error message.
-     */
-    public InvalidFieldException(String message) {
-        super(Response.status(Status.BAD_REQUEST).entity(message).build());
-    }
+	/**
+	 * Create an instance with the given error message.
+	 *
+	 * @param message
+	 *            The error message.
+	 */
+	public InvalidFieldException(String message) {
+		super(Response.status(Status.BAD_REQUEST).entity(message).build());
+	}
 
-    @Override
-    public String getMessage() {
-        return super.getMessage();
-    }
+	@Override
+	public String getMessage() {
+		return super.getMessage();
+	}
 }

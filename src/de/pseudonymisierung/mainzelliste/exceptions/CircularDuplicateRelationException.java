@@ -38,38 +38,38 @@ import de.pseudonymisierung.mainzelliste.Patient;
  */
 public class CircularDuplicateRelationException extends WebApplicationException {
 
-    @SuppressWarnings("javadoc")
-    private static final long serialVersionUID = 1554926735681002661L;
+	@SuppressWarnings("javadoc")
+	private static final long serialVersionUID = 1554926735681002661L;
 
-    /** The error message. */
-    String message;
+	/** The error message. */
+	String message;
 
-    /**
-     * Create an instance with an error message that reports the affected
-     * patients.
-     *
-     * @param duplicatePid
-     *            ID string of the patient that is tried to be marked as
-     *            duplicate.
-     * @param originalPid
-     *            ID string of the patient that is tried to be marked as
-     *            original.
-     *
-     * @see Patient#setOriginal(Patient)
-     */
-    public CircularDuplicateRelationException(String duplicatePid, String originalPid) {
-        super(Response.status(Status.BAD_REQUEST).entity(
-                "Cannot set " + duplicatePid + " to be a duplicate of " + originalPid +
-                " because " + originalPid + " is itself a duplicate of " + duplicatePid
-                ).build());
+	/**
+	 * Create an instance with an error message that reports the affected
+	 * patients.
+	 *
+	 * @param duplicatePid
+	 *            ID string of the patient that is tried to be marked as
+	 *            duplicate.
+	 * @param originalPid
+	 *            ID string of the patient that is tried to be marked as
+	 *            original.
+	 *
+	 * @see Patient#setOriginal(Patient)
+	 */
+	public CircularDuplicateRelationException(String duplicatePid, String originalPid) {
+		super(Response.status(Status.BAD_REQUEST).entity(
+				"Cannot set " + duplicatePid + " to be a duplicate of " + originalPid +
+				" because " + originalPid + " is itself a duplicate of " + duplicatePid
+				).build());
 
-        this.message = "Cannot set " + duplicatePid + " to be a duplicate of " + originalPid +
-                " because " + originalPid + " is itself a duplicate of " + duplicatePid;
-    }
+		this.message = "Cannot set " + duplicatePid + " to be a duplicate of " + originalPid +
+				" because " + originalPid + " is itself a duplicate of " + duplicatePid;
+	}
 
-    @Override
-    public String getMessage() {
-        return message;
-    }
+	@Override
+	public String getMessage() {
+		return message;
+	}
 
 }

@@ -49,87 +49,87 @@ import de.pseudonymisierung.mainzelliste.PlainTextField;
  */
 public class NGramComparator extends FieldComparator<PlainTextField> {
 
-    /** The length of n-grams ("n"). */
-    private int nGramLength = 2;
+	/** The length of n-grams ("n"). */
+	private int nGramLength = 2;
 
-    /** Cache of n-grams for recently used strings. */
-    private static Map<String, Set<String>> cacheNGrams = new HashMap<String, Set<String>>(50000);
+	/** Cache of n-grams for recently used strings. */
+	private static Map<String, Set<String>> cacheNGrams = new HashMap<String, Set<String>>(50000);
 
-    /**
-     * Get the set of n-grams for a given string.
-     *
-     * @param input
-     *            The input string.
-     * @return The generated n-grams.
-     */
-    private Set<String> getNGrams(String input){
-        Set<String> cacheResult = cacheNGrams.get(input);
-        if (cacheResult != null) return Collections.unmodifiableSet(cacheResult);
+	/**
+	 * Get the set of n-grams for a given string.
+	 *
+	 * @param input
+	 *            The input string.
+	 * @return The generated n-grams.
+	 */
+	private Set<String> getNGrams(String input){
+		Set<String> cacheResult = cacheNGrams.get(input);
+		if (cacheResult != null) return Collections.unmodifiableSet(cacheResult);
 
-        // initialize Buffer to hold input and padding
-        // (nGramLength - 1 spaces on each side)
-        StringBuffer buffer = new StringBuffer(input.length() + 2 * (nGramLength - 1));
-        // Add leading padding
-        for (int i = 0; i < nGramLength - 1; i++)
-            buffer.append(" ");
-        // add input string
-        buffer.append(input);
-        // add leading padding
-        for (int i = 0; i < nGramLength - 1; i++)
-            buffer.append(" ");
+		// initialize Buffer to hold input and padding
+		// (nGramLength - 1 spaces on each side)
+		StringBuffer buffer = new StringBuffer(input.length() + 2 * (nGramLength - 1));
+		// Add leading padding
+		for (int i = 0; i < nGramLength - 1; i++)
+			buffer.append(" ");
+		// add input string
+		buffer.append(input);
+		// add leading padding
+		for (int i = 0; i < nGramLength - 1; i++)
+			buffer.append(" ");
 
-        HashSet<String> output = new HashSet<String>(buffer.length() - nGramLength + 1);
-        for (int i = 0; i <= buffer.length() - nGramLength; i++)
-        {
-            output.add(buffer.substring(i, i + nGramLength));
-        }
-        cacheNGrams.put(new String(input), output);
-        return Collections.unmodifiableSet(output);
-    }
+		HashSet<String> output = new HashSet<String>(buffer.length() - nGramLength + 1);
+		for (int i = 0; i <= buffer.length() - nGramLength; i++)
+		{
+			output.add(buffer.substring(i, i + nGramLength));
+		}
+		cacheNGrams.put(new String(input), output);
+		return Collections.unmodifiableSet(output);
+	}
 
-    /**
-     * Instantiate comparison between two specified fields. The field
-     * definitions correspond to indices in the Fields map of the persons
-     * (objects of class Patient) which are compared.
-     *
-     * @param fieldLeft
-     *            Name of comparison field on the left side.
-     * @param fieldRight
-     *            Name of comparison field on the right side.
-     */
-    public NGramComparator (String fieldLeft, String fieldRight)
-    {
-        super(fieldLeft, fieldRight);
-    }
+	/**
+	 * Instantiate comparison between two specified fields. The field
+	 * definitions correspond to indices in the Fields map of the persons
+	 * (objects of class Patient) which are compared.
+	 *
+	 * @param fieldLeft
+	 *            Name of comparison field on the left side.
+	 * @param fieldRight
+	 *            Name of comparison field on the right side.
+	 */
+	public NGramComparator (String fieldLeft, String fieldRight)
+	{
+		super(fieldLeft, fieldRight);
+	}
 
-    @Override
-    public double compareBackend(PlainTextField fieldLeft, PlainTextField fieldRight) {
-        assert (fieldLeft instanceof PlainTextField);
-        assert (fieldRight instanceof PlainTextField);
+	@Override
+	public double compareBackend(PlainTextField fieldLeft, PlainTextField fieldRight) {
+		assert (fieldLeft instanceof PlainTextField);
+		assert (fieldRight instanceof PlainTextField);
 
-        Set<String> nGramsLeft = getNGrams(fieldLeft.getValue());
-        Set<String> nGramsRight = getNGrams(fieldRight.getValue());
+		Set<String> nGramsLeft = getNGrams(fieldLeft.getValue());
+		Set<String> nGramsRight = getNGrams(fieldRight.getValue());
 
-        int nLeft = nGramsLeft.size();
-        int nRight = nGramsRight.size();
+		int nLeft = nGramsLeft.size();
+		int nRight = nGramsRight.size();
 
-        int nCommon = 0;
-        Set<String> smaller;
-        Set<String> larger;
+		int nCommon = 0;
+		Set<String> smaller;
+		Set<String> larger;
 
-        if (nLeft < nRight) {
-            smaller = nGramsLeft;
-            larger = nGramsRight;
-        } else {
-            smaller = nGramsRight;
-            larger = nGramsLeft;
-        }
+		if (nLeft < nRight) {
+			smaller = nGramsLeft;
+			larger = nGramsRight;
+		} else {
+			smaller = nGramsRight;
+			larger = nGramsLeft;
+		}
 
-        for (String str : smaller) {
-            if (larger.contains(str)) nCommon++;
-        }
+		for (String str : smaller) {
+			if (larger.contains(str)) nCommon++;
+		}
 
-        return 2.0 * nCommon / (nLeft + nRight);
-    }
+		return 2.0 * nCommon / (nLeft + nRight);
+	}
 
 }

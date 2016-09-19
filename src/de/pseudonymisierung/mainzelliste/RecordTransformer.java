@@ -39,78 +39,78 @@ import de.pseudonymisierung.mainzelliste.matcher.*;
  */
 public class RecordTransformer {
 
-    /**
-     * Map of field transformers. Keys are the field names, values the
-     * corresponding FieldTransformer objects.
-     */
-    private Map<String, FieldTransformerChain> fieldTransformers;
+	/**
+	 * Map of field transformers. Keys are the field names, values the
+	 * corresponding FieldTransformer objects.
+	 */
+	private Map<String, FieldTransformerChain> fieldTransformers;
 
-    /**
-     * Create an instance from the configuration.
-     *
-     * @param props
-     *            The configuration of the Mainzelliste instance as provides by
-     *            {@link Config}.
-     *
-     * @throws InternalErrorException
-     *             If an error occurs during initalization. A typical cause is
-     *             when a configured FieldTransformer class cannot be found on
-     *             the class path.
-     */
-    @SuppressWarnings("unchecked")
-    public RecordTransformer(Properties props) throws InternalErrorException {
-        fieldTransformers = new HashMap<String, FieldTransformerChain>();
+	/**
+	 * Create an instance from the configuration.
+	 *
+	 * @param props
+	 *            The configuration of the Mainzelliste instance as provides by
+	 *            {@link Config}.
+	 *
+	 * @throws InternalErrorException
+	 *             If an error occurs during initalization. A typical cause is
+	 *             when a configured FieldTransformer class cannot be found on
+	 *             the class path.
+	 */
+	@SuppressWarnings("unchecked")
+	public RecordTransformer(Properties props) throws InternalErrorException {
+		fieldTransformers = new HashMap<String, FieldTransformerChain>();
 
-        // Get names of fields from config vars.*
-        Pattern p = Pattern.compile("^field\\.(\\w+)\\.type");
-        java.util.regex.Matcher m;
+		// Get names of fields from config vars.*
+		Pattern p = Pattern.compile("^field\\.(\\w+)\\.type");
+		java.util.regex.Matcher m;
 
-        // Build map of comparators and map of frequencies from Properties
-        for (Object key : props.keySet()) {
-            m = p.matcher((String) key);
-            if (m.find()) {
-                String fieldName = m.group(1);
-                String transformerProp = props.getProperty("field." + fieldName + ".transformers");
-                if (transformerProp != null)
-                {
-                    String transformers[] = transformerProp.split(",");
-                    FieldTransformerChain thisChain = new FieldTransformerChain();
-                    for (String thisTrans : transformers) {
-                        thisTrans = thisTrans.trim();
-                        try {
-                            FieldTransformer<Field<?>, Field<?>> tr = (FieldTransformer<Field<?>, Field<?>>) Class.forName("de.pseudonymisierung.mainzelliste.matcher." + thisTrans).newInstance();
-                            thisChain.add(tr);
-                        } catch (Exception e)
-                        {
-                            System.err.println(e.getMessage());
-                            throw new InternalErrorException();
-                        }
-                    }
-                    this.fieldTransformers.put(fieldName, thisChain);
-                }
-            }
-        }
-    }
+		// Build map of comparators and map of frequencies from Properties
+		for (Object key : props.keySet()) {
+			m = p.matcher((String) key);
+			if (m.find()) {
+				String fieldName = m.group(1);
+				String transformerProp = props.getProperty("field." + fieldName + ".transformers");
+				if (transformerProp != null)
+				{
+					String transformers[] = transformerProp.split(",");
+					FieldTransformerChain thisChain = new FieldTransformerChain();
+					for (String thisTrans : transformers) {
+						thisTrans = thisTrans.trim();
+						try {
+							FieldTransformer<Field<?>, Field<?>> tr = (FieldTransformer<Field<?>, Field<?>>) Class.forName("de.pseudonymisierung.mainzelliste.matcher." + thisTrans).newInstance();
+							thisChain.add(tr);
+						} catch (Exception e)
+						{
+							System.err.println(e.getMessage());
+							throw new InternalErrorException();
+						}
+					}
+					this.fieldTransformers.put(fieldName, thisChain);
+				}
+			}
+		}
+	}
 
-    /**
-     * Transforms a patient by transforming all of its fields. Fields for which
-     * no transformer is found (i.e. the field name is not in .keySet()) are
-     * passed unchanged.
-     * @param input The record to transform.
-     * @return The transformed record.
-     */
-    public Patient transform(Patient input) {
-        Map<String, Field<?>> inFields = input.getFields();
-        Patient output = new Patient();
-        HashMap<String, Field<?>> outFields = new HashMap<String, Field<?>>();
-        /* iterate over input fields and transform each */
-        for (String fieldName : inFields.keySet()) {
-            if (this.fieldTransformers.containsKey(fieldName))
-                outFields.put(fieldName, this.fieldTransformers.get(fieldName).transform(inFields.get(fieldName)));
-            else
-                outFields.put(fieldName, inFields.get(fieldName).clone());
-        }
-        output.setFields(outFields);
-        return output;
-    }
+	/**
+	 * Transforms a patient by transforming all of its fields. Fields for which
+	 * no transformer is found (i.e. the field name is not in .keySet()) are
+	 * passed unchanged.
+	 * @param input The record to transform.
+	 * @return The transformed record.
+	 */
+	public Patient transform(Patient input) {
+		Map<String, Field<?>> inFields = input.getFields();
+		Patient output = new Patient();
+		HashMap<String, Field<?>> outFields = new HashMap<String, Field<?>>();
+		/* iterate over input fields and transform each */
+		for (String fieldName : inFields.keySet()) {
+			if (this.fieldTransformers.containsKey(fieldName))
+				outFields.put(fieldName, this.fieldTransformers.get(fieldName).transform(inFields.get(fieldName)));
+			else
+				outFields.put(fieldName, inFields.get(fieldName).clone());
+		}
+		output.setFields(outFields);
+		return output;
+	}
 }

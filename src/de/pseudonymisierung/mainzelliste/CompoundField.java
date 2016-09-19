@@ -53,152 +53,152 @@ import de.pseudonymisierung.mainzelliste.exceptions.InternalErrorException;
 public class CompoundField<T extends Field<?>> extends Field<List<T>> {
 
 
-    /** The value of a compound field is a list of fields of a common type */
-    @OneToMany(cascade={CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH},
-                fetch=FetchType.EAGER, targetEntity = Field.class)
-    private List<T> value;
+	/** The value of a compound field is a list of fields of a common type */
+	@OneToMany(cascade={CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH},
+				fetch=FetchType.EAGER, targetEntity = Field.class)
+	private List<T> value;
 
-    /**
-     * Get the number of components. This is the number of Fields this CompoundField can hold, some
-     * of which can be empty at a given time. To get the number of non-empty fields,
-     * call getSize() - nEmptyFields.
-     *
-     * @return The number of components.
-     */
-    public int getSize() {
-        return value.size();
-    }
+	/**
+	 * Get the number of components. This is the number of Fields this CompoundField can hold, some
+	 * of which can be empty at a given time. To get the number of non-empty fields,
+	 * call getSize() - nEmptyFields.
+	 *
+	 * @return The number of components.
+	 */
+	public int getSize() {
+		return value.size();
+	}
 
-    /**
-     * Construct a CompoundField from a list of fields.
-     * @param value A list of Fields with matching type.
-     */
-    public CompoundField(List<T> value)
-    {
-        super(value);
-    }
+	/**
+	 * Construct a CompoundField from a list of fields.
+	 * @param value A list of Fields with matching type.
+	 */
+	public CompoundField(List<T> value)
+	{
+		super(value);
+	}
 
-    /** Construct a CompoundField with the given number of components.
-     *
-     * @param size The number of components.
-     */
-    public CompoundField(int size)
-    {
-        super(new Vector<T>(size));
-        for (int i = 0; i < size; i++)
-        {
-            value.add(null);
-        }
-    }
+	/** Construct a CompoundField with the given number of components.
+	 *
+	 * @param size The number of components.
+	 */
+	public CompoundField(int size)
+	{
+		super(new Vector<T>(size));
+		for (int i = 0; i < size; i++)
+		{
+			value.add(null);
+		}
+	}
 
-    @Override
-    public List<T> getValue()
-    {
-        return this.value;
-    }
+	@Override
+	public List<T> getValue()
+	{
+		return this.value;
+	}
 
-    /**
-     * Get the i-th component.
-     * @param i Index of the component to get.
-     * @return The i-th component.
-     */
-    public T getValueAt(int i)
-    {
-        return this.value.get(i);
-    }
+	/**
+	 * Get the i-th component.
+	 * @param i Index of the component to get.
+	 * @return The i-th component.
+	 */
+	public T getValueAt(int i)
+	{
+		return this.value.get(i);
+	}
 
-    @Override
-    public void setValue(List<T> value)
-    {
-        this.value = value;
-    }
+	@Override
+	public void setValue(List<T> value)
+	{
+		this.value = value;
+	}
 
-    /**
-     * Set value from a String. Required format: A JSON array whose member are JSON representations of fields,
-     * as returned by {@link Field#toJSON()}.
-     * @param s A JSON array of the fields to set as components.
-     */
-    @Override
-    public void setValue(String s) {
-        try {
-            JSONArray arr = new JSONArray(s);
-            this.value = new LinkedList<T>();
-            for (int fieldInd = 0; fieldInd < arr.length(); fieldInd++) {
-                JSONObject obj = arr.getJSONObject(fieldInd);
-                @SuppressWarnings("unchecked")
-                T thisField = (T) Class.forName(obj.getString("class")).newInstance();
-                thisField.setValue(obj.getString("value"));
-                this.value.add(thisField);
-            }
-        } catch (Exception e) {
-            Logger.getLogger(this.getClass()).error("Exception:", e);
-            throw new InternalErrorException();
-        }
-    }
+	/**
+	 * Set value from a String. Required format: A JSON array whose member are JSON representations of fields,
+	 * as returned by {@link Field#toJSON()}.
+	 * @param s A JSON array of the fields to set as components.
+	 */
+	@Override
+	public void setValue(String s) {
+		try {
+			JSONArray arr = new JSONArray(s);
+			this.value = new LinkedList<T>();
+			for (int fieldInd = 0; fieldInd < arr.length(); fieldInd++) {
+				JSONObject obj = arr.getJSONObject(fieldInd);
+				@SuppressWarnings("unchecked")
+				T thisField = (T) Class.forName(obj.getString("class")).newInstance();
+				thisField.setValue(obj.getString("value"));
+				this.value.add(thisField);
+			}
+		} catch (Exception e) {
+			Logger.getLogger(this.getClass()).error("Exception:", e);
+			throw new InternalErrorException();
+		}
+	}
 
-    /**
-     * Set the i-th component.
-     * @param i The index of the component to set.
-     * @param value The new value to set.
-     */
-    public void setValueAt(int i, T value)
-    {
-        this.value.set(i,  value);
-    }
+	/**
+	 * Set the i-th component.
+	 * @param i The index of the component to set.
+	 * @param value The new value to set.
+	 */
+	public void setValueAt(int i, T value)
+	{
+		this.value.set(i,  value);
+	}
 
-    /**
-     * Get the number of currently empty components. If a component is empty is
-     * determined by calling its isEmpty() method.
-     * @return The number of components c for which c.isEmpty() is true.
-     */
-    public int nEmptyFields()
-    {
-        int result = 0;
-        for (T thisField : this.value)
-        {
-            if (thisField.isEmpty()) result++;
-        }
-        return result;
-    }
+	/**
+	 * Get the number of currently empty components. If a component is empty is
+	 * determined by calling its isEmpty() method.
+	 * @return The number of components c for which c.isEmpty() is true.
+	 */
+	public int nEmptyFields()
+	{
+		int result = 0;
+		for (T thisField : this.value)
+		{
+			if (thisField.isEmpty()) result++;
+		}
+		return result;
+	}
 
-    @Override
-    /**
-     * Check if this CompoundField is empty.
-     * @return true if all components of this CompoundField are empty.
-     */
-    public boolean isEmpty()
-    {
-        if (this.nEmptyFields() == this.getSize())
-            return true;
-        else
-            return false;
-    }
+	@Override
+	/**
+	 * Check if this CompoundField is empty.
+	 * @return true if all components of this CompoundField are empty.
+	 */
+	public boolean isEmpty()
+	{
+		if (this.nEmptyFields() == this.getSize())
+			return true;
+		else
+			return false;
+	}
 
-    @SuppressWarnings("unchecked")
-    @Override
-    /**
-     * Creates a copy of this CompoundField. The components are copied by calling
-     * their clone() methods, respectively.
-     * @return The cloned CompoundField.
-     */
-    public CompoundField<T> clone()
-    {
-        List<Field<?>> copies = new Vector<Field<?>>(3);
-        for (T field : this.value)
-        {
-            copies.add(field.clone());
-        }
-        return new CompoundField<T>((List<T>) copies);
-    }
+	@SuppressWarnings("unchecked")
+	@Override
+	/**
+	 * Creates a copy of this CompoundField. The components are copied by calling
+	 * their clone() methods, respectively.
+	 * @return The cloned CompoundField.
+	 */
+	public CompoundField<T> clone()
+	{
+		List<Field<?>> copies = new Vector<Field<?>>(3);
+		for (T field : this.value)
+		{
+			copies.add(field.clone());
+		}
+		return new CompoundField<T>((List<T>) copies);
+	}
 
-    @Override
-    public JSONArray getValueJSON() throws JSONException {
-        JSONArray obj = new JSONArray();
-        for (T field : this.value) {
-            obj.put(field.toJSON());
-        }
-        return obj;
-    }
+	@Override
+	public JSONArray getValueJSON() throws JSONException {
+		JSONArray obj = new JSONArray();
+		for (T field : this.value) {
+			obj.put(field.toJSON());
+		}
+		return obj;
+	}
 
 
 

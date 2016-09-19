@@ -45,89 +45,89 @@ import de.pseudonymisierung.mainzelliste.exceptions.InvalidTokenException;
  */
 public class EditPatientToken extends Token {
 
-    /**
-     * ID of the patient that can be edited with this token.
-     */
-    private ID patientId;
+	/**
+	 * ID of the patient that can be edited with this token.
+	 */
+	private ID patientId;
 
-    /**
-     * Names of fields that can be changed with this token. If null,
-     * all fields can be changed.
-     */
-    private Set<String> fields;
+	/**
+	 * Names of fields that can be changed with this token. If null,
+	 * all fields can be changed.
+	 */
+	private Set<String> fields;
 
-    /**
-     * URL to redirect to after using the token.
-     */
-    private URL redirect = null;
+	/**
+	 * URL to redirect to after using the token.
+	 */
+	private URL redirect = null;
 
-    /**
-     * Get ID of the patient that can be edited with this token. The patient is
-     * identified by the ID that was provided on token creation.
-     *
-     * @return The patient ID.
-     */
-    public ID getPatientId() {
-        return patientId;
-    }
+	/**
+	 * Get ID of the patient that can be edited with this token. The patient is
+	 * identified by the ID that was provided on token creation.
+	 *
+	 * @return The patient ID.
+	 */
+	public ID getPatientId() {
+		return patientId;
+	}
 
-    /**
-     * Get the fields that can be changed with this token. If null, all fields
-     * can be changed.
-     *
-     * @return Set of field names.
-     */
-    public Set<String> getFields() {
-        return fields;
-    }
+	/**
+	 * Get the fields that can be changed with this token. If null, all fields
+	 * can be changed.
+	 *
+	 * @return Set of field names.
+	 */
+	public Set<String> getFields() {
+		return fields;
+	}
 
-    /**
-     * Return the URL to which the user should be redirected after the token has
-     * been used.
-     *
-     * @return The redirect URL or null if none is set.
-     */
-    public URL getRedirect() {
-        return this.redirect;
-    }
+	/**
+	 * Return the URL to which the user should be redirected after the token has
+	 * been used.
+	 *
+	 * @return The redirect URL or null if none is set.
+	 */
+	public URL getRedirect() {
+		return this.redirect;
+	}
 
-    @Override
-    public void setData(Map<String, ?> data) {
-        super.setData(data);
+	@Override
+	public void setData(Map<String, ?> data) {
+		super.setData(data);
 
-        // Read patient id from token and check if valid
-        Map<String, ?> idJSON = this.getDataItemMap("patientId");
-        if (!idJSON.containsKey("idString") || !idJSON.containsKey("idType"))
-            throw new InvalidIDException("Please provide a valid patient id as data item 'patientId'!");
+		// Read patient id from token and check if valid
+		Map<String, ?> idJSON = this.getDataItemMap("patientId");
+		if (!idJSON.containsKey("idString") || !idJSON.containsKey("idType"))
+			throw new InvalidIDException("Please provide a valid patient id as data item 'patientId'!");
 
-        this.patientId = IDGeneratorFactory.instance.buildId(
-                idJSON.get("idType").toString(), idJSON.get("idString").toString());
+		this.patientId = IDGeneratorFactory.instance.buildId(
+				idJSON.get("idType").toString(), idJSON.get("idString").toString());
 
-        if (!Persistor.instance.patientExists(patientId))
-            throw new InvalidIDException("No patient exists with id " + patientId.toString());
+		if (!Persistor.instance.patientExists(patientId))
+			throw new InvalidIDException("No patient exists with id " + patientId.toString());
 
-        // Read redirect URL
-        String redirectURLString = this.getDataItemString("redirect");
-        if (redirectURLString != null) {
-            try {
-                this.redirect = new URL(redirectURLString);
-            } catch (MalformedURLException e) {
-                throw new InvalidTokenException("Redirect URL " + redirectURLString + " is not a valid URL.");
-            }
-        }
+		// Read redirect URL
+		String redirectURLString = this.getDataItemString("redirect");
+		if (redirectURLString != null) {
+			try {
+				this.redirect = new URL(redirectURLString);
+			} catch (MalformedURLException e) {
+				throw new InvalidTokenException("Redirect URL " + redirectURLString + " is not a valid URL.");
+			}
+		}
 
-        // Read field list (if present) from data and check if valid
-        List<?> fieldsJSON = this.getDataItemList("fields");
-        if (fieldsJSON == null)
-            return;
+		// Read field list (if present) from data and check if valid
+		List<?> fieldsJSON = this.getDataItemList("fields");
+		if (fieldsJSON == null)
+			return;
 
-        this.fields = new HashSet<String>();
-        for (Object thisField : fieldsJSON) {
-            String fieldName = thisField.toString();
-            if (!Config.instance.fieldExists(fieldName))
-                throw new InvalidFieldException("No field '" + fieldName + "' defined!");
-            this.fields.add(fieldName);
-        }
-    }
+		this.fields = new HashSet<String>();
+		for (Object thisField : fieldsJSON) {
+			String fieldName = thisField.toString();
+			if (!Config.instance.fieldExists(fieldName))
+				throw new InvalidFieldException("No field '" + fieldName + "' defined!");
+			this.fields.add(fieldName);
+		}
+	}
 
 }
