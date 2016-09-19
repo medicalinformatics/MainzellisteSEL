@@ -3,24 +3,24 @@
  * Contact: info@mainzelliste.de
  *
  * This program is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Affero General Public License as published by the Free
+ * the terms of the GNU Affero General Public License as published by the Free 
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+ * This program is distributed in the hope that it will be useful, but WITHOUT 
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS 
+ * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more 
  * details.
  *
- * You should have received a copy of the GNU Affero General Public License
+ * You should have received a copy of the GNU Affero General Public License 
  * along with this program; if not, see <http://www.gnu.org/licenses>.
  *
  * Additional permission under GNU GPL version 3 section 7:
  *
- * If you modify this Program, or any covered work, by linking or combining it
- * with Jersey (https://jersey.java.net) (or a modified version of that
- * library), containing parts covered by the terms of the General Public
- * License, version 2.0, the licensors of this Program grant you additional
+ * If you modify this Program, or any covered work, by linking or combining it 
+ * with Jersey (https://jersey.java.net) (or a modified version of that 
+ * library), containing parts covered by the terms of the General Public 
+ * License, version 2.0, the licensors of this Program grant you additional 
  * permission to convey the resulting work.
  */
 package de.pseudonymisierung.mainzelliste.webservice;
@@ -81,13 +81,13 @@ import de.pseudonymisierung.mainzelliste.matcher.MatchResult.MatchResultType;
  */
 @Path("/patients")
 public class PatientsResource {
-
+	
 	/** The logging instance. */
 	private Logger logger = Logger.getLogger(PatientsResource.class);
-
+	
 	/**
 	 * Get a list of patients.
-	 *
+	 * 
 	 * @param req
 	 *            The injected HttpServletRequest.
 	 * @param tokenId
@@ -99,24 +99,24 @@ public class PatientsResource {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getAllPatients(@Context HttpServletRequest req,
-			@QueryParam("tokenId") String tokenId) throws UnauthorizedException {
-
+			@QueryParam("tokenId") String tokenId) throws UnauthorizedException {		
+		
 		logger.info("Received GET /patients");
-
+		
 		/*
-		 * If a token (type "readPatients") is provided, use this
+		 * If a token (type "readPatients") is provided, use this 
 		 */
 		if (tokenId != null)
 			return this.getPatientsToken(tokenId);
-
+		
 		else
 			throw new UnauthorizedException();
 	}
-
+	
 
 	/**
 	 * Create a new patient. Interface for web browser.
-	 *
+	 * 
 	 * @param tokenId
 	 *            Id of a valid "addPatient" token.
 	 * @param mainzellisteApiVersion
@@ -137,7 +137,7 @@ public class PatientsResource {
 			@Context HttpServletRequest request){
 		try {
 			Token t = Servers.instance.getTokenByTid(tokenId);
-			IDRequest createRet = PatientBackend.instance.createNewPatient(tokenId, form, Servers.instance.getRequestApiVersion(request));
+			IDRequest createRet = PatientBackend.instance.createNewPatient(tokenId, form, Servers.instance.getRequestApiVersion(request)); 
 			Set<ID> ids = createRet.getRequestedIds();
 			MatchResult result = createRet.getMatchResult();
 			Map <String, Object> map = new HashMap<String, Object>();
@@ -174,8 +174,8 @@ public class PatientsResource {
 									.build();
 						}
 						// Remove query parameters and pass them to JSP. The redirect is put
-						// into the "action" tag of a form and the parameters are passed as
-						// hidden fields
+						// into the "action" tag of a form and the parameters are passed as 
+						// hidden fields				
 						MultivaluedMap<String, String> queryParams = UriComponent.decodeQuery(redirectURI, true);
 						map.put("redirect", redirectURI);
 						map.put("redirectParams", queryParams);
@@ -188,7 +188,7 @@ public class PatientsResource {
 
 				// If Idat are to be redisplayed in the result form...
 				if (Boolean.parseBoolean(Config.instance.getProperty("result.printIdat"))) {
-					//...copy input to JSP
+					//...copy input to JSP 
 					for (String key : form.keySet())
 					{
 						map.put(key, form.getFirst(key));
@@ -198,15 +198,15 @@ public class PatientsResource {
 				}
 
 				map.put("ids", ids);
-
-				map.put("tentative", false);
-				// Only put true in map if one or more PID are tentative
-				for (ID id : ids) {
-					if (id != null && id.isTentative()) {
-						map.put("tentative", true);
-						break;
-					}
-				}
+                
+                map.put("tentative", false);
+                // Only put true in map if one or more PID are tentative
+                for (ID id : ids) {
+                    if (id != null && id.isTentative()) {
+                        map.put("tentative", true);
+                        break;
+                    }
+                }
 
 				if (Config.instance.debugIsOn() && result.getResultType() != MatchResultType.NON_MATCH)
 				{
@@ -232,7 +232,7 @@ public class PatientsResource {
 
 	/**
 	 * Create a new patient. Interface for software applications.
-	 *
+	 * 
 	 * @param tokenId
 	 *            Id of a valid "addPatient" token.
 	 * @param request
@@ -264,9 +264,9 @@ public class PatientsResource {
 		logger.debug("Accept: " + request.getHeader("Accept"));
 		logger.debug("Content-Type: " + request.getHeader("Content-Type"));
 		List<ID> newIds = new LinkedList<ID>(response.getRequestedIds());
-
+		
 		int apiMajorVersion = Servers.instance.getRequestMajorApiVersion(request);
-
+		
 		if (apiMajorVersion >= 2) {
 			JSONArray ret = new JSONArray();
 			for (ID thisID : newIds) {
@@ -274,14 +274,14 @@ public class PatientsResource {
 						.path(PatientsResource.class)
 						.path("/{idtype}/{idvalue}")
 						.build(thisID.getType(), thisID.getIdString());
-
+	
 				ret.put(new JSONObject()
 					.put("idType", thisID.getType())
 					.put("idString", thisID.getIdString())
 					.put("tentative", thisID.isTentative())
 					.put("uri", newUri));
 			}
-
+					
 			return Response
 				.status(Status.CREATED)
 				.entity(ret)
@@ -299,14 +299,14 @@ public class PatientsResource {
 								"value >= 2.0 or request only one ID type in token.")
 								.build());
 			}
-
+			
 			ID newId = newIds.get(0);
-
+			
 			URI newUri = context.getBaseUriBuilder()
 					.path(PatientsResource.class)
 					.path("/{idtype}/{idvalue}")
 					.build(newId.getType(), newId.getIdString());
-
+			
 			JSONObject ret = new JSONObject()
 					.put("newId", newId.getIdString())
 					.put("tentative", newId.isTentative())
@@ -322,7 +322,7 @@ public class PatientsResource {
 
 	/**
 	 * Get patients via "readPatient" token.
-	 *
+	 * 
 	 * @param tid
 	 *            Id of a valid "readPatient" token.
 	 * @return A JSON result as specified in the API documentation.
@@ -333,7 +333,7 @@ public class PatientsResource {
 	public Response getPatientsToken(
 			@PathParam("tid") String tid){
 		logger.info("Reveived request to get patient with token " + tid);
-		// Check if token exists and has the right type.
+		// Check if token exists and has the right type. 
 		// Validity of token is checked upon creation
 		Token t = Servers.instance.getTokenByTid(tid);
 		if (t == null) {
@@ -343,14 +343,14 @@ public class PatientsResource {
 
 		t.checkTokenType("readPatients");
 		List<?> requests = t.getDataItemList("searchIds");
-
+		
 		JSONArray ret = new JSONArray();
 		for (Object item : requests) {
 			JSONObject thisPatient = new JSONObject();
 			String idType;
 			String idString;
 			@SuppressWarnings("unchecked")
-			Map<String, String> thisSearchId = (Map<String, String>) item;
+			Map<String, String> thisSearchId = (Map<String, String>) item; 
 			idType = thisSearchId.get("idType");
 			idString = thisSearchId.get("idString");
 			ID id = IDGeneratorFactory.instance.buildId(idType, idString);
@@ -370,7 +370,7 @@ public class PatientsResource {
 					throw new InternalErrorException("Error while transforming patient fields into JSON");
 				}
 			}
-
+			
 			if (t.hasDataItem("resultIds")) {
 				try {
 					@SuppressWarnings("unchecked")
@@ -383,19 +383,19 @@ public class PatientsResource {
 				} catch (JSONException e) {
 					logger.error("Error while transforming patient ids into JSON", e);
 					throw new InternalErrorException("Error while transforming patient ids into JSON");
-				}
+				}			
 			}
-
+			
 			ret.put(thisPatient);
 		}
-
+		
 		return Response.ok().entity(ret).build();
 	}
 
 	/**
 	 * Edit a patient. Interface for web browsers. The patient to edit is
 	 * determined from the given "editPatient" token.
-	 *
+	 * 
 	 * @param tokenId
 	 *            A valid "editPatient" token.
 	 * @param form
@@ -417,9 +417,9 @@ public class PatientsResource {
 			for (String fieldName : form.keySet()) {
 				newFieldValues.put(fieldName, form.getFirst(fieldName));
 			}
-
+	
 			EditPatientToken t = this.editPatient(tokenId, newFieldValues, request);
-
+	
 			if (t.getRedirect() != null) {
 				return Response.status(Status.SEE_OTHER)
 						.header("Location", t.getRedirect().toString())
@@ -437,7 +437,7 @@ public class PatientsResource {
 	/**
 	 * Edit a patient. Interface for software applications. The patient to edit
 	 * is determined from the given "editPatient" token.
-	 *
+	 * 
 	 * @param tokenId
 	 *            A valid "editPatient" token.
 	 * @param data
@@ -460,10 +460,13 @@ public class PatientsResource {
 			Map<String, String> newFieldValues = new HashMap<String, String>();
 			Iterator<?> i = newFieldValuesJSON.keys();
 			while (i.hasNext()) {
-				String fieldName = i.next().toString();
-				newFieldValues.put(fieldName, newFieldValuesJSON.get(fieldName).toString());
+				String fieldName = i.next().toString();		
+				if (newFieldValuesJSON.isNull(fieldName))
+				    newFieldValues.put(fieldName, "");
+				else
+				    newFieldValues.put(fieldName, newFieldValuesJSON.get(fieldName).toString());
 			}
-			this.editPatient(tokenId, newFieldValues, request);
+			this.editPatient(tokenId, newFieldValues, request);	
 			return Response.status(Status.NO_CONTENT).build();
 		} catch (JSONException e) {
 			throw new InvalidJSONException(e);
@@ -475,7 +478,7 @@ public class PatientsResource {
 	 * specific media types should delegate all processing apart from converting
 	 * the input (e.g. form fields) to this function, including error handling
 	 * for invalid tokens etc.
-	 *
+	 * 
 	 * @param tokenId
 	 *            Id of a valid editPatient token.
 	 * @param newFieldValues
@@ -487,14 +490,14 @@ public class PatientsResource {
 	 * @return The token that is as authorization the patient. Used for retreiving the redirect URL afterwards.
 	 */
 	private EditPatientToken editPatient(String tokenId, Map<String, String> newFieldValues, HttpServletRequest request) {
-
+		
 		Token t = Servers.instance.getTokenByTid(tokenId);
 		EditPatientToken tt;
 		if (t == null || !"editPatient".equals(t.getType()) ) {
 				logger.info("Token with id " + tokenId + " " + (t == null ? "is unknown." : ("has wrong type '" + t.getType() + "'")));
 				throw new InvalidTokenException("Please supply a valid 'editPatient' token.", Status.UNAUTHORIZED);
 		}
-		// synchronize on token
+		// synchronize on token 
 		synchronized (t) {
 			/* Get token again and check if it still exist.
 			 * This prevents the following race condition:
@@ -521,13 +524,13 @@ public class PatientsResource {
 								" with this token.");
 				}
 			}
-
+			
 			PatientBackend.instance.editPatient(tt.getPatientId(), newFieldValues);
 		} // end of synchronized block
-
+		
 		if (!Config.instance.debugIsOn())
 			Servers.instance.deleteToken(t.getId());
-
+		
 		return tt;
 	}
 }
