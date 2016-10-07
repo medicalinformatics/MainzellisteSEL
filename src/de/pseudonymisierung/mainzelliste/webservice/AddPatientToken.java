@@ -19,7 +19,7 @@ public class AddPatientToken extends Token {
 
 	/**
 	 * Create an instance with the given id.
-	 * 
+	 *
 	 * @param tid
 	 *            The token id.
 	 */
@@ -29,7 +29,7 @@ public class AddPatientToken extends Token {
 		// read fields from JSON data
 		this.fields = new HashMap<String, String>();
 	}
-	
+
 	/**
 	 * Create an instance without setting the token id.
 	 */
@@ -60,7 +60,7 @@ public class AddPatientToken extends Token {
 			List<?> idtypes = this.getDataItemList("idtypes");
 			for (Object o : idtypes) {
 				this.requestedIdTypes.add(o.toString());
-			}			
+			}
 		}
 		else if (this.hasDataItem("idtype")) { // even older api
 				requestedIdTypes.add(this.getDataItemString("idtype"));
@@ -69,17 +69,17 @@ public class AddPatientToken extends Token {
 
 	/**
 	 * Return the fields transmitted on token creation.
-	 * 
+	 *
 	 * @return A map where keys are field names and values the respective field
 	 *         values.
 	 */
 	public Map<String, String> getFields() {
 		return this.fields;
 	}
-	
+
 	/**
 	 * Get the ID types that should be returned when making the ID request.
-	 * 
+	 *
 	 * @return The set of requested ID types.
 	 */
 	public Set<String> getRequestedIdTypes() {

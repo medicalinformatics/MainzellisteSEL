@@ -1,10 +1,12 @@
+# Ignore Maven output folder.
+/target/
+
+# Ignore Eclipse project files.
 /.classpath
 /.project
-/.settings
-WebContent/META-INF/context.xml
-config/*.conf
-/doc
-src/de/pseudonymisierung/mainzelliste/matcher/PSXMatcher.java
-src/de/pseudonymisierung/mainzelliste/matcher/PSXMatchingState.java
-src/de/pseudonymisierung/mainzelliste/matcher/PSXSpecification.java
-/target
+/.settings/
+
+# Ignore Mainzelliste context descriptor and configuration files, as these
+# contain user-defined or even confidential content.
+/WebContent/META-INF/context.xml
+/config/*.conf

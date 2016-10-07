@@ -3,24 +3,24 @@
  * Contact: info@mainzelliste.de
  *
  * This program is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Affero General Public License as published by the Free 
+ * the terms of the GNU Affero General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT 
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS 
- * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
  * details.
  *
- * You should have received a copy of the GNU Affero General Public License 
+ * You should have received a copy of the GNU Affero General Public License
  * along with this program; if not, see <http://www.gnu.org/licenses>.
  *
  * Additional permission under GNU GPL version 3 section 7:
  *
- * If you modify this Program, or any covered work, by linking or combining it 
- * with Jersey (https://jersey.java.net) (or a modified version of that 
- * library), containing parts covered by the terms of the General Public 
- * License, version 2.0, the licensors of this Program grant you additional 
+ * If you modify this Program, or any covered work, by linking or combining it
+ * with Jersey (https://jersey.java.net) (or a modified version of that
+ * library), containing parts covered by the terms of the General Public
+ * License, version 2.0, the licensors of this Program grant you additional
  * permission to convey the resulting work.
  */
 package de.pseudonymisierung.mainzelliste;
@@ -87,7 +87,7 @@ public class IDRequest {
 
 	/**
 	 * Creates a new IDRequest instance.
-	 * 
+	 *
 	 * @param inputFields
 	 *            The input fields as provided by the input form with field
 	 *            values as keys and respective inputs as values.
@@ -112,7 +112,7 @@ public class IDRequest {
 
 	/**
 	 * Get the assigned patient, i.e. he patient whose IDs are returned.
-	 * 
+	 *
 	 * @return The assigned patient.
 	 */
 	public Patient getAssignedPatient() {
@@ -121,7 +121,7 @@ public class IDRequest {
 
 	/**
 	 * Get the input fields as provided by the input form.
-	 * 
+	 *
 	 * @return Map with field values as keys and respective inputs as values.
 	 */
 	public Map<String, Field<?>> getInputFields() {
@@ -130,7 +130,7 @@ public class IDRequest {
 
 	/**
 	 * Get the requested ID types.
-	 * 
+	 *
 	 * @return The requested ID types.
 	 */
 	public Collection<String> getRequestedIdTypes() {
@@ -139,7 +139,7 @@ public class IDRequest {
 
 	/**
 	 * Get the match result for this request as returned by the matcher.
-	 * 
+	 *
 	 * @return The assigned match result.
 	 */
 	public MatchResult getMatchResult() {
@@ -148,7 +148,7 @@ public class IDRequest {
 
 	/**
 	 * Get the requested IDs, i.e. the IDs of the assigned patient.
-	 * 
+	 *
 	 * @return The requested IDs.
 	 * @see IDRequest#getAssignedPatient()
 	 */
@@ -167,7 +167,7 @@ public class IDRequest {
 
 	/**
 	 * Gets the date and time of this request.
-	 * 
+	 *
 	 * @return The date and time of this request.
 	 */
 	Date getTimestamp() {

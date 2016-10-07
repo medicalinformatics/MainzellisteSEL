@@ -3,24 +3,24 @@
  * Contact: info@mainzelliste.de
  *
  * This program is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Affero General Public License as published by the Free 
+ * the terms of the GNU Affero General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT 
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS 
- * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
  * details.
  *
- * You should have received a copy of the GNU Affero General Public License 
+ * You should have received a copy of the GNU Affero General Public License
  * along with this program; if not, see <http://www.gnu.org/licenses>.
  *
  * Additional permission under GNU GPL version 3 section 7:
  *
- * If you modify this Program, or any covered work, by linking or combining it 
- * with Jersey (https://jersey.java.net) (or a modified version of that 
- * library), containing parts covered by the terms of the General Public 
- * License, version 2.0, the licensors of this Program grant you additional 
+ * If you modify this Program, or any covered work, by linking or combining it
+ * with Jersey (https://jersey.java.net) (or a modified version of that
+ * library), containing parts covered by the terms of the General Public
+ * License, version 2.0, the licensors of this Program grant you additional
  * permission to convey the resulting work.
  */
 package de.pseudonymisierung.mainzelliste;
@@ -62,7 +62,7 @@ public class Patient {
 	/**
 	 * JSON serialization of a map of fields. Used for persisting fields in the
 	 * database.
-	 * 
+	 *
 	 * @param fields
 	 *            Map of fields to serialize.
 	 * @return JSON serialization of the given fields.
@@ -88,7 +88,7 @@ public class Patient {
 	/**
 	 * Creates a map of fields from its JSON representation. Used to read
 	 * persisted fields from the database.
-	 * 
+	 *
 	 * @param fieldsJsonString
 	 *            JSON string as created by {@link #fieldsToString(Map)}.
 	 * @return The map of fields.
@@ -131,7 +131,7 @@ public class Patient {
 	 * leads to poor performance. Instead, fields are serialized as a JSON
 	 * object (handled by {@link #setFields(Map)} and de-serialized by
 	 * {@link #postLoad()} upon loading from the database.
-	 * 
+	 *
 	 * @see #fieldsString
 	 */
 	@Transient
@@ -140,7 +140,7 @@ public class Patient {
 	/**
 	 * Serialization of the fields as JSON string for efficient storage in the
 	 * database.
-	 * 
+	 *
 	 * @see #fields
 	 */
 	@Lob
@@ -157,7 +157,7 @@ public class Patient {
 	/**
 	 * Input fields as read from form (before transformation). Used to display
 	 * field values as they were entered in first place.
-	 * 
+	 *
 	 * @see #fields
 	 * @see #inputFieldsString
 	 */
@@ -167,7 +167,7 @@ public class Patient {
 	/**
 	 * Serialization of the input fields as JSON string for efficient storage in
 	 * the database.
-	 * 
+	 *
 	 * @see #inputFields
 	 */
 	@Lob
@@ -207,7 +207,7 @@ public class Patient {
 
 	/**
 	 * Construct a patient object with the specified ids and fields.
-	 * 
+	 *
 	 * @param ids
 	 *            A set of ID objects that identify the patient.
 	 * @param c
@@ -221,7 +221,7 @@ public class Patient {
 
 	/**
 	 * Get the fields of this patient.
-	 * 
+	 *
 	 * @return An unmodifiable map with field names as keys and corresponding
 	 *         field objects as values. Although the map itself is unmodifiable,
 	 *         modifications of its members affect the patient object.
@@ -232,7 +232,7 @@ public class Patient {
 
 	/**
 	 * Get the ID of the specified type from this patient.
-	 * 
+	 *
 	 * @param type
 	 *            The ID type. See {@link ID} for the general structure of an
 	 *            ID.
@@ -249,7 +249,7 @@ public class Patient {
 
 	/**
 	 * Get the set of IDs of this patient.
-	 * 
+	 *
 	 * @return The IDs of the patient as unmodifiable set. While the set itself
 	 *         is unmodifiable, modification of the elements (ID objects) affect
 	 *         the patient object.
@@ -262,7 +262,7 @@ public class Patient {
 	 * Returns the input fields, i.e. as they were transmitted in the last
 	 * request that modified this patient, before transformations. Used for
 	 * displaying the field values as they had been entered in the first place.
-	 * 
+	 *
 	 * @return Map with field names as keys and the corresponding Field objects
 	 *         as values.
 	 */
@@ -276,13 +276,13 @@ public class Patient {
 	 * patient p_n if either p_1 and p_n are the same or if there exists a chain
 	 * p_1, p_2, ... , p_n of patients where p_k is a duplicate of p_k+1 for
 	 * 1<=k<n.
-	 * 
+	 *
 	 * PID requests that find p as the best matching patient should return the
 	 * PID of p.getOriginal().
-	 * 
+	 *
 	 * @return The original of this patient, returns this if this patient is not
 	 *         a duplicate.
-	 * 
+	 *
 	 * @see #setOriginal(Patient)
 	 */
 	public Patient getOriginal() {
@@ -295,7 +295,7 @@ public class Patient {
 	/**
 	 * Returns the internal ID of the persistency engine. Needed to determine if
 	 * two Patient object refer to the same database entry.
-	 * 
+	 *
 	 * @return the patientJpaId
 	 */
 	public int getPatientJpaId() {
@@ -304,7 +304,7 @@ public class Patient {
 
 	/**
 	 * Check whether this patient is the duplicate of another.
-	 * 
+	 *
 	 * @return True if this patient is the duplicate of another.
 	 * @see #getOriginal()
 	 * @see #setOriginal(Patient)
@@ -315,7 +315,7 @@ public class Patient {
 
 	/**
 	 * Check if this patient is suspected to be a duplicate of another one.
-	 * 
+	 *
 	 * @return True if this patient is suspected to be a duplicate of another.
 	 */
 	public boolean isTentative() {
@@ -344,7 +344,7 @@ public class Patient {
 	/**
 	 * Check whether p and this patient are the same in the database (i.e. their
 	 * patientJpaId values are equal).
-	 * 
+	 *
 	 * @param p
 	 *            A patient object.
 	 * @return true if this and p refer to the same database entry.
@@ -355,7 +355,7 @@ public class Patient {
 
 	/**
 	 * Set the fields of this patient.
-	 * 
+	 *
 	 * @param Fields
 	 *            A map with field names as keys and corresponding Field objects
 	 *            as values. The map is copied by reference.
@@ -367,7 +367,7 @@ public class Patient {
 
 	/**
 	 * Set the IDs for this patient.
-	 * 
+	 *
 	 * @param ids
 	 *            Set of IDs. The set is copied by reference.
 	 */
@@ -381,7 +381,7 @@ public class Patient {
 	 * transformation, should be set with this method. This allows redisplaying
 	 * them in the admin interface or to users by means of a "readPatients"
 	 * token.
-	 * 
+	 *
 	 * @param inputFields
 	 *            Map with field names as keys and corresponding Field objects
 	 *            as values.
@@ -395,7 +395,7 @@ public class Patient {
 	 * Set the original of a patient (see {@link #getOriginal() for a
 	 * definition}. This effectively marks this patient as a duplicate of the
 	 * argument.
-	 * 
+	 *
 	 * @param original
 	 *            The patient which is to be set as the original of this. Can be
 	 *            null, which means that this patient is not a duplicate at all.
@@ -420,7 +420,7 @@ public class Patient {
 	/**
 	 * Sets the "tentative" status of this patient, i.e. if it is suspected that
 	 * the patient is a duplicate of another.
-	 * 
+	 *
 	 * @param isTentative
 	 *            The new tentative status.
 	 */

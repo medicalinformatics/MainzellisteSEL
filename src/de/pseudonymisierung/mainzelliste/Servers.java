@@ -3,24 +3,24 @@
  * Contact: info@mainzelliste.de
  *
  * This program is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Affero General Public License as published by the Free 
+ * the terms of the GNU Affero General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT 
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS 
- * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
  * details.
  *
- * You should have received a copy of the GNU Affero General Public License 
+ * You should have received a copy of the GNU Affero General Public License
  * along with this program; if not, see <http://www.gnu.org/licenses>.
  *
  * Additional permission under GNU GPL version 3 section 7:
  *
- * If you modify this Program, or any covered work, by linking or combining it 
- * with Jersey (https://jersey.java.net) (or a modified version of that 
- * library), containing parts covered by the terms of the General Public 
- * License, version 2.0, the licensors of this Program grant you additional 
+ * If you modify this Program, or any covered work, by linking or combining it
+ * with Jersey (https://jersey.java.net) (or a modified version of that
+ * library), containing parts covered by the terms of the General Public
+ * License, version 2.0, the licensors of this Program grant you additional
  * permission to convey the resulting work.
  */
 package de.pseudonymisierung.mainzelliste;
@@ -109,10 +109,10 @@ public enum Servers {
 
 			Server s = new Server();
 			s.apiKey = props.getProperty("servers." + i + ".apiKey");
-			
+
 			String permissions[] = props.getProperty("servers." + i + ".permissions").split("[;,]");
 			s.permissions = new HashSet<String>(Arrays.asList(permissions));
-			
+
 			String allowedRemoteAdresses[] = props.getProperty("servers." + i + ".allowedRemoteAdresses").split("[;,]");
 			s.allowedRemoteAdressRanges = new LinkedList<SubnetUtils>();
 			s.allowedRemoteAdresses = new HashSet<String>();
@@ -128,7 +128,7 @@ public enum Servers {
 			}
 			servers.put(s.apiKey, s);
 		}
-			
+
 		if (Config.instance.getProperty("debug") == "true")
 		{
 			Token t = new Token("4223", "addPatient");
@@ -163,7 +163,7 @@ public enum Servers {
 
 	/**
 	 * Create a new session. The session is assigned a new unique session id.
-	 * 
+	 *
 	 * @return The new session object.
 	 */
 	public Session newSession() {
@@ -178,7 +178,7 @@ public enum Servers {
 	/**
 	 * Get a session by its session id. Caller MUST ensure proper
 	 * synchronization on the session.
-	 * 
+	 *
 	 * @param sid
 	 *            The id of the session to get.
 	 * @return The session or null if no session with the given id exists.
@@ -191,7 +191,7 @@ public enum Servers {
 
 	/**
 	 * Returns all known session ids.
-	 * 
+	 *
 	 * @return The ids of all active sessions.
 	 */
 	public Set<String> getSessionIds() {
@@ -203,7 +203,7 @@ public enum Servers {
 	/**
 	 * Delete a session. This also deletes (i.e. invalidates) all tokens
 	 * belonging to the session.
-	 * 
+	 *
 	 * @param sid The id of the session to delete.
 	 */
 	public void deleteSession(String sid) {
@@ -244,7 +244,7 @@ public enum Servers {
 		}
 	}
 
-	
+
 	/**
 	 * Check whether a client is authorized for a request. The IP address of the
 	 * requester and the API key (HTTP header "mainzellisteApiKey") are read
@@ -252,9 +252,9 @@ public enum Servers {
 	 * configuration) a server with the provided API exists, if the IP address
 	 * lies in the configured set or range, and if the the requested permission
 	 * is set for the server.
-	 * 
+	 *
 	 * If access is denied, an appropriate WebApplicationException is thrown.
-	 * 
+	 *
 	 * @param req
 	 *            The injected HTTPServletRequest.
 	 * @param permission
@@ -269,7 +269,7 @@ public enum Servers {
 			if (apiKey == null) // Compatibility to pre 1.0 (needed by secuTrial interface)
 				apiKey = req.getHeader("mzidApiKey");
 			Server server = servers.get(apiKey);
-			
+
 			if(server == null){
 				logger.info("No server found with provided API key " + apiKey);
 				throw new WebApplicationException(Response
@@ -277,7 +277,7 @@ public enum Servers {
 						.entity("Please supply your API key in HTTP header field 'mainzellisteApiKey'.")
 						.build());
 			}
-		
+
 			if(!server.allowedRemoteAdresses.contains(req.getRemoteAddr())){
 				boolean addressInRange = false;
 				for (SubnetUtils thisAddressRange : server.allowedRemoteAdressRanges) {
@@ -305,7 +305,7 @@ public enum Servers {
 			req.getSession().setAttribute("permissions", perms);
 			logger.info("Server " + req.getRemoteHost() + " logged in with permissions " + Arrays.toString(perms.toArray()) + ".");
 		}
-		
+
 		if(!perms.contains(permission)){ // Check permission
 			logger.info("Access from " + req.getRemoteHost() + " is denied since they lack permission " + permission + ".");
 			throw new WebApplicationException(Response
@@ -318,7 +318,7 @@ public enum Servers {
 	/**
 	 * Register a token in a session. This is necessary so that a token is
 	 * recognized as valid.
-	 * 
+	 *
 	 * @param sessionId
 	 *            Id of the session in which to register the token.
 	 * @param t
@@ -362,7 +362,7 @@ public enum Servers {
 	 * Delete the token with the given id and containing session. This is more
 	 * efficient than {@link #deleteToken(String)} as there is no need to search
 	 * the session the token belongs to.
-	 * 
+	 *
 	 * @param sessionId
 	 *            Id of the session the token belongs to.
 	 * @param tokenId
@@ -380,7 +380,7 @@ public enum Servers {
 
 	/**
 	 * Get all tokens of the given session.
-	 * 
+	 *
 	 * @param sid
 	 *            Id of the session whose tokens to get.
 	 * @return The set of tokens.
@@ -388,13 +388,13 @@ public enum Servers {
 	public Set<Token> getAllTokens(String sid) {
 		Session s = getSession(sid);
 		if(s == null) return Collections.emptySet();
-		
+
 		return s.getTokens();
 	}
 
 	/**
 	 * Get a token by its id.
-	 * 
+	 *
 	 * @param tokenId
 	 *            Id of the token to get.
 	 * @return The token or null if no token with the given id exists.
@@ -407,7 +407,7 @@ public enum Servers {
 
 	/**
 	 * Check if a token exists and has the given type. If
-	 * 
+	 *
 	 * @param tid
 	 *            Id of the token to check.
 	 * @param type
@@ -431,19 +431,19 @@ public enum Servers {
 		public final int majorVersion;
 		/** The minor revision. */
 		public final int minorVersion;
-		
+
 		/**
 		 * Create an instance from a version string. The version string is split
 		 * by dots and the first two segments are used as major and minor
 		 * version, respectively.
-		 * 
+		 *
 		 * @param versionString A version string in the format "major.minor".
 		 */
 		protected ApiVersion(String versionString) {
 			majorVersion = Integer.parseInt(versionString.split("\\.")[0]);
 			minorVersion = Integer.parseInt(versionString.split("\\.")[1]);
 		}
-		
+
 		public String toString() {
 			return majorVersion + "." + minorVersion;
 		}
@@ -453,7 +453,7 @@ public enum Servers {
 	 * Get api version from a request. Reads the version string from either the
 	 * "mainzellisteApiVersion" header or, if no such header is set, from an URL
 	 * parameter of the same name. If neither exists, version 1.0 is assumed.
-	 * 
+	 *
 	 * @param req
 	 *            The injected HttpServletRequest.
 	 * @return The api version inferred from the request.
@@ -491,11 +491,11 @@ public enum Servers {
 
 	/**
 	 * Get api version (major version only) from a request.
-	 * 
+	 *
 	 * @param req
 	 *            The injected HttpServletRequest.
 	 * @return The major api version inferred from the request.
-	 * 
+	 *
 	 * @see #getRequestApiVersion(HttpServletRequest)
 	 */
 	public int getRequestMajorApiVersion(HttpServletRequest req) {
@@ -504,11 +504,11 @@ public enum Servers {
 
 	/**
 	 * Get api version (minor version only) from a request.
-	 * 
+	 *
 	 * @param req
 	 *            The injected HttpServletRequest.
 	 * @return The major api version inferred from the request.
-	 * 
+	 *
 	 * @see #getRequestApiVersion(HttpServletRequest)
 	 */
 	public int getRequestMinorApiVersion(HttpServletRequest req) {
