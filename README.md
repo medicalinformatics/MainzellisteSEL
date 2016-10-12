@@ -156,8 +156,8 @@ As this release contains various bug fixes, we recommend an upgrade to all users
 - GET request to /patients with invalid `readPatients` token caused a NullPointerException.
 - Creation of `readPatients` tokens has been accelerated by optimizing the database query and using an index.
 - Corrections in the template configuration file:
-  - A trailing space in `callback.allowedFormat` has been removed.
-  - Token type `readPatient` has been corrected to `readPatients`.
+    - A trailing space in `callback.allowedFormat` has been removed.
+    - Token type `readPatient` has been corrected to `readPatients`.
 
 ### 1.3.0
 
