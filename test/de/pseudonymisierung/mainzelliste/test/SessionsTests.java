@@ -65,8 +65,9 @@ public class SessionsTests extends JerseyTest{
 		entity = TestUtilities.getBuilderSession(resource, null, TestUtilities.getApikey()).post(JSONObject.class);
 		
 		sessionUri = TestUtilities.getSessionUriOfJSON(entity);
-		// TODO: Uncomment
-//		TestUtilities.sleep(120000);
+		// Wait for two minutes for session to expire (one minute session
+		// timeout + one minute delay between invocations of session cleanup
+		TestUtilities.sleep(120000);
 		
 		// Read after waiting
 		response = TestUtilities.getBuilderSession(resource, sessionUri, TestUtilities.getApikey()).get(ClientResponse.class);
@@ -76,6 +77,7 @@ public class SessionsTests extends JerseyTest{
 	private void checkSessionValid(JSONObject sessionObj, String sessionId, String message) {
 		assertTrue(message + " No id in session object", sessionObj.has("sessionId"));
 		assertTrue(message + " No uri in session object", sessionObj.has("uri"));
+		
 		try {
 			if (sessionId != null)
 				assertEquals(message + " Unexpected id in session object", sessionId, sessionObj.get("sessionId").toString());
