@@ -258,3 +258,6 @@ sessionTimeout = 1
 operator.contact = Andreas Borg, Tel.: 06131-17-5062
 # operator.logo = 
 # operator.logo = C:\\Users\\borga\\Documents\\workspace-mzid\\mainzelliste-ilf\\WebContent\\static\\media\\JGU_Uni_medizin_Logo_4c_Internet.jpg
+
+# Test parameter for testing whitespace trimming (see ConfigTest#testTrimProperties)
+test.trimWhitespace = test 		
