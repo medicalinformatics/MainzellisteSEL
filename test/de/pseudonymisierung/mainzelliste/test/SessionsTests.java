@@ -79,6 +79,11 @@ public class SessionsTests extends JerseyTest{
 		assertTrue(message + " No uri in session object", sessionObj.has("uri"));
 		
 		try {
+			// Check URI
+			String sessionIdFromJson = sessionObj.getString("sessionId");
+			String uri = sessionObj.getString("uri");
+			assertEquals("Wrong session URI", resource().path("sessions/").path(sessionIdFromJson + "/").getURI().toString(),
+					uri);
 			if (sessionId != null)
 				assertEquals(message + " Unexpected id in session object", sessionId, sessionObj.get("sessionId").toString());
 		} catch (JSONException e) {
