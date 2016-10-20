@@ -793,6 +793,7 @@ public class TestUtilities {
 	 * @return should given the super constructor of an jersy test
 	 */
 	public static AppDescriptor setUpTest () {
+		System.setProperty("derby.stream.error.field", "java.lang.System.err");
 		return new WebAppDescriptor.Builder(packagePath).contextParam(configPackagePath, configFile).contextPath("/mainzelliste").contextListenerClass(Initializer.class).build();
 	}
 
