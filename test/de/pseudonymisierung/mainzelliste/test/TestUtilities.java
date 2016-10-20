@@ -2,6 +2,8 @@ package de.pseudonymisierung.mainzelliste.test;
 
 import static org.junit.Assert.*;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Arrays;
@@ -43,6 +45,7 @@ public class TestUtilities {
 	private static final String packagePath = "de.pseudonymisierung.mainzelliste.webservice";
 	private static final String configPackagePath = "de.pseudonymisierung.mainzelliste.ConfigurationFile";
 	private static final String configFile = "/mainzelliste.conf.test";
+
 	// Keys of JSON
 	private static final String sessionUriKey = "uri";
 	private static final String sessionIdKey = "sessionId";
@@ -807,5 +810,21 @@ public class TestUtilities {
 	 */
 	public static String[] getPatientKeys () {
 		return patientKeys;
+	}
+
+	/**
+	 * Get path of configuration file.
+	 * @return Path of configuration file.
+	 */
+	public static String getConfigfilePath() {
+		return configFile;
+	}
+	
+	/**
+	 * Get contents of configuration file.
+	 * @return Contents of configuration file.
+	 */
+	public static BufferedReader getConfigfile() {
+		return new BufferedReader(new InputStreamReader(TestUtilities.class.getResourceAsStream(configFile)));
 	}
 }
