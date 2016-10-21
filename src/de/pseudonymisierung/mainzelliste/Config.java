@@ -356,8 +356,10 @@ public enum Config {
 		props.load(reader);
 		// trim property values
 		for (String key : props.stringPropertyNames()) {
-			String value = props.getProperty(key).trim();
-			props.setProperty(key, value);
+			String value = props.getProperty(key);
+			if (value != value.trim()) {
+				props.setProperty(key, value);
+			}
 		}
 		configInputStream.close();
 		return props;
