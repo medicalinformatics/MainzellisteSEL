@@ -357,8 +357,8 @@ public enum Config {
 		// trim property values
 		for (String key : props.stringPropertyNames()) {
 			String value = props.getProperty(key);
-			if (value != value.trim()) {
-				props.setProperty(key, value);
+			if (!value.equals(value.trim())) {
+				props.setProperty(key, value.trim());
 			}
 		}
 		configInputStream.close();
