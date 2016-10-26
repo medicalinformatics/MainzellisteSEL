@@ -48,7 +48,7 @@ public class ConfigTest extends JerseyTest {
 					Config.instance.getProperty(testParameter));
 			// 2. With method to get all properties
 			assertEquals("Whitespace not trimmed form test parameter (Config#getProperties)", testParamValue.trim(),
-					Config.instance.getProperties().get(testParamValue));
+					Config.instance.getProperties().get(testParameter));
 
 		} catch (IOException e) {
 			fail("IO error while trying to read configuration file");
