@@ -152,10 +152,13 @@ public class ReadPatientTest extends JerseyTest {
         }
     }
     
-    /**
-     * Test response for CORS request being rejected due to illegal origin.
-     */
-	@Test
+	/**
+	 * Test response for CORS request being rejected due to illegal origin.
+	 * FIXME: Does not work with current test framework - combination of Jersey
+	 * Test and servlet filters not possible (see
+	 * http://stackoverflow.com/questions/20744996/filters-in-jerseytest-2-x).
+	 */
+	//@Test
 	public void testBlockedCors() {
 		String sessionId = TestUtilities.createSession(resource);
 		TestUtilities.addDummyPatient(resource);
