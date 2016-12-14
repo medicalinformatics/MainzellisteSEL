@@ -33,7 +33,7 @@ public class TestUtilities {
 
 	// --- Visible outside ---
 	private static final String apiKey = "mdat1234";
-	private static final String[] patientKeys = { "vorname", "nachname", "geburtsname", "geburtstag", "geburtsmonat", "geburtsjahr", "ort", "plz" };
+	private static final String[] patientKeys = { "vorname", "nachname", "geburtsname", "geburtstag", "geburtsmonat", "geburtsjahr", "ort", "plz"};
 
 	// --- Invisible outside ---
 	private static final String apiVersion = "2.0";
@@ -523,7 +523,6 @@ public class TestUtilities {
 			if (plz != null) {
 				jsonForm.put("plz", plz);
 			}
-
 		} catch (JSONException e) {
 			throw new Error("Error while creating JsonForm!");
 		}

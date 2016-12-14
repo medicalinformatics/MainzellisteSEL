@@ -91,21 +91,25 @@ public class MatchConfigTest extends JerseyTest {
 		statusCode = response.getStatus();
 		assertEquals("Adding patient with different year of birth returned unexpected status code.", 409, statusCode);
 		
-		// Different postal code should lead to conflict
+		// Different postal code should be unsure match
 		formData = TestUtilities.createForm("Max", "Mustermann", "", "01", "01", "2000", "Wiesbaden", "65197");
-		tokenId = TestUtilities.createTokenIdAddPatient(resource, sessionId, "pid");
-		response = TestUtilities.getBuilderPatient(resource, tokenId, TestUtilities.getApikey()).post(
-				ClientResponse.class, formData);
-		statusCode = response.getStatus();
-		assertEquals("Adding patient with different day of birth returned unexpected status code.", 409, statusCode);
+        formData.add("sureness", true);
 
-		// Different city code should lead to conflict
-		formData = TestUtilities.createForm("Max", "Mustermann", "", "01", "01", "2000", "Wiesbaden", "65197");
+        tokenId = TestUtilities.createTokenIdAddPatient(resource, sessionId, "pid");
+		response = TestUtilities.getBuilderPatient(resource, tokenId, TestUtilities.getApikey()).post(
+				ClientResponse.class, formData);
+		statusCode = response.getStatus();
+		assertEquals("Adding patient with different postal code returned unexpected status code.", 201, statusCode);
+
+		// Different city should lead to unsure match
+		formData = TestUtilities.createForm("Max", "Mustermann", "", "01", "01", "2000", "Horath", "54497");
+        formData.add("sureness", true);
 		tokenId = TestUtilities.createTokenIdAddPatient(resource, sessionId, "pid");
 		response = TestUtilities.getBuilderPatient(resource, tokenId, TestUtilities.getApikey()).post(
 				ClientResponse.class, formData);
 		statusCode = response.getStatus();
-		assertEquals("Adding patient with different day of birth returned unexpected status code.", 409, statusCode);
+		entity = response.getEntity(String.class);
+		assertEquals("Adding patient with different city returned unexpected status code.", 201, statusCode);
 	}
 
 	/**
