@@ -204,7 +204,13 @@ public class AddPatientTest extends JerseyTest {
 		response = TestUtilities.getBuilderPatient(resource, tokenId, TestUtilities.getApikey())
 				.post(ClientResponse.class, formDataConflict);
 		assertEquals("Adding Patient with a little change did not return 409 status. Message from server: " + response.getEntity(String.class), 409, response.getStatus());
-		
+
+		// Add Patient with an unsafe match and sureness true
+		formDataConflict.add("sureness", true);
+		response = TestUtilities.getBuilderPatient(resource, tokenId, TestUtilities.getApikey())
+				.post(ClientResponse.class, formDataConflict);
+		assertEquals("Adding Patient with a little change did not return 201 status. Message from server: " + response.getEntity(String.class), 201, response.getStatus());
+
 		// Add Patient with callback
 		formData = TestUtilities.createForm("AddPatientVornameCallback", "AddPatientNachnameCallback", "Callback", "01", "01", "2000", "Mainz", "55120");
 		ClientConfig clientConfig = new DefaultClientConfig();
@@ -261,7 +267,5 @@ public class AddPatientTest extends JerseyTest {
 					.post(ClientResponse.class, formData);
 			assertEquals("Add Patient with empty field did not return 201 status. Message from server: " + response.getEntity(String.class), 201, response.getStatus());
 		}
-		
-		// TODO: sureness true testen
 	}
 }
