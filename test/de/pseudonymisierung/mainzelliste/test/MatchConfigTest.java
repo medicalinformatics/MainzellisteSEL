@@ -90,26 +90,42 @@ public class MatchConfigTest extends JerseyTest {
 				ClientResponse.class, formData);
 		statusCode = response.getStatus();
 		assertEquals("Adding patient with different year of birth returned unexpected status code.", 409, statusCode);
-		
-		// Different postal code should be unsure match
+
+		// Different postal code without sureness should lead to conflict
 		formData = TestUtilities.createForm("Max", "Mustermann", "", "01", "01", "2000", "Wiesbaden", "65197");
+
+		tokenId = TestUtilities.createTokenIdAddPatient(resource, sessionId, "pid");
+		response = TestUtilities.getBuilderPatient(resource, tokenId, TestUtilities.getApikey()).post(
+				ClientResponse.class, formData);
+		statusCode = response.getStatus();
+		assertEquals("Adding patient with different postal code returned unexpected status code.", 409, statusCode);
+
+		// Different postal code and sureness true should be unsure match
         formData.add("sureness", true);
 
         tokenId = TestUtilities.createTokenIdAddPatient(resource, sessionId, "pid");
 		response = TestUtilities.getBuilderPatient(resource, tokenId, TestUtilities.getApikey()).post(
 				ClientResponse.class, formData);
 		statusCode = response.getStatus();
-		assertEquals("Adding patient with different postal code returned unexpected status code.", 201, statusCode);
+		assertEquals("Adding patient with different postal code and sureness true returned unexpected status code.", 201, statusCode);
 
-		// Different city should lead to unsure match
+		// Different city without sureness should lead to conflict
 		formData = TestUtilities.createForm("Max", "Mustermann", "", "01", "01", "2000", "Horath", "54497");
-        formData.add("sureness", true);
 		tokenId = TestUtilities.createTokenIdAddPatient(resource, sessionId, "pid");
 		response = TestUtilities.getBuilderPatient(resource, tokenId, TestUtilities.getApikey()).post(
 				ClientResponse.class, formData);
 		statusCode = response.getStatus();
 		entity = response.getEntity(String.class);
-		assertEquals("Adding patient with different city returned unexpected status code.", 201, statusCode);
+		assertEquals("Adding patient with different city returned unexpected status code.", 409, statusCode);
+
+		// Different city and sureness true should lead to unsure match
+		formData.add("sureness", true);
+		tokenId = TestUtilities.createTokenIdAddPatient(resource, sessionId, "pid");
+		response = TestUtilities.getBuilderPatient(resource, tokenId, TestUtilities.getApikey()).post(
+				ClientResponse.class, formData);
+		statusCode = response.getStatus();
+		entity = response.getEntity(String.class);
+		assertEquals("Adding patient with different city and sureness true returned unexpected status code.", 201, statusCode);
 	}
 
 	/**
