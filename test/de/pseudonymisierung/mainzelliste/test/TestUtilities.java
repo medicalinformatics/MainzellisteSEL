@@ -697,7 +697,7 @@ public class TestUtilities {
 	 *            to be extracted
 	 * @param key
 	 *            of the value to search for
-	 * @return value of the key
+	 * @return string value of the key
 	 */
 	public static String getStringOfJSON (JSONObject jsonObject, String key) {
 		try {
@@ -716,7 +716,7 @@ public class TestUtilities {
 	 *            to be extracted
 	 * @param key
 	 *            of the value to search for
-	 * @return value of the key
+	 * @return string value of the key
 	 */
 	public static String getStringOfJSON (JSONArray jsonArray, String key) {
 		try {
@@ -735,7 +735,7 @@ public class TestUtilities {
 	 *            to be extracted
 	 * @param key
 	 *            of the value to search for
-	 * @return value of the key
+	 * @return booolean value of the key
 	 */
 	public static Boolean getBooleanOfJSON (JSONObject jsonObject, String key) {
 		try {
@@ -754,7 +754,7 @@ public class TestUtilities {
      *            to be extracted
      * @param key
      *            of the value to search for
-     * @return value of the key
+     * @return boolean value of the key
      */
     public static Boolean getBooleanOfJSON (JSONArray jsonArray, String key) {
         try {

@@ -102,7 +102,7 @@ public class MatchConfigTest extends JerseyTest {
 		response = TestUtilities.getBuilderPatient(resource, tokenId, TestUtilities.getApikey()).post(
 				ClientResponse.class, formData);
 		statusCode = response.getStatus();
-		assertEquals("Adding patient with different postal code returned unexpected status code", 409, statusCode);
+		assertEquals("Adding patient with different postal code returned unexpected status code.", 409, statusCode);
 
 		// Different postal code and sureness true should be unsure match
         formData.add("sureness", true);
@@ -113,7 +113,7 @@ public class MatchConfigTest extends JerseyTest {
 		statusCode = response.getStatus();
 		assertEquals("Adding patient with different postal code and sureness true returned unexpected status code.", 201, statusCode);
         jsonEntity = response.getEntity(JSONArray.class);
-        // if sure match, tentative should be true
+        // if unsure match, tentative should be true
         assertEquals("Attribute <tentative> has unexpected value",true,TestUtilities.getBooleanOfJSON(jsonEntity,"tentative"));
 
 		// Different city without sureness should lead to conflict
