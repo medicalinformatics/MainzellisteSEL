@@ -657,7 +657,7 @@ public class TestUtilities {
 	// - Get Methods -
 
 	/**
-	 * Extract the token id of a jason object.
+	 * Extract the token id of a json object.
 	 * 
 	 * @param jsonObject
 	 *            to be extracted.
@@ -668,7 +668,7 @@ public class TestUtilities {
 	}
 
 	/**
-	 * Extract the session id of a jason object.
+	 * Extract the session id of a json object.
 	 * 
 	 * @param jsonObject
 	 *            to be extracted
@@ -679,7 +679,7 @@ public class TestUtilities {
 	}
 
 	/**
-	 * Extract the session uri of a jason object.
+	 * Extract the session uri of a json object.
 	 * 
 	 * @param jsonObject
 	 *            to be extracted
@@ -690,7 +690,7 @@ public class TestUtilities {
 	}
 
 	/**
-	 * Extract the value of the key in the jason object. Fails if the given key
+	 * Extract the value of the key in the json object. Fails if the given key
 	 * does not exist.
 	 * 
 	 * @param jsonObject
@@ -709,7 +709,7 @@ public class TestUtilities {
 	}
 
 	/**
-	 * Extract the value of the key in the jason array. Fails if the given key
+	 * Extract the value of the key in the json array. Fails if the given key
 	 * does not exist.
 	 * 
 	 * @param jsonArray
@@ -726,6 +726,45 @@ public class TestUtilities {
 			return null;
 		}
 	}
+
+	/**
+	 * Extract the value of the key in the json object. Fails if the given key
+	 * does not exist.
+	 *
+	 * @param jsonObject
+	 *            to be extracted
+	 * @param key
+	 *            of the value to search for
+	 * @return value of the key
+	 */
+	public static Boolean getBooleanOfJSON (JSONObject jsonObject, String key) {
+		try {
+			return jsonObject.getBoolean(key);
+		} catch (JSONException e) {
+			fail("'" + key + "' does not exist in JSONObject: " + jsonObject);
+			return null;
+		}
+	}
+
+    /**
+     * Extract the value of the key in the json array. Fails if the given key
+     * does not exist.
+     *
+     * @param jsonArray
+     *            to be extracted
+     * @param key
+     *            of the value to search for
+     * @return value of the key
+     */
+    public static Boolean getBooleanOfJSON (JSONArray jsonArray, String key) {
+        try {
+            return getBooleanOfJSON(jsonArray.getJSONObject(0), key);
+        } catch (JSONException e) {
+            fail("'" + jsonArray + "' has no JSONObject");
+            return null;
+        }
+    }
+
 
 	// - Build Methods -
 
