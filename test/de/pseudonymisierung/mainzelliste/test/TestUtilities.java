@@ -33,7 +33,7 @@ public class TestUtilities {
 
 	// --- Visible outside ---
 	private static final String apiKey = "mdat1234";
-	private static final String[] patientKeys = { "vorname", "nachname", "geburtsname", "geburtstag", "geburtsmonat", "geburtsjahr", "ort", "plz" };
+	private static final String[] patientKeys = { "vorname", "nachname", "geburtsname", "geburtstag", "geburtsmonat", "geburtsjahr", "ort", "plz"};
 
 	// --- Invisible outside ---
 	private static final String apiVersion = "2.0";
@@ -523,7 +523,6 @@ public class TestUtilities {
 			if (plz != null) {
 				jsonForm.put("plz", plz);
 			}
-
 		} catch (JSONException e) {
 			throw new Error("Error while creating JsonForm!");
 		}
@@ -658,7 +657,7 @@ public class TestUtilities {
 	// - Get Methods -
 
 	/**
-	 * Extract the token id of a jason object.
+	 * Extract the token id of a json object.
 	 * 
 	 * @param jsonObject
 	 *            to be extracted.
@@ -669,7 +668,7 @@ public class TestUtilities {
 	}
 
 	/**
-	 * Extract the session id of a jason object.
+	 * Extract the session id of a json object.
 	 * 
 	 * @param jsonObject
 	 *            to be extracted
@@ -680,7 +679,7 @@ public class TestUtilities {
 	}
 
 	/**
-	 * Extract the session uri of a jason object.
+	 * Extract the session uri of a json object.
 	 * 
 	 * @param jsonObject
 	 *            to be extracted
@@ -691,14 +690,14 @@ public class TestUtilities {
 	}
 
 	/**
-	 * Extract the value of the key in the jason object. Fails if the given key
+	 * Extract the value of the key in the json object. Fails if the given key
 	 * does not exist.
 	 * 
 	 * @param jsonObject
 	 *            to be extracted
 	 * @param key
 	 *            of the value to search for
-	 * @return value of the key
+	 * @return string value of the key
 	 */
 	public static String getStringOfJSON (JSONObject jsonObject, String key) {
 		try {
@@ -710,14 +709,14 @@ public class TestUtilities {
 	}
 
 	/**
-	 * Extract the value of the key in the jason array. Fails if the given key
+	 * Extract the value of the key in the json array. Fails if the given key
 	 * does not exist.
 	 * 
 	 * @param jsonArray
 	 *            to be extracted
 	 * @param key
 	 *            of the value to search for
-	 * @return value of the key
+	 * @return string value of the key
 	 */
 	public static String getStringOfJSON (JSONArray jsonArray, String key) {
 		try {
@@ -727,6 +726,45 @@ public class TestUtilities {
 			return null;
 		}
 	}
+
+	/**
+	 * Extract the value of the key in the json object. Fails if the given key
+	 * does not exist.
+	 *
+	 * @param jsonObject
+	 *            to be extracted
+	 * @param key
+	 *            of the value to search for
+	 * @return booolean value of the key
+	 */
+	public static Boolean getBooleanOfJSON (JSONObject jsonObject, String key) {
+		try {
+			return jsonObject.getBoolean(key);
+		} catch (JSONException e) {
+			fail("'" + key + "' does not exist in JSONObject: " + jsonObject);
+			return null;
+		}
+	}
+
+    /**
+     * Extract the value of the key in the json array. Fails if the given key
+     * does not exist.
+     *
+     * @param jsonArray
+     *            to be extracted
+     * @param key
+     *            of the value to search for
+     * @return boolean value of the key
+     */
+    public static Boolean getBooleanOfJSON (JSONArray jsonArray, String key) {
+        try {
+            return getBooleanOfJSON(jsonArray.getJSONObject(0), key);
+        } catch (JSONException e) {
+            fail("'" + jsonArray + "' has no JSONObject");
+            return null;
+        }
+    }
+
 
 	// - Build Methods -
 

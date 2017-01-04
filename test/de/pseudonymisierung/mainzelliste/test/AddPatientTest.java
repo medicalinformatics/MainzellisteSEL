@@ -198,13 +198,6 @@ public class AddPatientTest extends JerseyTest {
                 .post(ClientResponse.class, formData);
         assertEquals("Adding Patient without a not required field(ort) did not return 201 status. Message from server: " + response.getEntity(String.class), 201, response.getStatus());
 
-        // Add Patient with an unsafe match
-		tokenId = TestUtilities.createTokenIdAddPatient(resource, sessionId, "psn");		
-		Form formDataConflict = TestUtilities.createForm("AddPatientVorname", "AddPatientNachname", "Hanz", "01", "01", "2000", "Mainz", "");
-		response = TestUtilities.getBuilderPatient(resource, tokenId, TestUtilities.getApikey())
-				.post(ClientResponse.class, formDataConflict);
-		assertEquals("Adding Patient with a little change did not return 409 status. Message from server: " + response.getEntity(String.class), 409, response.getStatus());
-		
 		// Add Patient with callback
 		formData = TestUtilities.createForm("AddPatientVornameCallback", "AddPatientNachnameCallback", "Callback", "01", "01", "2000", "Mainz", "55120");
 		ClientConfig clientConfig = new DefaultClientConfig();
@@ -225,7 +218,6 @@ public class AddPatientTest extends JerseyTest {
 		assertEquals("Wrong user agent in Mainzelliste request.", "Mainzelliste/" + Config.instance.getVersion(), callback.getRequestHeaders().getFirst("User-Agent"));
 		assertEquals("Wrong HTTP method in callback.", "POST", callback.getRequestMethod());
 		
-
 		JSONObject callbackObject = new JSONObject(receiver.getReceivedEntity());
 		assertTrue("No Token-ID in callback", callbackObject.has("tokenId"));
 		assertEquals("Wrong Token-ID in callback", tokenId, callbackObject.getString("tokenId"));
@@ -235,13 +227,10 @@ public class AddPatientTest extends JerseyTest {
 		assertEquals("Wrong IdType in callback", idTypes.getString(0), callbackIds.getJSONObject(0).getString("idType"));
 		assertTrue("No IdString in callback", callbackIds.getJSONObject(0).has("idString"));
 		
-
 		// TODO: Request with redirect and with non existing IdType -> 400 Bad Request
 		
 		// TODO: Request with redirect check if id's (idType, IdString) and tokenId is right -> 201 Create
-		
-		
-		
+
 		// Adding Patient with predefined Values
 		tokenData = TestUtilities.createTokenDataAddPatient(idTypes, TestUtilities.createJSONForm("Add", "Predefined", null, "01", "01", "2000", null, null), null, null);
 		response = TestUtilities.getBuilderCreateToken(resource, sessionId, TestUtilities.getApikey()).post(ClientResponse.class, tokenData);
@@ -261,7 +250,5 @@ public class AddPatientTest extends JerseyTest {
 					.post(ClientResponse.class, formData);
 			assertEquals("Add Patient with empty field did not return 201 status. Message from server: " + response.getEntity(String.class), 201, response.getStatus());
 		}
-		
-		// TODO: sureness true testen
 	}
 }

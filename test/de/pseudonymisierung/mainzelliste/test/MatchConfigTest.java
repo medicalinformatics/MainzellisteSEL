@@ -66,6 +66,10 @@ public class MatchConfigTest extends JerseyTest {
 		String newPatientId = getIdStringFromJson(entity, "pid");
 		assertEquals("Adding patient with slight typographical error returned new ID", testPatientId, newPatientId);
 
+        // if sure match, tentative should be false
+        JSONArray jsonEntity = new JSONArray(entity);
+        assertEquals("Attribute <tentative> has unexpected value",false,TestUtilities.getBooleanOfJSON(jsonEntity,"tentative"));
+
 		// Different date of birth should lead to conflict
 		// Different day
 		formData = TestUtilities.createForm("Max", "Mustermann", "", "02", "01", "2000", "Wiesbaden", "65195");
@@ -90,23 +94,46 @@ public class MatchConfigTest extends JerseyTest {
 				ClientResponse.class, formData);
 		statusCode = response.getStatus();
 		assertEquals("Adding patient with different year of birth returned unexpected status code.", 409, statusCode);
-		
-		// Different postal code should lead to conflict
-		formData = TestUtilities.createForm("Max", "Mustermann", "", "01", "01", "2000", "Wiesbaden", "65197");
-		tokenId = TestUtilities.createTokenIdAddPatient(resource, sessionId, "pid");
-		response = TestUtilities.getBuilderPatient(resource, tokenId, TestUtilities.getApikey()).post(
-				ClientResponse.class, formData);
-		statusCode = response.getStatus();
-		assertEquals("Adding patient with different day of birth returned unexpected status code.", 409, statusCode);
 
-		// Different city code should lead to conflict
+		// Different postal code without sureness should lead to conflict
 		formData = TestUtilities.createForm("Max", "Mustermann", "", "01", "01", "2000", "Wiesbaden", "65197");
+
 		tokenId = TestUtilities.createTokenIdAddPatient(resource, sessionId, "pid");
 		response = TestUtilities.getBuilderPatient(resource, tokenId, TestUtilities.getApikey()).post(
 				ClientResponse.class, formData);
 		statusCode = response.getStatus();
-		assertEquals("Adding patient with different day of birth returned unexpected status code.", 409, statusCode);
-	}
+		assertEquals("Adding patient with different postal code returned unexpected status code.", 409, statusCode);
+
+		// Different postal code and sureness true should be unsure match
+        formData.add("sureness", true);
+
+        tokenId = TestUtilities.createTokenIdAddPatient(resource, sessionId, "pid");
+		response = TestUtilities.getBuilderPatient(resource, tokenId, TestUtilities.getApikey()).post(
+				ClientResponse.class, formData);
+		statusCode = response.getStatus();
+		assertEquals("Adding patient with different postal code and sureness true returned unexpected status code.", 201, statusCode);
+        jsonEntity = response.getEntity(JSONArray.class);
+        // if unsure match, tentative should be true
+        assertEquals("Attribute <tentative> has unexpected value",true,TestUtilities.getBooleanOfJSON(jsonEntity,"tentative"));
+
+		// Different city without sureness should lead to conflict
+		formData = TestUtilities.createForm("Max", "Mustermann", "", "01", "01", "2000", "Horath", "54497");
+		tokenId = TestUtilities.createTokenIdAddPatient(resource, sessionId, "pid");
+		response = TestUtilities.getBuilderPatient(resource, tokenId, TestUtilities.getApikey()).post(
+				ClientResponse.class, formData);
+		statusCode = response.getStatus();
+		assertEquals("Adding patient with different city returned unexpected status code.", 409, statusCode);
+
+		// Different city and sureness true should lead to unsure match
+		formData.add("sureness", true);
+		tokenId = TestUtilities.createTokenIdAddPatient(resource, sessionId, "pid");
+		response = TestUtilities.getBuilderPatient(resource, tokenId, TestUtilities.getApikey()).post(
+				ClientResponse.class, formData);
+		statusCode = response.getStatus();
+		assertEquals("Adding patient with different city and sureness true returned unexpected status code.", 201, statusCode);
+        jsonEntity = response.getEntity(JSONArray.class);
+        assertEquals("Attribute <tentative> has unexpected value",true,TestUtilities.getBooleanOfJSON(jsonEntity,"tentative"));
+    }
 
 	/**
 	 * Extract ID from return value of POST /patients
@@ -124,4 +151,5 @@ public class MatchConfigTest extends JerseyTest {
 		}
 		throw new Exception("ID type " + idType + " not found in JSON array.");
 	}
+
 }
