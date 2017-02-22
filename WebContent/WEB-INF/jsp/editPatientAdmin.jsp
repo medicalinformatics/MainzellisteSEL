@@ -69,6 +69,7 @@ function fillOriginalId() {
         <h1>Patienten bearbeiten</h1>
         <jsp:include page="patientFormElements.jsp"></jsp:include>
         <div id ="form_elements_admin">
+		<fieldset class="patienten_daten">
         <table class="daten_tabelle">
           <tr>
             <td><label for="tentative">Vorläufig</label></td>
@@ -105,19 +106,38 @@ function fillOriginalId() {
             </td>
           </tr>
         </table>
+        </fieldset>
+        <fieldset class="patienten_daten">
+        <table class="daten_tabelle">
+        	<tr>
+        		<td>Duplikate:</td>
+        		<td>
+					<ul>
+						<% for (String id : duplicates) { %>
+						<li>
+							<a href="<%=request.getContextPath()%>/html/admin/editPatient?idType=<%=defaultIdType %>&amp;idString=<%=id %>">
+								<%=id %>
+							</a>
+						<% } %>
+					</ul>
+        		</td>
+        	</tr>
+        	<tr>
+        		<td>Mögliche Duplikate:</td>
+        		<td>
+					<ul>
+						<% for (String id : possibleDuplicates) { %>
+						<li>
+							<a href="<%=request.getContextPath()%>/html/admin/editPatient?idType=<%=defaultIdType %>&amp;idString=<%=id %>">
+								<%=id %>
+							</a>
+						<% } %>
+					</ul>
+        		</td>
+        	</tr>
+        </table>
+        </fieldset>	
         </div>
-		<p>
-			Duplikate:
-			<ul>
-				<% for (String id : duplicates) out.print("<li>" + id + "</li>");%>
-			</ul>
-		</p>				
-		<p>
-			Mögliche Duplikate:
-			<ul>
-				<% for (String id : possibleDuplicates) out.print("<li>" + id + "</li>");%>
-			</ul>
-		</p>				        
         <p class="buttons">
           <input type="submit" value="Speichern">
         </p>
