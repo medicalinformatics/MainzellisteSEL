@@ -3,24 +3,24 @@
  * Contact: info@mainzelliste.de
  *
  * This program is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Affero General Public License as published by the Free
+ * the terms of the GNU Affero General Public License as published by the Free 
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+ * This program is distributed in the hope that it will be useful, but WITHOUT 
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS 
+ * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more 
  * details.
  *
- * You should have received a copy of the GNU Affero General Public License
+ * You should have received a copy of the GNU Affero General Public License 
  * along with this program; if not, see <http://www.gnu.org/licenses>.
  *
  * Additional permission under GNU GPL version 3 section 7:
  *
- * If you modify this Program, or any covered work, by linking or combining it
- * with Jersey (https://jersey.java.net) (or a modified version of that
- * library), containing parts covered by the terms of the General Public
- * License, version 2.0, the licensors of this Program grant you additional
+ * If you modify this Program, or any covered work, by linking or combining it 
+ * with Jersey (https://jersey.java.net) (or a modified version of that 
+ * library), containing parts covered by the terms of the General Public 
+ * License, version 2.0, the licensors of this Program grant you additional 
  * permission to convey the resulting work.
  */
 package de.pseudonymisierung.mainzelliste.dto;
@@ -46,6 +46,7 @@ import org.apache.log4j.Logger;
 
 
 import de.pseudonymisierung.mainzelliste.Config;
+import de.pseudonymisierung.mainzelliste.Initializer;
 import de.pseudonymisierung.mainzelliste.ID;
 import de.pseudonymisierung.mainzelliste.IDGeneratorMemory;
 import de.pseudonymisierung.mainzelliste.IDRequest;
@@ -53,34 +54,39 @@ import de.pseudonymisierung.mainzelliste.Patient;
 import de.pseudonymisierung.mainzelliste.exceptions.InternalErrorException;
 import de.pseudonymisierung.mainzelliste.exceptions.InvalidIDException;
 import de.pseudonymisierung.mainzelliste.matcher.MatchResult.MatchResultType;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.sql.Driver;
+import java.util.Enumeration;
+import javax.servlet.ServletContext;
 
 /**
  * Handles reading and writing from and to the database. Implemented as a
  * singleton object, which can be referenced by Persistor.instance.
  */
 public enum Persistor {
-
+	
 	/** The singleton instance. */
 	instance;
-
+	
 	/** Factory for EntityManager. */
 	private EntityManagerFactory emf;
 	/** EntityManager. Instance that stays open (for cases where entities cannot be detached). */
 	private EntityManager em;
-
+	
 	/** The logging instance. */
 	private Logger logger = Logger.getLogger(this.getClass());
-
+	
 	/** String with which database identifers are quoted. */
 	private String identifierQuoteString = null;
-
+	
 	/** Creates the singleton instance with the configured database connection. */
 	private Persistor() {
-
+		
 		this.initPropertiesTable();
-
+		
 		HashMap<String, String> persistenceOptions = new HashMap<String, String>();
-
+		
 		// Settings from config
 		persistenceOptions.put("javax.persistence.jdbc.driver", Config.instance.getProperty("db.driver"));
 		persistenceOptions.put("javax.persistence.jdbc.url", Config.instance.getProperty("db.url"));
@@ -88,35 +94,100 @@ public enum Persistor {
 			persistenceOptions.put("javax.persistence.jdbc.user", Config.instance.getProperty("db.username"));
 		if (Config.instance.getProperty("db.password") != null)
 			persistenceOptions.put("javax.persistence.jdbc.password", Config.instance.getProperty("db.password"));
-
+		
 		// Other settings
 		persistenceOptions.put("openjpa.jdbc.SynchronizeMappings", "buildSchema");
 		persistenceOptions.put("openjpa.jdbc.DriverDataSource", "dbcp");
 		persistenceOptions.put("openjpa.ConnectionProperties", "testOnBorrow=true, validationQuery=SELECT 1");
-
+		
 		emf = Persistence.createEntityManagerFactory("mainzelliste", persistenceOptions);
 		em = emf.createEntityManager();
-
+		
 		new org.apache.openjpa.jdbc.schema.DBCPDriverDataSource();
-
+		
 		// update database schema (post-JPA)
 		String dbVersion = this.getSchemaVersion();
 		this.updateDatabaseSchemaJPA(dbVersion);
-
+		
 		// Check database connection
 		getPatients();
-
+		
 		Logger.getLogger(Persistor.class).info("Persistence has initialized successfully.");
 	}
 
 	/**
-	 * Get a patient by one of its IDs.
+	 * Shut down instance. This method is called upon undeployment and releases
+	 * resources, such as stopping background threads or removing objects that
+	 * would otherwise persist and cause a memory leak. Called by
+	 * {@link de.pseudonymisierung.mainzelliste.webservice.ContextShutdownHook}.
+	 */
+	public void shutdown() {
+		ClassLoader contextClassLoader = Initializer.getServletContext().getClassLoader();
+		Enumeration<Driver> drivers = DriverManager.getDrivers();
+		while (drivers.hasMoreElements()) {
+			Driver driver = drivers.nextElement();
+			Class<?> driverClass = driver.getClass();
+
+			if (checkClassLoader(driver, contextClassLoader)) {
+				if (driverClass.getName().equals("com.mysql.jdbc.Driver")) {
+					// special mysql handling
+					handleMySQLShutdown();
+				}
+				try {
+					logger.info("Deregistering JDBC driver " + driver);
+					DriverManager.deregisterDriver(driver);
+				} catch (SQLException ex) {
+					logger.debug("An error occured during deregistering JDBC driver " + driver, ex);
+				}
+			}
+		}
+	}
+
+	/**
+	 * Check if the driver was loaded by the web app classloader or by one of its children.
 	 *
+	 * @param driver The jdbc driver to test
+	 * @param contextClassLoader The web applications classloader
+	 * @return Returns true if the driver was loaded by the web app classloader or by one of its children
+	 */
+	private boolean checkClassLoader(Driver driver, ClassLoader contextClassLoader) {
+		ClassLoader cl = driver.getClass().getClassLoader();
+		while (cl != null) {
+			if (cl == contextClassLoader)
+				return true; // the driver was loaded by the context class loader or by one of its successor
+			cl = cl.getParent();
+		}
+		return false;
+	}
+
+	/**
+	 * Special handling when shutting down the mysql jdbc driver. The mysql driver starts a thread that will not exit
+	 * automatically when the driver gets unloaded. Stop that thread explicitly. Using reflections will not cause any
+	 * errors when mysql is not used and the driver is not within the classpath.
+	 */
+	private void handleMySQLShutdown() {
+		try {
+			Class<?> threadClass = Class.forName("com.mysql.jdbc.AbandonedConnectionCleanupThread");
+			logger.info("Calling MySQL AbandonedConnectionCleanupThread shutdown");
+			Method shutdownMethod = threadClass.getMethod("shutdown");
+			shutdownMethod.invoke(null);
+		} catch (ClassNotFoundException ex) {
+		} catch (NoSuchMethodException ex) {
+		} catch (SecurityException ex) {
+		} catch (IllegalAccessException ex) {
+		} catch (IllegalArgumentException ex) {
+		} catch (InvocationTargetException ex) {
+		}
+	}
+
+	/**
+	 * Get a patient by one of its IDs.
+	 * 
 	 * @param pid
 	 *            An identifier of the patient to get.
 	 * @return The patient with the given ID or null if no patient with the
 	 *         given ID exists.
-	 *
+	 * 
 	 */
 	public Patient getPatient(ID pid){
 		EntityManager em = emf.createEntityManager();
@@ -128,8 +199,8 @@ public enum Persistor {
 			em.close();
 			logger.fatal("Found more than one patient with ID: " + pid.toString());
 			throw new InternalErrorException("Found more than one patient with ID: " + pid.toString());
-		}
-
+		} 
+		
 		if (result.size() == 0) {
 			em.close();
 			return null;
@@ -143,12 +214,12 @@ public enum Persistor {
 		em.close();
 		return p;
 	}
-
+	
 	/**
 	 * Returns all patients currently persisted in the patient list. This is not
 	 * a copy! Caller MUST NOT perform write operations on the return value or
 	 * its linked objects.
-	 *
+	 * 
 	 * @return All persisted patients.
 	 */
 	public synchronized List<Patient> getPatients() { //TODO: Filtern
@@ -160,7 +231,7 @@ public enum Persistor {
 
 	/**
 	 * Check whether a patient with the given ID exists.
-	 *
+	 * 
 	 * @param idType
 	 *            The ID type.
 	 * @param idString
@@ -176,13 +247,13 @@ public enum Persistor {
 		Long count = q.getSingleResult();
 		if (count > 0)
 			return true;
-		else
+		else 
 			return false;
 	}
-
+	
 	/**
 	 * Check whether a patient with the given ID exists.
-	 *
+	 * 
 	 * @param id
 	 *            The ID to check.
 	 * @return true if a patient with the given ID exists.
@@ -193,7 +264,7 @@ public enum Persistor {
 
 	/**
 	 * Returns a detached list of the IDs of all patients.
-	 *
+	 * 
 	 * @return A list where every item represents the IDs of one patient.
 	 */
 	public synchronized List<Set<ID>> getAllIds() {
@@ -210,20 +281,20 @@ public enum Persistor {
 	/**
 	 * Add an ID request to the database. In cases where a new ID is created, a
 	 * new Patient object is persisted.
-	 *
+	 * 
 	 * @param req
 	 *            The ID request to persist.
 	 */
 	public synchronized void addIdRequest(IDRequest req) {
 		em.getTransaction().begin();
-		em.persist(req); //TODO: Fehlerbehandlung, falls PID schon existiert.
+		em.persist(req); //TODO: Fehlerbehandlung, falls PID schon existiert.		
 		em.getTransaction().commit();
 	}
-
+	
 	/**
 	 * Update the persisted properties of an ID generator (e.g. the counter from
 	 * which PIDs are generated).
-	 *
+	 * 
 	 * @param mem
 	 *            The properties to persist.
 	 */
@@ -234,15 +305,15 @@ public enum Persistor {
 		em.getTransaction().commit();
 		em.close();
 	}
-
+	
 	/**
 	 * Mark a patient as duplicate of another.
-	 *
+	 * 
 	 * @param idOfDuplicate
 	 *            ID of the patient to be marked as duplicate.
 	 * @param idOfOriginal
 	 *            ID of the patient of which the other one is a duplicate.
-	 *
+	 *            
 	 * @see de.pseudonymisierung.mainzelliste.Patient#isDuplicate()
 	 * @see de.pseudonymisierung.mainzelliste.Patient#getOriginal()
 	 * @see de.pseudonymisierung.mainzelliste.Patient#setOriginal(Patient)
@@ -253,10 +324,10 @@ public enum Persistor {
 		pDuplicate.setOriginal(pOriginal);
 		updatePatient(pDuplicate);
 	}
-
+	
 	/**
 	 * Load the persisted properties for an ID generator.
-	 *
+	 * 
 	 * @param idType
 	 *            Identifier of the ID generator.
 	 * @return The persisted properties or null if no properties have been
@@ -275,10 +346,10 @@ public enum Persistor {
 			return null;
 		}
 	}
-
+	
 	/**
 	 * Persist changes made to a patient.
-	 *
+	 * 
 	 * @param p
 	 *            The patient to persist.
 	 */
@@ -286,13 +357,13 @@ public enum Persistor {
 		em.getTransaction().begin();
 		Patient edited = em.merge(p);
 		em.getTransaction().commit();
-		// Refreshes cached entity
-		em.refresh(edited);
+		// Refreshes cached entity 
+		em.refresh(edited); 
 	}
-
+	
 	/**
 	 * Remove a patient from the database.
-	 *
+	 * 
 	 * @param id An ID of the patient to persist.
 	 */
 	public synchronized void deletePatient(ID id) {
@@ -408,7 +479,7 @@ public enum Persistor {
 					for (IDGeneratorMemory thisGen : generators) {
 						genMap.put(Integer.parseInt(thisGen.get("counter")), thisGen);
 					}
-					// Remove the object with the highest counter. This should be kept.
+					// Remove the object with the highest counter. This should be kept. 
 					genMap.pollLastEntry();
 					// Remove the others.
 					for (IDGeneratorMemory thisGen : genMap.values()) {
@@ -428,10 +499,10 @@ public enum Persistor {
 			// Update schema version. Corresponds to Mainzelliste version, therefore the gap
 			this.setSchemaVersion("1.3.1", em);
 			fromVersion = "1.3.1";
-
+			
 			em.getTransaction().commit();
 		} // End of update 1.1 -> 1.3.1
-
+		
 		// Update schema version to release version, even if no changes are necessary
 		em.getTransaction().begin();
 		this.setSchemaVersion(Config.instance.getVersion(), em);
@@ -467,61 +538,61 @@ public enum Persistor {
 	/**
 	 * Reads the release version from the database (1.0 is assumed if
 	 * this information cannot be found).
-	 *
+	 * 
 	 * This function does not make use of JPA in order to be compatible
-	 * with updates that have to be made before JPA initialization
+	 * with updates that have to be made before JPA initialization 
 	 * (e.g. if the Object-DB mapping would be broken without the update).
-	 *
+	 * 
 	 * Run initPropertiesTable() first to ensure that version information exists.
-	 *
+	 * 
 	 * @return The persisted release version.
 	 */
 	private String getSchemaVersion() {
 		Connection conn = getJdbcConnection();
 		try {
-			// Check if there is a properties table
+			// Check if there is a properties table 
 			ResultSet rs = conn.createStatement().executeQuery("SELECT " + quoteIdentifier("value") + " FROM mainzelliste_properties " +
 					"WHERE property='version'");
 			if (!rs.next()) {
 				logger.fatal("Properties table not initialized correctly!");
-				throw new Error("Properties table not initialized correctly!");
-			}
+				throw new Error("Properties table not initialized correctly!");	
+			}				
 			return rs.getString("value");
 		} catch (SQLException e) {
 			logger.fatal("Could not update database schema!", e);
-			throw new Error(e);
-		}
+			throw new Error(e);			
+		}			
 	}
-
+	
 	/**
 	 * Update version information in the database. Should be run in one
 	 * transaction on the provided EntityManager together with the changes made
 	 * for this version so that no inconsistencies arise if any of the update
 	 * statements fail.
-	 *
+	 * 
 	 * @param toVersion
 	 *            The version string to set.
 	 * @param em
 	 *            A valid EntityManager object.
 	 */
 	private void setSchemaVersion(String toVersion, EntityManager em) {
-		em.createNativeQuery("UPDATE mainzelliste_properties SET " + quoteIdentifier("value") + "='" + toVersion +
-				"' WHERE property='version'").executeUpdate();
+		em.createNativeQuery("UPDATE mainzelliste_properties SET " + quoteIdentifier("value") + "='" + toVersion + 
+				"' WHERE property='version'").executeUpdate(); 
 	}
-
+	
 	/**
 	 * Create mainzelliste_properties if not exists. Check if JPA schema was
 	 * initialized. If no, set version to current, otherwise, it is assumed that
 	 * the database schema was created by version 1.0 (where the properties
 	 * table did not exist) and this version is set.
-	 *
+	 * 
 	 * Must be called before JPA initialization, i.e. before an EntityManager is
 	 * created.
 	 */
 	private void initPropertiesTable() {
 		Connection conn = getJdbcConnection();
 		try {
-			// Check if there is a properties table
+			// Check if there is a properties table 
 			DatabaseMetaData metaData = conn.getMetaData();
 			// Look for patients table to determine if schema is yet to be created
 			String tableName;
@@ -530,17 +601,17 @@ public enum Persistor {
 			else
 				tableName = "Patient";
 			ResultSet rs = metaData.getTables(null, null, tableName, null);
-			boolean firstRun = !rs.next(); // First invocation with this database
-
-			// Check if there is a properties table
+			boolean firstRun = !rs.next(); // First invocation with this database 
+			
+			// Check if there is a properties table 
 			rs = metaData.getTables(null, null, "mainzelliste_properties", null);
 			// Assume version 1.0 if none is provided
 			if (!rs.next()) {
-				// Create table
+				// Create table				
 				conn.createStatement().execute("CREATE TABLE mainzelliste_properties" +
 						"(property varchar(256), " + quoteIdentifier("value") +" varchar(256))");
-			}
-			rs = conn.createStatement().executeQuery("SELECT " + quoteIdentifier("value") +
+			} 
+			rs = conn.createStatement().executeQuery("SELECT " + quoteIdentifier("value") + 
 					" FROM mainzelliste_properties WHERE property='version'");
 			if (!rs.next()) {
 				// Properties table exists, but no version information
@@ -550,14 +621,14 @@ public enum Persistor {
 			}
 		} catch (SQLException e) {
 			logger.fatal("Could not update database schema!", e);
-			throw new Error(e);
-		}
+			throw new Error(e);			
+		}			
 	}
-
+	
 	/**
 	 * Get JDBC connection to database. Fails with an Error if the driver class cannot be found or an error occurs while
 	 * connecting.
-	 *
+	 * 
 	 * @return The JDBC connection.
 	 */
 	private Connection getJdbcConnection() {
@@ -576,10 +647,10 @@ public enum Persistor {
 			throw new Error(e);
 		}
 	}
-
+	
 	/**
 	 * Quote an identifier (e.g. table name) for use in an SQL query. Selects the appropriate quotation character.
-	 *
+	 * 
 	 * @param identifier
 	 *            The identifier to quote.
 	 * @return The quoted identifier.
