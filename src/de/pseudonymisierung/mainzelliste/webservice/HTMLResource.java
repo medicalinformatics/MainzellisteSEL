@@ -158,7 +158,7 @@ public class HTMLResource {
 							idType, idString))
 					.build());
 
-		List<Patient> duplicates = Persistor.instance.getPatientWithDuplicates(patId);
+		List<Patient> duplicates = Persistor.instance.getDuplicates(patId);
 		LinkedList<String> duplicateIds = new LinkedList<String>();
 		for (Patient thisPatient : duplicates) {
 			duplicateIds.add(thisPatient.getId(IDGeneratorFactory.instance.getDefaultIDType()).getIdString());

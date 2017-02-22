@@ -51,6 +51,7 @@ import de.pseudonymisierung.mainzelliste.IDGeneratorMemory;
 import de.pseudonymisierung.mainzelliste.IDRequest;
 import de.pseudonymisierung.mainzelliste.Patient;
 import de.pseudonymisierung.mainzelliste.exceptions.InternalErrorException;
+import de.pseudonymisierung.mainzelliste.exceptions.InvalidIDException;
 import de.pseudonymisierung.mainzelliste.matcher.MatchResult.MatchResultType;
 
 /**
@@ -305,29 +306,52 @@ public enum Persistor {
 		em.getTransaction().commit();
 	}
 
-	/**
-	 * Get patient with duplicates. Returns a list of the patient with the given ID and all patients that are marked as
-	 * duplicates of the given patient or of which the given patient is a duplicate. This includes transitive relations
-	 * (duplicate of duplicate).
+	/** Get patient with duplicates. Works like
+	 * {@link Persistor#getDuplicates(ID)}, but the requested patient is
+	 * included in the result.
 	 * 
 	 * @param id
 	 *            An ID of the patient to get.
-	 * @return A list containing the requested patient and its duplicates, null if no such patient exists.
-	 */
-	public synchronized List<Patient> getPatientWithDuplicates(ID id) {
+	 * @return A list containing the requested patient and its duplicates.
+	 * @throws InvalidIDException
+	 *             If no patient with the given ID exists. */
+	public synchronized List<Patient> getPatientWithDuplicates(ID id) throws InvalidIDException {
+		List<Patient> duplicates = getDuplicates(id);
+		Patient p = getAttachedPatient(id);
+		duplicates.add(p);
+		return duplicates;
+	}
+	
+	/** Get duplicates of a patient.
+	 * 
+	 * Returns a list of all patients that are marked as duplicates of the given
+	 * patient or of which the given patient is a duplicate. This includes
+	 * transitive relations (duplicate of duplicate), but not the patient which
+	 * is queried.
+	 * 
+	 * @param id
+	 *            An ID of the patient for which to get duplicates.
+	 * @return A list containing the duplicates of the requested patients (empty
+	 *         if none exist).
+	 * @throws InvalidIDException
+	 *             If no patient with the given ID exists. */
+	public synchronized List<Patient> getDuplicates(ID id) throws InvalidIDException {
 		Patient p = getAttachedPatient(id);
 		if (p == null)
-			return null;
+			throw new InvalidIDException("No patient found with ID " + id.getIdString() + " of type " + id.getType());
 		Patient root = p.getOriginal();
 		LinkedList<Patient> allInstances = new LinkedList<Patient>();
 		LinkedList<Patient> queue = new LinkedList<Patient>();
 		queue.add(root);
-		TypedQuery<Patient> duplicateQuery = em.createQuery("SELECT p FROM Patient p JOIN p.original o WHERE o=:original", Patient.class);
+		TypedQuery<Patient> duplicateQuery = em
+				.createQuery("SELECT p FROM Patient p JOIN p.original o WHERE o=:original", Patient.class);
 		while (!queue.isEmpty()) {
 			Patient thisPatient = queue.remove();
-			allInstances.add(thisPatient);
+			if (!thisPatient.equals(p)) {
+				allInstances.add(thisPatient);
+			}
 			duplicateQuery.setParameter("original", thisPatient);
-			queue.addAll(duplicateQuery.getResultList());
+			queue.addAll(duplicateQuery.getResultList());			
 		}
 		
 		return allInstances;
