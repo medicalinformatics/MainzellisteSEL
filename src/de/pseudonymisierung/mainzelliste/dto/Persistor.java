@@ -388,7 +388,7 @@ public enum Persistor {
 	 *             If no patient with the given ID exists. */
 	public synchronized List<Patient> getPatientWithDuplicates(ID id) throws InvalidIDException {
 		List<Patient> duplicates = getDuplicates(id);
-		Patient p = getAttachedPatient(id);
+		Patient p = getPatient(id);
 		duplicates.add(p);
 		return duplicates;
 	}
@@ -407,7 +407,7 @@ public enum Persistor {
 	 * @throws InvalidIDException
 	 *             If no patient with the given ID exists. */
 	public synchronized List<Patient> getDuplicates(ID id) throws InvalidIDException {
-		Patient p = getAttachedPatient(id);
+		Patient p = getPatient(id);
 		if (p == null)
 			throw new InvalidIDException("No patient found with ID " + id.getIdString() + " of type " + id.getType());
 		Patient root = p.getOriginal();
@@ -434,7 +434,7 @@ public enum Persistor {
 	 * @return The list of possible duplicates.
 	 */
 	public List<Patient> getPossibleDuplicates(ID id) {
-		Patient p = getAttachedPatient(id);
+		Patient p = getPatient(id);
 		if (p == null)
 			return new LinkedList<Patient>();
 		TypedQuery<Patient> q = em.createQuery("SELECT pa FROM IDRequest r JOIN r.assignedPatient pa JOIN r.matchResult m JOIN m.bestMatchedPatient pb "
@@ -510,31 +510,6 @@ public enum Persistor {
 		em.close();
 	}
 	
-	/**
-	 * Get patient, attached to this.em.
-	 * 
-	 * @param id ID of the patient to get.
-	 */
-	private synchronized Patient getAttachedPatient(ID id) {
-		TypedQuery<Patient> q = em.createQuery("SELECT p FROM Patient p JOIN p.ids id WHERE id.idString = :idString AND id.type = :idType", Patient.class);
-		q.setParameter("idString", id.getIdString());
-		q.setParameter("idType", id.getType());
-		List<Patient> result = q.getResultList();
-		if (result.size() > 1) {
-			em.close();
-			logger.fatal("Found more than one patient with ID: " + id.toString());
-			throw new InternalErrorException("Found more than one patient with ID: " + id.toString());
-		} 
-		
-		if (result.size() == 0) {
-			em.close();
-			return null;
-		}
-
-		Patient p = result.get(0);
-		return p;
-	}
-
 	/**
 	 * Reads the release version from the database (1.0 is assumed if
 	 * this information cannot be found).
