@@ -442,8 +442,8 @@ public class Patient {
 	
 	/** 
 	 * Determine if another patient object is equal to this. Two patient
-	 * objects p1 and p2 they are equal by reference (p1==p2) or if they refer
-	 * to the same objects in the database. 
+	 * objects p1 and p2 are considered equal if they are equal by reference
+	 * (p1==p2) or if they refer to the same object in the database. 
 	 */
 	@Override
 	public boolean equals(Object o) {
