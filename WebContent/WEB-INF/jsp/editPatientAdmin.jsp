@@ -1,3 +1,5 @@
+<%@page import="java.util.List"%>
+<%@page import="de.pseudonymisierung.mainzelliste.dto.Persistor"%>
 <%@page import="javax.ws.rs.core.Response.Status"%>
 <%@page import="javax.ws.rs.core.Response"%>
 <%@page import="javax.ws.rs.WebApplicationException"%>
@@ -10,25 +12,27 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
   pageEncoding="UTF-8"%>
 <%
-  String idTypes[] = IDGeneratorFactory.instance.getIDTypes();
-  String defaultIdType = IDGeneratorFactory.instance.getDefaultIDType();
-  JSONObject originalIds;
-  @SuppressWarnings("unchecked")
-  Map<String, Object> map = (Map<String, Object>) request
-    .getAttribute("it");
-
-  Patient original = (Patient) map.get("original");
-   try {
-     originalIds = new JSONObject();
-     if (original != null) {
-       for (ID thisId : original.getIds())
-         originalIds.put(thisId.getType(), thisId.getIdString());
-     }
-   } catch (JSONException e) {
-     throw new WebApplicationException(Response.status(Status.INTERNAL_SERVER_ERROR)
-         .entity("An internal error has occured: JSONException while collecting IDs. " + e.getMessage())
-         .build());
-   }
+	String idTypes[] = IDGeneratorFactory.instance.getIDTypes();
+	String defaultIdType = IDGeneratorFactory.instance.getDefaultIDType();
+	JSONObject originalIds;
+	@SuppressWarnings("unchecked")
+	Map<String, Object> map = (Map<String, Object>) request
+		.getAttribute("it");
+	
+	Patient original = (Patient) map.get("original");
+ 	try {
+ 		originalIds = new JSONObject();
+ 		if (original != null) {
+ 			for (ID thisId : original.getIds())
+ 				originalIds.put(thisId.getType(), thisId.getIdString());
+ 		}
+ 	} catch (JSONException e) {
+ 		throw new WebApplicationException(Response.status(Status.INTERNAL_SERVER_ERROR)
+ 				.entity("An internal error has occured: JSONException while collecting IDs. " + e.getMessage())
+ 				.build());
+ 	}
+ 	List<String> duplicates = (List<String>) map.get("duplicates");
+ 	List<String> possibleDuplicates = (List<String>) map.get("possibleDuplicates");
 %>
 <!DOCTYPE html>
 <html>
@@ -65,6 +69,7 @@ function fillOriginalId() {
         <h1>Patienten bearbeiten</h1>
         <jsp:include page="patientFormElements.jsp"></jsp:include>
         <div id ="form_elements_admin">
+		<fieldset class="patienten_daten">
         <table class="daten_tabelle">
           <tr>
             <td><label for="tentative">Vorläufig</label></td>
@@ -101,6 +106,37 @@ function fillOriginalId() {
             </td>
           </tr>
         </table>
+        </fieldset>
+        <fieldset class="patienten_daten">
+        <table class="daten_tabelle">
+        	<tr>
+        		<td>Duplikate:</td>
+        		<td>
+					<ul>
+						<% for (String id : duplicates) { %>
+						<li>
+							<a href="<%=request.getContextPath()%>/html/admin/editPatient?idType=<%=defaultIdType %>&amp;idString=<%=id %>">
+								<%=id %>
+							</a>
+						<% } %>
+					</ul>
+        		</td>
+        	</tr>
+        	<tr>
+        		<td>Mögliche Duplikate:</td>
+        		<td>
+					<ul>
+						<% for (String id : possibleDuplicates) { %>
+						<li>
+							<a href="<%=request.getContextPath()%>/html/admin/editPatient?idType=<%=defaultIdType %>&amp;idString=<%=id %>">
+								<%=id %>
+							</a>
+						<% } %>
+					</ul>
+        		</td>
+        	</tr>
+        </table>
+        </fieldset>	
         </div>
         <p class="buttons">
           <input type="submit" value="Speichern">
