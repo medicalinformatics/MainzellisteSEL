@@ -42,6 +42,12 @@ We have compiled this list from the results of public search engines. If you use
 
 ## Release notes
 
+###1.6.1
+
+This is a bugfix release for restoring compatibility with Java 7. Version 1.6.0 does not compile with Java versions <8 due to an unimplemented interface method, which has a default implementation in Java 8.
+
+Fix submitted by Stephan Rusch (Universitätsklinikum Freiburg).
+
 ###1.6.0
 
 This release further enhances the mechanism to choose the UI language and includes some important fixes, notably the contribution of changes to prevent memory leaks contributed by Daniel Volk. Again, upgrading is possible from all previous releases by replacing the binary.   
@@ -53,6 +59,7 @@ This release further enhances the mechanism to choose the UI language and includ
 - If the language is induced from the `Accept-Language` header, all languages listed therein are tried, respecting the preference order. Previously, if for example Albanian (or any other language for which no localization file is included) and German were listed in the header in this order, Mainzelliste did not consider the second choice (German) but used the server language.
 - When a cross origin (CORS) request issues an origin domain not listed as acceptable source, Mainzelliste now cancels the request. Previously, it processed the request nevertheless and relied on the web browser blocking the response. 
 - Trailing whitespace is now trimmed from configuration parameters, as this was a common source of errors.
+- When printing the result of an ID request, the page order is omitted for a better print layout.
 - The logo can now also be read from a relative path within the .war file or from the directory `META-INF/resources` within a .jar file on the class path (contributed by Daniel Volk, see pull request #32).
   
 
