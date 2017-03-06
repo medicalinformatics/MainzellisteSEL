@@ -93,4 +93,8 @@ public class SimpleIDGenerator implements IDGenerator<IntegerID> {
 	public String getIdType() {
 		return idType;
 	}
+
+	@Override
+	public boolean isExternal() { return false; }
+
 }

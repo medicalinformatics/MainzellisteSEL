@@ -230,7 +230,17 @@ public enum PatientBackend {
 				&& (form.getFirst("sureness") == null || !Boolean.parseBoolean(form.getFirst("sureness")))) {
 					return new IDRequest(p.getFields(), idTypes, match, null);
 				}
+
+				// Generate internal IDs
 				Set<ID> newIds = IDGeneratorFactory.instance.generateIds();
+
+				// Import external IDs
+				for (String extIDType : IDGeneratorFactory.instance.getExternalIDTypes()) {
+					String extIDString = form.getFirst(extIDType);
+					if (extIDString != null) {
+						newIds.add(IDGeneratorFactory.instance.buildId(extIDType, extIDString));
+					}
+				}
 				pNormalized.setIds(newIds);
 
 				for (String idType : idTypes) {

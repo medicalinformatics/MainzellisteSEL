@@ -103,4 +103,6 @@ public interface IDGenerator<I extends ID> {
 	 * @return Name of ID.
 	 */
 	public String getIdType();
+
+	public boolean isExternal();
 }
