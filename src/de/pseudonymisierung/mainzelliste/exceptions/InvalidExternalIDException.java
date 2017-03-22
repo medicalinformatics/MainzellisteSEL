@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013-2015 Martin Lablans, Andreas Borg, Frank Ückert
+ * Copyright (C) 2013 Martin Lablans, Andreas Borg, Frank Ückert
  * Contact: info@mainzelliste.de
  *
  * This program is free software; you can redistribute it and/or modify it under
@@ -23,47 +23,40 @@
  * License, version 2.0, the licensors of this Program grant you additional
  * permission to convey the resulting work.
  */
-package de.pseudonymisierung.mainzelliste;
+package de.pseudonymisierung.mainzelliste.exceptions;
 
-import org.apache.commons.lang.NotImplementedException;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 
-import java.util.Properties;
+/**
+ * Signals that an external id type is invalid, e.g. unknown.
+ */
+public class InvalidExternalIDException extends WebApplicationException {
 
-public class ExternalIDGenerator implements IDGenerator<ExternalID>{
+    @SuppressWarnings("javadoc")
+    private static final long serialVersionUID = 2027522593983344225L;
 
-    /** The ID type this generator instance creates. */
-    String idType;
+	/** The default error message. */
+	private static String defaultMessage = "Invalid External ID type.";
 
-    @Override
-    public void init(IDGeneratorMemory mem, String idType, Properties props) {
-        this.idType = idType;
-    }
+	/** Create an instance with the default error message. */
+	public InvalidExternalIDException() {
+		this(defaultMessage);
+	}
 
-    @Override
-    public boolean verify(String id) {
-        return true;
-    }
+	/**
+	 * Create an instance with the given error message.
+	 *
+	 * @param message
+	 *            The error message.
+	 */
+	public InvalidExternalIDException(String message) {
+		super(Response.status(Status.BAD_REQUEST).entity(message).build());
+	}
 
-    @Override
-    public synchronized ExternalID getNext() {
-        throw new NotImplementedException("TODO");
-    }
-
-    @Override
-    public String correct(String IDString) {
-        throw new NotImplementedException("TODO");
-    }
-
-    @Override
-    public ExternalID buildId(String id) {
-        return new ExternalID(id, getIdType());
-    }
-
-    @Override
-    public String getIdType() {
-        return idType;
-    }
-
-    @Override
-	public boolean isExternal() { return true; }
+	@Override
+	public String getMessage() {
+		return super.getMessage();
+	}
 }

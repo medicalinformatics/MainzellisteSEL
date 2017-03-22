@@ -104,23 +104,6 @@ public abstract class ID {
 	}
 
 	/**
-	 * Creates an ID with a type.
-	 *
-	 * @param type
-	 *            Type as according to configuration.
-	 * @throws InvalidIDException
-	 *             If the given id type is not known or the given ID string is
-	 *             invalid and could not be corrected.
-	 */
-	public ID(String type) throws InvalidIDException {
-		setType(type);
-		setTentative(false);
-		IDGenerator<?> generator = getFactory();
-		if (generator == null)
-			throw new InvalidIDException("ID type " + type + " is unknown.");
-	}
-
-	/**
 	 * Creates an ID with a given ID string and type.
 	 *
 	 * @param idString
