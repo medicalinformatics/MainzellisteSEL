@@ -521,7 +521,7 @@ public class PatientsResource {
 				for (String fieldName : newFieldValues.keySet()) {
 					if (!tt.getFields().contains(fieldName))
 						throw new InvalidFieldException("No authorization to edit field " + fieldName +
-								" with this token.");
+								" with this token.", Status.UNAUTHORIZED);
 				}
 			}
 			
