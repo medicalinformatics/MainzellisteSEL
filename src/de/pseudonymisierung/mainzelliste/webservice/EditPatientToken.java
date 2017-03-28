@@ -58,8 +58,8 @@ public class EditPatientToken extends Token {
 	private Set<String> fields;
 
     /**
-     * External ids that can be changed with this token. If null,
-     * all fields can be changed.
+     * External IDs that can be changed with this token. If null,
+     * all external IDs can be changed.
      */
     private Set<String> ids;
 
@@ -89,7 +89,7 @@ public class EditPatientToken extends Token {
 	}
 
     /**
-     * Get the ids that can be changed with this token. If null, all external ids
+     * Get the external IDs that can be changed with this token. If null, all external IDs
      * can be changed.
      *
      * @return Set of id names.
@@ -145,7 +145,7 @@ public class EditPatientToken extends Token {
 			}
 		}
 
-		// Read id list (external ids, if present) and check if is valid
+		// Read ID list (external IDs), if present, and check if valid
         List<?> idsJSON = this.getDataItemList("ids");
         if (idsJSON != null) {
             this.ids = new HashSet<String>();

@@ -29,6 +29,9 @@ import org.apache.commons.lang.NotImplementedException;
 
 import java.util.Properties;
 
+/**
+ * Pseuodo generator for external patient identifiers.
+ */
 public class ExternalIDGenerator implements IDGenerator<ExternalID>{
 
     /** The ID type this generator instance creates. */
@@ -39,19 +42,35 @@ public class ExternalIDGenerator implements IDGenerator<ExternalID>{
         this.idType = idType;
     }
 
+    /**
+     * Verify an external ID. Always returns true as Mainzelliste cannot
+     * recognize illegal external IDs.
+     * 
+     * @return true
+     */
     @Override
     public boolean verify(String id) {
         return true;
     }
 
+    /**
+     * Not implemented for external IDs.
+     * 
+     * @throws NotImplementedException
+     */
     @Override
     public synchronized ExternalID getNext() {
-        throw new NotImplementedException("TODO");
+        throw new NotImplementedException("Cannot get next ID for external ID type!");
     }
 
+    /**
+     * Not implemented for external IDs.
+     * 
+     * @throws NotImplementedException
+     */
     @Override
     public String correct(String IDString) {
-        throw new NotImplementedException("TODO");
+        throw new NotImplementedException("Cannot correct external ID!");
     }
 
     @Override

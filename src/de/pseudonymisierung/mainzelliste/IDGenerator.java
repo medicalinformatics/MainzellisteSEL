@@ -104,5 +104,9 @@ public interface IDGenerator<I extends ID> {
 	 */
 	public String getIdType();
 
+	/**
+	 * Check whether an ID generator is a dummy generator for externally
+	 * generated IDs.
+	 */
 	public boolean isExternal();
 }

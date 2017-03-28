@@ -240,7 +240,7 @@ public enum PatientBackend {
 					if (extIDString != null) {
 						ID extId = IDGeneratorFactory.instance.buildId(extIDType, extIDString);
 						if (Persistor.instance.getPatient(extId) != null) {
-								logger.info("Request to add patient with existent external ID " + extId.toString());
+								logger.info("Request to add patient with existing external ID " + extId.toString());
 								throw new WebApplicationException(
 										Response.status(Status.CONFLICT)
 												.entity("Cannot create a new patient with the supplied external ID, " +
@@ -399,20 +399,21 @@ public enum PatientBackend {
 
 		for (String idType : IDGeneratorFactory.instance.getExternalIDTypes()) {
 			if (newFieldValues.containsKey(idType)) {
-				// check if a patient has already this external id (not null)
+				// check if a patient already has this external ID (not null)
 				ID patientExtId = pToEdit.getId(idType);
 				if (patientExtId != null) {
-					logger.error("External id of this type already exist and cannot be overwritten");
+					logger.error("External ID " + patientExtId.getIdString() + " of this type (" + 
+							patientExtId.getType() + ") already exists and cannot be overwritten");
 					throw new WebApplicationException(
 							Response.status(Status.CONFLICT)
 									.entity("Cannot edit a patient, because external ID cannot be overwritten. " +
-											"Please exclude existent external ID from input and repeat the request.")
+											"Please exclude existing external ID from input and repeat the request.")
 									.build());
 				}
 				// check if this external id is already in use
 				ID extId = IDGeneratorFactory.instance.buildId(idType, newFieldValues.get(idType));
 				if (Persistor.instance.getPatient(extId) != null) {
-					logger.info("Request to add patient with existent external ID " + extId.toString());
+					logger.info("Request to add patient with existing external ID " + extId.toString());
 					throw new WebApplicationException(
 							Response.status(Status.CONFLICT)
 									.entity("Cannot create a new patient with the supplied external ID, " +
