@@ -3,24 +3,24 @@
  * Contact: info@mainzelliste.de
  *
  * This program is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Affero General Public License as published by the Free
+ * the terms of the GNU Affero General Public License as published by the Free 
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+ * This program is distributed in the hope that it will be useful, but WITHOUT 
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS 
+ * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more 
  * details.
  *
- * You should have received a copy of the GNU Affero General Public License
+ * You should have received a copy of the GNU Affero General Public License 
  * along with this program; if not, see <http://www.gnu.org/licenses>.
  *
  * Additional permission under GNU GPL version 3 section 7:
  *
- * If you modify this Program, or any covered work, by linking or combining it
- * with Jersey (https://jersey.java.net) (or a modified version of that
- * library), containing parts covered by the terms of the General Public
- * License, version 2.0, the licensors of this Program grant you additional
+ * If you modify this Program, or any covered work, by linking or combining it 
+ * with Jersey (https://jersey.java.net) (or a modified version of that 
+ * library), containing parts covered by the terms of the General Public 
+ * License, version 2.0, the licensors of this Program grant you additional 
  * permission to convey the resulting work.
  */
 package de.pseudonymisierung.mainzelliste;
@@ -31,7 +31,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
-import java.util.prefs.Preferences;
 
 import org.apache.log4j.Logger;
 import org.codehaus.jettison.json.JSONException;
@@ -68,8 +67,6 @@ public enum IDGeneratorFactory {
 	 */
 	private IDGeneratorFactory() {
 		HashMap<String, IDGenerator<? extends ID>> temp = new HashMap<String, IDGenerator<? extends ID>>();
-		Preferences prefs = Preferences.userRoot().node(
-				"de/pseudonymisierung/mainzelliste/idgenerator");
 		Properties props = Config.instance.getProperties();
 
 		if (!props.containsKey("idgenerators")
@@ -84,7 +81,8 @@ public enum IDGeneratorFactory {
 
 		// Iterate over ID types
 		for (String thisIdType : idTypes) {
-			String thisIdGenerator = prefs.get(thisIdType, "");
+			PropertyIterator propIt = new PropertyIterator(props, "idgenerator." + thisIdType);
+			String thisIdGenerator = propIt.getProperty("", "");
 			try {
 				// Add mainzelliste package to class name if none is given
 				// (check by searching for a dot in the class name)
@@ -106,11 +104,12 @@ public enum IDGeneratorFactory {
 					 */
 					mem = Persistor.instance.getIDGeneratorMemory(thisIdType);
 				}
-				// Get properties for this ID generator from Preferences
+				// Get properties for this ID generator
 				Properties thisIdProps = new Properties();
-				Preferences thisIdPrefs = prefs.node(thisIdType);
-				for (String key : thisIdPrefs.keys()) {
-					thisIdProps.put(key, thisIdPrefs.get(key, ""));
+				for (Object key : propIt.keyIterator()) {
+					if (key instanceof String) {
+						thisIdProps.put(key, propIt.getProperty((String)key, ""));
+					}
 				}
 				thisGenerator.init(mem, thisIdType, thisIdProps);
 				temp.put(thisIdType, thisGenerator);
@@ -129,7 +128,7 @@ public enum IDGeneratorFactory {
 
 	/**
 	 * Get the IDGenerator for the given ID type.
-	 *
+	 * 
 	 * @param idType
 	 *            The ID type for which to get the IDGenerator.
 	 * @return The respective IDGenerator instance or null if the given ID type
@@ -142,7 +141,7 @@ public enum IDGeneratorFactory {
 	/**
 	 * Generates a set of IDs for a new patient by calling every ID generator
 	 * defined in the configuration.
-	 *
+	 * 
 	 * @return The set of generated IDs.
 	 */
 	public Set<ID> generateIds() {
@@ -156,7 +155,7 @@ public enum IDGeneratorFactory {
 	/**
 	 * Get names of defined id types as an array. The result must not be
 	 * modified.
-	 *
+	 * 
 	 * @return The defined id types.
 	 */
 	public String[] getIDTypes() {
@@ -166,7 +165,7 @@ public enum IDGeneratorFactory {
 	/**
 	 * Get the default id type (currently, the first one defined in the
 	 * configuration).
-	 *
+	 * 
 	 * @return The default id type.
 	 */
 	public String getDefaultIDType() {
@@ -176,26 +175,26 @@ public enum IDGeneratorFactory {
 	public ID idFromJSON(JSONObject json) throws JSONException, InvalidIDException {
 		if (!json.has("idType") && json.has("idString"))
 			throw new JSONException("Illegal format for ID. Need at least members 'idType' and 'idString'");
-
+		
 		IDGenerator<?> generator = IDGeneratorFactory.instance.getFactory(json.getString("idType"));
 		if (generator == null) {
-			String message = String.format("No ID generator %s found!", json.getString("idType"));
+			String message = String.format("No ID generator %s found!", json.getString("idType")); 
 			logger.error(message);
 			throw new InvalidIDException();
 		}
 		ID id = generator.buildId(json.getString("idString"));
-
+		
 		if (json.has("tentative"))
 			id.setTentative(json.getBoolean("tentative"));
 		else
 			id.setTentative(false);
-
+		
 		return id;
 	}
-
+	
 	/**
 	 * Build an ID with the given ID string and type.
-	 *
+	 * 
 	 * @param idType
 	 *            The ID type.
 	 * @param idString

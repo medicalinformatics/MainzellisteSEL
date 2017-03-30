@@ -46,11 +46,19 @@ import org.apache.log4j.Logger;
 
 
 import de.pseudonymisierung.mainzelliste.Config;
+import de.pseudonymisierung.mainzelliste.Initializer;
 import de.pseudonymisierung.mainzelliste.ID;
 import de.pseudonymisierung.mainzelliste.IDGeneratorMemory;
 import de.pseudonymisierung.mainzelliste.IDRequest;
 import de.pseudonymisierung.mainzelliste.Patient;
 import de.pseudonymisierung.mainzelliste.exceptions.InternalErrorException;
+import de.pseudonymisierung.mainzelliste.exceptions.InvalidIDException;
+import de.pseudonymisierung.mainzelliste.matcher.MatchResult.MatchResultType;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.sql.Driver;
+import java.util.Enumeration;
+import javax.servlet.ServletContext;
 
 /**
  * Handles reading and writing from and to the database. Implemented as a
@@ -114,6 +122,71 @@ public enum Persistor {
 		Logger.getLogger(Persistor.class).info("Persistence has initialized successfully.");
 	}
 	
+	/**
+	 * Shut down instance. This method is called upon undeployment and releases
+	 * resources, such as stopping background threads or removing objects that
+	 * would otherwise persist and cause a memory leak. Called by
+	 * {@link de.pseudonymisierung.mainzelliste.webservice.ContextShutdownHook}.
+	 */
+	public void shutdown() {
+		ClassLoader contextClassLoader = Initializer.getServletContext().getClassLoader();
+		Enumeration<Driver> drivers = DriverManager.getDrivers();
+		while (drivers.hasMoreElements()) {
+			Driver driver = drivers.nextElement();
+			Class<?> driverClass = driver.getClass();
+
+			if (checkClassLoader(driver, contextClassLoader)) {
+				if (driverClass.getName().equals("com.mysql.jdbc.Driver")) {
+					// special mysql handling
+					handleMySQLShutdown();
+				}
+				try {
+					logger.info("Deregistering JDBC driver " + driver);
+					DriverManager.deregisterDriver(driver);
+				} catch (SQLException ex) {
+					logger.debug("An error occured during deregistering JDBC driver " + driver, ex);
+				}
+			}
+		}
+	}
+
+	/**
+	 * Check if the driver was loaded by the web app classloader or by one of its children.
+	 *
+	 * @param driver The jdbc driver to test
+	 * @param contextClassLoader The web applications classloader
+	 * @return Returns true if the driver was loaded by the web app classloader or by one of its children
+	 */
+	private boolean checkClassLoader(Driver driver, ClassLoader contextClassLoader) {
+		ClassLoader cl = driver.getClass().getClassLoader();
+		while (cl != null) {
+			if (cl == contextClassLoader)
+				return true; // the driver was loaded by the context class loader or by one of its successor
+			cl = cl.getParent();
+		}
+		return false;
+	}
+
+	/**
+	 * Special handling when shutting down the mysql jdbc driver. The mysql driver starts a thread that will not exit
+	 * automatically when the driver gets unloaded. Stop that thread explicitly. Using reflections will not cause any
+	 * errors when mysql is not used and the driver is not within the classpath.
+	 */
+	private void handleMySQLShutdown() {
+		try {
+			Class<?> threadClass = Class.forName("com.mysql.jdbc.AbandonedConnectionCleanupThread");
+			logger.info("Calling MySQL AbandonedConnectionCleanupThread shutdown");
+			Method shutdownMethod = threadClass.getMethod("shutdown");
+			shutdownMethod.invoke(null);
+		} catch (ClassNotFoundException ex) {
+		} catch (NoSuchMethodException ex) {
+		} catch (SecurityException ex) {
+		} catch (IllegalAccessException ex) {
+		} catch (IllegalArgumentException ex) {
+		} catch (InvocationTargetException ex) {
+		}
+	}
+
 	/**
 	 * Get a patient by one of its IDs.
 	 * 
@@ -309,6 +382,81 @@ public enum Persistor {
 		if (p != null)
 			em.remove(p);
 		em.getTransaction().commit();
+	}
+
+	/** Get patient with duplicates. Works like
+	 * {@link Persistor#getDuplicates(ID)}, but the requested patient is
+	 * included in the result.
+	 * 
+	 * @param id
+	 *            An ID of the patient to get.
+	 * @return A list containing the requested patient and its duplicates.
+	 * @throws InvalidIDException
+	 *             If no patient with the given ID exists. */
+	public synchronized List<Patient> getPatientWithDuplicates(ID id) throws InvalidIDException {
+		List<Patient> duplicates = getDuplicates(id);
+		Patient p = getPatient(id);
+		duplicates.add(p);
+		return duplicates;
+	}
+	
+	/** Get duplicates of a patient.
+	 * 
+	 * Returns a list of all patients that are marked as duplicates of the given
+	 * patient or of which the given patient is a duplicate. This includes
+	 * transitive relations (duplicate of duplicate), but not the patient which
+	 * is queried.
+	 * 
+	 * @param id
+	 *            An ID of the patient for which to get duplicates.
+	 * @return A list containing the duplicates of the requested patients (empty
+	 *         if none exist).
+	 * @throws InvalidIDException
+	 *             If no patient with the given ID exists. */
+	public synchronized List<Patient> getDuplicates(ID id) throws InvalidIDException {
+		Patient p = getPatient(id);
+		if (p == null)
+			throw new InvalidIDException("No patient found with ID " + id.getIdString() + " of type " + id.getType());
+		Patient root = p.getOriginal();
+		LinkedList<Patient> allInstances = new LinkedList<Patient>();
+		LinkedList<Patient> queue = new LinkedList<Patient>();
+		queue.add(root);
+		TypedQuery<Patient> duplicateQuery = em
+				.createQuery("SELECT p FROM Patient p JOIN p.original o WHERE o=:original", Patient.class);
+		while (!queue.isEmpty()) {
+			Patient thisPatient = queue.remove();
+			if (!thisPatient.equals(p)) {
+				allInstances.add(thisPatient);
+			}
+			duplicateQuery.setParameter("original", thisPatient);
+			queue.addAll(duplicateQuery.getResultList());			
+		}
+		
+		return allInstances;
+	}
+	
+	/**
+	 * Get possible duplicates of a patient. 
+	 * @param id ID of the patient for which to find possible duplicates.
+	 * @return The list of possible duplicates.
+	 */
+	public List<Patient> getPossibleDuplicates(ID id) {
+		Patient p = getPatient(id);
+		if (p == null)
+			return new LinkedList<Patient>();
+		TypedQuery<Patient> q = em.createQuery("SELECT pa FROM IDRequest r JOIN r.assignedPatient pa JOIN r.matchResult m JOIN m.bestMatchedPatient pb "
+				+ "WHERE m.type=:matchResultType AND pa.isTentative=true AND pb=:thisPatient", Patient.class);
+		q.setParameter("matchResultType", MatchResultType.POSSIBLE_MATCH);
+		q.setParameter("thisPatient", p);
+		LinkedList<Patient> result = new LinkedList<Patient>(q.getResultList());
+		if (p.isTentative()) {
+			q = em.createQuery("SELECT pb FROM IDRequest r JOIN r.assignedPatient pa JOIN r.matchResult m JOIN m.bestMatchedPatient pb "
+					+ "WHERE m.type=:matchResultType AND pa.isTentative=true AND pa=:thisPatient", Patient.class);
+			q.setParameter("matchResultType", MatchResultType.POSSIBLE_MATCH);
+			q.setParameter("thisPatient", p);
+			result.addAll(q.getResultList());
+		}
+		return result;
 	}
 	
 	/**
