@@ -230,7 +230,28 @@ public enum PatientBackend {
 				&& (form.getFirst("sureness") == null || !Boolean.parseBoolean(form.getFirst("sureness")))) {
 					return new IDRequest(p.getFields(), idTypes, match, null);
 				}
+
+				// Generate internal IDs
 				Set<ID> newIds = IDGeneratorFactory.instance.generateIds();
+
+				// Import external IDs
+				for (String extIDType : IDGeneratorFactory.instance.getExternalIDTypes()) {
+					String extIDString = form.getFirst(extIDType);
+					if (extIDString != null) {
+						ID extId = IDGeneratorFactory.instance.buildId(extIDType, extIDString);
+						if (Persistor.instance.getPatient(extId) != null) {
+								logger.info("Request to add patient with existing external ID " + extId.toString());
+								throw new WebApplicationException(
+										Response.status(Status.CONFLICT)
+												.entity("Cannot create a new patient with the supplied external ID, " +
+														"because it is already in use. " +
+														"Please check external ID and repeat the request.")
+												.build());
+
+						}
+						newIds.add(extId);
+					}
+				}
 				pNormalized.setIds(newIds);
 
 				for (String idType : idTypes) {
@@ -375,6 +396,35 @@ public enum PatientBackend {
 		// assign changed fields to patient in database, persist
 		pToEdit.setFields(pNormalized.getFields());
 		pToEdit.setInputFields(pNormalized.getInputFields());
+
+		for (String idType : IDGeneratorFactory.instance.getExternalIDTypes()) {
+			if (newFieldValues.containsKey(idType)) {
+				// check if a patient already has this external ID (not null)
+				ID patientExtId = pToEdit.getId(idType);
+				if (patientExtId != null) {
+					logger.error("External ID " + patientExtId.getIdString() + " of this type (" + 
+							patientExtId.getType() + ") already exists and cannot be overwritten");
+					throw new WebApplicationException(
+							Response.status(Status.CONFLICT)
+									.entity("Cannot edit a patient, because external ID cannot be overwritten. " +
+											"Please exclude existing external ID from input and repeat the request.")
+									.build());
+				}
+				// check if this external id is already in use
+				ID extId = IDGeneratorFactory.instance.buildId(idType, newFieldValues.get(idType));
+				if (Persistor.instance.getPatient(extId) != null) {
+					logger.info("Request to add patient with existing external ID " + extId.toString());
+					throw new WebApplicationException(
+							Response.status(Status.CONFLICT)
+									.entity("Cannot create a new patient with the supplied external ID, " +
+											"because it is already in use. " +
+											"Please check external ID and repeat the request.")
+									.build());
+
+				}
+				pToEdit.setId(extId);
+			}
+		}
 
 		// Save to database
 		Persistor.instance.updatePatient(pToEdit);
