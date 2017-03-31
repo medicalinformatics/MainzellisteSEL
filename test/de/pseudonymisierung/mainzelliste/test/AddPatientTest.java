@@ -119,9 +119,18 @@ public class AddPatientTest extends JerseyTest {
 		
 		// Add Dummy Patient for Testing
 		TestUtilities.addDummyPatient(resource);
-		
+
+		// Add patient with external id
+		Form formData = TestUtilities.createForm("TestPatientVorname", "TestPatientNachname", "Peter", "05", "01", "1990", "Mainz", "55120");
+		formData.add("extid", "1234");
+
+        String tokenId = TestUtilities.createTokenIdAddPatient(resource, sessionId, "psn");
+		response = TestUtilities.getBuilderPatient(resource, tokenId, TestUtilities.getApikey())
+                .post(ClientResponse.class, formData);
+        assertEquals("Add Patient did not return 201 status. Message from server: " + response.getEntity(String.class), 201, response.getStatus());
+
 		// Generate Formula Data
-		Form formData = TestUtilities.createForm("AddPatientVorname", "AddPatientNachname", "Hans", "01", "01", "2000", "Mainz", "55120");
+		formData = TestUtilities.createForm("AddPatientVorname", "AddPatientNachname", "Hans", "01", "01", "2000", "Mainz", "55120");
 		
 		// Call without token
 		response = TestUtilities.getBuilderPatient(resource, null, null)
@@ -134,7 +143,7 @@ public class AddPatientTest extends JerseyTest {
 		assertEquals("Add Patient with non-existing token did not return 401 status. Message from server: " + response.getEntity(String.class), 401, response.getStatus());
 
 		// Call with editToken not addToken
-		String tokenId = TestUtilities.createTokenIdEditPatient(resource, sessionId, TestUtilities.buildJSONObject("idType", "psn", "idString", "1"), null);
+		tokenId = TestUtilities.createTokenIdEditPatient(resource, sessionId, TestUtilities.buildJSONObject("idType", "psn", "idString", "1"), null);
 		response = TestUtilities.getBuilderPatient(resource, tokenId, null)
 				.post(ClientResponse.class, formData);
 		assertEquals("Add Patient with wrong token did not return 401 status. Message from server: " + response.getEntity(String.class), 401, response.getStatus());
