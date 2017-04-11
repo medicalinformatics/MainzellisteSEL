@@ -11,6 +11,7 @@ import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.client.WebResource.Builder;
 import com.sun.jersey.test.framework.JerseyTest;
+import com.sun.jersey.api.representation.Form;
 
 public class ReadPatientTest extends JerseyTest {
 
@@ -150,6 +151,23 @@ public class ReadPatientTest extends JerseyTest {
                 assertEquals(i + ". time of Loop: Field '" + keyArray[j] + "' of Patient is not the same as it was given.", valueArray[j], TestUtilities.getStringOfJSON(fields, keyArray[j]));
             }
         }
+
+        // Add patient with external id
+        Form formData = TestUtilities.createForm("TestMax", "TestMustermann", "", "05", "01", "1980", "Mainz", "55120");
+        formData.add("extid", "1470");
+
+        String addTokenId = TestUtilities.createTokenIdAddPatient(resource, sessionId, "psn");
+        response = TestUtilities.getBuilderPatient(resource, addTokenId, TestUtilities.getApikey())
+                .post(ClientResponse.class, formData);
+
+        // Read patient using external id
+        JSONObject searchId = TestUtilities.buildJSONObject("idType", "extid", "idString", "1470");
+
+        String readTokenId = TestUtilities.createTokenIdReadPatient(resource, sessionId, resultFields, resultIds, searchId);
+        response = TestUtilities.getBuilderPatient(resource, readTokenId, TestUtilities.getApikey())
+                .get(ClientResponse.class);
+        assertEquals("Read Patient using external id did not return 200 status. Message from server: " + response, 200, response.getStatus());
+
     }
     
 	/**

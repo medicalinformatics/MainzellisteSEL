@@ -121,13 +121,22 @@ public class AddPatientTest extends JerseyTest {
 		TestUtilities.addDummyPatient(resource);
 
 		// Add patient with external id
-		Form formData = TestUtilities.createForm("TestPatientVorname", "TestPatientNachname", "Peter", "05", "01", "1990", "Mainz", "55120");
+		Form formData = TestUtilities.createForm("TestPatientVorname", "TestPatientNachname", "", "05", "01", "1990", "Mainz", "55120");
 		formData.add("extid", "1234");
 
         String tokenId = TestUtilities.createTokenIdAddPatient(resource, sessionId, "psn");
 		response = TestUtilities.getBuilderPatient(resource, tokenId, TestUtilities.getApikey())
                 .post(ClientResponse.class, formData);
         assertEquals("Add Patient did not return 201 status. Message from server: " + response.getEntity(String.class), 201, response.getStatus());
+
+		// Add other patient with the existing external id
+		formData = TestUtilities.createForm("TestPatientVornameA", "TestPatientNachnameA", "", "05", "01", "1991", "Mainz", "55120");
+		formData.add("extid", "1234");
+
+		tokenId = TestUtilities.createTokenIdAddPatient(resource, sessionId, "psn");
+		response = TestUtilities.getBuilderPatient(resource, tokenId, TestUtilities.getApikey())
+				.post(ClientResponse.class, formData);
+		assertEquals("Add Patient did not return 409 status. Message from server: " + response.getEntity(String.class), 409, response.getStatus());
 
 		// Generate Formula Data
 		formData = TestUtilities.createForm("AddPatientVorname", "AddPatientNachname", "Hans", "01", "01", "2000", "Mainz", "55120");
