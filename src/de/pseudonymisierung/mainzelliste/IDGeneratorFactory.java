@@ -57,6 +57,8 @@ public enum IDGeneratorFactory {
 	 */
 	private String[] idTypes;
 
+	private HashSet<String> extIdTypes;
+
 	/** The logging instance */
 	private Logger logger = Logger.getLogger(this.getClass());
 
@@ -123,6 +125,13 @@ public enum IDGeneratorFactory {
 		}
 		generators = Collections.unmodifiableMap(temp);
 
+		// Find the set of external id types
+		extIdTypes = new HashSet<String>();
+		for (String idType : this.generators.keySet()) {
+			if (this.generators.get(idType).isExternal())
+				extIdTypes.add(idType);
+		}
+
 		logger.info("ID generators have initialized successfully.");
 	}
 
@@ -159,13 +168,8 @@ public enum IDGeneratorFactory {
 	 *
 	 * @return The set of external id types.
 	 */
-	public Set<String> getExternalIDTypes() {
-		HashSet<String> extIDTypes = new HashSet<String>();
-		for (String idType : this.generators.keySet()) {
-			if (this.generators.get(idType).isExternal())
-				extIDTypes.add(idType);
-		}
-		return extIDTypes;
+	public Set<String> getExternalIdTypes() {
+		return this.extIdTypes;
 	}
 
 	/**

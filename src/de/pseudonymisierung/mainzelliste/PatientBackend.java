@@ -235,7 +235,7 @@ public enum PatientBackend {
 				Set<ID> newIds = IDGeneratorFactory.instance.generateIds();
 
 				// Import external IDs
-				for (String extIDType : IDGeneratorFactory.instance.getExternalIDTypes()) {
+				for (String extIDType : IDGeneratorFactory.instance.getExternalIdTypes()) {
 					String extIDString = form.getFirst(extIDType);
 					if (extIDString != null) {
 						ID extId = IDGeneratorFactory.instance.buildId(extIDType, extIDString);
@@ -397,7 +397,7 @@ public enum PatientBackend {
 		pToEdit.setFields(pNormalized.getFields());
 		pToEdit.setInputFields(pNormalized.getInputFields());
 
-		for (String idType : IDGeneratorFactory.instance.getExternalIDTypes()) {
+		for (String idType : IDGeneratorFactory.instance.getExternalIdTypes()) {
 			if (newFieldValues.containsKey(idType)) {
 				// check if a patient already has this external ID (not null)
 				ID patientExtId = pToEdit.getId(idType);

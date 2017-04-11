@@ -525,9 +525,15 @@ public class PatientsResource {
 			// Check that the caller is allowed to change the provided fields or ids
 			if(allowedFormFields != null) {
 				for (String fieldName : newFieldValues.keySet()) {
-					if (!allowedFormFields.contains(fieldName))
-						throw new InvalidFieldException("No authorization to edit field " + fieldName +
-								" with this token.");
+					if (!allowedFormFields.contains(fieldName)) {
+                        if (IDGeneratorFactory.instance.getExternalIdTypes().contains(fieldName)) {
+                            throw new UnauthorizedException("No authorization to edit external id " + fieldName +
+                                    " with this token.");
+                        } else {
+                            throw new UnauthorizedException("No authorization to edit field " + fieldName +
+                                    " with this token.");
+                        }
+                    }
 				}
 			}
 			

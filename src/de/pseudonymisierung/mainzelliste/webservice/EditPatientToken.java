@@ -37,7 +37,6 @@ import de.pseudonymisierung.mainzelliste.ID;
 import de.pseudonymisierung.mainzelliste.IDGeneratorFactory;
 import de.pseudonymisierung.mainzelliste.dto.Persistor;
 import de.pseudonymisierung.mainzelliste.exceptions.InvalidFieldException;
-import de.pseudonymisierung.mainzelliste.exceptions.InvalidExternalIDException;
 import de.pseudonymisierung.mainzelliste.exceptions.InvalidIDException;
 import de.pseudonymisierung.mainzelliste.exceptions.InvalidTokenException;
 
@@ -149,11 +148,11 @@ public class EditPatientToken extends Token {
         List<?> idsJSON = this.getDataItemList("ids");
         if (idsJSON != null) {
             this.ids = new HashSet<String>();
-            Set<String> validExternalIds = IDGeneratorFactory.instance.getExternalIDTypes();
+            Set<String> validExternalIds = IDGeneratorFactory.instance.getExternalIdTypes();
             for (Object thisId : idsJSON) {
                 String idString = thisId.toString();
                 if (!validExternalIds.contains(idString))
-                    throw new InvalidExternalIDException("Not valid external Id in token '" + idString + "'");
+                    throw new InvalidIDException("Not valid external Id in token '" + idString + "'");
                 this.ids.add(idString);
             }
         }
