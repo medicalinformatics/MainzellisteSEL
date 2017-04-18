@@ -30,7 +30,7 @@ import org.apache.commons.lang.NotImplementedException;
 import java.util.Properties;
 
 /**
- * Pseuodo generator for external patient identifiers.
+ * Pseudo generator for externally generated patient identifiers.
  */
 public class ExternalIDGenerator implements IDGenerator<ExternalID>{
 
