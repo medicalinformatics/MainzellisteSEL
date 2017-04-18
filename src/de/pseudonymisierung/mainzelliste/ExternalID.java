@@ -30,8 +30,8 @@ import de.pseudonymisierung.mainzelliste.exceptions.InvalidIDException;
 import javax.persistence.Entity;
 
 /**
- * An externally generated patient identifier
- * Imported in Mainzelliste from external systems (cannot be internally generated or overwritten)
+ * An externally generated patient identifier.
+ * Imported in Mainzelliste from external systems (cannot be internally generated or overwritten).
  */
 @Entity
 public class ExternalID extends ID {

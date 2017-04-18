@@ -150,10 +150,10 @@ public class EditPatientToken extends Token {
             this.ids = new HashSet<String>();
             Set<String> validExternalIds = IDGeneratorFactory.instance.getExternalIdTypes();
             for (Object thisId : idsJSON) {
-                String idString = thisId.toString();
-                if (!validExternalIds.contains(idString))
-                    throw new InvalidIDException("Not valid external Id in token '" + idString + "'");
-                this.ids.add(idString);
+                String idType = thisId.toString();
+                if (!validExternalIds.contains(idType))
+                    throw new InvalidIDException("Invalid external Id type '" + idType + "' in token.");
+                this.ids.add(idType);
             }
         }
 	}
