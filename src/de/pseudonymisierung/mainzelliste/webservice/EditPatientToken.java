@@ -56,7 +56,13 @@ public class EditPatientToken extends Token {
 	 */
 	private Set<String> fields;
 
-	/**
+    /**
+     * External IDs that can be changed with this token. If null,
+     * all external IDs can be changed.
+     */
+    private Set<String> ids;
+
+    /**
 	 * URL to redirect to after using the token.
 	 */
 	private URL redirect = null;
@@ -80,6 +86,16 @@ public class EditPatientToken extends Token {
 	public Set<String> getFields() {
 		return fields;
 	}
+
+    /**
+     * Get the external IDs that can be changed with this token. If null, all external IDs
+     * can be changed.
+     *
+     * @return Set of id names.
+     */
+    public Set<String> getIds() {
+        return ids;
+    }
 
 	/**
 	 * Return the URL to which the user should be redirected after the token has
@@ -118,16 +134,28 @@ public class EditPatientToken extends Token {
 
 		// Read field list (if present) from data and check if valid
 		List<?> fieldsJSON = this.getDataItemList("fields");
-		if (fieldsJSON == null)
-			return;
-
-		this.fields = new HashSet<String>();
-		for (Object thisField : fieldsJSON) {
-			String fieldName = thisField.toString();
-			if (!Config.instance.fieldExists(fieldName))
-				throw new InvalidFieldException("No field '" + fieldName + "' defined!");
-			this.fields.add(fieldName);
+		if (fieldsJSON != null) {
+			this.fields = new HashSet<String>();
+			for (Object thisField : fieldsJSON) {
+				String fieldName = thisField.toString();
+				if (!Config.instance.fieldExists(fieldName))
+					throw new InvalidFieldException("No field '" + fieldName + "' defined!");
+				this.fields.add(fieldName);
+			}
 		}
+
+		// Read ID list (external IDs), if present, and check if valid
+        List<?> idsJSON = this.getDataItemList("ids");
+        if (idsJSON != null) {
+            this.ids = new HashSet<String>();
+            Set<String> validExternalIds = IDGeneratorFactory.instance.getExternalIdTypes();
+            for (Object thisId : idsJSON) {
+                String idType = thisId.toString();
+                if (!validExternalIds.contains(idType))
+                    throw new InvalidIDException("Invalid external Id type '" + idType + "' in token.");
+                this.ids.add(idType);
+            }
+        }
 	}
 
 }
