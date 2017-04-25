@@ -107,7 +107,7 @@ public class Token {
 		else if (this.type.equals("readPatients"))
 			this.checkReadPatients();
 		else if (this.type.equals("editPatient"))
-			this.checkEditPatient();
+			this.checkEditPatient(apiVersion);
 		else
 			throw new InvalidTokenException("Token type " + this.type
 					+ " unknown!");
@@ -427,9 +427,14 @@ public class Token {
 
 	/**
 	 * Check whether this is a valid editPatient token.
+	 * Incompatible change in version 3:
+	 * It is not possible anymore to use the token without fields in order to edit all fields
 	 */
-	private void checkEditPatient() {
-		// All checks for editPatient are made on creation
+	private void checkEditPatient(ApiVersion apiVersion) {
+		if (apiVersion.majorVersion >= 3)
+		if (!this.getData().containsKey("ids") && !this.getData().containsKey("fields")) {
+			throw new InvalidTokenException("Token should contain at least one field or id to edit");
+		}
 		return;
 	}
 
