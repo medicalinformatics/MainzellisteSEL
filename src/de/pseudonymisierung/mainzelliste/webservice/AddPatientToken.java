@@ -14,7 +14,7 @@ public class AddPatientToken extends Token {
 
 	/** Fields transmitted on token creation. */
 	private Map<String, String> fields = new HashMap<String, String>();
-	/** Fields transmitted on token creation (externally generated ids) */
+	/** Ids transmitted on token creation (externally generated ids) */
 	private Map<String, String> ids = new HashMap<String, String>();
 	/** The ID types that should be returned when making the ID request. */
 	private Set<String> requestedIdTypes = new HashSet<String>();
