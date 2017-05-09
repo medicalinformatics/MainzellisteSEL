@@ -32,7 +32,6 @@ import java.util.regex.Pattern;
 
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jettison.json.JSONObject;
-import org.codehaus.jettison.json.JSONArray;
 
 import com.sun.jersey.api.uri.UriTemplate;
 
