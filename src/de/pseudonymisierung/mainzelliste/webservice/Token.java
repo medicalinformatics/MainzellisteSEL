@@ -27,16 +27,12 @@ package de.pseudonymisierung.mainzelliste.webservice;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Pattern;
 
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jettison.json.JSONObject;
+import org.codehaus.jettison.json.JSONArray;
 
 import com.sun.jersey.api.uri.UriTemplate;
 
@@ -429,11 +425,26 @@ public class Token {
 	 * Check whether this is a valid editPatient token.
 	 * Incompatible change in version 3:
 	 * It is not possible anymore to use the token without fields in order to edit all fields
+	 * Edit token without ids and fields throws an exception
 	 */
 	private void checkEditPatient(ApiVersion apiVersion) {
-		if (apiVersion.majorVersion >= 3)
+        // if API version < 3 and there are no fields in token, all fields can be edited
+        // in this case all fields from configuration are added to token
+        if (!this.getData().containsKey("fields") && apiVersion.majorVersion < 3) {
+            Map<String, Object> dataWithAllFields = (Map<String, Object>)this.getData();
+
+			ArrayList<String> fieldKeys = new ArrayList<String>();
+            for (String fieldKey : Config.instance.getFieldKeys()) {
+                fieldKeys.add(fieldKey);
+            }
+
+            dataWithAllFields.put("fields", fieldKeys);
+            this.setData(dataWithAllFields);
+        }
+
+        // if there are no fields and ids in token, throw an exception
 		if (!this.getData().containsKey("ids") && !this.getData().containsKey("fields")) {
-			throw new InvalidTokenException("Token should contain at least one field or id to edit");
+			throw new InvalidTokenException("Token must contain at least one field or id to edit");
 		}
 		return;
 	}
