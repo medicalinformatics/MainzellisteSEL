@@ -519,7 +519,11 @@ public class PatientsResource {
 			// Form fields (union of fields and ids)
 			Set<String> allowedFormFields = tt.getFields();
 			if(tt.getIds() != null) {
-				allowedFormFields.addAll(tt.getIds());
+				if (allowedFormFields != null) {
+					allowedFormFields.addAll(tt.getIds());
+				} else {
+					allowedFormFields = tt.getIds();
+				}
 			}
 
 			// Check that the caller is allowed to change the provided fields or ids
