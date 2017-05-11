@@ -184,6 +184,12 @@ public enum PatientBackend {
 				form.add(key, t.getFields().get(key));
 			}
 
+			// get externally generated ids transmitted from MDAT server
+			for (String key : t.getIds().keySet())
+			{
+				form.add(key, t.getIds().get(key));
+			}
+
 			Validator.instance.validateForm(form, true);
 
 			for(String s: Config.instance.getFieldKeys()){
