@@ -247,10 +247,12 @@ public class TestUtilities {
 	 * @param fields
 	 *            Field's which will be editable. If Null given all will be
 	 *            editable.
-	 * @return TokenId
+     * @param ids
+     *            Id's (extern generated ids) which will be editable.
+     * @return TokenId
 	 */
-	public static String createTokenIdEditPatient (WebResource resource, String sessionId, JSONObject patientId, JSONArray fields, JSONArray extIDs) {
-		JSONObject tokenData = createTokenDataEditPatient(patientId, fields, extIDs);
+	public static String createTokenIdEditPatient (WebResource resource, String sessionId, JSONObject patientId, JSONArray fields, JSONArray ids) {
+		JSONObject tokenData = createTokenDataEditPatient(patientId, fields, ids);
 		return createTokenId(resource, sessionId, tokenData);
 	}
 
