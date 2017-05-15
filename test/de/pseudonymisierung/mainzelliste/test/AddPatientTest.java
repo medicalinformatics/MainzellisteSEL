@@ -115,6 +115,7 @@ public class AddPatientTest extends JerseyTest {
 		// Generate tokenData
 		JSONObject resultFields = TestUtilities.buildJSONObject("vorname", "Max", "nachname", "Muster", "geburtstag", "27", "geburtsmonat", "05", "geburtsjahr", "1996");
 		JSONArray idTypes = TestUtilities.buildJSONArray("psn");
+		JSONArray allFields = TestUtilities.buildJSONArray("vorname", "nachname", "geburtsname", "geburtstag", "geburtsmonat", "geburtsjahr", "plz", "ort");
 		JSONObject tokenData = TestUtilities.createTokenDataAddPatient(idTypes, resultFields, null, null);
 		
 		// Add Dummy Patient for Testing
@@ -152,7 +153,7 @@ public class AddPatientTest extends JerseyTest {
 		assertEquals("Add Patient with non-existing token did not return 401 status. Message from server: " + response.getEntity(String.class), 401, response.getStatus());
 
 		// Call with editToken not addToken
-		tokenId = TestUtilities.createTokenIdEditPatient(resource, sessionId, TestUtilities.buildJSONObject("idType", "psn", "idString", "1"), null);
+		tokenId = TestUtilities.createTokenIdEditPatient(resource, sessionId, TestUtilities.buildJSONObject("idType", "psn", "idString", "1"), allFields, null);
 		response = TestUtilities.getBuilderPatient(resource, tokenId, null)
 				.post(ClientResponse.class, formData);
 		assertEquals("Add Patient with wrong token did not return 401 status. Message from server: " + response.getEntity(String.class), 401, response.getStatus());

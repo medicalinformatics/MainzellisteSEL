@@ -36,7 +36,7 @@ public class TestUtilities {
 	private static final String[] patientKeys = { "vorname", "nachname", "geburtsname", "geburtstag", "geburtsmonat", "geburtsjahr", "ort", "plz"};
 
 	// --- Invisible outside ---
-	private static final String apiVersion = "2.0";
+	private static final String apiVersion = "3.0";
 	private static final JSONArray resultIds = buildJSONArray("psn");
 	private static final String tokenPath = "sessions/%s/tokens";
 	private static final String patientsPath = "patients/";
@@ -249,8 +249,8 @@ public class TestUtilities {
 	 *            editable.
 	 * @return TokenId
 	 */
-	public static String createTokenIdEditPatient (WebResource resource, String sessionId, JSONObject patientId, JSONArray fields) {
-		JSONObject tokenData = createTokenDataEditPatient(patientId, fields);
+	public static String createTokenIdEditPatient (WebResource resource, String sessionId, JSONObject patientId, JSONArray fields, JSONArray extIDs) {
+		JSONObject tokenData = createTokenDataEditPatient(patientId, fields, extIDs);
 		return createTokenId(resource, sessionId, tokenData);
 	}
 
@@ -375,11 +375,12 @@ public class TestUtilities {
 	 * @param patientId
 	 *            Id of patient which wanted to be edited
 	 * @param fields
-	 *            Field's which will be editable. If Null given all will be
-	 *            editable.
+	 *            Field's which will be editable.
+	 * @param ids
+	 *            Id's (extern generated ids) which will be editable.
 	 * @return TokenData which is needed to edit a patient
 	 */
-	public static JSONObject createTokenDataEditPatient (JSONObject patientId, JSONArray fields) {
+	public static JSONObject createTokenDataEditPatient (JSONObject patientId, JSONArray fields, JSONArray ids) {
 		JSONObject tokenData = new JSONObject();
 
 		try {
@@ -395,6 +396,10 @@ public class TestUtilities {
 			if (fields != null) {
 				data.put("fields", fields);
 			}
+
+			if (ids != null) {
+                data.put("ids", ids);
+            }
 
 			tokenData.put("data", data);
 
@@ -645,7 +650,7 @@ public class TestUtilities {
 	 * @return the status code of the request
 	 */
 	public static int deletePatient (WebResource resource, JSONObject patientId) {
-		String tokenId = createTokenIdEditPatient(resource, createSession(resource), patientId, null);
+		String tokenId = createTokenIdEditPatient(resource, createSession(resource), patientId, buildJSONArray("vorname","nachnahme"), null);
 
 		ClientResponse response = TestUtilities.getBuilderPatientEdit(resource, tokenId, TestUtilities.getApikey()).put(Builder.class).delete(ClientResponse.class);
 

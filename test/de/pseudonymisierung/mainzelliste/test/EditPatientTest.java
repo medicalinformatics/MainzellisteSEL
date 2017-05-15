@@ -31,9 +31,12 @@ public class EditPatientTest extends JerseyTest {
 	public void testEditPatientToken() {
 		String sessionId = TestUtilities.createSession(resource);
 
+        JSONArray allFields = TestUtilities.buildJSONArray("vorname", "nachname", "geburtsname", "geburtstag", "geburtsmonat", "geburtsjahr", "plz", "ort");
+        JSONArray extIDs = TestUtilities.buildJSONArray("extid");
+
 		// Generate tokenData
 		JSONObject patientId = TestUtilities.buildJSONObject("idType", "psn", "idString", "1");
-		JSONObject tokenData = TestUtilities.createTokenDataEditPatient(patientId, null);
+		JSONObject tokenData = TestUtilities.createTokenDataEditPatient(patientId, allFields, null);
 
 		// TODO: Anlegen mit falscher IP-Adresse → Erwarte 401 Unauthorized
 
@@ -53,25 +56,43 @@ public class EditPatientTest extends JerseyTest {
 		assertEquals("Creating token with non existing session did not return 404 status.", 404, response.getStatus());
 		
 		// Create Token with not existing id/pseudonym
-		tokenData = TestUtilities.createTokenDataEditPatient(TestUtilities.buildJSONObject("idType", "psn", "idString", "-1"), null);
+		tokenData = TestUtilities.createTokenDataEditPatient(TestUtilities.buildJSONObject("idType", "psn", "idString", "-1"), allFields, null);
 		response = TestUtilities.getBuilderCreateToken(resource, sessionId, TestUtilities.getApikey())
 				.post(ClientResponse.class, tokenData);
 		assertEquals("Creating token with unknown id/pseudonym not return 400 status.", 400, response.getStatus());
 
-		// Create Token for editPatient
-		tokenData = TestUtilities.createTokenDataEditPatient(patientId, null);
+		// Create Token for editPatient (only fields)
+		tokenData = TestUtilities.createTokenDataEditPatient(patientId, allFields, null);
 		response = TestUtilities.getBuilderCreateToken(resource, sessionId, TestUtilities.getApikey())
 				.post(ClientResponse.class, tokenData);
 		JSONObject jsonObject = response.getEntity(JSONObject.class);
-		assertEquals("Creating token not return 201 status.", 201, response.getStatus());
+		assertEquals("Creating token did not return 201 status.", 201, response.getStatus());
 
-		// Create Token for editPatient with extid
-		tokenData = TestUtilities.createTokenDataEditPatient(TestUtilities.buildJSONObject("idType", "extid", "idString", "1234"), null);
+        // Create Token for editPatient (only ids)
+        tokenData = TestUtilities.createTokenDataEditPatient(patientId, null, extIDs);
+        response = TestUtilities.getBuilderCreateToken(resource, sessionId, TestUtilities.getApikey())
+                .post(ClientResponse.class, tokenData);
+        assertEquals("Creating token did not return 201 status.", 201, response.getStatus());
+
+        // Create Token for editPatient (with fields and ids)
+        tokenData = TestUtilities.createTokenDataEditPatient(patientId, allFields, extIDs);
+        response = TestUtilities.getBuilderCreateToken(resource, sessionId, TestUtilities.getApikey())
+                .post(ClientResponse.class, tokenData);
+        assertEquals("Creating token did not return 201 status.", 201, response.getStatus());
+
+        // Create Token for editPatient without fields and ids
+        tokenData = TestUtilities.createTokenDataEditPatient(patientId, null, null);
+        response = TestUtilities.getBuilderCreateToken(resource, sessionId, TestUtilities.getApikey())
+                .post(ClientResponse.class, tokenData);
+        assertEquals("Creating token without fields/ids did not return 400 status.", 400, response.getStatus());
+
+        // Create Token for editPatient with extid
+		tokenData = TestUtilities.createTokenDataEditPatient(TestUtilities.buildJSONObject("idType", "extid", "idString", "1234"), allFields, null);
 		response = TestUtilities.getBuilderCreateToken(resource, sessionId, TestUtilities.getApikey())
 				.post(ClientResponse.class, tokenData);
-		assertEquals("Creating token with extid not return 201 status.", 201, response.getStatus());
+		assertEquals("Creating token with extid did not return 201 status.", 201, response.getStatus());
 
-		// Extract tokenId
+        // Extract tokenId
 		String tokenId = TestUtilities.getTokenIdOfJSON(jsonObject);
 		
 		// Get Request to prove the tokenId for availability
@@ -106,8 +127,11 @@ public class EditPatientTest extends JerseyTest {
 		
 		// Generate Formula Data
 		JSONObject formData = TestUtilities.createJSONForm("Peter", "Baier", "Hans", "01", "01", "2000", "Mainz", "55120");
-		
-		// Call without token
+
+        JSONArray allFields = TestUtilities.buildJSONArray("vorname", "nachname", "geburtsname", "geburtstag", "geburtsmonat", "geburtsjahr", "plz", "ort");
+        JSONArray extIDs = TestUtilities.buildJSONArray("extid");
+
+        // Call without token
 		response = TestUtilities.getBuilderPatientEdit(resource, null, null)
 				.put(ClientResponse.class, formData);
 		assertEquals("Edit patient without token did not return 405 status. Message from server: " + response, 405, response.getStatus());
@@ -124,17 +148,17 @@ public class EditPatientTest extends JerseyTest {
 		assertEquals("Edit patient with wrong token did not return 401 status. Message from server: " + response, 401, response.getStatus());
 
 		// Edit patients fields without permission in given token
-		tokenId = TestUtilities.createTokenIdEditPatient(resource, sessionId, patientId, TestUtilities.buildJSONArray("vorname", "nachname"));
+		tokenId = TestUtilities.createTokenIdEditPatient(resource, sessionId, patientId, TestUtilities.buildJSONArray("vorname", "nachname"), null);
 		response = TestUtilities.getBuilderPatientEdit(resource, tokenId, TestUtilities.getApikey())
 				.put(ClientResponse.class, formData);
 		assertEquals("Edit patient fields which are not given in the token did not return 401. Message from server: " + response.getEntity(String.class), 401, response.getStatus());
 		editPatient = TestUtilities.readPatient(resource, patientId);
 		for (int i = 0; i < patientKeys.length; i++) {
-			assertNotEquals("Edit patient '" + patientKeys[i] + "' not expectet.", formData.get(patientKeys[i]), TestUtilities.getStringOfJSON(editPatient, patientKeys[i]));
+			assertNotEquals("Edit patient '" + patientKeys[i] + "' not expected.", formData.get(patientKeys[i]), TestUtilities.getStringOfJSON(editPatient, patientKeys[i]));
 		}
 		
-		tokenId = TestUtilities.createTokenIdEditPatient(resource, sessionId, patientId, null);
-		
+		tokenId = TestUtilities.createTokenIdEditPatient(resource, sessionId, patientId, allFields, null);
+
 		// Edit Patient without a required field with a loop one by one
 		for (int i = 0; i < 5; i++) {
 			String[] valueArray = {"Peter", "Bauer", "01", "01", "2000"};
@@ -164,7 +188,7 @@ public class EditPatientTest extends JerseyTest {
 		// Edit 'vorname'
 		formData = new JSONObject();
 		formData.put(patientKeys[0], patientValues[0]);
-		tokenId = TestUtilities.createTokenIdEditPatient(resource, sessionId, patientId, null);
+		tokenId = TestUtilities.createTokenIdEditPatient(resource, sessionId, patientId, allFields, null);
 		response = TestUtilities.getBuilderPatientEdit(resource, tokenId, TestUtilities.getApikey())
 				.put(ClientResponse.class, formData);
 		assertEquals("Edit Patient did not return 204 status. Message from server: " + response, 204, response.getStatus());
@@ -174,7 +198,7 @@ public class EditPatientTest extends JerseyTest {
 		// Edit 'nachname'
 		formData = new JSONObject();
 		formData.put(patientKeys[1], patientValues[1]);
-		tokenId = TestUtilities.createTokenIdEditPatient(resource, sessionId, patientId, null);
+		tokenId = TestUtilities.createTokenIdEditPatient(resource, sessionId, patientId, allFields, null);
 		response = TestUtilities.getBuilderPatientEdit(resource, tokenId, TestUtilities.getApikey())
 				.put(ClientResponse.class, formData);
 		assertEquals("Edit Patient did not return 204 status. Message from server: " + response, 204, response.getStatus());
@@ -184,7 +208,7 @@ public class EditPatientTest extends JerseyTest {
 		// Edit 'geburtsname'
 		formData = new JSONObject();
 		formData.put(patientKeys[2], patientValues[2]);
-		tokenId = TestUtilities.createTokenIdEditPatient(resource, sessionId, patientId, null);
+		tokenId = TestUtilities.createTokenIdEditPatient(resource, sessionId, patientId, allFields, null);
 		response = TestUtilities.getBuilderPatientEdit(resource, tokenId, TestUtilities.getApikey())
 				.put(ClientResponse.class, formData);
 		assertEquals("Edit Patient did not return 204 status. Message from server: " + response, 204, response.getStatus());
@@ -194,7 +218,7 @@ public class EditPatientTest extends JerseyTest {
 		// Edit 'geburtstag'
 		formData = new JSONObject();
 		formData.put(patientKeys[3], patientValues[3]);
-		tokenId = TestUtilities.createTokenIdEditPatient(resource, sessionId, patientId, null);
+		tokenId = TestUtilities.createTokenIdEditPatient(resource, sessionId, patientId, allFields, null);
 		response = TestUtilities.getBuilderPatientEdit(resource, tokenId, TestUtilities.getApikey())
 				.put(ClientResponse.class, formData);
 		assertEquals("Edit 'geburtstag' without 'geburtsmonat' or 'geburtsjahr' did not return 400 status. Message from server: " + response.getEntity(String.class), 400, response.getStatus());
@@ -204,7 +228,7 @@ public class EditPatientTest extends JerseyTest {
 		formData.put(patientKeys[3], patientValues[3]);
 		formData.put(patientKeys[4], patientValues[4]);
 		formData.put(patientKeys[5], patientValues[5]);
-		tokenId = TestUtilities.createTokenIdEditPatient(resource, sessionId, patientId, null);
+		tokenId = TestUtilities.createTokenIdEditPatient(resource, sessionId, patientId, allFields, null);
 		response = TestUtilities.getBuilderPatientEdit(resource, tokenId, TestUtilities.getApikey())
 				.put(ClientResponse.class, formData);
 		assertEquals("Edit Patient did not return 204 status. Message from server: " + response, 204, response.getStatus());
@@ -215,7 +239,7 @@ public class EditPatientTest extends JerseyTest {
 		
 		// Edit 'ort'
 		formData.put(patientKeys[6], patientValues[6]);
-		tokenId = TestUtilities.createTokenIdEditPatient(resource, sessionId, patientId, null);
+		tokenId = TestUtilities.createTokenIdEditPatient(resource, sessionId, patientId, allFields, null);
 		response = TestUtilities.getBuilderPatientEdit(resource, tokenId, TestUtilities.getApikey())
 				.put(ClientResponse.class, formData);
 		assertEquals("Edit Patient did not return 204 status. Message from server: " + response, 204, response.getStatus());
@@ -224,23 +248,36 @@ public class EditPatientTest extends JerseyTest {
 		
 		// Edit 'plz'
 		formData.put(patientKeys[7], patientValues[7]);
-		tokenId = TestUtilities.createTokenIdEditPatient(resource, sessionId, patientId, null);
+		tokenId = TestUtilities.createTokenIdEditPatient(resource, sessionId, patientId, allFields, null);
 		response = TestUtilities.getBuilderPatientEdit(resource, tokenId, TestUtilities.getApikey())
 				.put(ClientResponse.class, formData);
 		assertEquals("Edit Patient not return 204 status. Message from server: " + response, 204, response.getStatus());
 		editPatient = TestUtilities.readPatient(resource, patientId);
 		assertEquals("Edited Patient field '" + patientKeys[7] + "' is not as edited.", patientValues[7], TestUtilities.getStringOfJSON(editPatient, patientKeys[7]));
 
+        // Edit 'plz' (missing fields in token)
+        tokenId = TestUtilities.createTokenIdEditPatient(resource, sessionId, patientId, null, extIDs);
+        response = TestUtilities.getBuilderPatientEdit(resource, tokenId, TestUtilities.getApikey())
+                .put(ClientResponse.class, formData);
+        assertEquals("Edit Patient not return 401 status. Message from server: " + response, 401, response.getStatus());
+
+        // Edit 'extid' (missing ids in token)
+        formData.put("extid", "1235");
+        tokenId = TestUtilities.createTokenIdEditPatient(resource, sessionId, patientId, allFields, null);
+        response = TestUtilities.getBuilderPatientEdit(resource, tokenId, TestUtilities.getApikey())
+                .put(ClientResponse.class, formData);
+        assertEquals("Edit Patient not return 401 status. Message from server: " + response, 401, response.getStatus());
+
         // Edit 'extid'
         formData.put("extid", "1235");
-        tokenId = TestUtilities.createTokenIdEditPatient(resource, sessionId, patientId, null);
+        tokenId = TestUtilities.createTokenIdEditPatient(resource, sessionId, patientId, allFields, extIDs);
         response = TestUtilities.getBuilderPatientEdit(resource, tokenId, TestUtilities.getApikey())
                 .put(ClientResponse.class, formData);
         assertEquals("Edit Patient not return 204 status. Message from server: " + response, 204, response.getStatus());
 
 		// Edit 'extid' (extid for this patient isn't empty)
 		formData.put("extid", "1357");
-		tokenId = TestUtilities.createTokenIdEditPatient(resource, sessionId, patientId, null);
+		tokenId = TestUtilities.createTokenIdEditPatient(resource, sessionId, patientId, allFields, extIDs);
 		response = TestUtilities.getBuilderPatientEdit(resource, tokenId, TestUtilities.getApikey())
 				.put(ClientResponse.class, formData);
 		assertEquals("Edit Patient not return 409 status. Message from server: " + response, 409, response.getStatus());
@@ -261,6 +298,8 @@ public class EditPatientTest extends JerseyTest {
         String[] valueArray = { "EditPatientVorname", "EditPatientNachname", "Wolfgang", "11", "11", "1977", "Wiesbaden",
                 "65197" };
 
+        JSONArray allFields = TestUtilities.buildJSONArray("vorname", "nachname", "geburtsname", "geburtstag", "geburtsmonat", "geburtsjahr", "plz", "ort");
+
         // Add Dummy Patient for Testing
         JSONObject dummyPatientId = TestUtilities.addPatient(resource, valueArray[0], valueArray[1], valueArray[2],
                 valueArray[3], valueArray[4], valueArray[5], valueArray[6], valueArray[7]);
@@ -269,7 +308,7 @@ public class EditPatientTest extends JerseyTest {
         String keyToSetToNull = keyArray[6];
         JSONObject formData = new JSONObject();
         formData.put(keyToSetToNull, JSONObject.NULL);
-        String tokenId = TestUtilities.createTokenIdEditPatient(resource, sessionId, dummyPatientId, null);
+        String tokenId = TestUtilities.createTokenIdEditPatient(resource, sessionId, dummyPatientId, allFields, null);
         response = TestUtilities.getBuilderPatientEdit(resource, tokenId, TestUtilities.getApikey())
                 .put(ClientResponse.class, formData);
 
