@@ -428,7 +428,7 @@ public enum PatientBackend {
 									.build());
 
 				}
-				pToEdit.setId(extId);
+				pToEdit.addId(extId);
 			}
 		}
 
