@@ -203,7 +203,7 @@ public class TestUtilities {
 	 * @param sessionId
 	 *            Id of a valid session
 	 * @param idTypes
-	 *            Pseudonym types, which should be created and returned
+	 *            Pseudonym types that should be created and returned
 	 * @return TokenId
 	 */
 	public static String createTokenIdAddPatient (WebResource resource, String sessionId, String... idTypes) {
@@ -220,9 +220,9 @@ public class TestUtilities {
 	 * @param sessionId
 	 *            Id of a valid session
 	 * @param resultFields
-	 *            Fields which will be shown
+	 *            Fields that will be shown
 	 * @param resultIds
-	 *            Id's which will be shown
+	 *            Id's that will be shown
 	 * @param searchIds
 	 *            Id's to search for. The key is the id type and the value is
 	 *            the id.
@@ -245,10 +245,10 @@ public class TestUtilities {
 	 *            Id to search for. The key is the id name and the value is the
 	 *            id.
 	 * @param fields
-	 *            Field's which will be editable. If Null given all will be
+	 *            Fields that will be editable. If Null given all will be
 	 *            editable.
      * @param ids
-     *            Id's (extern generated ids) which will be editable.
+     *            Id's (extern generated ids) that will be editable.
      * @return TokenId
 	 */
 	public static String createTokenIdEditPatient (WebResource resource, String sessionId, JSONObject patientId, JSONArray fields, JSONArray ids) {
@@ -265,7 +265,7 @@ public class TestUtilities {
 	 * @param sessionId
 	 *            Id of a valid session
 	 * @param tokenData
-	 *            Whole information which is needed to create a token id.
+	 *            Whole information that is needed to create a token id.
 	 * @return TokenId
 	 */
 	public static String createTokenId (WebResource resource, String sessionId, JSONObject tokenData) {
@@ -284,16 +284,16 @@ public class TestUtilities {
 	 * Create a json object with data
 	 * 
 	 * @param idtypes
-	 *            Id types which should be created.
+	 *            Id types that should be created.
 	 * @param fields
 	 *            will be pre-filled.
 	 * @param callback
-	 *            Url which will be called after a successful insertion of the
+	 *            Url that will be called after a successful insertion of the
 	 *            patient and before transmission the answer of the request
 	 * @param redirect
-	 *            Url which will be refer to after a successful insertion of the
+	 *            Url that will be refer to after a successful insertion of the
 	 *            patient
-	 * @return TokenData which is needed to create a patient
+	 * @return TokenData that is needed to create a patient
 	 */
 	public static JSONObject createTokenDataAddPatient (JSONArray idtypes, JSONObject fields, String callback, String redirect) {
 		JSONObject tokenData = new JSONObject();
@@ -333,13 +333,13 @@ public class TestUtilities {
 	 * Create a json object with data to view a patient
 	 * 
 	 * @param resultFields
-	 *            Fields which will be shown
+	 *            Fields that will be shown
 	 * @param resultIds
-	 *            Id's which will be shown
+	 *            Id's that will be shown
 	 * @param searchIds
 	 *            Id's to search for. The key is the id type and the value is
 	 *            the id.
-	 * @return TokenData which is needed to view a patient
+	 * @return TokenData that is needed to view a patient
 	 */
 	public static JSONObject createTokenDataReadPatient (JSONArray resultFields, JSONArray resultIds, JSONObject... searchIds) {
 		JSONObject tokenData = new JSONObject();
@@ -375,12 +375,12 @@ public class TestUtilities {
 	 * Create a json object with data to edit a patient
 	 * 
 	 * @param patientId
-	 *            Id of patient which wanted to be edited
+	 *            Id of patient that wanted to be edited
 	 * @param fields
-	 *            Field's which will be editable.
+	 *            Fields that will be editable.
 	 * @param ids
-	 *            Id's (extern generated ids) which will be editable.
-	 * @return TokenData which is needed to edit a patient
+	 *            Id's (extern generated ids) that will be editable.
+	 * @return TokenData that is needed to edit a patient
 	 */
 	public static JSONObject createTokenDataEditPatient (JSONObject patientId, JSONArray fields, JSONArray ids) {
 		JSONObject tokenData = new JSONObject();
