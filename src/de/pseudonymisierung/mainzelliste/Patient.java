@@ -248,13 +248,13 @@ public class Patient {
 	}
 
 	/**
-	 * Set ID if this ID type is not already in ids
+	 * Add ID if this ID type is not already in ids.
 	 *
 	 * @param ID
-	 *            The ID to be set
-	 * @return true if the id was set successfully, otherwise false (if ID of this type already exist)
+	 *            The ID to add.
+	 * @return true if the id was added successfully, otherwise false (if ID of this type already exists).
 	 */
-	public boolean setId(ID id) {
+	public boolean addId(ID id) {
 		for (ID thisId : ids) {
 			if (thisId.getType().equals(id.getType()))
 				return false;
