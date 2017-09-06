@@ -182,6 +182,7 @@
                 <version>2.3</version>
                 <configuration>
                     <warSourceDirectory>${basedir}/WebContent</warSourceDirectory>
+                    <attachClasses>true</attachClasses>
                 </configuration>
             </plugin>
             <plugin>

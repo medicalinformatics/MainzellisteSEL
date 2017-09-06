@@ -40,6 +40,7 @@ The Mainzelliste API has been implemented in the following projects and software
 
 We have compiled this list from the results of public search engines. If you use the Mainzelliste or its API, we would be glad to include your project in this list. Please don't hestitate to [contact us](mailto:info@mainzelliste.de).
 
+<<<<<<< HEAD
 ## Contributing
 
 We would love to include your useful changes to the Mainzelliste code in a future official release. See the related [Wiki page](https://bitbucket.org/medicalinformatics/mainzelliste/wiki/Contributing) for further information on contributing code.
@@ -60,6 +61,10 @@ Bug fixes:
 
 - Trying to edit a field that is not listed as editable in the `editPatient` token lead to HTTP status code 400 (Bad Request) instead of the more suitable 401 (Unauthorized).
 - Edit requests sometimes lead to an error message saying that date fields are missing even when the date was not be edited at all.
+
+### 1.6.2
+
+Adds `<attachClasses>` configuration parameter to Maven WAR Plugin in order to make classes accessible as a library. 
 
 ###1.6.1
 
