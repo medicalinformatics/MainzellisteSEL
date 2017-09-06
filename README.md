@@ -47,6 +47,20 @@ We would love to include your useful changes to the Mainzelliste code in a futur
 
 ## Release notes
 
+###1.7.0
+
+This release introduces support for externally generated IDs. This feature introduces an incompatible API change; therefore the API version is bumped to 3.0. However, old API versions are still supported by means of the `mainzellisteApiVersion` header, i.e. this software release is fully backwards compatible. 
+
+New features:
+
+- Support for externally generated IDs. See [TODO] for further information on how to use this feature.
+- The admin form for editing patient data now shows duplicates and potential duplicates of the patient.
+
+Bug fixes:
+
+- Trying to edit a field that is not listed as editable in the `editPatient` token lead to HTTP status code 400 (Bad Request) instead of the more suitable 401 (Unauthorized).
+- Edit requests sometimes lead to an error message saying that date fields are missing even when the date was not be edited at all.
+
 ###1.6.1
 
 This is a bugfix release for restoring compatibility with Java 7. Version 1.6.0 does not compile with Java versions <8 due to an unimplemented interface method, which has a default implementation in Java 8.
