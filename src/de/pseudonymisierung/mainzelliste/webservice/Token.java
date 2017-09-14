@@ -30,6 +30,8 @@ import java.net.URISyntaxException;
 import java.util.*;
 import java.util.regex.Pattern;
 
+import javax.ws.rs.core.Response.Status;
+
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jettison.json.JSONObject;
 
@@ -119,7 +121,7 @@ public class Token {
 	public void checkTokenType(String expected) {
 		if (expected == null || !expected.equals(this.getType()))
 			throw new InvalidTokenException("Invalid token type: Expected: "
-					+ expected + ", actual: " + this.getType());
+					+ expected + ", actual: " + this.getType(), Status.UNAUTHORIZED);
 	}
 
 	/**
@@ -402,21 +404,45 @@ public class Token {
 		}
 
 		// Check fields
-		if (this.getData().containsKey("resultFields")) {
+		checkResultFields();
+		checkResultIds();
+	}
 
-			try {
-				List<?> fields = this.getDataItemList("resultFields");
-				for (Object thisField : fields) {
-					if (!Config.instance.getFieldKeys().contains(
-							thisField.toString()))
-						throw new InvalidTokenException("Field '" + thisField
-								+ "' provided in field list is unknown!");
-				}
-			} catch (ClassCastException e) {
-				throw new InvalidTokenException(
-						"Illegal format for data item 'fields'! "
-								+ "Please provide a list of field names.");
+	/**
+	 *	Check if "resultFields" contains only valid field names.
+	 */
+	private void checkResultFields() {
+		Set<String> fieldList = Config.instance.getFieldKeys();
+		try {
+			List<?> fields = this.getDataItemList("resultFields");
+			for (Object thisField : fields) {
+				if (!fieldList.contains(thisField.toString()))
+					throw new InvalidTokenException("Field '" + thisField
+							+ "' provided in field list is unknown!");
 			}
+		} catch (ClassCastException e) {
+			throw new InvalidTokenException(
+					"Illegal format for data item 'resultFields'! "
+							+ "Please provide a list of field names.");
+		}
+	}
+
+	/**
+	 * Check if "resultIds" contains only valid ID types.
+	 */
+	private void checkResultIds() {
+		Set<String> definedIdTypes = new HashSet<String>(Arrays.asList(IDGeneratorFactory.instance.getIDTypes()));
+		try {
+			List<?> resultIdTypes = this.getDataItemList("resultIds");
+			for (Object thisIdType : resultIdTypes) {
+				if (!definedIdTypes.contains(thisIdType.toString()))
+					throw new InvalidTokenException("ID type '" + thisIdType
+							+ "' provided in ID type list is unknown!");
+			}
+		} catch (ClassCastException e) {
+			throw new InvalidTokenException(
+					"Illegal format for data item 'resultIds'! "
+							+ "Please provide a list of ID types.");
 		}
 	}
 
