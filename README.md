@@ -61,6 +61,8 @@ Bug fixes:
 
 - Trying to edit a field that is not listed as editable in the `editPatient` token lead to HTTP status code 400 (Bad Request) instead of the more suitable 401 (Unauthorized).
 - Edit requests sometimes lead to an error message saying that date fields are missing even when the date was not be edited at all.
+- Some API methods returned inappropriate status codes for certain error conditions. 
+- All writing API methods are now synchronized to prevent race conditions.
 
 ### 1.6.2
 
