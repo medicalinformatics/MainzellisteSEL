@@ -54,7 +54,7 @@ This release introduces support for externally generated IDs. This feature intro
 
 New features:
 
-- Support for externally generated IDs. See [TODO] for further information on how to use this feature.
+- Support for externally generated IDs. See the [Wiki page on this topic](https://bitbucket.org/medicalinformatics/mainzelliste/wiki/External-IDs) for further information on how to use this feature.
 - The admin form for editing patient data now shows duplicates and potential duplicates of the patient.
 
 Bug fixes:
