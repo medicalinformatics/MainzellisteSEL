@@ -37,6 +37,7 @@ The Mainzelliste API has been implemented in the following projects and software
 - [Electronic data capture system by Fraunhofer FOKUS](https://cdn3.scrivito.com/fokus/57a537e2ec27cb7b/0a3a0655dcc079f58890e39dbdca4781/E-HEALTH_Standards_PB_03-2015_v03.pdf)
 - [Centraxx](http://www.kairos.de/centraxx/)
 - German National Cohort (uses a subset of the API) ([Data protection concept](http://nationale-kohorte.de/wp-content/uploads/2015/07/Treuhandstellenkonzept.pdf))
+- German Center for Cardiovascular Disease (DZHK) ([Data protection concept](https://dzhk.de/fileadmin/user_upload/Datenschutzkonzept_des_DZHK.pdf))
 
 We have compiled this list from the results of public search engines. If you use the Mainzelliste or its API, we would be glad to include your project in this list. Please don't hestitate to [contact us](mailto:info@mainzelliste.de).
 
