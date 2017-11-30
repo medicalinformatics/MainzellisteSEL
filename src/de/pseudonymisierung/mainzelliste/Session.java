@@ -30,6 +30,7 @@ import java.net.URISyntaxException;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -50,6 +51,8 @@ public class Session extends ConcurrentHashMap<String, String>{
 	private URI uri;
 	/** The set of tokens belonging to this Session. */
 	private Set<Token> tokens = new HashSet<Token>();
+	/** The set of patients belonging to this Session */
+	private HashMap<ID, Patient> patients = new HashMap<ID, Patient>();
 
 	/**
 	 * The time of the last access to this Session. Updateable via
@@ -178,5 +181,45 @@ public class Session extends ConcurrentHashMap<String, String>{
 		synchronized(tokens){
 			tokens.clear();
 		}
+	}
+	
+	/**
+	 * Add a patient to the set of patients related to this session.
+	 * 
+	 * @param p
+	 *            The patient to add.
+	 */
+	public void addPatient(Patient p) {
+		for (ID thisId : p.getIds()) {
+			patients.put(thisId, p);
+		}
+	}
+
+	/**
+	 * Remove a patient from the set of patients related to this session.
+	 * 
+	 * @param p
+	 *            The patient to remove.
+	 */
+	public void deletePatient(Patient p) {
+		for (ID thisId : p.getIds()) {
+			patients.remove(thisId);
+		}
+	}
+
+	/**
+	 * Clear the set of patients related to this session.
+	 */
+	public void deleteAllPatients() {
+		patients.clear();
+	}
+
+	/**
+	 * Get the set of patients related to this session.
+	 * 
+	 * @return The set of patients.
+	 */
+	public Set<Patient> getPatients() {
+		return new HashSet<Patient>(patients.values());
 	}
 }
