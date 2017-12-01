@@ -202,6 +202,8 @@ public class Session extends ConcurrentHashMap<String, String>{
 	 *            The patient to remove.
 	 */
 	public void deletePatient(Patient p) {
+		if (p == null)
+			return;
 		for (ID thisId : p.getIds()) {
 			patients.remove(thisId);
 		}
