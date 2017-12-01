@@ -26,6 +26,7 @@
 package de.pseudonymisierung.mainzelliste.webservice;
 
 import java.net.URI;
+import java.util.HashSet;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
@@ -33,6 +34,7 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -46,11 +48,17 @@ import javax.ws.rs.core.UriBuilder;
 
 import com.sun.jersey.spi.resource.Singleton;
 import org.apache.log4j.Logger;
+import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 
+import de.pseudonymisierung.mainzelliste.ID;
+import de.pseudonymisierung.mainzelliste.IDGeneratorFactory;
+import de.pseudonymisierung.mainzelliste.Patient;
 import de.pseudonymisierung.mainzelliste.Servers;
 import de.pseudonymisierung.mainzelliste.Session;
+import de.pseudonymisierung.mainzelliste.dto.Persistor;
+import de.pseudonymisierung.mainzelliste.exceptions.InvalidIDException;
 
 /**
  * Resource-based access to server-side client sessions. A server-side client
@@ -307,5 +315,157 @@ public class SessionsResource {
 		session.getValue(); // returns 404 if session does not exist
 		Servers.instance.deleteToken(tokenId);
 		return Response.status(Status.NO_CONTENT).build();
+	}
+	
+	/**
+	 * Get the list of patients related to this session. Requires the
+	 * "manageSessionPatients" permission.
+	 * 
+	 * @param req
+	 *            The injected HttpServletRequest
+	 * @param session
+	 *            Id of the session for which to get the list of patients.
+	 * @return On success, an array of patient IDs.
+	 */
+	@Path("/{session}/patients/")
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	public synchronized Response getPatients(@Context HttpServletRequest req,
+			@PathParam("session") SessionIdParam session) {
+		Servers.instance.checkPermission(req, "manageSessionPatients");
+		session.getValue(); // Checks if session is valid
+		String returnIdType = IDGeneratorFactory.instance.getDefaultIDType();
+		JSONArray idsOfPatients = new JSONArray();
+		for (Patient thisPatient : session.getValue().getPatients()) {
+			idsOfPatients.put(thisPatient.getId(returnIdType).toJSON());
+		}
+		return Response.ok(idsOfPatients).build();
+	}
+
+	/**
+	 * Add patients to the list of patients related to this session. Requires
+	 * the "manageSessionPatients" permission.
+	 * 
+	 * @param req
+	 *            The injected HttpServletRequest
+	 * @param session
+	 *            Id of the session for which to add patients.
+	 * @param patientIds
+	 *            An array of patient IDs.
+	 * 
+	 * @return The appropriate HTTP response (204 on success).
+	 */
+	@Path("/{session}/patients/")
+	@POST
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public synchronized Response addPatients(@Context HttpServletRequest req,
+			@PathParam("session") SessionIdParam session, JSONArray patientIds) {
+		Servers.instance.checkPermission(req, "manageSessionPatients");
+		session.getValue(); // Checks if session is valid
+		try {
+			for (int i = 0; i < patientIds.length(); i++) {
+				JSONObject patientId = patientIds.getJSONObject(i);
+				ID thisId = IDGeneratorFactory.instance.idFromJSON(patientId);
+				Patient thisPatient = Persistor.instance.getPatient(thisId);
+				if (thisPatient == null)
+					throw new InvalidIDException("No patient found with ID " + thisId.toString());
+				session.getValue().addPatient(thisPatient);
+			}
+		} catch (JSONException e) {
+			throw new WebApplicationException(e, Response.status(Status.BAD_REQUEST)
+					.entity("Received invalid JSON data: " + e.getMessage()).build());
+		}
+		return Response.noContent().build();
+	}
+
+	/**
+	 * Set the list of patients related to this session. The existing list is
+	 * replaced with the given one. Requires the "manageSessionPatients"
+	 * permission.
+	 * 
+	 * @param req
+	 *            The injected HttpServletRequest
+	 * @param session
+	 *            Id of the session for which to set the list of patients.
+	 * @param patientIds
+	 *            An array of patient IDs.
+	 * 
+	 * @return The appropriate HTTP response (204 on success).
+	 */
+	@Path("/{session}/patients/")
+	@PUT
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public synchronized Response setPatients(@Context HttpServletRequest req,
+			@PathParam("session") SessionIdParam session, JSONArray patientIds) {
+		Servers.instance.checkPermission(req, "manageSessionPatients");
+		session.getValue(); // Checks if session is valid
+		// Collect patients first to make sure they exist in order to only
+		// remove existing patients from the session if no eror occurs.
+		HashSet<Patient> patientsToSet = new HashSet<Patient>();
+		try {
+			for (int i = 0; i < patientIds.length(); i++) {
+				JSONObject patientId = patientIds.getJSONObject(i);
+				ID thisId = IDGeneratorFactory.instance.idFromJSON(patientId);
+				Patient thisPatient = Persistor.instance.getPatient(thisId);
+				if (thisPatient == null)
+					throw new InvalidIDException("No patient found with ID " + thisId.toString());
+				patientsToSet.add(thisPatient);
+			}
+			session.getValue().deleteAllPatients();
+			for (Patient thisPatient : patientsToSet) {
+				session.getValue().addPatient(thisPatient);
+			}
+		} catch (JSONException e) {
+			throw new WebApplicationException(e, Response.status(Status.BAD_REQUEST)
+					.entity("Received invalid JSON data: " + e.getMessage()).build());
+		}
+		return Response.noContent().build();
+	}
+
+	/**
+	 * Clear the list of patients related to this session. Requires the
+	 * "manageSessionPatients" permission.
+	 * 
+	 * @param req
+	 *            The injected HttpServletRequest
+	 * @param session
+	 *            Id of the session for which to clear the list of patients.
+	 * @return The appropriate HTTP response (204 on success).
+	 */
+	@Path("/{session}/patients/")
+	@DELETE
+	public synchronized Response deletePatients(@Context HttpServletRequest req,
+			@PathParam("session") SessionIdParam session) {
+		Servers.instance.checkPermission(req, "manageSessionPatients");
+		session.getValue().deleteAllPatients();
+		return Response.noContent().build();
+	}
+
+	/**
+	 * Remove a patient from the list of patients related to this session.
+	 * Requires the "manageSessionPatients" permission.
+	 * 
+	 * @param req
+	 *            The injected HttpServletRequest
+	 * @param session
+	 *            Id of the session from which to remove the patient.
+	 * @param idType
+	 *            Type of the ID that identifies the patient to remove.
+	 * @param idString
+	 *            Value of the ID that identifies the patient to remove.
+	 * @return The appropriate HTTP response (204 on success).
+	 */
+	@Path("/{session}/patients/{idType}/{idString}")
+	@DELETE
+	public synchronized Response deletePatient(@Context HttpServletRequest req,
+			@PathParam("session") SessionIdParam session, @PathParam("idType") String idType,
+			@PathParam("idString") String idString) {
+		Servers.instance.checkPermission(req, "manageSessionPatients");
+		ID idOfPatient = IDGeneratorFactory.instance.buildId(idType, idString);
+		Patient patientToDelete = Persistor.instance.getPatient(idOfPatient);
+		session.getValue().deletePatient(patientToDelete);
+		return Response.noContent().build();
 	}
 }
