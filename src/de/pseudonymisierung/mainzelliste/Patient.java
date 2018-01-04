@@ -231,7 +231,8 @@ public class Patient {
 	}
 
 	/**
-	 * Get the ID of the specified type from this patient.
+	 * Get the ID of the specified type from this patient. The ID will be 
+	 * generated if it does not exist.
 	 *
 	 * @param type
 	 *            The ID type. See {@link ID} for the general structure of an
@@ -244,7 +245,12 @@ public class Patient {
 			if (thisId.getType().equals(type))
 				return thisId;
 		}
-		return null;
+		// ID of requested type was not found -> generate new ID
+		ID newID = IDGeneratorFactory.instance.getFactory(type).getNext();
+		this.addId(newID);
+		return newID;
+		// Optional falls lazy generation nicht aktiv:
+		// return null;
 	}
 
 	/**
