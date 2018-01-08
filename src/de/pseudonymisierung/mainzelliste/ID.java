@@ -127,6 +127,28 @@ public abstract class ID {
 	}
 
 	/**
+	 * Compare this ID with another. Two ID objects are considered equal if they
+	 * belong to the same class (subclass of ID) and have equal values for ID
+	 * type ({@link #getType()}) and ID string ({@link #getIdString()}).
+	 * 
+	 * @return true if obj is not null and equal to this according to the stated
+	 *         definition, false otherwise.
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == null) {
+			return false;
+		}
+
+		if (this.getClass() != obj.getClass())
+			return false;
+
+		ID idToCompareWith = (ID) obj;
+		return (this.getType().equals(idToCompareWith.getType())
+				&& this.getIdString().equals(idToCompareWith.getIdString()));
+	}
+
+	/**
 	 * Gets the ID string.
 	 *
 	 * @return The ID string.
