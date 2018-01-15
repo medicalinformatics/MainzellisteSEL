@@ -25,9 +25,13 @@
  */
 package de.pseudonymisierung.mainzelliste.matcher;
 
+import java.util.List;
+import java.util.NavigableMap;
+
 import javax.persistence.Basic;
 import javax.persistence.Embeddable;
 import javax.persistence.ManyToOne;
+import javax.persistence.Transient;
 
 import de.pseudonymisierung.mainzelliste.Patient;
 
@@ -90,6 +94,36 @@ public class MatchResult {
 	 */
 	@ManyToOne
 	private Patient bestMatchedPatient;
+
+	/**
+	 * All possible matches, indexed by matching weight. Values are lists of
+	 * patients because multiple comparisons can yield the same weight.
+	 */
+	@Transient
+	private NavigableMap<Double, List<Patient>> possibleMatches;
+
+	/**
+	 * Get all possible matches, indexed and ordered descending by matching
+	 * weight. Values are lists of patients because multiple comparisons can
+	 * yield the same weight.
+	 * 
+	 * @return The map of possible matches.
+	 */
+	public NavigableMap<Double, List<Patient>> getPossibleMatches() {
+		return possibleMatches;
+	}
+
+	/**
+	 * Set possible matches. Stores a descending view of the given map.Values
+	 * are lists of patients because multiple comparisons can yield the same
+	 * weight.
+	 * 
+	 * @param possibleMatches
+	 *            The map of possible matches, indexed by matching weight.
+	 */
+	public void setPossibleMatches(NavigableMap<Double, List<Patient>> possibleMatches) {
+		this.possibleMatches = possibleMatches.descendingMap();
+	}
 
 	/**
 	 * Get the best matching patient. This the one for which comparison to the

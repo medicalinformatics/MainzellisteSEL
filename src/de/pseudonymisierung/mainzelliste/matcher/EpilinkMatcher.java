@@ -35,6 +35,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.Vector;
 import java.util.regex.Pattern;
 
@@ -336,6 +337,7 @@ public class EpilinkMatcher implements Matcher {
 
 		Patient bestMatch = null;
 		double bestWeight = Double.NEGATIVE_INFINITY;
+		TreeMap<Double, List<Patient>> possibleMatches = new TreeMap<Double, List<Patient>>();
 
 		for (Patient b : patientList)
 		{
@@ -347,14 +349,21 @@ public class EpilinkMatcher implements Matcher {
 				bestWeight = weight;
 				bestMatch = b;
 			}
+			if (weight <= thresholdMatch && weight > thresholdNonMatch) {
+				if (!possibleMatches.containsKey(weight))
+					possibleMatches.put(weight, new LinkedList<Patient>());
+				possibleMatches.get(weight).add(b);
+			}
 		}
-
+		MatchResult result;
 		if (bestWeight >= thresholdMatch){
-			return new MatchResult(MatchResultType.MATCH, bestMatch, bestWeight);
+			result = new MatchResult(MatchResultType.MATCH, bestMatch, bestWeight);			
 		} else if (bestWeight < thresholdMatch && bestWeight > thresholdNonMatch) {
-			return new MatchResult(MatchResultType.POSSIBLE_MATCH, bestMatch, bestWeight);
+			result =  new MatchResult(MatchResultType.POSSIBLE_MATCH, bestMatch, bestWeight);
 		} else {
-			return new MatchResult(MatchResultType.NON_MATCH, null, bestWeight);
+			result = new MatchResult(MatchResultType.NON_MATCH, null, bestWeight);
 		}
+		result.setPossibleMatches(possibleMatches.descendingMap());
+		return result;
 	}
 }
