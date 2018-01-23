@@ -234,7 +234,7 @@ public enum PatientBackend {
 			case POSSIBLE_MATCH :
 				if (match.getResultType() == MatchResultType.POSSIBLE_MATCH
 				&& (form.getFirst("sureness") == null || !Boolean.parseBoolean(form.getFirst("sureness")))) {
-					return new IDRequest(p.getFields(), idTypes, match, null);
+					return new IDRequest(p.getFields(), idTypes, match, null, t);
 				}
 
 				// Generate internal IDs
@@ -283,7 +283,7 @@ public enum PatientBackend {
 
 			logger.info("Weight of best match: " + match.getBestMatchedWeight());
 
-			request = new IDRequest(p.getFields(), idTypes, match, assignedPatient);
+			request = new IDRequest(p.getFields(), idTypes, match, assignedPatient, t);
 
 			ret.put("request", request);
 

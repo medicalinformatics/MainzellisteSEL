@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import de.pseudonymisierung.mainzelliste.matcher.MatchResult.MatchResultType;
+
 /**
  * Authorizes to add a patient to the database by his IDAT and receive an ID
  * (pseudonym) back.
@@ -103,5 +105,18 @@ public class AddPatientToken extends Token {
 	 */
 	public Set<String> getRequestedIdTypes() {
 		return this.requestedIdTypes;
+	}
+	
+	/**
+	 * Query if this token permits to return possible matches for an unsure
+	 * record linkage result. I.e., when POST /patients is performed with this
+	 * token and the record linkage returns
+	 * {@link MatchResultType#POSSIBLE_MATCH}, the IDs of patients that are
+	 * similar to the requested patient are returned in the response.
+	 * 
+	 * @return True if possible matches are returned.
+	 */
+	public boolean showPossibleMatches() {
+		return Boolean.TRUE.equals(this.getData().get("showPossibleMatches"));
 	}
 }

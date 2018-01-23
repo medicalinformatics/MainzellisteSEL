@@ -258,12 +258,14 @@ public class PatientsResource {
 		IDRequest response = PatientBackend.instance.createNewPatient(tokenId, form, Servers.instance.getRequestApiVersion(request));
 		if (response.getMatchResult().getResultType() == MatchResultType.POSSIBLE_MATCH && response.getRequestedIds() == null) {
 			JSONObject ret = new JSONObject();
-			JSONArray possibleMatches = new JSONArray();
-			for (Entry<Double, List<Patient>> possibleMatch : response.getMatchResult().getPossibleMatches().entrySet()) {
-				for (Patient p : possibleMatch.getValue())
-					possibleMatches.put(p.getId(IDGeneratorFactory.instance.getDefaultIDType()).toJSON());
+			if (response.getToken().showPossibleMatches()) {
+				JSONArray possibleMatches = new JSONArray();
+				for (Entry<Double, List<Patient>> possibleMatch : response.getMatchResult().getPossibleMatches().entrySet()) {
+					for (Patient p : possibleMatch.getValue())
+						possibleMatches.put(p.getId(IDGeneratorFactory.instance.getDefaultIDType()).toJSON());
+				}
+				ret.put("possibleMatches", possibleMatches);
 			}
-			ret.put("possibleMatches", possibleMatches); 
 			ret.put("message", "Unable to definitely determined whether the data refers to an existing or to a new "
 					+ "patient. Please check data or resubmit with sureness=true to get a tentative result. Please check"
 					+ " documentation for details.");
