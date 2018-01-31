@@ -166,8 +166,8 @@ public enum IDGeneratorFactory {
 	 * 
 	 * @param idTypes
 	 *            Types of the IDs to generate. Duplicates are removed from this
-	 *            parameter, i.e. not more than one ID can be generated per ID
-	 *            type.
+	 *            parameter, i.e. not more than one ID per ID type will be
+	 *            generated.
 	 * @return The set of generated IDs.
 	 */
 	public Set<ID> generateIds(Collection<String> idTypes) {
