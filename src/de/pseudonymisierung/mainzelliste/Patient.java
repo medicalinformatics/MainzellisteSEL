@@ -249,8 +249,6 @@ public class Patient {
 		ID newID = IDGeneratorFactory.instance.getFactory(type).getNext();
 		this.addId(newID);
 		return newID;
-		// Optional falls lazy generation nicht aktiv:
-		// return null;
 	}
 
 	/**
