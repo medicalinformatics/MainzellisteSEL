@@ -169,6 +169,7 @@ public enum IDGeneratorFactory {
 	 *            parameter, i.e. not more than one ID per ID type will be
 	 *            generated.
 	 * @return The set of generated IDs.
+	 * @throws NullPointerException if the specified collection is null
 	 */
 	public Set<ID> generateIds(Collection<String> idTypes) {
 		HashSet<String> idTypesDedup = new HashSet<String>(idTypes);

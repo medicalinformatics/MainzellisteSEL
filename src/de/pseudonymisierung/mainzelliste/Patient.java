@@ -237,7 +237,7 @@ public class Patient {
 	 * @param type
 	 *            The ID type. See {@link ID} for the general structure of an
 	 *            ID.
-	 * @return This patient's ID of the given type or null if no such ID is
+	 * @return This patient's ID of the given type or null if no such ID type is
 	 *         defined.
 	 */
 	public ID getId(String type) {
@@ -246,15 +246,21 @@ public class Patient {
 				return thisId;
 		}
 		// ID of requested type was not found -> generate new ID
-		ID newID = IDGeneratorFactory.instance.getFactory(type).getNext();
-		this.addId(newID);
-		return newID;
+		IDGenerator<? extends ID> factory = IDGeneratorFactory.instance.getFactory(type);
+
+		if(factory != null) {
+			ID newID = factory.getNext();
+			this.addId(newID);
+			return newID;
+		}
+
+		return null;
 	}
 
 	/**
 	 * Add ID if this ID type is not already in ids.
 	 *
-	 * @param ID
+	 * @param id
 	 *            The ID to add.
 	 * @return true if the id was added successfully, otherwise false (if ID of this type already exists).
 	 */
@@ -376,7 +382,7 @@ public class Patient {
 	/**
 	 * Set the fields of this patient.
 	 *
-	 * @param Fields
+	 * @param fields
 	 *            A map with field names as keys and corresponding Field objects
 	 *            as values. The map is copied by reference.
 	 */
