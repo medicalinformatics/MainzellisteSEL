@@ -378,7 +378,8 @@ public class PatientsResource {
 					List<String> idTypes = (List<String>) t.getDataItemList("resultIds");
 					List<JSONObject> returnIds = new LinkedList<JSONObject>();
 					for (String thisIdType : idTypes) {
-						returnIds.add(patient.getId(thisIdType).toJSON());
+						ID returnId = patient.getId(thisIdType);
+						if (returnId != null) returnIds.add(returnId.toJSON());
 					}
 					thisPatient.put("ids", returnIds);
 				} catch (JSONException e) {
