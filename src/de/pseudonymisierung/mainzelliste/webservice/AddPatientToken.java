@@ -108,7 +108,7 @@ public class AddPatientToken extends Token {
 	}
 	
 	/**
-	 * Query if this token permits to return possible matches for an unsure
+	 * Query whether this token permits to return possible matches for an unsure
 	 * record linkage result. I.e., when POST /patients is performed with this
 	 * token and the record linkage returns
 	 * {@link MatchResultType#POSSIBLE_MATCH}, the IDs of patients that are
