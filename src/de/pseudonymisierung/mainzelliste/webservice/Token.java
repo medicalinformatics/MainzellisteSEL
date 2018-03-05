@@ -415,6 +415,10 @@ public class Token {
 		Set<String> fieldList = Config.instance.getFieldKeys();
 		try {
 			List<?> fields = this.getDataItemList("resultFields");
+			
+			if (fields == null)
+				return; // Allow omitting resultFields (same semantics as providing empty array).
+			
 			for (Object thisField : fields) {
 				if (!fieldList.contains(thisField.toString()))
 					throw new InvalidTokenException("Field '" + thisField
@@ -434,6 +438,10 @@ public class Token {
 		Set<String> definedIdTypes = new HashSet<String>(Arrays.asList(IDGeneratorFactory.instance.getIDTypes()));
 		try {
 			List<?> resultIdTypes = this.getDataItemList("resultIds");
+
+			if (resultIdTypes == null)
+				return; // Allow omitting resultIds (same semantics as providing empty array).
+			
 			for (Object thisIdType : resultIdTypes) {
 				if (!definedIdTypes.contains(thisIdType.toString()))
 					throw new InvalidTokenException("ID type '" + thisIdType
