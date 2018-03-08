@@ -209,6 +209,11 @@ idgenerators = pid, intid
 # For externally generated id types (imported from external systems) use ExternalIDGenerator
 # idgenerators = pid, intid, extid
 
+# By default, IDs are generated once they are requested (lazy generation).
+# Set the following parameter to true if upon creating a patient, IDs of all
+# configured types should be created for this patient eagerly.
+idgenerators.eagerGeneration = false
+
 # Additional params for PIDGenerator (k1, k2, k3, rndwidth) are defined here.
 idgenerator.pid = PIDGenerator
 idgenerator.pid.k1 = 1

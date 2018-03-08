@@ -25,6 +25,7 @@
  */
 package de.pseudonymisierung.mainzelliste;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -155,8 +156,25 @@ public enum IDGeneratorFactory {
 	 * @return The set of generated IDs.
 	 */
 	public Set<ID> generateIds() {
+		return generateIds(this.generators.keySet());
+	}
+
+	/**
+	 * Generates a set of IDs for a new patient by calling the appropriate ID
+	 * generator for every requested ID type. For external IDs no values are
+	 * generated.
+	 * 
+	 * @param idTypes
+	 *            Types of the IDs to generate. Duplicates are removed from this
+	 *            parameter, i.e. not more than one ID per ID type will be
+	 *            generated.
+	 * @return The set of generated IDs.
+	 * @throws NullPointerException if the specified collection is null
+	 */
+	public Set<ID> generateIds(Collection<String> idTypes) {
+		HashSet<String> idTypesDedup = new HashSet<String>(idTypes);
 		HashSet<ID> ids = new HashSet<ID>();
-		for (String idType : this.generators.keySet()) {
+		for (String idType : idTypesDedup) {
 			if (!this.generators.get(idType).isExternal())
 				ids.add(this.generators.get(idType).getNext());
 		}

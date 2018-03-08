@@ -238,8 +238,11 @@ public enum PatientBackend {
 				}
 
 				// Generate internal IDs
-				Set<ID> newIds = IDGeneratorFactory.instance.generateIds();
-
+				boolean eagerGeneration = Boolean
+						.parseBoolean(Config.instance.getProperty("idgenerators.eagerGeneration"));
+				Set<ID> newIds = eagerGeneration ? IDGeneratorFactory.instance.generateIds()
+						: IDGeneratorFactory.instance.generateIds(idTypes);
+				
 				// Import external IDs
 				for (String extIDType : IDGeneratorFactory.instance.getExternalIdTypes()) {
 					String extIDString = form.getFirst(extIDType);

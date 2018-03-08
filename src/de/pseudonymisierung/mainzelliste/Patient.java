@@ -51,6 +51,7 @@ import org.codehaus.jettison.json.JSONObject;
 
 import de.pseudonymisierung.mainzelliste.exceptions.CircularDuplicateRelationException;
 import de.pseudonymisierung.mainzelliste.exceptions.InternalErrorException;
+import de.pseudonymisierung.mainzelliste.exceptions.InvalidIDException;
 
 /**
  * A patient entity identified by at least one ID and described by a number of Fields.
@@ -231,26 +232,42 @@ public class Patient {
 	}
 
 	/**
-	 * Get the ID of the specified type from this patient.
+	 * Get the ID of the specified type from this patient. The ID will be
+	 * generated if it does not exist and is not externally provided.
 	 *
 	 * @param type
 	 *            The ID type. See {@link ID} for the general structure of an
 	 *            ID.
-	 * @return This patient's ID of the given type or null if no such ID is
-	 *         defined.
+	 * @return This patient's ID of the given type or null if the ID is
+	 *         externally provided and not defined for this patient.
+	 * @throws InvalidIDException
+	 *             if the provided ID type is undefined.
 	 */
 	public ID getId(String type) {
 		for (ID thisId : ids) {
 			if (thisId.getType().equals(type))
 				return thisId;
 		}
+		// ID of requested type was not found and is not external -> generate new ID
+		IDGenerator<? extends ID> factory = IDGeneratorFactory.instance.getFactory(type);
+
+		if (factory == null) {
+			throw new InvalidIDException("ID type " + type + " not defined!");
+		}
+		
+		if(!factory.isExternal()) {
+			ID newID = factory.getNext();
+			this.addId(newID);
+			return newID;
+		}
+
 		return null;
 	}
 
 	/**
 	 * Add ID if this ID type is not already in ids.
 	 *
-	 * @param ID
+	 * @param id
 	 *            The ID to add.
 	 * @return true if the id was added successfully, otherwise false (if ID of this type already exists).
 	 */
@@ -372,7 +389,7 @@ public class Patient {
 	/**
 	 * Set the fields of this patient.
 	 *
-	 * @param Fields
+	 * @param fields
 	 *            A map with field names as keys and corresponding Field objects
 	 *            as values. The map is copied by reference.
 	 */
