@@ -4,6 +4,11 @@ import com.sun.jersey.spi.container.servlet.WebComponent;
 import de.pseudonymisierung.mainzelliste.Config;
 import de.pseudonymisierung.mainzelliste.Field;
 import de.pseudonymisierung.mainzelliste.PlainTextField;
+import de.pseudonymisierung.mainzelliste.exceptions.InternalErrorException;
+import de.samply.common.http.HttpConnector;
+import de.samply.common.http.HttpConnectorException;
+import de.securerecordlinkage.initializer.config.ExternalServer;
+import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.log4j.FileAppender;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
@@ -88,11 +93,13 @@ public class Initializer {
         JSONObject reqObject = new JSONObject();
         JSONObject tmpObj = new JSONObject();
         try {
+
+            de.securerecordlinkage.initializer.Config configInitializer = de.securerecordlinkage.initializer.Config.instance;
             tmpObj.put("authType", "apiKey");
-            tmpObj.put("sharedKey", "123abc");
+            tmpObj.put("sharedKey", configInitializer.getLocalMainzelliste().getApiKey());
             reqObject.put("localAuthentification", tmpObj);
             tmpObj = new JSONObject();
-            tmpObj.put("url", "https://postman-echo.com/post");
+            tmpObj.put("url", configInitializer.getLocalMainzelliste().getUrl());
             reqObject.put("dataService", tmpObj);
             tmpObj.put("algoType", "epiLink");
             tmpObj.put("bloomLength", 500);
@@ -143,6 +150,33 @@ public class Initializer {
         return reqObject;
     }
 
+    private List<JSONObject> createRemoteInitJSON() {
+        List<ExternalServer> servers = de.securerecordlinkage.initializer.Config.instance.getConfig().getServers().getServer();
+        List<JSONObject> results = new ArrayList<>();
+
+        try {
+
+            for (ExternalServer server : servers) {
+                JSONObject reqObject = new JSONObject();
+                JSONObject tmpObj = new JSONObject();
+                JSONObject authObj = new JSONObject();
+
+                tmpObj.put("url", server.getUrl());
+                authObj.put("authType", "apikey");
+                authObj.put("authType", server.getApiKey());
+                tmpObj.put("authentication", authObj);
+                reqObject.put("connectionProfile", tmpObj);
+
+                results.add(reqObject);
+            }
+
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return results;
+    }
+
     // TODO: 1. Create config file for remote init
     // 2. Read parameters from this file
     // 3. Use samply.config ?
@@ -150,4 +184,23 @@ public class Initializer {
         return null;
     }
 
+    private void doRequest(String url, String data) {
+        Logger logger = Logger.getLogger(de.pseudonymisierung.mainzelliste.Initializer.class);
+        //TODO proxy config
+        HashMap config = new HashMap();
+        HttpConnector hc = new HttpConnector(config);
+        try {
+            CloseableHttpResponse result = hc.doAction("PUT", url, null, null, "application/json", data, false, false, 5);
+            if(result.getStatusLine().getStatusCode() == 200) {
+                logger.info("SRL configuration updated. Response Code " + String.valueOf(result.getStatusLine().getStatusCode()));
+            } else if(result.getStatusLine().getStatusCode() == 204){
+                logger.info("SRL configuration initialized. Response Code " + String.valueOf(result.getStatusLine().getStatusCode()));
+            } else {
+                throw new InternalErrorException(result.getStatusLine().toString());
+            }
+        } catch (HttpConnectorException e) {
+            e.printStackTrace();
+            logger.error("Cannot connect to http ", e);
+        }
+    }
 }
