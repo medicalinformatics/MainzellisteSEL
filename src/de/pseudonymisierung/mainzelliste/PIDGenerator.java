@@ -762,4 +762,7 @@ public class PIDGenerator implements IDGenerator<PID>{
 
 	@Override
 	public boolean isExternal() { return false; }
+
+	@Override
+	public boolean isSrl() { return false; }
 }

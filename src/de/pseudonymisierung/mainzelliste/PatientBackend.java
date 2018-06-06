@@ -20,6 +20,7 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import de.sessionTokenSimulator.PatientRecords;
 import org.apache.http.HttpResponse;
 import org.apache.http.StatusLine;
 import org.apache.http.client.HttpClient;
@@ -242,7 +243,7 @@ public enum PatientBackend {
 						.parseBoolean(Config.instance.getProperty("idgenerators.eagerGeneration"));
 				Set<ID> newIds = eagerGeneration ? IDGeneratorFactory.instance.generateIds()
 						: IDGeneratorFactory.instance.generateIds(idTypes);
-				
+
 				// Import external IDs
 				for (String extIDType : IDGeneratorFactory.instance.getExternalIdTypes()) {
 					String extIDString = form.getFirst(extIDType);
@@ -261,9 +262,16 @@ public enum PatientBackend {
 						newIds.add(extId);
 					}
 				}
+
 				pNormalized.setIds(newIds);
 
-				for (String idType : idTypes) {
+                // Send requests for SRL IDs
+                for (String srlIDType : IDGeneratorFactory.instance.getSrlIdTypes()) {
+                    PatientRecords records = new PatientRecords();
+                    records.linkPatient(pNormalized, srlIDType, pNormalized.getId(srlIDType).getIdString());
+                }
+
+                for (String idType : idTypes) {
 					ID thisID = pNormalized.getId(idType);
 					returnIds.add(thisID);
 					logger.info("Created new ID " + thisID.getIdString() + " for ID request " + (t == null ? "(null)" : t.getId()));
