@@ -33,7 +33,7 @@ public class CommunicatorResource {
     private int page = 1;
 
     private String requestedIDType = "SRL1";
-    private String baseCommunicatorURL = "http://localhost:8079/Communicator/getAllRecords";
+    private String baseCommunicatorURL = "http://localhost:8084/mainzelliste/Communicator/getAllRecords";
 
     // Read config with SRL links to know where to send the request
     public void init() {
