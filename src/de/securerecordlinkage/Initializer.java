@@ -41,7 +41,11 @@ public class Initializer {
 
         Config c = Config.instance;
         JSONObject configJSON = createLocalInitJSON(c);
-        SendHelper.doRequest("https://postman-echo.com/put", "PUT", configJSON.toString());
+        SendHelper.doRequest("https://192.168.12.154:8080/init/local", "PUT", configJSON.toString());
+
+        de.securerecordlinkage.initializer.Config selConfing = de.securerecordlinkage.initializer.Config.instance;
+        JSONObject remoteInitJSON = createRemoteInitJSON(selConfing);
+        SendHelper.doRequest("https://192.168.12.154:8080/init/local", "PUT", remoteInitJSON.toString());
 
         log4jSetup();
 
@@ -180,7 +184,7 @@ public class Initializer {
     // TODO: 1. Create config file for remote init
     // 2. Read parameters from this file
     // 3. Use samply.config ?
-    private JSONObject createRemoteInitJSON(Config config){
+    private JSONObject createRemoteInitJSON(de.securerecordlinkage.initializer.Config config) {
         return null;
     }
 
@@ -191,9 +195,9 @@ public class Initializer {
         HttpConnector hc = new HttpConnector(config);
         try {
             CloseableHttpResponse result = hc.doAction("PUT", url, null, null, "application/json", data, false, false, 5);
-            if(result.getStatusLine().getStatusCode() == 200) {
+            if (result.getStatusLine().getStatusCode() == 200) {
                 logger.info("SRL configuration updated. Response Code " + String.valueOf(result.getStatusLine().getStatusCode()));
-            } else if(result.getStatusLine().getStatusCode() == 204){
+            } else if (result.getStatusLine().getStatusCode() == 204) {
                 logger.info("SRL configuration initialized. Response Code " + String.valueOf(result.getStatusLine().getStatusCode()));
             } else {
                 throw new InternalErrorException(result.getStatusLine().toString());

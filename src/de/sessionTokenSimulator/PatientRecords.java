@@ -103,6 +103,7 @@ public class PatientRecords {
     }
 
     public int updatePatient(JSONObject patient){
+        logger.info("updatePatient(" + patient + ")");
         boolean updateSuccessful = true;
 
         if(updateSuccessful==true){
