@@ -58,7 +58,7 @@ public class PatientRecords {
                 JSONObject fields = new JSONObject();
                 for (String fieldKey : p.getFields().keySet()) {
                     String FieldName = "field." + fieldKey + ".transformers";
-                    if (!config.getProperty(FieldName).isEmpty()) {
+                    if (config.getProperty(FieldName) != null) {
                         if (config.getProperty(FieldName).contains("Decomposer")) {
                             String fieldValue = String.valueOf(p.getFields().get(fieldKey));
                             fieldValue = fieldValue.substring(1, fieldValue.length()-2);
