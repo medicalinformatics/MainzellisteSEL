@@ -213,23 +213,5 @@ public class Initializer {
         return null;
     }
 
-    private void doRequest(String url, String data) {
-        Logger logger = Logger.getLogger(de.pseudonymisierung.mainzelliste.Initializer.class);
-        //TODO proxy config
-        HashMap config = new HashMap();
-        HttpConnector hc = new HttpConnector(config);
-        try {
-            CloseableHttpResponse result = hc.doAction("PUT", url, null, null, "application/json", data, false, false, 5);
-            if (result.getStatusLine().getStatusCode() == 200) {
-                logger.info("SRL configuration updated. Response Code " + String.valueOf(result.getStatusLine().getStatusCode()));
-            } else if (result.getStatusLine().getStatusCode() == 204) {
-                logger.info("SRL configuration initialized. Response Code " + String.valueOf(result.getStatusLine().getStatusCode()));
-            } else {
-                throw new InternalErrorException(result.getStatusLine().toString());
-            }
-        } catch (HttpConnectorException e) {
-            e.printStackTrace();
-            logger.error("Cannot connect to http ", e);
-        }
-    }
+
 }
