@@ -3,11 +3,14 @@ package de.securerecordlinkage;
 import com.sun.jersey.spi.container.servlet.WebComponent;
 import de.pseudonymisierung.mainzelliste.Config;
 import de.pseudonymisierung.mainzelliste.Field;
+import de.pseudonymisierung.mainzelliste.Patient;
 import de.pseudonymisierung.mainzelliste.PlainTextField;
+import de.pseudonymisierung.mainzelliste.dto.Persistor;
 import de.pseudonymisierung.mainzelliste.exceptions.InternalErrorException;
 import de.samply.common.http.HttpConnector;
 import de.samply.common.http.HttpConnectorException;
 import de.securerecordlinkage.initializer.config.ExternalServer;
+import de.sessionTokenSimulator.PatientRecords;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.log4j.FileAppender;
 import org.apache.log4j.Logger;
@@ -72,6 +75,12 @@ public class Initializer {
             JSONObject remoteInitJSON = createRemoteInitJSON();
             SendHelper.doRequest(c.getProperty("srl.secureEpiLinkRemoteURL"), "PUT", remoteInitJSON.toString());
 
+
+            this.wait(1000);
+            //TODO: only test to simulate send patient LÖSCHEN bitte LÖSCH mich
+            List<Patient> patientList = Persistor.instance.getPatients();
+            PatientRecords prs = new PatientRecords();
+            prs.linkPatient(patientList.get(1), "sel1_sel2", "dsfdsfsdfdsf");
         } catch (Exception e) {
             logger.error("initialize() - Could not send remoteJSON " + e.toString());
             //e.printStackTrace();
