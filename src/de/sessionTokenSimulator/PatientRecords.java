@@ -57,10 +57,8 @@ public class PatientRecords {
             for (Patient p : patientList) {
                 JSONObject tmpObject = new JSONObject();
                 tmpObject.put("fields", getFieldsObject(p));
-                //TODO: use real IDs
-                JSONArray idandIDTypeArray = new JSONArray();
-                idandIDTypeArray.put(getIDObject(p));
-                tmpObject.put("ids", idandIDTypeArray);
+                // TODO: use real IDs
+                tmpObject.put("id", getRandomID());
                 array.put(tmpObject);
 
 
@@ -74,7 +72,7 @@ public class PatientRecords {
         return array;
     }
 
-    //TODO: request with url paramater
+    //TODO: request with url paramater from config
     public void linkPatient(Patient p, String IDType, String IDString) {
         try {
             JSONObject recordAsJSON = new JSONObject();
@@ -84,7 +82,7 @@ public class PatientRecords {
             recordAsJSON.put("id", tmpObj);
             recordAsJSON.put("fields", getFieldsObject(p));
             CommunicatorResource rs = new CommunicatorResource();
-            rs.sendLinkRecord(recordAsJSON, "http://192.168.0.101:8080/linkRecord/dkfz");
+            rs.sendLinkRecord("http://192.168.0.101:8080/linkRecord/dkfz", IDType, IDString, recordAsJSON);
         } catch (Exception e) {
             logger.info(e);
         }
@@ -101,20 +99,11 @@ public class PatientRecords {
         }
     }
 
-    public JSONObject getIDObject(Patient p){
-        JSONObject fields = new JSONObject();
-        try {
-            fields.put("idType", "sel1_sel2");
-
-            //TODO: only for testing, use real IDs
-            Random rand = new Random();
-            int  n = rand.nextInt(50000) + 1;
-
-            fields.put("idString", String.valueOf(n));
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return fields;
+    public String getRandomID(){
+        //TODO: only for testing, use real IDs
+        Random rand = new Random();
+        int  n = rand.nextInt(50000) + 1;
+        return String.valueOf(n);
     }
 
     public JSONObject getFieldsObject(Patient p) {
