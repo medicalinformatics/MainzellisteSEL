@@ -47,10 +47,6 @@ public class Initializer {
             Config c = Config.instance;
             JSONObject configJSON = createLocalInitJSON(c);
             SendHelper.doRequest(c.getProperty("srl.initLocal"), "PUT", configJSON.toString());
-
-
-            //Only For Tests!! We init a second local SRL TODO: delete
-
         } catch (Exception e) {
             logger.error("initialize() - Could not send initJSON " + e.toString());
             //e.printStackTrace();
@@ -67,7 +63,6 @@ public class Initializer {
         }
         //Init Communicator Ressource
 
-
         try {
             //de.securerecordlinkage.initializer.Config selConfig = de.securerecordlinkage.initializer.Config.instance;
             Config c = Config.instance;
@@ -76,11 +71,11 @@ public class Initializer {
             SendHelper.doRequest(c.getProperty("srl.secureEpiLinkRemoteURL"), "PUT", remoteInitJSON.toString());
 
 
-            this.wait(1000);
             //TODO: only test to simulate send patient LÖSCHEN bitte LÖSCH mich
-            List<Patient> patientList = Persistor.instance.getPatients();
-            PatientRecords prs = new PatientRecords();
-            prs.linkPatient(patientList.get(1), "sel1_sel2", "dsfdsfsdfdsf");
+            //this.wait(1000);
+            //List<Patient> patientList = Persistor.instance.getPatients();
+            //PatientRecords prs = new PatientRecords();
+            //prs.linkPatient(patientList.get(1), "sel1_sel2", "dsfdsfsdfdsf");
         } catch (Exception e) {
             logger.error("initialize() - Could not send remoteJSON " + e.toString());
             //e.printStackTrace();

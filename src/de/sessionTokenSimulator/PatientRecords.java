@@ -74,6 +74,7 @@ public class PatientRecords {
         return array;
     }
 
+    //TODO: request with url paramater
     public void linkPatient(Patient p, String IDType, String IDString) {
         try {
             JSONObject recordAsJSON = new JSONObject();
@@ -83,7 +84,7 @@ public class PatientRecords {
             recordAsJSON.put("id", tmpObj);
             recordAsJSON.put("fields", getFieldsObject(p));
             CommunicatorResource rs = new CommunicatorResource();
-            rs.sendLinkRecord(recordAsJSON);
+            rs.sendLinkRecord(recordAsJSON, "http://192.168.0.101:8080/linkRecord/dkfz");
         } catch (Exception e) {
             logger.info(e);
         }
