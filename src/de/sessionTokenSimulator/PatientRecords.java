@@ -94,6 +94,7 @@ public class PatientRecords {
         }
     }
 
+
     public void matchPatients(String remoteId) {
         try {
             List<Patient> patientList = Persistor.instance.getPatients();
