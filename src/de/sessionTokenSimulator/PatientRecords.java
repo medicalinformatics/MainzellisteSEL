@@ -64,8 +64,6 @@ public class PatientRecords {
                 // TODO: use real IDs
                 tmpObject.put("id", getRandomID());
                 array.put(tmpObject);
-
-
             }
 
             //IDGeneratorFactory.instance.getSrlIdTypes();
