@@ -14,8 +14,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 //TODO: Verify against APIkey
 //TODO: Extract PatientRecords class, to use this class independent of Mainzelliste
@@ -41,7 +40,8 @@ public class CommunicatorResource {
     private static String localCallbackLinkURL = "http://localhost:8082/Communicator/linkCallBack";
     private static String localCallbackMatchURL = "http://localhost:8082/Communicator/matchCallBack";
     private static String localDataServiceURL = "http://localhost:8082/Communicator/getAllRecords";
-    private static String apiKey = "123abc";
+    private static List<String> apiKey = new ArrayList<>();
+    private static String authenticationType = "apiKey";
 
     public static String linkRequestURL = "http://192.168.0.101:8080/linkRecord/dkfz";
     public static String linkAllRequestURL = "http://192.168.0.101:8080/linkRecords/dkfz";
@@ -57,7 +57,8 @@ public class CommunicatorResource {
         localCallbackLinkURL = config.getLocalCallbackLinkUrl();
         localCallbackMatchURL = config.getLocalCallbackMatchUrl();
         localDataServiceURL = config.getLocalDataServiceUrl();
-        apiKey = config.getLocalApiKey();
+        apiKey.add(config.getLocalApiKey());
+        authenticationType = config.getLocalAuthenticationType();
 
         logger.info("remoteID: " + remoteId + " baseCommunicatorURL: " + localDataServiceURL);
 
@@ -230,6 +231,16 @@ public class CommunicatorResource {
     //----Helper functions ---------------------------------------------
     private boolean authorizationValidator(HttpServletRequest request) {
 
+        Map<String, List<String>> allowedAuthTypesAndValues = new HashMap<>();
+
+        allowedAuthTypesAndValues.put(authenticationType, apiKey);
+
+        AuthorizationValidator authorizationValidator = new AuthorizationValidator(allowedAuthTypesAndValues);
+        return authorizationValidator.validate(request);
+
+
+
+        /*
         logger.info("authorizationValidator() " + "validate ApiKey");
         //TODO: get authKey from Config
         String authKey = apiKey;
@@ -254,6 +265,7 @@ public class CommunicatorResource {
             logger.info("Wrong ApiKey!");
             return false;
         }
+        */
 
     }
 
@@ -384,20 +396,24 @@ public class CommunicatorResource {
     //TODO: search a better place and add return http statuscode
     @GET
     @Path("/triggerMatch/{remoteID}")
-    public Response triggerMatch(@PathParam("remoteID") String remoteID) throws JSONException {
+    public Response triggerMatch(@Context HttpServletRequest request, @PathParam("remoteID") String remoteID) throws JSONException {
 
-        logger.info("trigger matcher started");
-        logger.info("trigger matcher " + remoteID);
+        if (authorizationValidator(request)) {
+            logger.info("trigger matcher started");
+            logger.info("trigger matcher " + remoteID);
 
-        JSONObject answerObject = new JSONObject();
+            JSONObject answerObject = new JSONObject();
 
-        //TODO: PatientRecords should use a generic interface, so we don't have to use a specific PatientRecords object here
-        PatientRecords pr = new PatientRecords();
-        Integer totalAmount = pr.matchPatients(remoteID);
+            //TODO: PatientRecords should use a generic interface, so we don't have to use a specific PatientRecords object here
+            PatientRecords pr = new PatientRecords();
+            Integer totalAmount = pr.matchPatients(remoteID);
 
-        answerObject.put("totalAmount", totalAmount);
-        MatchCounter.setNumAll(remoteID, totalAmount);
-        return Response.ok(answerObject, MediaType.APPLICATION_JSON).build();
+            answerObject.put("totalAmount", totalAmount);
+            MatchCounter.setNumAll(remoteID, totalAmount);
+            return Response.ok(answerObject, MediaType.APPLICATION_JSON).build();
+        } else {
+            return Response.status(401).build();
+        }
     }
 
     // Find better name
@@ -405,21 +421,25 @@ public class CommunicatorResource {
     // Call only once, if repeated, the SRL IDs should be first deleted
     @GET
     @Path("/triggerLink/{remoteID}")
-    public Response triggerLink(@PathParam("remoteID") String remoteID) throws JSONException {
-        try {
-            logger.info("trigger linker started");
-            logger.info("trigger linker " + remoteID);
+    public Response triggerLink(@Context HttpServletRequest request, @PathParam("remoteID") String remoteID) throws JSONException {
+        if (authorizationValidator(request)) {
+            try {
+                logger.info("trigger linker started");
+                logger.info("trigger linker " + remoteID);
 
-            JSONObject answerObject = new JSONObject();
+                JSONObject answerObject = new JSONObject();
 
-            PatientRecords pr = new PatientRecords();
-            Integer totalAmount = pr.linkPatients(remoteID);
+                PatientRecords pr = new PatientRecords();
+                Integer totalAmount = pr.linkPatients(remoteID);
 
-            answerObject.put("totalAmount", totalAmount);
-            return Response.ok(answerObject, MediaType.APPLICATION_JSON).build();
-        } catch (Exception e) {
-            logger.error("SRL IDs cannot be generated: " + e.toString());
-            return Response.status(500).build();
+                answerObject.put("totalAmount", totalAmount);
+                return Response.ok(answerObject, MediaType.APPLICATION_JSON).build();
+            } catch (Exception e) {
+                logger.error("SRL IDs cannot be generated: " + e.toString());
+                return Response.status(500).build();
+            }
+        } else {
+            return Response.status(401).build();
         }
     }
 
@@ -427,18 +447,29 @@ public class CommunicatorResource {
     @Path("/triggerMatch/status/{remoteID}")
     public Response triggerMatchStatus(@PathParam("remoteID") String remoteID) throws JSONException {
 
+
         logger.info("triggerMatchStatus requested for remoteID: " + remoteID);
 
         JSONObject answerObject = new JSONObject();
         answerObject.put("totalAmount", MatchCounter.getNumAll(remoteID));
         answerObject.put("totalMatches", MatchCounter.getNumMatch(remoteID));
         answerObject.put("totalTentativeMatches", TentativeMatchCounter.getNumMatch(remoteID));
-        answerObject.put("matchingStatus", "in progress");
 
         logger.info("triggerMatchStatus response: " + answerObject);
-        if(MatchCounter.getNumMatch(remoteID) + MatchCounter.getNumNonMatch(remoteID) >= MatchCounter.getNumAll(remoteID)){
-            answerObject.put("matchingStatus", "finished");
+
+        try {
+            answerObject.put("matchingStatus", "in progress");
+            if(MatchCounter.getNumMatch(remoteID) + MatchCounter.getNumNonMatch(remoteID) >= MatchCounter.getNumAll(remoteID)){
+                answerObject.put("matchingStatus", "finished");
+            }
+            logger.info("getNumMatch:" + MatchCounter.getNumMatch(remoteID) + " getNumNonMatch: " + MatchCounter.getNumNonMatch(remoteID) + " getNumAll: " + MatchCounter.getNumAll(remoteID));
+
+            logger.info("triggerMatchStatus (with progress status) response: " + answerObject);
+        } catch (JSONException e) {
+            logger.info("matchingStatus could not be set");
+            logger.error(e.getMessage());
         }
+
 
         return Response.ok(answerObject, MediaType.APPLICATION_JSON).build();
     }
