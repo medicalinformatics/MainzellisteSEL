@@ -11,10 +11,7 @@ import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 
-import java.util.Base64;
-import java.util.BitSet;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 // 1. Read all Patients and save in Communicator Format
 // 2. Encode the fields with BloomFilter
@@ -104,7 +101,7 @@ public class PatientRecords {
         }
     }
 
-    public Integer linkPatients(String remoteID) {
+    public Integer linkPatients(String remoteID, String matchMode) {
         JSONArray array = new JSONArray();
         int index = 0;
         try {
@@ -114,34 +111,48 @@ public class PatientRecords {
             logger.info("Linking started...");
             CommunicatorResource rs = new CommunicatorResource();
             de.securerecordlinkage.initializer.Config c = de.securerecordlinkage.initializer.Config.instance;
-            String IDType = getIDType(c.getLocalID(), remoteID);
-            IDGenerator<? extends ID> factory = IDGeneratorFactory.instance.getFactory(IDType);
 
-            if (factory == null) {
-                throw new InvalidIDException("ID type " + IDType + " not defined!");
+
+            if (matchMode.equals("linkRecords")) {
+                String IDType = getIDType(c.getLocalID(), remoteID);
+                IDGenerator<? extends ID> factory = IDGeneratorFactory.instance.getFactory(IDType);
+
+                if (factory == null) {
+                    throw new InvalidIDException("ID type " + IDType + " not defined!");
+                }
+
+                factory.reset(IDType);
+
+                for (Patient p: patientList) {
+                    Patient existingPatient = Persistor.instance.getPatient(new SrlID(String.valueOf(index+1), IDType));
+                    index = index + 1;
+                    if (existingPatient != null && !existingPatient.equals(p)) {
+                        throw new Exception("Delete Secure Record Linkage IDs before new linkage");
+                    }
+                    String IDString = p.getId(IDType).getIdString();
+                    if (existingPatient == null) {
+                        Persistor.instance.updatePatient(p);
+                    }
+                    if (IDString.equals(String.valueOf(index))) {
+                        JSONObject tmpObject = new JSONObject();
+                        tmpObject.put("fields", getFieldsObject(p));
+                        array.put(tmpObject);
+                    } else {
+                        throw new Exception("Delete Secure Record Linkage IDs before new linkage");
+                    }
+                }
+                rs.sendLinkRecords(c.getLocalSELUrl()+"/" + matchMode+ "/" + remoteID, IDType, array);
             }
-
-            factory.reset(IDType);
 
             for (Patient p: patientList) {
-                Patient existingPatient = Persistor.instance.getPatient(new SrlID(String.valueOf(index+1), IDType));
-                index = index + 1;
-                if (existingPatient != null && !existingPatient.equals(p)) {
-                    throw new Exception("Delete Secure Record Linkage IDs before new linkage");
-                }
-                String IDString = p.getId(IDType).getIdString();
-                if (existingPatient == null) {
-                    Persistor.instance.updatePatient(p);
-                }
-                if (IDString.equals(String.valueOf(index))) {
-                    JSONObject tmpObject = new JSONObject();
-                    tmpObject.put("fields", getFieldsObject(p));
-                    array.put(tmpObject);
-                } else {
-                    throw new Exception("Delete Secure Record Linkage IDs before new linkage");
-                }
+                JSONObject tmpObject = new JSONObject();
+                tmpObject.put("fields", getFieldsObject(p));
+                array.put(tmpObject);
             }
-            rs.sendLinkRecords(c.getLocalSELUrl()+"/linkRecords/" + remoteID, IDType, array);
+
+            if (!matchMode.equals("linkRecords")) {
+                rs.sendMatchRecords(c.getLocalSELUrl()+"/" + matchMode+ "/" + remoteID, array);
+            }
 
         } catch (Exception e) {
             logger.info(e);
@@ -179,14 +190,30 @@ public class PatientRecords {
     }
 
     public int updateRecord(String idType, String tmpRef, String linkageId) {
-        logger.info("updatePatient(" + tmpRef + ") -> " + linkageId + ")");
-        boolean updateSuccessful = true;
+        try {
+            logger.info("updatePatient(" + tmpRef + ") -> " + linkageId + ")");
 
-        if (updateSuccessful == true) {
-            return 200;
-        } else {
+            ID oldId = new SrlID(tmpRef, idType);
+            ID newId = IDGeneratorFactory.instance.buildId(idType, linkageId);
+
+            Patient p = Persistor.instance.getPatient(oldId);
+            Set<ID> newIds = new HashSet<ID>();
+            Set<ID> listIds = p.getIds();
+            for (ID id : listIds) {
+                if (id.getType().equals(idType)) {
+                    newIds.add(newId);
+                } else {
+                    newIds.add(id);
+                }
+            }
+            p.setIds(newIds);
+            Persistor.instance.updatePatient(p);
+        } catch (Exception e) {
+            logger.info(e);
             return 500;
         }
+
+        return 200;
     }
 
     public String getRandomID(){
