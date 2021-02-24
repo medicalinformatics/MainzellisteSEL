@@ -60,11 +60,12 @@ public class CommunicatorResource {
 
         localId = config.getLocalID();
         remoteId = id;
-        baseCommunicatorURL = config.getServers().get(remoteId).getUrl();
+//        baseCommunicatorURL = config.getServers().get(remoteId).getUrl();
         baseLinkageServiceURL = config.getServers().get(remoteId).getLinkageServiceBaseURL();
         localCallbackLinkURL = config.getLocalCallbackLinkUrl();
         localCallbackMatchURL = config.getLocalCallbackMatchUrl();
         localDataServiceURL = config.getLocalDataServiceUrl();
+        baseCommunicatorURL = localDataServiceURL;
         //TODO: Better name, because in the future this should not only be keys, also other authentication values
         authenticationKeys.add(config.getLocalApiKey());
         localApiKey = config.getLocalApiKey();
