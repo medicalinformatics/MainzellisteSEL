@@ -55,6 +55,8 @@ public class HTTPSendHelper {
             logger.info("SRL configuration updated. Response Code " + String.valueOf(result.getStatusLine().getStatusCode()));
         } else if (result.getStatusLine().getStatusCode() == 204) {
             logger.info("SRL configuration initialized. Response Code " + String.valueOf(result.getStatusLine().getStatusCode()));
+        } else if (result.getStatusLine().getStatusCode() == 202) {
+            logger.info("Response Code " + String.valueOf(result.getStatusLine().getStatusCode()));
         } else {
             throw new InternalErrorException(result.getStatusLine().toString());
         }

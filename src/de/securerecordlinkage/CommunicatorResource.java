@@ -138,6 +138,8 @@ public class CommunicatorResource {
             recordToSendJSON.put("fields", recordAsJson.get("fields"));
 
             sendHTTPPOSTWithAuthorizationHeader(url, recordToSendJSON);
+
+            logger.info(recordToSendJSON.toString());
         } catch (Exception e) {
             logger.error(e);
         }
@@ -526,8 +528,8 @@ public class CommunicatorResource {
         if (test) {
             //if (authorizationValidator(request)) {
             try {
-                logger.info("trigger linker started");
-                logger.info("trigger linker " + remoteID);
+                logger.info("trigger match started");
+                logger.info("trigger match  " + remoteID);
 
                 JSONObject answerObject = new JSONObject();
 
@@ -535,9 +537,12 @@ public class CommunicatorResource {
                 Integer totalAmount = pr.linkPatients(remoteID, "matchRecords");
 
                 answerObject.put("totalAmount", totalAmount);
+                logger.info(answerObject.toString());
+                MatchCounter.setNumAll(remoteID, totalAmount);
+
                 return Response.ok(answerObject, MediaType.APPLICATION_JSON).build();
             } catch (Exception e) {
-                logger.error("SRL IDs cannot be generated: " + e.toString());
+                logger.error("Could not match the records: " + e.toString());
                 return Response.status(500).build();
             }
         } else {
@@ -545,6 +550,34 @@ public class CommunicatorResource {
         }
     }
 
+    @GET
+    @Path("/triggerNMMatch/status/{remoteID}")
+    public Response triggerNMMatchStatus(@PathParam("remoteID") String remoteID) throws JSONException {
+
+        logger.info("triggerNMMatchStatus requested for remoteID: " + remoteID);
+
+        JSONObject answerObject = new JSONObject();
+        answerObject.put("totalAmount", MatchCounter.getNumAll(remoteID));
+        answerObject.put("totalMatches", MatchCounter.getNumMatch(remoteID));
+        answerObject.put("totalTentativeMatches", TentativeMatchCounter.getNumMatch(remoteID));
+
+        logger.info("triggerMatchStatus response: " + answerObject);
+
+        try {
+            answerObject.put("matchingStatus", "in progress");
+            if (MatchCounter.getNumMatch(remoteID) + MatchCounter.getNumNonMatch(remoteID) >= MatchCounter.getNumAll(remoteID)) {
+                answerObject.put("matchingStatus", "finished");
+            }
+            logger.info("getNumMatch:" + MatchCounter.getNumMatch(remoteID) + " getNumNonMatch: " + MatchCounter.getNumNonMatch(remoteID) + " getNumAll: " + MatchCounter.getNumAll(remoteID));
+
+            logger.info("triggerMatchStatus (with progress status) response: " + answerObject);
+        } catch (JSONException e) {
+            logger.info("matchingStatus could not be set");
+            logger.error(e.getMessage());
+        }
+
+        return Response.ok(answerObject, MediaType.APPLICATION_JSON).build();
+    }
 
     @GET
     @Path("/triggerMatch/status/{remoteID}")
