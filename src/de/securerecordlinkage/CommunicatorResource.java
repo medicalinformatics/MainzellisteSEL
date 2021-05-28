@@ -289,13 +289,13 @@ public class CommunicatorResource {
                         }
                         return Response.status(200).build();
                     } catch (Exception e) {
-                        logger.info("MatchRecord failed. " + e.toString());
+                        logger.error("MatchRecord failed. " + e.toString());
                         return Response.status(500).build();
                     }
                 }
             }
             catch (Exception e) {
-                logger.info("MatchRecord failed. " + e.toString());
+                logger.error("MatchRecord failed. " + e.toString());
                 return Response.status(500).build();
             }
         }
@@ -469,7 +469,7 @@ public class CommunicatorResource {
 
     //TODO: search a better place and add return http statuscode
     @GET
-    @Path("/triggerMatch/{remoteID}")
+    @Path("/match/trigger/{remoteID}")
     public Response triggerMatch(@Context HttpServletRequest request, @PathParam("remoteID") String remoteID) throws JSONException {
 
         //TODO: change back to validation, if validation is necessary
@@ -503,7 +503,7 @@ public class CommunicatorResource {
     // Triggers the first link process (M:N) for two patient list instances
     // Call only once, if repeated, the SRL IDs should be first deleted
     @GET
-    @Path("/triggerMNLink/{remoteID}")
+    @Path("/linkMN/trigger/{remoteID}")
     public Response triggerMNlink(@Context HttpServletRequest request, @PathParam("remoteID") String remoteID) throws JSONException {
 
 
@@ -536,7 +536,7 @@ public class CommunicatorResource {
     // Triggers the first link process (M:N) for two patient list instances
     // Call only once, if repeated, the SRL IDs should be first deleted
     @GET
-    @Path("/triggerMNMatch/{remoteID}")
+    @Path("/matchMN/trigger/{remoteID}")
     public Response triggerMNmatch(@Context HttpServletRequest request, @PathParam("remoteID") String remoteID) throws JSONException {
 
 
@@ -574,17 +574,22 @@ public class CommunicatorResource {
     }
 
     @GET
-    @Path("/triggerMatch/status/{remoteID}")
-    public Response triggerNMMatchStatus(@PathParam("remoteID") String remoteID) throws JSONException {
+    @Path("/match/status/{remoteID}")
+    public Response triggerMatchStatus(@PathParam("remoteID") String remoteID) throws JSONException {
 
-        logger.info("triggerMatchStatus requested for remoteID: " + remoteID);
+        logger.info("matchingStatus requested for remoteID: " + remoteID);
+
+        if (MatchCounter.getNumAll(remoteID) == null) {
+            logger.error("Wrong remoteID: " + remoteID);
+            return Response.status(500).build();
+        }
 
         JSONObject answerObject = new JSONObject();
         answerObject.put("totalAmount", MatchCounter.getNumAll(remoteID));
         answerObject.put("totalMatches", MatchCounter.getNumMatch(remoteID));
         answerObject.put("totalTentativeMatches", TentativeMatchCounter.getNumMatch(remoteID));
 
-        logger.info("triggerMatchStatus response: " + answerObject);
+        logger.info("matchingStatus response: " + answerObject);
 
         try {
             answerObject.put("matchingStatus", "in progress");
@@ -593,9 +598,9 @@ public class CommunicatorResource {
             }
             logger.info("getNumMatch:" + MatchCounter.getNumMatch(remoteID) + " getNumNonMatch: " + MatchCounter.getNumNonMatch(remoteID) + " getNumAll: " + MatchCounter.getNumAll(remoteID));
 
-            logger.info("triggerMatchStatus (with progress status) response: " + answerObject);
+            logger.info("matchingStatus (with progress status) response: " + answerObject);
         } catch (JSONException e) {
-            logger.info("matchingStatus could not be set");
+            logger.error("matchingStatus could not be set");
             logger.error(e.getMessage());
         }
 
@@ -603,16 +608,16 @@ public class CommunicatorResource {
     }
 
     @GET
-    @Path("/triggerMNMatch/status/{remoteID}")
-    public Response triggerMatchStatus(@PathParam("remoteID") String remoteID) throws JSONException {
+    @Path("/matchMN/status/{remoteID}")
+    public Response triggerMNMatchStatus(@PathParam("remoteID") String remoteID) throws JSONException {
 
 
-        logger.info("triggerMNMatchStatus requested for remoteID: " + remoteID);
+        logger.info("matchingStatus (M:N) requested for remoteID: " + remoteID);
 
         if (MatchCounter.getNumAll(remoteID) == null) {
             logger.error("Wrong remoteID: " + remoteID);
             return Response.status(500).build();
-        };
+        }
 
         JSONObject answerObject = new JSONObject();
 
@@ -620,13 +625,13 @@ public class CommunicatorResource {
         answerObject.put("totalMatches", MatchCounter.getNumMatch(remoteID));
         answerObject.put("totalTentativeMatches", TentativeMatchCounter.getNumMatch(remoteID));
 
-        logger.info("triggerMNMatchStatus response: " + answerObject);
+        logger.info("matchingStatus (M:N) response: " + answerObject);
 
         try {
             answerObject.put("matchingStatus", "finished");
-            logger.info("triggerMNMatchStatus response: " + answerObject);
+            logger.info("matchingStatus (M:N) response: " + answerObject);
         } catch (JSONException e) {
-            logger.info("matchingStatus could not be set");
+            logger.error("matchingStatus (M:N) could not be set");
             logger.error(e.getMessage());
         }
 
