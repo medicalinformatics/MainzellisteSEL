@@ -282,10 +282,10 @@ public class CommunicatorResource {
                         }
                         if (tentativeMatchValue == 1) {
                             TentativeMatchCounter.incrementNumMatch(remoteID);
-                        } else if (matchValue == 0) {
+                        } else if (tentativeMatchValue == 0) {
                             TentativeMatchCounter.incrementNumNonMatch(remoteID);
                         } else {
-                            TentativeMatchCounter.setNumMatch(remoteID, matchValue);
+                            TentativeMatchCounter.setNumMatch(remoteID, tentativeMatchValue);
                         }
                         return Response.status(200).build();
                     } catch (Exception e) {
@@ -587,7 +587,7 @@ public class CommunicatorResource {
         JSONObject answerObject = new JSONObject();
         answerObject.put("totalAmount", MatchCounter.getNumAll(remoteID));
         answerObject.put("totalMatches", MatchCounter.getNumMatch(remoteID));
-        answerObject.put("totalTentativeMatches", TentativeMatchCounter.getNumMatch(remoteID));
+        answerObject.put("totalTentativeMatches", TentativeMatchCounter.getNumMatch(remoteID)-MatchCounter.getNumMatch(remoteID));
 
         logger.info("matchingStatus response: " + answerObject);
 
@@ -623,12 +623,12 @@ public class CommunicatorResource {
 
         answerObject.put("totalAmount", MatchCounter.getNumAll(remoteID));
         answerObject.put("totalMatches", MatchCounter.getNumMatch(remoteID));
-        answerObject.put("totalTentativeMatches", TentativeMatchCounter.getNumMatch(remoteID));
+        answerObject.put("totalTentativeMatches", TentativeMatchCounter.getNumMatch(remoteID)-MatchCounter.getNumMatch(remoteID));
 
         logger.info("matchingStatus (M:N) response: " + answerObject);
 
         try {
-            answerObject.put("matchingStatus", "finished");
+            answerObject.put("matchingStatus", "in progress");
             logger.info("matchingStatus (M:N) response: " + answerObject);
         } catch (JSONException e) {
             logger.error("matchingStatus (M:N) could not be set");
