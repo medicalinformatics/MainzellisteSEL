@@ -264,25 +264,38 @@ public class CommunicatorResource {
         } else {
             //APIKey correct, now do the work
             try {
-
-                if (json.contains("\"match\":true")){
-                    logger.info("matchCallback: match=" + true);
-                    MatchCounter.incrementNumMatch(remoteID);
+                JSONObject jsonObject = new JSONObject(json);
+                JSONObject resObject = (JSONObject) jsonObject.get("result");
+                if (resObject == null) {
+                    logger.error("MatchRecord failed. " + jsonObject.get("error"));
+                    return Response.status(500).build();
+                } else {
+                    try {
+                        int matchValue = resObject.getInt("matches");
+                        int tentativeMatchValue = resObject.getInt("tentativeMatches");
+                        if (matchValue == 1) {
+                            MatchCounter.incrementNumMatch(remoteID);
+                        } else if (matchValue == 0) {
+                            MatchCounter.incrementNumNonMatch(remoteID);
+                        } else {
+                            MatchCounter.setNumMatch(remoteID, matchValue);
+                        }
+                        if (tentativeMatchValue == 1) {
+                            TentativeMatchCounter.incrementNumMatch(remoteID);
+                        } else if (tentativeMatchValue == 0) {
+                            TentativeMatchCounter.incrementNumNonMatch(remoteID);
+                        } else {
+                            TentativeMatchCounter.setNumMatch(remoteID, tentativeMatchValue);
+                        }
+                        return Response.status(200).build();
+                    } catch (Exception e) {
+                        logger.error("MatchRecord failed. " + e.toString());
+                        return Response.status(500).build();
+                    }
                 }
-                else{
-                    //Count nonMatches
-                    logger.info("matchCallback: non match");
-                    MatchCounter.incrementNumNonMatch(remoteID);
-                }
-
-                if(json.contains("\"tentativeMatch\":true")){
-                    logger.info("matchCallback: tentativeMatch=" + true);
-                    TentativeMatchCounter.incrementNumMatch(remoteID);
-                }
-
-                return Response.status(200).build();
-            } catch (Exception e) {
-                logger.error("addMatchResult failed. " + e.toString());
+            }
+            catch (Exception e) {
+                logger.error("MatchRecord failed. " + e.toString());
                 return Response.status(500).build();
             }
         }
@@ -456,7 +469,7 @@ public class CommunicatorResource {
 
     //TODO: search a better place and add return http statuscode
     @GET
-    @Path("/triggerMatch/{remoteID}")
+    @Path("/match/trigger/{remoteID}")
     public Response triggerMatch(@Context HttpServletRequest request, @PathParam("remoteID") String remoteID) throws JSONException {
 
         //TODO: change back to validation, if validation is necessary
@@ -475,6 +488,11 @@ public class CommunicatorResource {
 
             answerObject.put("totalAmount", totalAmount);
             MatchCounter.setNumAll(remoteID, totalAmount);
+            MatchCounter.setNumMatch(remoteID, 0);
+            MatchCounter.setNumNonMatch(remoteID, 0);
+            TentativeMatchCounter.setNumAll(remoteID, totalAmount);
+            TentativeMatchCounter.setNumMatch(remoteID, 0);
+            TentativeMatchCounter.setNumNonMatch(remoteID, 0);
             return Response.ok(answerObject, MediaType.APPLICATION_JSON).build();
         } else {
             return Response.status(401).build();
@@ -485,7 +503,7 @@ public class CommunicatorResource {
     // Triggers the first link process (M:N) for two patient list instances
     // Call only once, if repeated, the SRL IDs should be first deleted
     @GET
-    @Path("/triggerMNLink/{remoteID}")
+    @Path("/linkMN/trigger/{remoteID}")
     public Response triggerMNlink(@Context HttpServletRequest request, @PathParam("remoteID") String remoteID) throws JSONException {
 
 
@@ -518,7 +536,7 @@ public class CommunicatorResource {
     // Triggers the first link process (M:N) for two patient list instances
     // Call only once, if repeated, the SRL IDs should be first deleted
     @GET
-    @Path("/triggerMNMatch/{remoteID}")
+    @Path("/matchMN/trigger/{remoteID}")
     public Response triggerMNmatch(@Context HttpServletRequest request, @PathParam("remoteID") String remoteID) throws JSONException {
 
 
@@ -539,6 +557,11 @@ public class CommunicatorResource {
                 answerObject.put("totalAmount", totalAmount);
                 logger.info(answerObject.toString());
                 MatchCounter.setNumAll(remoteID, totalAmount);
+                MatchCounter.setNumMatch(remoteID, 0);
+                MatchCounter.setNumNonMatch(remoteID, 0);
+                TentativeMatchCounter.setNumAll(remoteID, totalAmount);
+                TentativeMatchCounter.setNumMatch(remoteID, 0);
+                TentativeMatchCounter.setNumNonMatch(remoteID, 0);
 
                 return Response.ok(answerObject, MediaType.APPLICATION_JSON).build();
             } catch (Exception e) {
@@ -551,17 +574,22 @@ public class CommunicatorResource {
     }
 
     @GET
-    @Path("/triggerNMMatch/status/{remoteID}")
-    public Response triggerNMMatchStatus(@PathParam("remoteID") String remoteID) throws JSONException {
+    @Path("/match/status/{remoteID}")
+    public Response triggerMatchStatus(@PathParam("remoteID") String remoteID) throws JSONException {
 
-        logger.info("triggerNMMatchStatus requested for remoteID: " + remoteID);
+        logger.info("matchingStatus requested for remoteID: " + remoteID);
+
+        if (MatchCounter.getNumAll(remoteID) == null) {
+            logger.error("Wrong remoteID: " + remoteID);
+            return Response.status(500).build();
+        }
 
         JSONObject answerObject = new JSONObject();
         answerObject.put("totalAmount", MatchCounter.getNumAll(remoteID));
         answerObject.put("totalMatches", MatchCounter.getNumMatch(remoteID));
-        answerObject.put("totalTentativeMatches", TentativeMatchCounter.getNumMatch(remoteID));
+        answerObject.put("totalTentativeMatches", TentativeMatchCounter.getNumMatch(remoteID)-MatchCounter.getNumMatch(remoteID));
 
-        logger.info("triggerMatchStatus response: " + answerObject);
+        logger.info("matchingStatus response: " + answerObject);
 
         try {
             answerObject.put("matchingStatus", "in progress");
@@ -570,9 +598,9 @@ public class CommunicatorResource {
             }
             logger.info("getNumMatch:" + MatchCounter.getNumMatch(remoteID) + " getNumNonMatch: " + MatchCounter.getNumNonMatch(remoteID) + " getNumAll: " + MatchCounter.getNumAll(remoteID));
 
-            logger.info("triggerMatchStatus (with progress status) response: " + answerObject);
+            logger.info("matchingStatus (with progress status) response: " + answerObject);
         } catch (JSONException e) {
-            logger.info("matchingStatus could not be set");
+            logger.error("matchingStatus could not be set");
             logger.error(e.getMessage());
         }
 
@@ -580,32 +608,32 @@ public class CommunicatorResource {
     }
 
     @GET
-    @Path("/triggerMatch/status/{remoteID}")
-    public Response triggerMatchStatus(@PathParam("remoteID") String remoteID) throws JSONException {
+    @Path("/matchMN/status/{remoteID}")
+    public Response triggerMNMatchStatus(@PathParam("remoteID") String remoteID) throws JSONException {
 
 
-        logger.info("triggerMatchStatus requested for remoteID: " + remoteID);
+        logger.info("matchingStatus (M:N) requested for remoteID: " + remoteID);
+
+        if (MatchCounter.getNumAll(remoteID) == null) {
+            logger.error("Wrong remoteID: " + remoteID);
+            return Response.status(500).build();
+        }
 
         JSONObject answerObject = new JSONObject();
+
         answerObject.put("totalAmount", MatchCounter.getNumAll(remoteID));
         answerObject.put("totalMatches", MatchCounter.getNumMatch(remoteID));
-        answerObject.put("totalTentativeMatches", TentativeMatchCounter.getNumMatch(remoteID));
+        answerObject.put("totalTentativeMatches", TentativeMatchCounter.getNumMatch(remoteID)-MatchCounter.getNumMatch(remoteID));
 
-        logger.info("triggerMatchStatus response: " + answerObject);
+        logger.info("matchingStatus (M:N) response: " + answerObject);
 
         try {
             answerObject.put("matchingStatus", "in progress");
-            if(MatchCounter.getNumMatch(remoteID) + MatchCounter.getNumNonMatch(remoteID) >= MatchCounter.getNumAll(remoteID)){
-                answerObject.put("matchingStatus", "finished");
-            }
-            logger.info("getNumMatch:" + MatchCounter.getNumMatch(remoteID) + " getNumNonMatch: " + MatchCounter.getNumNonMatch(remoteID) + " getNumAll: " + MatchCounter.getNumAll(remoteID));
-
-            logger.info("triggerMatchStatus (with progress status) response: " + answerObject);
+            logger.info("matchingStatus (M:N) response: " + answerObject);
         } catch (JSONException e) {
-            logger.info("matchingStatus could not be set");
+            logger.error("matchingStatus (M:N) could not be set");
             logger.error(e.getMessage());
         }
-
 
         return Response.ok(answerObject, MediaType.APPLICATION_JSON).build();
     }
