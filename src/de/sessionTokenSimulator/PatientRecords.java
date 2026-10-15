@@ -6,7 +6,8 @@ import de.pseudonymisierung.mainzelliste.exceptions.InvalidIDException;
 import de.pseudonymisierung.mainzelliste.matcher.BloomFilterTransformer;
 import de.securerecordlinkage.CommunicatorResource;
 import de.securerecordlinkage.configuration.ConfigLoader;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONObject;
 
@@ -17,7 +18,7 @@ import java.util.*;
 
 public class PatientRecords {
 
-    private Logger logger = Logger.getLogger(this.getClass());
+    private Logger logger = LogManager.getLogger(this.getClass());
     private int numPatients = 0;
 
     /**
@@ -42,7 +43,7 @@ public class PatientRecords {
      * }
      * reqObject.put("records", array);
      * } catch (Exception e) {
-     * logger.info(e);
+     * logger.error("Patient record operation failed", e);
      * }
      * <p>
      * return reqObject;
@@ -63,7 +64,7 @@ public class PatientRecords {
 
             //IDGeneratorFactory.instance.getSrlIdTypes();
         } catch (Exception e) {
-            logger.info(e);
+            logger.error("Patient record operation failed", e);
         }
 
         return array;
@@ -77,7 +78,7 @@ public class PatientRecords {
 
             //IDGeneratorFactory.instance.getSrlIdTypes();
         } catch (Exception e) {
-            logger.info(e);
+            logger.error("Patient record operation failed", e);
         }
 
         return 0;
@@ -96,7 +97,7 @@ public class PatientRecords {
             String remoteId = getRemoteID(IDType);
             rs.sendLinkRecord(c.getLocalSELUrl()+"/linkRecord/" + remoteId, IDType, IDString, recordAsJSON);
         } catch (Exception e) {
-            logger.info(e);
+            logger.error("Patient record operation failed", e);
         }
     }
 
@@ -154,7 +155,7 @@ public class PatientRecords {
             }
 
         } catch (Exception e) {
-            logger.info(e);
+            logger.error("Patient record operation failed", e);
         }
 
         return numPatients;
@@ -170,7 +171,7 @@ public class PatientRecords {
                 matchPatient(p, remoteId);
             }
         } catch (Exception e) {
-            logger.info(e);
+            logger.error("Patient record operation failed", e);
         }
 
         return numPatients;
@@ -184,7 +185,7 @@ public class PatientRecords {
             ConfigLoader c = ConfigLoader.instance;
             rs.sendMatchRecord(c.getLocalSELUrl()+"/matchRecord/" + remoteId, recordAsJSON);
         } catch (Exception e) {
-            logger.info(e);
+            logger.error("Patient record operation failed", e);
         }
     }
 
@@ -196,19 +197,33 @@ public class PatientRecords {
             ID newId = IDGeneratorFactory.instance.buildId(idType, linkageId);
 
             Patient p = Persistor.instance.getPatient(oldId);
+            if (p == null) {
+                logger.error("No patient found for ID " + idType + "=" + tmpRef);
+                return 404;
+            }
+
             Set<ID> newIds = new HashSet<ID>();
             Set<ID> listIds = p.getIds();
+            boolean replaced = false;
             for (ID id : listIds) {
-                if (id.getType().equals(idType)) {
+                if (idMatches(id, idType, tmpRef)) {
                     newIds.add(newId);
+                    replaced = true;
                 } else {
                     newIds.add(id);
                 }
             }
+
+            if (!replaced) {
+                logger.error("Patient " + p.getPatientJpaId() + " was found by "
+                        + idType + "=" + tmpRef + " but that ID was not present in the patient ID set");
+                return 500;
+            }
+
             p.setIds(newIds);
             Persistor.instance.updatePatient(p);
         } catch (Exception e) {
-            logger.info(e);
+            logger.error("Patient record operation failed", e);
             return 500;
         }
 
@@ -224,28 +239,32 @@ public class PatientRecords {
                 ID newId = IDGeneratorFactory.instance.buildId(idType, linkageId);
                 Set<ID> newIds = new HashSet<ID>();
                 Set<ID> listIds = p.getIds();
-                boolean newIDAlreadyExistsinDB = false;
+                boolean replaced = false;
                 for (ID id : listIds) {
                     if (id.getType().equals(idType)) {
-                        newIDAlreadyExistsinDB = true;
                         newIds.add(newId);
+                        replaced = true;
                     } else {
                         newIds.add(id);
                     }
-                    if(!newIDAlreadyExistsinDB){
-                        newIds.add(newId);
-                    }
+                }
+                if (!replaced) {
+                    newIds.add(newId);
                 }
                 p.setIds(newIds);
                 Persistor.instance.updatePatient(p);
                 i++;
             }
         } catch (Exception e) {
-            logger.info(e);
+            logger.error("Patient record operation failed", e);
             return 500;
         }
 
         return 200;
+    }
+
+    private boolean idMatches(ID id, String idType, String idString) {
+        return id.getType().equals(idType) && id.getIdString().equals(idString);
     }
 
 
@@ -301,7 +320,7 @@ public class PatientRecords {
             }
 
         } catch (Exception e) {
-            logger.info(e);
+            logger.error("Patient record operation failed", e);
         }
 
         return fields;
