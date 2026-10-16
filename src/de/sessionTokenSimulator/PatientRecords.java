@@ -50,17 +50,28 @@ public class PatientRecords {
      * }
      **/
 
-    public JSONArray readAllPatientsAsArray() {
+    /**
+     * Reads all patients that already have a linkage ID for the given remote. The linkage ID is
+     * sent as record id, because the linkage service derives the linkage IDs of matching client
+     * records from it. Patients without a linkage ID or with a temporary (numeric) SRL ID are
+     * skipped, so initIDs has to be run before the M:N linkage.
+     */
+    public JSONArray readAllPatientsAsArray(String remoteID) {
         JSONArray array = new JSONArray();
         try {
+            String IDType = getIDType(ConfigLoader.instance.getLocalID(), remoteID);
             List<Patient> patientList = Persistor.instance.getPatients();
             for (Patient p : patientList) {
+                ID linkageId = p.getId(IDType);
+                if (linkageId == null || isTemporarySrlId(linkageId.getIdString())) {
+                    continue;
+                }
                 JSONObject tmpObject = new JSONObject();
                 tmpObject.put("fields", getFieldsObject(p));
-                // TODO: use real IDs
-                tmpObject.put("id", getRandomID());
+                tmpObject.put("id", linkageId.getIdString());
                 array.put(tmpObject);
             }
+            logger.info(array.length() + " of " + patientList.size() + " patients have a linkage ID for " + IDType);
 
             //IDGeneratorFactory.instance.getSrlIdTypes();
         } catch (Exception e) {
@@ -268,11 +279,12 @@ public class PatientRecords {
     }
 
 
-    public String getRandomID(){
-        //TODO: only for testing, use real IDs
-        Random rand = new Random();
-        int  n = rand.nextInt(50000) + 1;
-        return String.valueOf(n);
+    /**
+     * Temporary SRL IDs are counter values from SrlIDGenerator, linkage IDs from the linkage
+     * service are base64 strings.
+     */
+    private boolean isTemporarySrlId(String idString) {
+        return idString.matches("[0-9]+");
     }
 
     public JSONObject getFieldsObject(Patient p) {
