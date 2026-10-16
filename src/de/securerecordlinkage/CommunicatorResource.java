@@ -261,21 +261,16 @@ public class CommunicatorResource {
         } else {
             //APIKey correct, now do the work
             try {
+                JSONObject jsonObject = new JSONObject(json);
+                JSONObject result = jsonObject.getJSONObject("result");
+                int matches = result.getInt("matches");
+                int tentativeMatches = result.getInt("tentativeMatches");
+                int total = MatchCounter.getNumAll(remoteID);
 
-                if (json.contains("\"match\":true")){
-                    logger.info("matchCallback: match=" + true);
-                    MatchCounter.incrementNumMatch(remoteID);
-                }
-                else{
-                    //Count nonMatches
-                    logger.info("matchCallback: non match");
-                    MatchCounter.incrementNumNonMatch(remoteID);
-                }
-
-                if(json.contains("\"tentativeMatch\":true")){
-                    logger.info("matchCallback: tentativeMatch=" + true);
-                    TentativeMatchCounter.incrementNumMatch(remoteID);
-                }
+                MatchCounter.setNumMatch(remoteID, matches);
+                MatchCounter.setNumNonMatch(remoteID, Math.max(0, total - matches));
+                TentativeMatchCounter.setNumMatch(remoteID, tentativeMatches);
+                TentativeMatchCounter.setNumNonMatch(remoteID, Math.max(0, total - tentativeMatches));
 
                 return Response.status(200).build();
             } catch (Exception e) {
@@ -306,8 +301,7 @@ public class CommunicatorResource {
                 setQueryParameter(info.getQueryParameters().get("page"), info.getQueryParameters().get("pageSize"), info.getQueryParameters().get("toDate"));
                 PatientRecords records = new PatientRecords();
 
-                return Response.ok(prepareReturnDataSet(records.readAllPatientsAsArray(), remoteID), MediaType.APPLICATION_JSON).build();
-                //return Response.ok(records.readAllPatientsAsArray(), MediaType.APPLICATION_JSON).build();
+                return Response.ok(prepareReturnDataSet(records.readAllPatientsAsArray(remoteID), remoteID), MediaType.APPLICATION_JSON).build();
             } catch (Exception e) {
                 logger.error("getAllRecords failed. " + e.toString());
                 return Response.status(500).build();
@@ -572,6 +566,31 @@ public class CommunicatorResource {
             logger.error(e.getMessage());
         }
 
+
+        return Response.ok(answerObject, MediaType.APPLICATION_JSON).build();
+    }
+
+    @GET
+    @Path("/matchMN/status/{remoteID}")
+    public Response triggerMNMatchStatus(@PathParam("remoteID") String remoteID) throws JSONException {
+        logger.info("matchingStatus (M:N) requested for remoteID: " + remoteID);
+
+        Integer total = MatchCounter.getNumAll(remoteID);
+        if (total == null) {
+            logger.error("Wrong remoteID: " + remoteID);
+            return Response.status(500).build();
+        }
+
+        Integer matches = MatchCounter.getNumMatch(remoteID);
+        Integer nonMatches = MatchCounter.getNumNonMatch(remoteID);
+        JSONObject answerObject = new JSONObject();
+        answerObject.put("totalAmount", total);
+        answerObject.put("totalMatches", matches);
+        answerObject.put("totalTentativeMatches", TentativeMatchCounter.getNumMatch(remoteID));
+        answerObject.put("matchingStatus",
+                matches != null && nonMatches != null && matches + nonMatches >= total
+                        ? "finished"
+                        : "in progress");
 
         return Response.ok(answerObject, MediaType.APPLICATION_JSON).build();
     }
